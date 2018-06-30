@@ -1,0 +1,44 @@
+{
+  "name": "hyperbuild",
+  "version": "0.0.1",
+  "description": "Non-recursive HTML parser written in C for Node.js using Emscripten",
+  "main": "out/hyperbuild_em.js",
+  "files": [
+    "out/hyperbuild_em.js",
+    "out/hyperbuild_em.js.mem",
+    "test/run/em/start.js",
+    "test/src/"
+  ],
+  "devDependencies": {
+    "minimist": "^1.2.0",
+    "uglify-es": "^3.3.9"
+  },
+  "scripts": {
+    "test": "./test/run/em/start.js",
+    "build": "./compile.em.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wilsonzlin/hyperbuild.git"
+  },
+  "keywords": [
+    "html",
+    "build",
+    "builder",
+    "preprocess",
+    "preprocessor",
+    "minify",
+    "minifier"
+  ],
+  "author": {
+    "email": "contact@wilsonl.in",
+    "name": "Wilson Lin",
+    "url": "https://wilsonl.in/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wilsonzlin/hyperbuild/issues"
+  },
+  "homepage": "https://github.com/wilsonzlin/hyperbuild#readme",
+  "dependencies": {}
+}
