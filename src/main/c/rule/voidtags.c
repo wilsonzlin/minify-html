@@ -1,47 +1,30 @@
 #ifndef _HDR_HYPERBUILD_RULE_VOIDTAGS
 #define _HDR_HYPERBUILD_RULE_VOIDTAGS
 
-#include "../ext/khash.h"
+#include "../ext/nicehash/src/main/c/set/str.h"
 
-const char *hb_r_voidtags_raw[] = {
-  "area",
-  "base",
-  "br",
-  "col",
-  "embed",
-  "hr",
-  "img",
-  "input",
-  "keygen",
-  "link",
-  "meta",
-  "param",
-  "source",
-  "track",
-  "wbr",
-};
+static nh_set_str_t hb_r_voidtags_set;
 
-KHASH_SET_INIT_STR(hb_r_voidtags)
-
-static khash_t(hb_r_voidtags) *hb_r_voidtags_h;
-
-static void hb_r_voidtags_init() {
-  hb_r_voidtags_h = kh_init(hb_r_voidtags);
-
-  int rv;
-
-  for (int i = 0; i < sizeof(hb_r_voidtags_raw) / sizeof(hb_r_voidtags_raw[0]); i++) {
-    kh_put(hb_r_voidtags, hb_r_voidtags_h, hb_r_voidtags_raw[i], &rv);
-  }
+void hb_r_voidtags_init() {
+  nh_set_str_add(hb_r_voidtags_set, "area");
+  nh_set_str_add(hb_r_voidtags_set, "base");
+  nh_set_str_add(hb_r_voidtags_set, "br");
+  nh_set_str_add(hb_r_voidtags_set, "col");
+  nh_set_str_add(hb_r_voidtags_set, "embed");
+  nh_set_str_add(hb_r_voidtags_set, "hr");
+  nh_set_str_add(hb_r_voidtags_set, "img");
+  nh_set_str_add(hb_r_voidtags_set, "input");
+  nh_set_str_add(hb_r_voidtags_set, "keygen");
+  nh_set_str_add(hb_r_voidtags_set, "link");
+  nh_set_str_add(hb_r_voidtags_set, "meta");
+  nh_set_str_add(hb_r_voidtags_set, "param");
+  nh_set_str_add(hb_r_voidtags_set, "source");
+  nh_set_str_add(hb_r_voidtags_set, "track");
+  nh_set_str_add(hb_r_voidtags_set, "wbr");
 }
 
 int hb_r_voidtags_check(char *tag) {
-  khint_t k = kh_get(hb_r_voidtags, hb_r_voidtags_h, tag);
-  return k != kh_end(hb_r_voidtags_h);
-}
-
-void hb_r_voidtags_init() {
-  hb_r_voidtags_init();
+  return nh_set_str_has(hb_r_voidtags_set, tag);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_VOIDTAGS
