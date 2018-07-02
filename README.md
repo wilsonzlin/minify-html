@@ -2,7 +2,7 @@
 
 A fast HTML parser, preprocessor, and minifier, written in C.
 Designed to be used in C projects, but also runnable on Node.js thanks to Emscripten.
-Heavily influenced by [kangax's html-minifier](https://github.com/kangax/html-minifier).
+Minifier heavily influenced by [kangax's html-minifier](https://github.com/kangax/html-minifier).
 
 ## Features
 
@@ -25,51 +25,88 @@ Current limitations:
 - UTF-8 in, UTF-8 out, no BOM at any time.
 - Not aware of exotic Unicode whitespace characters.
 - Tested and designed for Linux only.
+- Follows HTML5 only.
+
+### Errors
+
+Errors marked with a `⌫` can be suppressed using the [`--errorEx`](#--errorEx) option.
+
+#### `EBADENT` ⌫
+
+It's an error if an invalid HTML entity is detected.
+If suppressed, invalid entities are simply interpreted literally.
+See [entityrefs.c](src/main/c/rule/entityrefs.c) for the list of entity references considered valid by hyperbuild.
+Valid entities that reference a Unicode code point must be between 0x0 and 0x10FFFF (inclusive).
+
+#### `EBADTAG` ⌫
+
+It's an error if an unknown (non-standard) tag is reached.
+See [tags.c](src/main/c/rule/tags.c) for the list of tags considered valid by hyperbuild.
+
+#### `EUCASETAG` ⌫
+
+It's an error if an opening or closing tag's name has any uppercase characters.
+
+#### `EUCASEATTR` ⌫
+
+It's an error if an attribute's name has any uppercase characters.
+
+#### `EUQOTATTR` ⌫
+
+It's an error if an attribute's value is not quoted with `"` (U+0022).
+This means that `` ` `` and `'` are not valid quote marks.
+
+#### `EBADCHILD`
+
+It's an error if a tag is declared where it can't be a child of.
+This is a very simple check, and does not cover the comprehensive HTML rules, as they involve backtracking, tree traversal, and lots of conditionals.
+
+This rule is enforced in four parts: 
+[whitelistparents.c](src/main/c/rule/whitelistparents.c),
+[blacklistparents.c](src/main/c/rule/blacklistparents.c),
+[whitelistchildren.c](src/main/c/rule/whitelistchildren.c), and
+[blacklistchildren.c](src/main/c/rule/blacklistchildren.c).
+
+#### `EUNCTAG`
+
+It's an error if a non-void tag is not closed.
+See [voidtags.c](src/main/c/rule/voidtags.c) for the list of tags considered void by hyperbuild.
+
+This includes tags that close automatically because of siblings (e.g. `<li><li>`), as it greatly simplifies the complexity of the minifier due to guarantees about the structure.
+
+#### `ECLOSVOID`
+
+It's an error if a void tag is closed.
+See [voidtags.c](src/main/c/rule/voidtags.c) for the list of tags considered void by hyperbuild.
+
+#### `ESELFCLOS`
+
+It's an error if a tag is self-closed like XML.
 
 ### Options
 
-#### I/O
-
-General options for input and output.
-
-##### `--in`
+#### `--in`
 
 Path to a file to process. If omitted, hyperbuild will read from `stdin`, and imports will be relative to the working directory.
 
-##### `--out`
+#### `--out`
 
 Path to a file to write to; it will be created if it doesn't exist already. If omitted, the output will be streamed to `stdout`.
 
-##### `--keep`
+#### `--keep`
 
 Don't automatically delete the output file if an error occurred. This option does nothing if the output is `stdout`, and cannot be used with `--buffer`.
 
-##### `--buffer`
+#### `--buffer`
 
 Buffer all output until the process is complete and successful. This can prevent many writes to storage (and won't cause any writes on error), but will use a non-constant amount of memory.
 This applies even when the output is `stdout`, and cannot be used with `--keep`.
 
-#### Error
+#### `--errorEx`
 
-When to stop parsing with an error.
+Suppress errors specified by this option. hyperbuild will quitely ignore and continue processing when otherwise one of the provided errors would occur.
 
-##### `-Einvalid-entity`
-
-It's an error if an invalid HTML entity is detected.
-If omitted, invalid entities are simply interpreted literally.
-
-##### `-Einvalid-tag`
-
-It's an error if an unknown (non-standard) tag is reached.
-A definitive list will be published soon. In the meantime, use the [MDN article](https://developer.mozilla.org/en-US/docs/Web/HTML/Element) as a reference.
-
-##### `-Eucase-tag`
-
-It's an error if an opening or closing tag's name has any uppercase characters.
-
-##### `-Eucase-attr`
-
-It's an error if an attribute's name has any uppercase characters. 
+Separate the error names by a comma. Suppressible errors are marked with a `⌫` in the [Errors](#Errors) section.
 
 ## Processing
 
@@ -230,9 +267,7 @@ Trim and collapse whitespace in `class` attribute values.
 
 #### `--decodeEntities`
 
-Decode any entities into their UTF-8 values.
-
-Invalid entities will result in an error.
+Decode any valid entities into their UTF-8 values.
 
 #### `--processConditionalComments`
 
