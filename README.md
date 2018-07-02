@@ -29,7 +29,7 @@ Current limitations:
 
 ### Errors
 
-Errors marked with a `⌫` can be suppressed using the [`--errorEx`](#--errorEx) option.
+Errors marked with a `⌫` can be suppressed using the [`--errorEx`](#--errorex) option.
 
 #### `EBADENT` ⌫
 
@@ -106,7 +106,7 @@ This applies even when the output is `stdout`, and cannot be used with `--keep`.
 
 Suppress errors specified by this option. hyperbuild will quitely ignore and continue processing when otherwise one of the provided errors would occur.
 
-Separate the error names by a comma. Suppressible errors are marked with a `⌫` in the [Errors](#Errors) section.
+Separate the error names by a comma. Suppressible errors are marked with a `⌫` in the [Errors](#errors) section.
 
 ## Processing
 
@@ -221,7 +221,7 @@ Remove any whitespace from the start and end of a tag, if the first and/or last 
 Useful when combined with whitespace collapsing.
 
 Other whitespace between text nodes and tags are not removed, as it is not recommended to mix non-inline tags with raw text; wrap text in an appropriate tag.
-Basically, a tag should only either contain text and [inline text semantics](#https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics), or tags.
+Basically, a tag should only either contain text and [inline text semantics](https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics), or tags.
 
 <table><thead><tr><th>Before<th>After<tbody><tr><td>
 
