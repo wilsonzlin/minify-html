@@ -3,9 +3,10 @@
 
 #include "../ext/nicehash/src/main/c/set/str.h"
 
-static nh_set_str_t hb_r_inlinetags_set = nh_set_str_create();
+static nh_set_str_t hb_r_inlinetags_set;
 
 void hb_r_inlinetags_init() {
+  hb_r_inlinetags_set = nh_set_str_create();
   nh_set_str_add(hb_r_inlinetags_set, "a");
   nh_set_str_add(hb_r_inlinetags_set, "abbr");
   nh_set_str_add(hb_r_inlinetags_set, "b");

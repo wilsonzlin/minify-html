@@ -4,12 +4,13 @@
 #include <stdint.h>
 #include "../ext/nicehash/src/main/c/map/str.h"
 
-// Sourced from https://dev.w3.org/html5/html-author/charref at 2018-07-01T05:40:00Z
+// Sourced from https://dev.w3.org/html5/html-author/charref at 2018-07-02T10:00:00Z
 
 NICEHASH_MAP_STR(int32, int32_t)
-nh_map_str_int32_t hb_r_entityrefs_map = nh_map_str_int32_create();
+static nh_map_str_int32_t hb_r_entityrefs_map;
 
 void hb_r_entityrefs_init() {
+  hb_r_entityrefs_map = nh_map_str_int32_create();
   nh_map_str_int32_set(hb_r_entityrefs_map, "AElig", 0xc6);
   nh_map_str_int32_set(hb_r_entityrefs_map, "AMP", 0x26);
   nh_map_str_int32_set(hb_r_entityrefs_map, "Aacute", 0xc1);
