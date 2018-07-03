@@ -2,7 +2,7 @@
 #define _HDR_HYPERBUILD_RULE_ENTITYREFS
 
 #include <stdint.h>
-#include "../ext/nicehash/src/main/c/map/str.h"
+#include "../../ext/nicehash/src/main/c/map/str.h"
 
 // Sourced from https://dev.w3.org/html5/html-author/charref at 2018-07-02T10:00:00Z
 

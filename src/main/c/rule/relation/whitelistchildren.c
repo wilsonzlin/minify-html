@@ -1,8 +1,8 @@
 #ifndef _HDR_HYPERBUILD_RULE_WHITELISTCHILDREN
 #define _HDR_HYPERBUILD_RULE_WHITELISTCHILDREN
 
-#include "../ext/nicehash/src/main/c/set/str.h"
-#include "../ext/nicehash/src/main/c/map/str.h"
+#include "../../ext/nicehash/src/main/c/set/str.h"
+#include "../../ext/nicehash/src/main/c/map/str.h"
 
 NICEHASH_MAP_STR(strset, nh_set_str_t)
 static nh_map_str_strset_t hb_r_whitelistchildren_map;
@@ -13,6 +13,7 @@ void hb_r_whitelistchildren_init() {
   nh_set_str_t table = nh_set_str_create();
   nh_set_str_add(table, "caption");
   nh_set_str_add(table, "colgroup");
+  nh_set_str_add(table, "col");
   nh_set_str_add(table, "thead");
   nh_set_str_add(table, "tbody");
   nh_set_str_add(table, "tfoot");

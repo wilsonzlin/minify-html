@@ -1,7 +1,7 @@
 #ifndef _HDR_HYPERBUILD_RULE_INLINETAGS
 #define _HDR_HYPERBUILD_RULE_INLINETAGS
 
-#include "../ext/nicehash/src/main/c/set/str.h"
+#include "../../ext/nicehash/src/main/c/set/str.h"
 
 static nh_set_str_t hb_r_inlinetags_set;
 

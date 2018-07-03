@@ -1,8 +1,8 @@
 #ifndef _HDR_HYPERBUILD_RULE_BLACKLISTCHILDREN
 #define _HDR_HYPERBUILD_RULE_BLACKLISTCHILDREN
 
-#include "../ext/nicehash/src/main/c/set/str.h"
-#include "../ext/nicehash/src/main/c/map/str.h"
+#include "../../ext/nicehash/src/main/c/set/str.h"
+#include "../../ext/nicehash/src/main/c/map/str.h"
 
 NICEHASH_MAP_STR(strset, nh_set_str_t)
 static nh_map_str_strset_t hb_r_blacklistchildren_map;
