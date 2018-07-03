@@ -229,6 +229,7 @@ Basically, a tag should only either contain text and [inline text semantics](htt
 <p>↵
 ··Hey,·I·<em>just</em>·found↵
 ··out·about·this·<strong>cool</strong>·website!↵
+··<div></div>↵
 </p>
 ```
 
@@ -236,7 +237,8 @@ Basically, a tag should only either contain text and [inline text semantics](htt
 
 ```html
 <p>Hey,·I·<em>just</em>·found↵
-··out·about·this·<strong>cool</strong>·website!</p>
+··out·about·this·<strong>cool</strong>·website!↵
+··<div></div></p>
 ```
 
 </table>
