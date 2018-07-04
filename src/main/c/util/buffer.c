@@ -2,21 +2,24 @@
 #define _HDR_HYPERBUILD_UTIL_BUFFER
 
 #include <stddef.h>
+#include <string.h>
+#include "hbchar.h"
 
 #define INITIAL_BUFFER_SIZE 20
 #define BUFFER_GROWTH_RATE 1.5
 
 typedef struct hbu_buffer_s {
-  char *data;
+  hb_char_t *data;
   size_t length;
   size_t size;
 } *hbu_buffer_t;
 
 hbu_buffer_t hbu_buffer_create(void) {
   hbu_buffer_t buf = malloc(sizeof(struct hbu_buffer_s));
-  buf->data = calloc(INITIAL_BUFFER_SIZE, sizeof(char));
+  buf->data = calloc(INITIAL_BUFFER_SIZE, SIZEOF_CHAR);
   buf->length = 0;
   buf->size = INITIAL_BUFFER_SIZE;
+  return buf;
 }
 
 void hbu_buffer_destroy(hbu_buffer_t buf) {
@@ -28,15 +31,15 @@ int hbu_buffer_valid_index(hbu_buffer_t buf, size_t idx) {
   return idx >= 0 && idx < buf->length;
 }
 
-char hbu_buffer_get(hbu_buffer_t buf, size_t idx) {
+hb_eod_char_t hbu_buffer_get(hbu_buffer_t buf, size_t idx) {
   if (!hbu_buffer_valid_index(buf, idx)) {
-    return '\0';
+    return HB_EOD;
   }
 
   return buf->data[idx];
 }
 
-void hbu_buffer_set(hbu_buffer_t buf, size_t idx, char c) {
+void hbu_buffer_set(hbu_buffer_t buf, size_t idx, hb_char_t c) {
   if (!hbu_buffer_valid_index(buf, idx)) {
     return;
   }
@@ -51,7 +54,7 @@ void hbu_buffer_size_expand(hbu_buffer_t buf, size_t new_size) {
     return;
   }
 
-  char *new_data = realloc(buf->data, sizeof(char) * new_size);
+  hb_char_t *new_data = realloc(buf->data, SIZEOF_CHAR * new_size);
   for (size_t i = old_size; i < new_size; i++) {
     new_data[i] = '\0';
   }
@@ -69,8 +72,8 @@ void hbu_buffer_size_shrink(hbu_buffer_t buf, size_t new_size) {
     return;
   }
 
-  char *new_data = malloc(sizeof(char) * new_size);
-  memcpy(new_data, buf->data, sizeof(char) * (new_size) - 1);
+  hb_char_t *new_data = malloc(SIZEOF_CHAR * new_size);
+  memcpy(new_data, buf->data, SIZEOF_CHAR * (new_size) - 1);
   new_data[new_size - 1] = '\0';
 
   free(buf->data);
@@ -107,7 +110,7 @@ void hbu_buffer_ensure_length(hbu_buffer_t buf, size_t length) {
   }
 }
 
-void hbu_buffer_append(hbu_buffer_t buf, char tail) {
+void hbu_buffer_append(hbu_buffer_t buf, hb_char_t tail) {
   size_t next_idx = buf->length;
 
   if (next_idx >= buf->size - 1) {
@@ -121,7 +124,7 @@ void hbu_buffer_append(hbu_buffer_t buf, char tail) {
   buf->length++;
 }
 
-void hbu_buffer_extend_str(hbu_buffer_t buf, char *ext, size_t ext_len) {
+void hbu_buffer_extend_str(hbu_buffer_t buf, hb_char_t *ext, size_t ext_len) {
   hbu_buffer_ensure_length(buf, buf->length + ext_len);
   for (size_t i = 0; i < ext_len; i++) {
     hbu_buffer_append(buf, ext[i]);
@@ -135,12 +138,12 @@ void hbu_buffer_extend_buf(hbu_buffer_t buf, hbu_buffer_t ext) {
   }
 }
 
-char hbu_buffer_shift(hbu_buffer_t buf) {
+hb_eod_char_t hbu_buffer_shift(hbu_buffer_t buf) {
   if (buf->length == 0) {
-    return '\0';
+    return HB_EOD;
   }
 
-  char f = buf->data[0];
+  hb_char_t f = buf->data[0];
 
   for (size_t i = 1; i < buf->length; i++) {
     buf->data[i - 1] = buf->data[i];
@@ -152,7 +155,7 @@ char hbu_buffer_shift(hbu_buffer_t buf) {
   return f;
 }
 
-void hbu_buffer_unshift(hbu_buffer_t buf, char head) {
+void hbu_buffer_unshift(hbu_buffer_t buf, hb_char_t head) {
   hbu_buffer_append(buf, '\0'); // Use append instead of ensure_length to grow rather than crawl
 
   for (size_t i = 0; i < buf->length - 1; i++) { // -1 to skip last appended '\0'
@@ -163,14 +166,14 @@ void hbu_buffer_unshift(hbu_buffer_t buf, char head) {
   // length already adjusted thanks to initial append
 }
 
-char hbu_buffer_pop(hbu_buffer_t buf) {
+hb_eod_char_t hbu_buffer_pop(hbu_buffer_t buf) {
   if (buf->length == 0) {
-    return '\0';
+    return HB_EOD;
   }
 
   size_t idx = buf->length - 1;
 
-  char l = buf->data[idx];
+  hb_char_t l = buf->data[idx];
 
   buf->data[idx] = '\0';
   buf->length--;
