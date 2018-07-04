@@ -35,13 +35,13 @@ Errors marked with a `⌫` can be suppressed using the [`--errorEx`](#--errorex)
 
 It's an error if an invalid HTML entity is detected.
 If suppressed, invalid entities are simply interpreted literally.
-See [entityrefs.c](src/main/c/rule/entityrefs.c) for the list of entity references considered valid by hyperbuild.
+See [entityrefs.c](src/main/c/rule/entity/entityrefs.c) for the list of entity references considered valid by hyperbuild.
 Valid entities that reference a Unicode code point must be between 0x0 and 0x10FFFF (inclusive).
 
 #### `EBADTAG` ⌫
 
 It's an error if an unknown (non-standard) tag is reached.
-See [tags.c](src/main/c/rule/tags.c) for the list of tags considered valid by hyperbuild.
+See [tags.c](src/main/c/rule/tag/tags.c) for the list of tags considered valid by hyperbuild.
 
 #### `EUCASETAG` ⌫
 
@@ -61,23 +61,23 @@ This means that `` ` `` and `'` are not valid quote marks.
 It's an error if a tag is declared where it can't be a child of.
 This is a very simple check, and does not cover the comprehensive HTML rules, as they involve backtracking, tree traversal, and lots of conditionals.
 
-This rule is enforced in four parts: 
-[whitelistparents.c](src/main/c/rule/whitelistparents.c),
-[blacklistparents.c](src/main/c/rule/blacklistparents.c),
-[whitelistchildren.c](src/main/c/rule/whitelistchildren.c), and
-[blacklistchildren.c](src/main/c/rule/blacklistchildren.c).
+This rule is enforced in four parts:
+[whitelistparents.c](src/main/c/rule/relation/whitelistparents.c),
+[blacklistparents.c](src/main/c/rule/relation/blacklistparents.c),
+[whitelistchildren.c](src/main/c/rule/relation/whitelistchildren.c), and
+[blacklistchildren.c](src/main/c/rule/relation/blacklistchildren.c).
 
 #### `EUNCTAG`
 
 It's an error if a non-void tag is not closed.
-See [voidtags.c](src/main/c/rule/voidtags.c) for the list of tags considered void by hyperbuild.
+See [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
 
 This includes tags that close automatically because of siblings (e.g. `<li><li>`), as it greatly simplifies the complexity of the minifier due to guarantees about the structure.
 
 #### `ECLOSVOID`
 
 It's an error if a void tag is closed.
-See [voidtags.c](src/main/c/rule/voidtags.c) for the list of tags considered void by hyperbuild.
+See [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
 
 #### `ESELFCLOS`
 
@@ -111,12 +111,12 @@ Separate the error names by a comma. Suppressible errors are marked with a `⌫`
 ## Processing
 
 hyperbuild sits somewhere between Server Side Includes and a templating library, and is designed for simplistic compilation of apps statically rather than dynamic generation of live content.
- 
+
 To achieve this, hyperbuild has special **directives** that allow special action to be taken when it's processing some HTML code.
 This includes importing files, getting and setting variables, and escaping text for HTML.
 
 Directives are like functions in any common language: they take some arguments, and return some value.
-In hyperbuild, all arguments are simple strings, and the return value is directly streamed while processing. 
+In hyperbuild, all arguments are simple strings, and the return value is directly streamed while processing.
 
 ### Using directives
 
@@ -157,16 +157,90 @@ Read, parse, process, and minify another file, and stream the result.
 
 ## Minification
 
+### Theory
+
+#### Whitespace
+
+##### Beginning and end
+
+##### Between text and tags
+
+##### Contiguous
+
+##### Whole text
+
+#### Content
+
+##### Specific tags
+
+```html
+<title></title>
+<meta>
+<link>
+<table></table>
+<ul></ul>
+<ol></ol>
+<dl></dl>
+<hr>
+<br>
+```
+
+##### Formatting tags
+
+```html
+<strong> moat </strong>
+```
+
+##### Content tags
+
+```html
+<p>Some <strong>content</strong></p>
+```
+
+##### Content-first tags
+
+```html
+<li>Anthony</li>
+```
+
+```html
+<li>
+  <div>
+  </div>
+</li>
+```
+
+##### Sectioning tags
+
+```html
+<p>Some <strong>content</strong></p>
+```
+
+##### Overview
+
+|Type|Content|
+|---|---|
+|Formatting tags|Text nodes|
+|Content tags|Formatting tags, text nodes|
+|Sectioning tags|Sectioning tags, formatting tags|
+
+|Tag|Formatting|Content|Sectioning|
+|---|---|---|---|
+|`li`, `dd`|-|1|2|
+|`p`, `h1-6`|-|Y|-|
+
 ### Options
 
 For options that have a list of tags as their values, the tags should be separated by a comma.
-For brevity, hyperbuild has built-in sets of tags that can be used in place of declaring all their members; they begin with a `$` sign: 
+For brevity, hyperbuild has built-in sets of tags that can be used in place of declaring all their members; they begin with a `$` sign:
 
 |Name|Tags|Description|
 |---|---|---|
-|`$inline`|`a`, `abbr`, `b`, `bdi`, `bdo`, `cite`, `code`, `data`, `dfn`, `em`, `i`, `kbd`, `mark`, `q`, `rt`, `rtc`, `ruby`, `s`, `samp`, `small`, `span`, `strong`, `sub`, `sup`, `time`, `u`, `var`, `wbr`|Inline text semantics (see https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics).
+|`$wss`|`pre`, `code`|Whitespace sensitive.|
+|`$content`|`p`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`|Content tags.|
+|`$formatting`|`a`, `abbr`, `b`, `bdi`, `bdo`, `cite`, `code`, `data`, `dfn`, `em`, `i`, `kbd`, `mark`, `q`, `rt`, `rtc`, `ruby`, `s`, `samp`, `small`, `span`, `strong`, `sub`, `sup`, `time`, `u`, `var`, `wbr`|Inline text semantics (see https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics).|
 
-#### `--collapseWhitespaceEx pre,code`
+#### `--collapseWhitespaceEx $wss`
 
 Reduce a sequence of whitespace characters in text nodes to a single space (U+0020), unless they are a child of the tags specified by this option.
 
@@ -183,12 +257,12 @@ Reduce a sequence of whitespace characters in text nodes to a single space (U+00
 <td>
 
 ```html
-<p>·The·quick·brown·fox·jumps·over·the·lazy·dog.·</p> 
+<p>·The·quick·brown·fox·jumps·over·the·lazy·dog.·</p>
 ```
 
 </table>
 
-#### `--destroyWholeWhitespaceEx pre,code,p,$inline`
+#### `--destroyWholeWhitespaceEx $wss,$content,$formatting`
 
 Remove any text nodes that only consist of whitespace characters, unless they are a child of the tags specified by this option.
 
@@ -214,7 +288,7 @@ Especially useful when using `display: inline-block` so that whitespace between 
 
 </table>
 
-#### `--trimWhitespaceEx pre,code`
+#### `--trimWhitespaceEx $wss,$formatting`
 
 Remove any whitespace from the start and end of a tag, if the first and/or last node is a text node, unless the tag is one of the tags specified by this option.
 
