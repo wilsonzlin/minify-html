@@ -147,7 +147,7 @@ There are two methods of getting hyperbuild's attention: using a special tag, an
 - Replace `dir` with a hyperbuild directive name
 - Arguments are provided in name-value pairs between parentheses, separated by commas
 - All characters between the `=` and next `,` or `)` count as the argument's value, including whitespace characters
-- To use commas or right parentheses in argument values, use the HTML entity (`&#44;` and `&#41;`)
+- To use commas, right parentheses, or ampersands in argument values, use HTML entities (`&#44;`, `&#41;`, and `&amp;`)
 - Directive entities inside argument values will be processed
 
 ### Available directives
