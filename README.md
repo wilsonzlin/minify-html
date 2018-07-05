@@ -74,14 +74,15 @@ See [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered
 
 This includes tags that close automatically because of siblings (e.g. `<li><li>`), as it greatly simplifies the complexity of the minifier due to guarantees about the structure.
 
-#### `ECLOSVOID`
+#### Additional errors
 
-It's an error if a void tag is closed.
-See [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
+There are additional implicit errors that are considered as generic syntax errors due to the way the parser works:
 
-#### `ESELFCLOS`
-
-It's an error if a tag is self-closed like XML.
+- Closing void tags; see [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
+- Self closing tags.
+- Placing whitespace between `=` and attribute names/values.
+- Placing whitespace before the tag name in an opening tag.
+- Placing whitespace around the tag name in a closing tag.
 
 ### Options
 
