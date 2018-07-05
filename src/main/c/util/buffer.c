@@ -32,7 +32,7 @@ hb_char_t *hbu_buffer_underlying(hbu_buffer_t buf) {
 }
 
 int hbu_buffer_valid_index(hbu_buffer_t buf, size_t idx) {
-  return idx >= 0 && idx < buf->length;
+  return idx < buf->length;
 }
 
 hb_eod_char_t hbu_buffer_get(hbu_buffer_t buf, size_t idx) {
