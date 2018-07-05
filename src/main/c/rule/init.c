@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_RULE_INIT
 
 #include "./char/attrname.c"
+#include "./char/attrvalquote.c"
 #include "./char/c0.c"
 #include "./char/digit.c"
 #include "./char/lcalpha.c"
@@ -31,6 +32,7 @@ void hb_r_init(void) {
   hb_r_attrname_init();
 
   // Values
+  hb_r_attrvalquote_init();
   hb_r_unquotedattrval_init();
   hb_r_entityrefs_init();
 
