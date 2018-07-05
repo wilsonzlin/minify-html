@@ -27,6 +27,10 @@ void hbu_buffer_destroy(hbu_buffer_t buf) {
   free(buf);
 }
 
+hb_char_t *hbu_buffer_underlying(hbu_buffer_t buf) {
+  return buf->data;
+}
+
 int hbu_buffer_valid_index(hbu_buffer_t buf, size_t idx) {
   return idx >= 0 && idx < buf->length;
 }
