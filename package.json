@@ -23,6 +23,10 @@
   },
   "keywords": [
     "html",
+    "c",
+    "em",
+    "emscripten",
+    "fast",
     "build",
     "builder",
     "preprocess",
