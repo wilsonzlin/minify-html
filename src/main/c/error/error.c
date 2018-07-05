@@ -36,6 +36,13 @@ void hbe_fatal(hbe_errcode_t errcode, char *fmt, ...) {
   exit(errcode);
 }
 
-// TODO errcode enum used as exit statuses
+void hbe_debug(char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  fprintf(stderr, "[DEBUG] ");
+  vfprintf(stderr, fmt, args);
+  fprintf(stderr, "\n");
+  va_end(args);
+}
 
 #endif // _HDR_HYPERBUILD_ERROR
