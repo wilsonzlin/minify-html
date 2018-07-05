@@ -178,17 +178,7 @@ Read, parse, process, and minify another file, and stream the result.
 
 ##### Specific tags
 
-```html
-<title></title>
-<meta>
-<link>
-<table></table>
-<ul></ul>
-<ol></ol>
-<dl></dl>
-<hr>
-<br>
-```
+Tags not in one of the categories below are **specific tags**.
 
 ##### Formatting tags
 
@@ -215,11 +205,7 @@ Read, parse, process, and minify another file, and stream the result.
 </li>
 ```
 
-##### Sectioning tags
-
-```html
-<p>Some <strong>content</strong></p>
-```
+##### Layout tags
 
 ##### Overview
 
@@ -227,9 +213,9 @@ Read, parse, process, and minify another file, and stream the result.
 |---|---|
 |Formatting tags|Text nodes|
 |Content tags|Formatting tags, text nodes|
-|Sectioning tags|Sectioning tags, formatting tags|
+|Layout tags|Layout tags, formatting tags|
 
-|Tag|Formatting|Content|Sectioning|
+|Tag|Formatting|Content|Layout|
 |---|---|---|---|
 |`li`, `dd`|-|1|2|
 |`p`, `h1-6`|-|Y|-|
@@ -244,6 +230,8 @@ For brevity, hyperbuild has built-in sets of tags that can be used in place of d
 |`$wss`|`pre`, `code`|Whitespace sensitive.|
 |`$content`|`p`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`|Content tags.|
 |`$formatting`|`a`, `abbr`, `b`, `bdi`, `bdo`, `cite`, `code`, `data`, `dfn`, `em`, `i`, `kbd`, `mark`, `q`, `rt`, `rtc`, `ruby`, `s`, `samp`, `small`, `span`, `strong`, `sub`, `sup`, `time`, `u`, `var`, `wbr`|Inline text semantics (see https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics).|
+|`$layout`|||
+|`$specific`|`html`, `link`, `meta`, `style`, `title`, `body`,
 
 #### `--collapseWhitespaceEx $wss`
 
