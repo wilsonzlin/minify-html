@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_RULE_ATTRNAME
 
 #include "../../ext/nicehash/set/int32.h"
+#include "../../util/hbchar.h"
 #include "./c0.c"
 
 static nh_set_int32_t hb_r_attrname_blacklist;
@@ -18,7 +19,7 @@ void hb_r_attrname_init(void) {
   // NOTE: Unicode noncharacters not tested (https://html.spec.whatwg.org/multipage/syntax.html#syntax-attribute-name)
 }
 
-int hb_r_attrname_check(char c) {
+int hb_r_attrname_check(hb_char_t c) {
   return !nh_set_int32_has(hb_r_attrname_blacklist, c);
 }
 

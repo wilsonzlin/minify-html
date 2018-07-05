@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_RULE_DIGIT
 
 #include "../../ext/nicehash/set/int32.h"
+#include "../../util/hbchar.h"
 
 static nh_set_int32_t hb_r_digit_set;
 
@@ -16,7 +17,7 @@ void hb_r_digit_init(void) {
   hb_r_digit_add_elems(hb_r_digit_set);
 }
 
-int hb_r_digit_check(char c) {
+int hb_r_digit_check(hb_char_t c) {
   return nh_set_int32_has(hb_r_digit_set, c);
 }
 

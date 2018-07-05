@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_RULE_TAGS
 
 #include "../../ext/nicehash/set/str.h"
+#include "../../util/hbchar.h"
 
 // Sourced from https://developer.mozilla.org/en-US/docs/Web/HTML/Element at 2018-07-01T05:55:00Z
 
@@ -161,8 +162,8 @@ void hb_r_tags_init(void) {
   nh_set_str_add(hb_r_tags_set, "xmp");
 }
 
-int hb_r_tags_check(char *tag) {
-  return nh_set_str_has(hb_r_tags_set, tag);
+int hb_r_tags_check(hb_char_t *tag) {
+  return nh_set_str_has(hb_r_tags_set, (char *) tag);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_TAGS

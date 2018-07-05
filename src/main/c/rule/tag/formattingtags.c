@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_RULE_FORMATTINGTAGS
 
 #include "../../ext/nicehash/set/str.h"
+#include "../../util/hbchar.h"
 
 static nh_set_str_t hb_r_formattingtags_set;
 
@@ -40,8 +41,8 @@ void hb_r_formattingtags_init(void) {
   nh_set_str_add(hb_r_formattingtags_set, "wbr");
 }
 
-int hb_r_formattingtags_check(char *tag) {
-  return nh_set_str_has(hb_r_formattingtags_set, tag);
+int hb_r_formattingtags_check(hb_char_t *tag) {
+  return nh_set_str_has(hb_r_formattingtags_set, (char *) tag);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_FORMATTINGTAGS

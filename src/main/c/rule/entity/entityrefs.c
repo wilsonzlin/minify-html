@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "../../datastructure/map/str-int32.h"
+#include "../../util/hbchar.h"
 
 // Sourced from https://dev.w3.org/html5/html-author/charref at 2018-07-02T10:00:00Z
 
@@ -2043,12 +2044,12 @@ void hb_r_entityrefs_init(void) {
   nh_map_str_int32_set(hb_r_entityrefs_map, "zwnj", 0x200c);
 }
 
-int hb_r_entityrefs_check(char *ref) {
-  return nh_map_str_int32_has(hb_r_entityrefs_map, ref);
+int hb_r_entityrefs_check(hb_char_t *ref) {
+  return nh_map_str_int32_has(hb_r_entityrefs_map, (char *) ref);
 }
 
-uint32_t hb_r_entityrefs_get(char *ref) {
-  return nh_map_str_int32_get(hb_r_entityrefs_map, ref, 0);
+uint32_t hb_r_entityrefs_get(hb_char_t *ref) {
+  return nh_map_str_int32_get(hb_r_entityrefs_map, (char *) ref, 0);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_ENTITYREFS

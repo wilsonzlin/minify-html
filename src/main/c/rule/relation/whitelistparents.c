@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_RULE_WHITELISTPARENTS
 
 #include "../../datastructure/map/str-strset.h"
+#include "../../util/hbchar.h"
 
 static nh_map_str_strset_t hb_r_whitelistparents_map;
 
@@ -34,13 +35,13 @@ void hb_r_whitelistparents_init(void) {
   nh_map_str_strset_set(hb_r_whitelistparents_map, "col", col);
 }
 
-int hb_r_whitelistparents_check(char *child) {
-  return nh_map_str_strset_has(hb_r_whitelistparents_map, child);
+int hb_r_whitelistparents_check(hb_char_t *child) {
+  return nh_map_str_strset_has(hb_r_whitelistparents_map, (char *) child);
 }
 
-int hb_r_whitelistparents_has(char *child, char *parent) {
-  nh_map_str_strset_t set = nh_map_str_strset_get(hb_r_whitelistparents_map, child, NULL);
-  return nh_set_str_has(set, parent);
+int hb_r_whitelistparents_has(hb_char_t *child, hb_char_t *parent) {
+  nh_set_str_t set = nh_map_str_strset_get(hb_r_whitelistparents_map, (char *) child, NULL);
+  return nh_set_str_has(set, (char *) parent);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_WHITELISTPARENTS
