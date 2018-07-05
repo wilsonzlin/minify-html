@@ -1,7 +1,7 @@
 #ifndef _HDR_HYPERBUILD_RULE_LCALPHA
 #define _HDR_HYPERBUILD_RULE_LCALPHA
 
-#include "../../ext/nicehash/src/main/c/set/int32.h"
+#include "../../ext/nicehash/set/int32.h"
 
 static nh_set_int32_t hb_r_lcalpha_set;
 

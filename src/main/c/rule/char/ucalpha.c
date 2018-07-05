@@ -1,7 +1,7 @@
 #ifndef _HDR_HYPERBUILD_RULE_UCALPHA
 #define _HDR_HYPERBUILD_RULE_UCALPHA
 
-#include "../../ext/nicehash/src/main/c/set/int32.h"
+#include "../../ext/nicehash/set/int32.h"
 
 static nh_set_int32_t hb_r_ucalpha_set;
 

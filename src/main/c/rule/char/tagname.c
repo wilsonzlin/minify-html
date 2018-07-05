@@ -1,7 +1,7 @@
 #ifndef _HDR_HYPERBUILD_RULE_TAGNAME
 #define _HDR_HYPERBUILD_RULE_TAGNAME
 
-#include "../../ext/nicehash/src/main/c/set/int32.h"
+#include "../../ext/nicehash/set/int32.h"
 #include "./lcalpha.c"
 #include "./ucalpha.c"
 #include "./digit.c"

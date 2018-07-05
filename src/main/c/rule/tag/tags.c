@@ -1,7 +1,7 @@
 #ifndef _HDR_HYPERBUILD_RULE_TAGS
 #define _HDR_HYPERBUILD_RULE_TAGS
 
-#include "../../ext/nicehash/src/main/c/set/str.h"
+#include "../../ext/nicehash/set/str.h"
 
 // Sourced from https://developer.mozilla.org/en-US/docs/Web/HTML/Element at 2018-07-01T05:55:00Z
 
