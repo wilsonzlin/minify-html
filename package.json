@@ -13,10 +13,6 @@
     "minimist": "^1.2.0",
     "uglify-es": "^3.3.9"
   },
-  "scripts": {
-    "test": "./test/run/em/start.js",
-    "build": "./compile.em.js"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wilsonzlin/hyperbuild.git"
