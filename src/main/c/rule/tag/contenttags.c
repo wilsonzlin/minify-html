@@ -24,7 +24,7 @@ void hb_r_contenttags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "object");
   nh_set_str_add(set, "option");
   nh_set_str_add(set, "p");
-  nh_set_str_add(set, "summary"); // or a heading
+  nh_set_str_add(set, "summary"); // Can also contain a heading
   nh_set_str_add(set, "textarea");
   nh_set_str_add(set, "video");
 }
