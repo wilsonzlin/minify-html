@@ -30,7 +30,7 @@ void hbe_fatal(hbe_errcode_t errcode, char *fmt, ...) {
   va_start(args, fmt);
   fprintf(stderr, "[FATAL] hyperbuild encountered error %d:\n", errcode);
   vfprintf(stderr, fmt, args);
-  printf("\n");
+  fprintf(stderr, "\n");
   va_end(args);
   exit(EXIT_FAILURE);
 }
