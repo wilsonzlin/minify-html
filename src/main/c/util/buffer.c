@@ -187,7 +187,7 @@ hb_eod_char_t hbu_buffer_pop(hbu_buffer_t buf) {
 
 int hbu_buffer_compare(hbu_buffer_t a, hbu_buffer_t b) {
   // All buffers have NULL-terminated underlying char arrays
-  return strcmp(a->data, b->data);
+  return strcmp((char *) a->data, (char *) b->data);
 }
 
 int hbu_buffer_equal(hbu_buffer_t a, hbu_buffer_t b) {
