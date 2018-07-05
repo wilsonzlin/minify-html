@@ -2,11 +2,10 @@
 #define _HDR_HYPERBUILD_RULE_ENTITYREFS
 
 #include <stdint.h>
-#include "../../ext/nicehash/src/main/c/map/str.h"
+#include "../../datastructure/map/str-int32.h"
 
 // Sourced from https://dev.w3.org/html5/html-author/charref at 2018-07-02T10:00:00Z
 
-NICEHASH_MAP_STR(int32, int32_t)
 static nh_map_str_int32_t hb_r_entityrefs_map;
 
 void hb_r_entityrefs_init(void) {
