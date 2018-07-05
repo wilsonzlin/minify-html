@@ -9,6 +9,8 @@
 
 #define MAX_POS_MSG_LEN 1024
 
+typedef int (*hbu_pipe_predicate_t)(hb_char_t);
+
 typedef void (*hbu_pipe_writer_cb_t)(void *, hb_char_t);
 
 typedef struct hbu_pipe_s {
@@ -75,7 +77,7 @@ static hb_eod_char_t _hbu_pipe_read_from_buffer_or_input(hbu_pipe_t pipe) {
     return hbu_buffer_shift(pipe->buffer);
   }
 
-  return _hbu_pipe_read_from_input(pipe->input);
+  return _hbu_pipe_read_from_input(pipe);
 }
 
 static void _hbu_pipe_update_pos(hbu_pipe_t pipe, hb_char_t c) {
@@ -174,26 +176,6 @@ void hbu_pipe_blank_set_output_buffer(hbu_pipe_t pipe, hbu_buffer_t buf) {
  *
  */
 
-hb_char_t hbu_pipe_accept(hbu_pipe_t pipe) {
-  hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
-
-  _hbu_pipe_assert_not_eoi(pipe, c);
-
-  _hbu_pipe_update_pos(pipe, c);
-
-  _hbu_pipe_write_to_output(pipe, c);
-
-  return c;
-}
-
-void hbu_pipe_skip(hbu_pipe_t pipe) {
-  hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
-
-  _hbu_pipe_assert_not_eoi(pipe, c);
-
-  _hbu_pipe_update_pos(pipe, c);
-}
-
 hb_eod_char_t hbu_pipe_peek_eoi(hbu_pipe_t pipe) {
   // OPTIMISATION: Read directly from buffer if available (no need to unshift later)
   if (pipe->buffer->length) {
@@ -213,7 +195,7 @@ hb_char_t hbu_pipe_peek(hbu_pipe_t pipe) {
   hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
 
   _hbu_pipe_assert_not_eoi(pipe, c);
-  
+
   return c;
 }
 
@@ -227,12 +209,86 @@ hb_char_t hbu_pipe_peek_offset(hbu_pipe_t pipe, size_t offset) {
   return c;
 }
 
+hb_char_t hbu_pipe_accept(hbu_pipe_t pipe) {
+  hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
+
+  _hbu_pipe_assert_not_eoi(pipe, c);
+
+  _hbu_pipe_update_pos(pipe, c);
+
+  _hbu_pipe_write_to_output(pipe, c);
+
+  return c;
+}
+
+int hbu_pipe_accept_if(hbu_pipe_t pipe, hb_char_t c) {
+  hb_eod_char_t n = hbu_pipe_peek_eoi(pipe);
+
+  if (n == HB_EOD || n != c) {
+    return 0;
+  }
+
+  hbu_pipe_accept(pipe);
+
+  return 1;
+}
+
+int hbu_pipe_accept_if_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
+  hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
+
+  if (c == HB_EOD || !(*pred)(c)) {
+    return 0;
+  }
+
+  hbu_pipe_accept(pipe);
+
+  return 1;
+}
+
+void hbu_pipe_accept_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
+  while (1) {
+    if (!hbu_pipe_accept_if_predicate(pipe, pred)) {
+      break;
+    }
+  }
+}
+
+void hbu_pipe_skip(hbu_pipe_t pipe) {
+  hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
+
+  _hbu_pipe_assert_not_eoi(pipe, c);
+
+  _hbu_pipe_update_pos(pipe, c);
+}
+
+void hbu_pipe_skip_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
+  while (1) {
+    hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
+
+    if (c == HB_EOD || !(*pred)(c)) {
+      break;
+    }
+
+    hbu_pipe_skip(pipe);
+  }
+}
+
 void hbu_pipe_require(hbu_pipe_t pipe, hb_char_t c) {
   hb_char_t n = hbu_pipe_accept(pipe);
 
   if (c != n) {
     hbe_fatal("Expected `%c` (0x%x), got `%c` (0x%x)", c, c, n, n);
   }
+}
+
+hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred, const char *name) {
+  hb_char_t n = hbu_pipe_accept(pipe);
+
+  if (!(*pred)(n)) {
+    hbe_fatal("Expected %s, got `%c` (0x%x)", name, n, n);
+  }
+
+  return n;
 }
 
 void hbu_pipe_write(hbu_pipe_t pipe, hb_char_t c) {
