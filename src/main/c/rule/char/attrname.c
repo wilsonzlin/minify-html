@@ -6,7 +6,7 @@
 
 static nh_set_int32_t hb_r_attrname_blacklist;
 
-void hb_r_attrname_init() {
+void hb_r_attrname_init(void) {
   hb_r_attrname_blacklist = nh_set_int32_create();
   hb_r_c0_add_elems(hb_r_attrname_blacklist);
   nh_set_int32_add(hb_r_attrname_blacklist, ' ');

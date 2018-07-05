@@ -13,7 +13,7 @@ void hb_r_whitespace_add_elems(nh_set_int32_t set) {
   nh_set_int32_add(set, 0x20); // SPACE
 }
 
-void hb_r_whitespace_init() {
+void hb_r_whitespace_init(void) {
   hb_r_whitespace_set = nh_set_int32_create();
   hb_r_whitespace_add_elems(hb_r_whitespace_set);
 }

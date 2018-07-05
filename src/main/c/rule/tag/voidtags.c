@@ -5,7 +5,7 @@
 
 static nh_set_str_t hb_r_voidtags_set;
 
-void hb_r_voidtags_init() {
+void hb_r_voidtags_init(void) {
   hb_r_voidtags_set = nh_set_str_create();
   nh_set_str_add(hb_r_voidtags_set, "area");
   nh_set_str_add(hb_r_voidtags_set, "base");

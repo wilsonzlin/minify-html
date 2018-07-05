@@ -7,7 +7,7 @@
 NICEHASH_MAP_STR(strset, nh_set_str_t)
 static nh_map_str_strset_t hb_r_blacklistparents_map;
 
-void hb_r_blacklistparents_init() {
+void hb_r_blacklistparents_init(void) {
   hb_r_blacklistparents_map = nh_map_str_strset_create();
 }
 

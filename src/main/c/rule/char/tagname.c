@@ -8,7 +8,7 @@
 
 static nh_set_int32_t hb_r_tagname_set;
 
-void hb_r_tagname_init() {
+void hb_r_tagname_init(void) {
   hb_r_tagname_set = nh_set_int32_create();
   hb_r_lcalpha_add_elems(hb_r_tagname_set);
   hb_r_ucalpha_add_elems(hb_r_tagname_set);

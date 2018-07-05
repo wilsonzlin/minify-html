@@ -6,7 +6,7 @@
 
 static nh_set_int32_t hb_r_unquotedattrval_set;
 
-void hb_r_unquotedattrval_init() {
+void hb_r_unquotedattrval_init(void) {
   hb_r_unquotedattrval_set = nh_set_int32_create();
   hb_r_whitespace_add_elems(hb_r_unquotedattrval_set);
   nh_set_int32_add(hb_r_unquotedattrval_set, '"');

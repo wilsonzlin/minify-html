@@ -11,7 +11,7 @@ void hb_r_c0_add_elems(nh_set_int32_t set) {
   }
 }
 
-void hb_r_c0_init() {
+void hb_r_c0_init(void) {
   hb_r_c0_set = nh_set_int32_create();
   hb_r_c0_add_elems(hb_r_c0_set);
 }

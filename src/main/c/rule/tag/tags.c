@@ -7,7 +7,7 @@
 
 static nh_set_str_t hb_r_tags_set;
 
-void hb_r_tags_init() {
+void hb_r_tags_init(void) {
   hb_r_tags_set = nh_set_str_create();
   nh_set_str_add(hb_r_tags_set, "a");
   nh_set_str_add(hb_r_tags_set, "abbr");

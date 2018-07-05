@@ -11,7 +11,7 @@ void hb_r_lcalpha_add_elems(nh_set_int32_t set) {
   }
 }
 
-void hb_r_lcalpha_init() {
+void hb_r_lcalpha_init(void) {
   hb_r_lcalpha_set = nh_set_int32_create();
   hb_r_lcalpha_add_elems(hb_r_lcalpha_set);
 }
