@@ -225,13 +225,18 @@ Tags not in one of the categories below are **specific tags**.
 For options that have a list of tags as their values, the tags should be separated by a comma.
 For brevity, hyperbuild has built-in sets of tags that can be used in place of declaring all their members; they begin with a `$` sign:
 
-|Name|Tags|Description|
+|Name|Tags|Source|
 |---|---|---|
-|`$wss`|`pre`, `code`|Whitespace sensitive.|
-|`$content`|`p`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`|Content tags.|
-|`$formatting`|`a`, `abbr`, `b`, `bdi`, `bdo`, `cite`, `code`, `data`, `dfn`, `em`, `i`, `kbd`, `mark`, `q`, `rt`, `rtc`, `ruby`, `s`, `samp`, `small`, `span`, `strong`, `sub`, `sup`, `time`, `u`, `var`, `wbr`|Inline text semantics (see https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics).|
-|`$layout`|||
-|`$specific`|`html`, `link`, `meta`, `style`, `title`, `body`,
+|`$content`|`address`, `audio`, `button`, `canvas`, `caption`, `figcaption`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `legend`, `meter`, `object`, `option`, `p`, `summary`, `textarea`, `video`|[contenttags.c](src/main/c/rule/tag/contenttags.c)|
+|`$contentfirst`|`dd`, `details`, `dt`, `iframe`, `label`, `li`, `noscript`, `output`, `progress`, `slot`, `td`, `template`, `th`|[contentfirsttags.c](src/main/c/rule/tag/contentfirsttags.c)|
+|`$formatting`|`a`, `abbr`, `b`, `bdi`, `bdo`, `cite`, `code`, `data`, `del`, `dfn`, `em`, `i`, `ins`, `kbd`, `mark`, `q`, `rp`, `rt`, `rtc`, `ruby`, `s`, `samp`, `small`, `span`, `strong`, `sub`, `sup`, `time`, `u`, `var`, `wbr`|[formattingtags.c](src/main/c/rule/tag/formattingtags.c)|
+|`$layout`|`blockquote`, `body`, `colgroup`, `datalist`, `dialog`, `div`, `dl`, `fieldset`, `figure`, `footer`, `form`, `head`, `header`, `hgroup`, `html`, `main`, `map`, `menu`, `nav`, `ol`, `optgroup`, `picture`, `section`, `select`, `table`, `tbody`, `tfoot`, `thead`, `tr`, `ul`|[layouttags.c](src/main/c/rule/tag/layouttags.c)|
+|`$specific`|`area`, `br`, `col`, `embed`, `hr`, `img`, `input`, `param`, `pre`, `script`, `source`, `track`|[specifictags.c](src/main/c/rule/tag/specifictags.c)|
+|`$heading`|`hgroup`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`|[headingtags.c](src/main/c/rule/tag/headingtags.c)|
+|`$media`|`audio`, `video`|[mediatags.c](src/main/c/rule/tag/mediatags.c)|
+|`$sectioning`|`article`, `aside`, `nav`, `section`|[sectioningtags.c](src/main/c/rule/tag/sectioningtags.c)|
+|`$void`|`area`, `base`, `br`, `col`, `embed`, `hr`, `img`, `input`, `keygen`, `link`, `meta`, `param`, `source`, `track`, `wbr`|[voidtags.c](src/main/c/rule/tag/voidtags.c)|
+|`$wss`|`pre`, `code`|[wsstags.c](src/main/c/rule/tag/wsstags.c)|
 
 #### `--collapseWhitespaceEx $wss`
 
