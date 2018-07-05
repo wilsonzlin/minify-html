@@ -42,7 +42,7 @@ static hb_eod_char_t _hbu_pipe_read_from_input(hbu_pipe_t pipe) {
 
 static void _hbu_pipe_assert_valid_peek_offset(size_t offset) {
   if (offset <= 0) {
-    hbe_fatal("INTERR $offset is less than or equal to zero");
+    hbe_fatal(HBE_INTERR_PEEK_OFFSET_GEQ_ZERO, "INTERR $offset is less than or equal to zero");
   }
 }
 
@@ -111,7 +111,7 @@ static char *_hbu_pipe_generate_pos_msg(hbu_pipe_t pipe) {
 
 static void _hbu_pipe_assert_not_eoi(hbu_pipe_t pipe, hb_eod_char_t c) {
   if (c == HB_EOD) {
-    hbe_fatal("Unexpected end of input at %s", _hbu_pipe_generate_pos_msg(pipe));
+    hbe_fatal(HBE_PARSE_UNEXPECTED_END, "Unexpected end of input at %s", _hbu_pipe_generate_pos_msg(pipe));
   }
 }
 
@@ -277,7 +277,7 @@ void hbu_pipe_require(hbu_pipe_t pipe, hb_char_t c) {
   hb_char_t n = hbu_pipe_accept(pipe);
 
   if (c != n) {
-    hbe_fatal("Expected `%c` (0x%x), got `%c` (0x%x)", c, c, n, n);
+    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected `%c` (0x%x), got `%c` (0x%x)", c, c, n, n);
   }
 }
 
@@ -285,7 +285,7 @@ hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred,
   hb_char_t n = hbu_pipe_accept(pipe);
 
   if (!(*pred)(n)) {
-    hbe_fatal("Expected %s, got `%c` (0x%x)", name, n, n);
+    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s, got `%c` (0x%x)", name, n, n);
   }
 
   return n;

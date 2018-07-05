@@ -14,7 +14,7 @@ hb_eod_char_t hbu_fstreamin_read(hbu_fstreamin_t fstreamin) {
 
   if (fread(&c, SIZEOF_CHAR, 1, fstreamin->fd) != SIZEOF_CHAR) {
     if (ferror(fstreamin->fd)) {
-      hbe_fatal("Failed to read input file %s", fstreamin->name);
+      hbe_fatal(HBE_IO_FREAD_FAIL, "Failed to read input file %s", fstreamin->name);
     }
 
     // Must be EOF

@@ -18,7 +18,7 @@
     FILE *fd = fopen(path, mode); \
     \
     if (fd == NULL) { \
-      hbe_fatal("Failed to open file %s for " verb, fstream->name); \
+      hbe_fatal(HBE_IO_FOPEN_FAIL, "Failed to open file %s for " verb " with error %d", fstream->name, errno); \
     } \
     \
     fstream->fd = fd; \
@@ -28,7 +28,7 @@
   \
   void hbu_fstream##type##_delete(hbu_fstream##type##_t fstream) { \
     if (fclose(fstream->fd) == EOF) { \
-      hbe_fatal("Failed to close " noun " stream for file %s", fstream->name); \
+      hbe_fatal(HBE_IO_FCLOSE_FAIL, "Failed to close " noun " stream for file %s with error %d", fstream->name, errno); \
     } \
     \
     free(fstream); \

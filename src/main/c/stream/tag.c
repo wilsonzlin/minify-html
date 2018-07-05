@@ -42,8 +42,7 @@ void hbs_tag(hbu_pipe_t pipe) {
   hbu_pipe_require(pipe, '>');
 
   if (!hbu_buffer_equal(opening_name, closing_name)) {
-    // TODO
-    hbe_fatal("EUNCTAG");
+    hbe_fatal(HBE_PARSE_UNCLOSED_TAG, "Tag not closed");
   }
 }
 

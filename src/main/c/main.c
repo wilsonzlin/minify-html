@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <getopt.h>
 
@@ -47,11 +48,11 @@ int main(int argc, char **argv) {
   }
 
   if (input_path == NULL) {
-    hbe_fatal("No input file provided");
+    hbe_fatal(1, "No input file provided");
   }
 
   if (output_path == NULL) {
-    hbe_fatal("No output file provided");
+    hbe_fatal(1, "No output file provided");
   }
 
   printf("Input: %s\n", input_path);
@@ -65,4 +66,6 @@ int main(int argc, char **argv) {
   hbu_pipe_blank_set_output_fstreamout(pipe, output);
 
   hbs_content(pipe);
+  printf("All done!\n");
+  exit(EXIT_SUCCESS);
 }
