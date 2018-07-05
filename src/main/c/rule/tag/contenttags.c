@@ -13,6 +13,12 @@ void hb_r_contenttags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "canvas");
   nh_set_str_add(set, "caption");
   nh_set_str_add(set, "figcaption");
+  nh_set_str_add(set, "h1");
+  nh_set_str_add(set, "h2");
+  nh_set_str_add(set, "h3");
+  nh_set_str_add(set, "h4");
+  nh_set_str_add(set, "h5");
+  nh_set_str_add(set, "h6");
   nh_set_str_add(set, "legend");
   nh_set_str_add(set, "meter");
   nh_set_str_add(set, "object");
