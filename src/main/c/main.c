@@ -1,11 +1,16 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <getopt.h>
+
 #include "error/error.c"
+
 #include "rule/init.c"
+
 #include "util/fstreamin.c"
 #include "util/fstreamout.c"
 #include "util/pipe.c"
+
+#include "stream/content.c"
 
 int main(int argc, char **argv) {
   // Set up rules
@@ -59,7 +64,5 @@ int main(int argc, char **argv) {
   hbu_pipe_blank_set_input(pipe, input);
   hbu_pipe_blank_set_output_fstreamout(pipe, output);
 
-  while (1) {
-    hbu_pipe_accept(pipe);
-  }
+  hbs_content(pipe);
 }
