@@ -6,10 +6,14 @@
 
 static nh_set_str_t hb_r_wsstags_set;
 
+void hb_r_wsstags_add_elems(nh_set_str_t set) {
+  nh_set_str_add(set, "code");
+  nh_set_str_add(set, "pre");
+}
+
 void hb_r_wsstags_init(void) {
   hb_r_wsstags_set = nh_set_str_create();
-  nh_set_str_add(hb_r_wsstags_set, "code");
-  nh_set_str_add(hb_r_wsstags_set, "pre");
+  hb_r_wsstags_add_elems(hb_r_wsstags_set);
 }
 
 int hb_r_wsstags_check(hb_char_t *tag) {
