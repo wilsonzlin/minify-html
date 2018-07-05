@@ -31,32 +31,32 @@ Current limitations:
 
 Errors marked with a `⌫` can be suppressed using the [`--errorEx`](#--errorex) option.
 
-#### `EBADENT` ⌫
+#### `HBE_PARSE_INVALID_ENTITY` ⌫
 
 It's an error if an invalid HTML entity is detected.
 If suppressed, invalid entities are simply interpreted literally.
 See [entityrefs.c](src/main/c/rule/entity/entityrefs.c) for the list of entity references considered valid by hyperbuild.
 Valid entities that reference a Unicode code point must be between 0x0 and 0x10FFFF (inclusive).
 
-#### `EBADTAG` ⌫
+#### `HBE_PARSE_NONSTANDARD_TAG` ⌫
 
 It's an error if an unknown (non-standard) tag is reached.
 See [tags.c](src/main/c/rule/tag/tags.c) for the list of tags considered valid by hyperbuild.
 
-#### `EUCASETAG` ⌫
+#### `HBE_PARSE_UCASE_TAG` ⌫
 
 It's an error if an opening or closing tag's name has any uppercase characters.
 
-#### `EUCASEATTR` ⌫
+#### `HBE_PARSE_UCASE_ATTR` ⌫
 
 It's an error if an attribute's name has any uppercase characters.
 
-#### `EUQOTATTR` ⌫
+#### `HBE_PARSE_UNQUOTED_ATTR` ⌫
 
 It's an error if an attribute's value is not quoted with `"` (U+0022).
 This means that `` ` `` and `'` are not valid quote marks.
 
-#### `EBADCHILD`
+#### `HBE_PARSE_ILLEGAL_CHILD`
 
 It's an error if a tag is declared where it can't be a child of.
 This is a very simple check, and does not cover the comprehensive HTML rules, as they involve backtracking, tree traversal, and lots of conditionals.
@@ -67,12 +67,16 @@ This rule is enforced in four parts:
 [whitelistchildren.c](src/main/c/rule/relation/whitelistchildren.c), and
 [blacklistchildren.c](src/main/c/rule/relation/blacklistchildren.c).
 
-#### `EUNCTAG`
+#### `HBE_PARSE_UNCLOSED_TAG`
 
 It's an error if a non-void tag is not closed.
 See [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
 
 This includes tags that close automatically because of siblings (e.g. `<li><li>`), as it greatly simplifies the complexity of the minifier due to guarantees about the structure.
+
+#### `HBE_PARSE_UNEXPECTED_END` and `HBE_PARSE_EXPECTED_NOT_FOUND`
+
+General syntax errors.
 
 #### Additional errors
 
