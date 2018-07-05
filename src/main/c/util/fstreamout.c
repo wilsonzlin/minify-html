@@ -6,7 +6,7 @@
 #include "../error/error.c"
 #include "fstream.h"
 
-HBU_FSTREAM_BUILD_INFRA(out, "w", "write", "writing")
+HBU_FSTREAM_BUILD_INFRA(out, "w", "write", "writing", stdout)
 
 void hbu_fstreamout_write(hbu_fstreamout_t fstreamout, hb_char_t c) {
   if (fwrite(&c, SIZEOF_CHAR, 1, fstreamout->fd) != SIZEOF_CHAR) {

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "../error/error.c"
 
-#define HBU_FSTREAM_BUILD_INFRA(type, mode, noun, verb) \
+#define HBU_FSTREAM_BUILD_INFRA(type, mode, noun, verb, std) \
   typedef struct hbu_fstream##type##_s { \
     const char *name; \
     FILE *fd; \
@@ -13,15 +13,21 @@
   \
   hbu_fstream##type##_t hbu_fstream##type##_create(char *path) { \
     hbu_fstream##type##_t fstream = malloc(sizeof(struct hbu_fstream##type##_s)); \
-    fstream->name = path; \
     \
-    FILE *fd = fopen(path, mode); \
-    \
-    if (fd == NULL) { \
-      hbe_fatal(HBE_IO_FOPEN_FAIL, "Failed to open file %s for " verb " with error %d", fstream->name, errno); \
+    if (path == NULL) { \
+      fstream->name = #std; \
+      fstream->fd = std; \
+    } else { \
+      fstream->name = path; \
+      \
+      FILE *fd = fopen(path, mode); \
+      \
+      if (fd == NULL) { \
+        hbe_fatal(HBE_IO_FOPEN_FAIL, "Failed to open file %s for " verb " with error %d", fstream->name, errno); \
+      } \
+      \
+      fstream->fd = fd; \
     } \
-    \
-    fstream->fd = fd; \
     \
     return fstream; \
   } \

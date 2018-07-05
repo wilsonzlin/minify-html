@@ -7,7 +7,7 @@
 #include "../error/error.c"
 #include "fstream.h"
 
-HBU_FSTREAM_BUILD_INFRA(in, "r", "read", "reading")
+HBU_FSTREAM_BUILD_INFRA(in, "r", "read", "reading", stdin)
 
 hb_eod_char_t hbu_fstreamin_read(hbu_fstreamin_t fstreamin) {
   hb_char_t c;
