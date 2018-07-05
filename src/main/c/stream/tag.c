@@ -7,6 +7,9 @@
 #include "../util/pipe.c"
 
 #include "./helper/tagname.c"
+// Declare first before content.c, as content.c depends on it
+void hbs_tag(hbu_pipe_t pipe);
+
 #include "./content.c"
 
 void hbs_tag(hbu_pipe_t pipe) {

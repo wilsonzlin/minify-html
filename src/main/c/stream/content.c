@@ -4,6 +4,9 @@
 #include "../util/hbchar.h"
 #include "../util/pipe.c"
 
+// Declare first before tag.c, as tag.c depends on it
+void hbs_content(hbu_pipe_t pipe);
+
 #include "./tag.c"
 
 void hbs_content(hbu_pipe_t pipe) {
