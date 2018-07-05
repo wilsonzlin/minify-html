@@ -10,6 +10,7 @@ static nh_set_str_t hb_r_layouttags_set;
 void hb_r_layouttags_add_elems(nh_set_str_t set) {
   hb_r_sectioningtags_add_elems(set);
   nh_set_str_add(set, "blockquote");
+  nh_set_str_add(set, "body");
   nh_set_str_add(set, "colgroup");
   nh_set_str_add(set, "datalist");
   nh_set_str_add(set, "dialog");
@@ -19,8 +20,10 @@ void hb_r_layouttags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "figure");
   nh_set_str_add(set, "footer");
   nh_set_str_add(set, "form");
+  nh_set_str_add(set, "head");
   nh_set_str_add(set, "header");
   nh_set_str_add(set, "hgroup");
+  nh_set_str_add(set, "html");
   nh_set_str_add(set, "main");
   nh_set_str_add(set, "map");
   nh_set_str_add(set, "menu");
