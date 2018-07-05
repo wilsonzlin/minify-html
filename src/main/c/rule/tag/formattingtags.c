@@ -8,18 +8,20 @@ static nh_set_str_t hb_r_formattingtags_set;
 
 void hb_r_formattingtags_init(void) {
   hb_r_formattingtags_set = nh_set_str_create();
+  // Difference to MDN's inline text semantics list: -br, +del, +ins
   nh_set_str_add(hb_r_formattingtags_set, "a");
   nh_set_str_add(hb_r_formattingtags_set, "abbr");
   nh_set_str_add(hb_r_formattingtags_set, "b");
   nh_set_str_add(hb_r_formattingtags_set, "bdi");
   nh_set_str_add(hb_r_formattingtags_set, "bdo");
-  nh_set_str_add(hb_r_formattingtags_set, "br");
   nh_set_str_add(hb_r_formattingtags_set, "cite");
   nh_set_str_add(hb_r_formattingtags_set, "code");
   nh_set_str_add(hb_r_formattingtags_set, "data");
+  nh_set_str_add(hb_r_formattingtags_set, "del");
   nh_set_str_add(hb_r_formattingtags_set, "dfn");
   nh_set_str_add(hb_r_formattingtags_set, "em");
   nh_set_str_add(hb_r_formattingtags_set, "i");
+  nh_set_str_add(hb_r_formattingtags_set, "ins");
   nh_set_str_add(hb_r_formattingtags_set, "kbd");
   nh_set_str_add(hb_r_formattingtags_set, "mark");
   nh_set_str_add(hb_r_formattingtags_set, "q");
@@ -35,7 +37,6 @@ void hb_r_formattingtags_init(void) {
   nh_set_str_add(hb_r_formattingtags_set, "sub");
   nh_set_str_add(hb_r_formattingtags_set, "sup");
   nh_set_str_add(hb_r_formattingtags_set, "time");
-  nh_set_str_add(hb_r_formattingtags_set, "tt");
   nh_set_str_add(hb_r_formattingtags_set, "u");
   nh_set_str_add(hb_r_formattingtags_set, "var");
   nh_set_str_add(hb_r_formattingtags_set, "wbr");
