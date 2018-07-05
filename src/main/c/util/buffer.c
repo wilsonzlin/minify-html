@@ -181,4 +181,14 @@ hb_eod_char_t hbu_buffer_pop(hbu_buffer_t buf) {
   return l;
 }
 
+int hbu_buffer_compare(hbu_buffer_t a, hbu_buffer_t b) {
+  // All buffers have NULL-terminated underlying char arrays
+  return strcmp(a->data, b->data);
+}
+
+int hbu_buffer_equal(hbu_buffer_t a, hbu_buffer_t b) {
+  return a->length == b->length &&
+         hbu_buffer_compare(a, b);
+}
+
 #endif
