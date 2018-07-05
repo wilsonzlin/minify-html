@@ -2,11 +2,15 @@
 #include <stdio.h>
 #include <getopt.h>
 #include "error/error.c"
+#include "rule/init.c"
 #include "util/fstreamin.c"
 #include "util/fstreamout.c"
 #include "util/pipe.c"
 
 int main(int argc, char **argv) {
+  // Set up rules
+  hb_r_init();
+
   char *input_path = NULL;
   char *output_path = NULL;
 
