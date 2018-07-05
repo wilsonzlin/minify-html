@@ -47,16 +47,8 @@ int main(int argc, char **argv) {
     }
   }
 
-  if (input_path == NULL) {
-    hbe_fatal(1, "No input file provided");
-  }
-
-  if (output_path == NULL) {
-    hbe_fatal(1, "No output file provided");
-  }
-
-  printf("Input: %s\n", input_path);
-  printf("Output: %s\n", output_path);
+  hbe_debug("Input: %s", input_path);
+  hbe_debug("Output: %s", output_path);
 
   hbu_fstreamin_t input = hbu_fstreamin_create(input_path);
   hbu_fstreamout_t output = hbu_fstreamout_create(output_path);
@@ -66,6 +58,7 @@ int main(int argc, char **argv) {
   hbu_pipe_blank_set_output_fstreamout(pipe, output);
 
   hbs_content(pipe);
-  printf("All done!\n");
+
+  hbe_debug("All done!");
   exit(EXIT_SUCCESS);
 }
