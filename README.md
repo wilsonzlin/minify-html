@@ -100,18 +100,18 @@ Path to a file to write to; it will be created if it doesn't exist already. If o
 
 #### `--keep`
 
-Don't automatically delete the output file if an error occurred. This option does nothing if the output is `stdout`, and cannot be used with `--buffer`.
+Don't automatically delete the output file if an error occurred. If the output is `stdout`, or the output is a file but `--buffer` is provided, this option does nothing.
 
 #### `--buffer`
 
-Buffer all output until the process is complete and successful. This can prevent many writes to storage (and won't cause any writes on error), but will use a non-constant amount of memory.
-This applies even when the output is `stdout`, and cannot be used with `--keep`.
+Buffer all output until the process is complete and successful. This won't truncate or write anything to the output until the build process is done, but will use a non-constant amount of memory.
+This applies even when the output is `stdout`.
 
-#### `--errorEx`
+#### `--suppress`
 
 Suppress errors specified by this option. hyperbuild will quitely ignore and continue processing when otherwise one of the provided errors would occur.
 
-Separate the error names by a comma. Suppressible errors are marked with a `⌫` in the [Errors](#errors) section.
+Separate the error names with commas. Suppressible errors are marked with a `⌫` in the [Errors](#errors) section.
 
 ## Processing
 
@@ -238,7 +238,7 @@ For brevity, hyperbuild has built-in sets of tags that can be used in place of d
 |`$void`|`area`, `base`, `br`, `col`, `embed`, `hr`, `img`, `input`, `keygen`, `link`, `meta`, `param`, `source`, `track`, `wbr`|[voidtags.c](src/main/c/rule/tag/voidtags.c)|
 |`$wss`|`pre`, `code`|[wsstags.c](src/main/c/rule/tag/wsstags.c)|
 
-#### `--collapseWhitespaceEx $wss`
+#### `--MXcollapseWhitespace $wss`
 
 Reduce a sequence of whitespace characters in text nodes to a single space (U+0020), unless they are a child of the tags specified by this option.
 
@@ -260,7 +260,7 @@ Reduce a sequence of whitespace characters in text nodes to a single space (U+00
 
 </table>
 
-#### `--destroyWholeWhitespaceEx $wss,$content,$formatting`
+#### `--MXdestroyWholeWhitespace $wss,$content,$formatting`
 
 Remove any text nodes that only consist of whitespace characters, unless they are a child of the tags specified by this option.
 
@@ -286,7 +286,7 @@ Especially useful when using `display: inline-block` so that whitespace between 
 
 </table>
 
-#### `--trimWhitespaceEx $wss,$formatting`
+#### `--MXtrimWhitespace $wss,$formatting`
 
 Remove any whitespace from the start and end of a tag, if the first and/or last node is a text node, unless the tag is one of the tags specified by this option.
 
@@ -315,9 +315,9 @@ Basically, a tag should only either contain text and [inline text semantics](htt
 
 </table>
 
-#### `--trimClassAttribute`
+#### `--MXtrimClassAttribute`
 
-Trim and collapse whitespace in `class` attribute values.
+Don't trim and collapse whitespace in `class` attribute values.
 
 <table><thead><tr><th>Before<th>After<tbody><tr><td>
 
@@ -339,29 +339,29 @@ Trim and collapse whitespace in `class` attribute values.
 
 </table>
 
-#### `--decodeEntities`
+#### `--MXdecodeEntities`
 
-Decode any valid entities into their UTF-8 values.
+Don't decode any valid entities into their UTF-8 values.
 
-#### `--processConditionalComments`
+#### `--MXprocessConditionalComments`
 
-Process the contents of conditional comments, including downlevel-revealed conditional comments.
+Don't process the contents of conditional comments, including downlevel-revealed conditional comments.
 
-#### `--removeAttributeQuotes`
+#### `--MXremoveAttributeQuotes`
 
-Remove quotes around attribute values when possible.
+Don't remove quotes around attribute values when possible.
 
-#### `--removeComments`
+#### `--MXremoveComments`
 
-Remove any comments, except conditional comments.
+Don't remove any comments, except conditional comments.
 
-#### `--removeOptionalTags`
+#### `--MXremoveOptionalTags`
 
-Remove optional starting or ending tags.
+Don't remove optional starting or ending tags.
 
-#### `--removeTagWhitespace`
+#### `--MXremoveTagWhitespace`
 
-Remove spaces between attributes when possible.
+Don't remove spaces between attributes when possible.
 
 ### Non-options
 
