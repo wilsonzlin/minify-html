@@ -1,9 +1,11 @@
 #ifndef _HDR_HYPERBUILD_ERROR
 #define _HDR_HYPERBUILD_ERROR
 
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 typedef enum hbe_errcode {
   HBE_INTERR_PEEK_OFFSET_GEQ_ZERO = 1,
@@ -24,6 +26,12 @@ typedef enum hbe_errcode {
   HBE_PARSE_UNEXPECTED_END,
   HBE_PARSE_EXPECTED_NOT_FOUND,
 } hbe_errcode_t;
+
+static char *hbe_fatal_autodelete_file = NULL;
+
+void hbe_fatal_set_autodelete(char *path) {
+  hbe_fatal_autodelete_file = path;
+}
 
 void hbe_debug(char *fmt, ...) {
   va_list args;
@@ -50,6 +58,14 @@ void hbe_fatal(hbe_errcode_t errcode, char *fmt, ...) {
   vfprintf(stderr, fmt, args);
   fprintf(stderr, "\n");
   va_end(args);
+
+  if (hbe_fatal_autodelete_file != NULL) {
+    if (unlink(hbe_fatal_autodelete_file)) {
+      hbe_warn("Failed to delete file %s with error %d", hbe_fatal_autodelete_file, errno);
+    } else {
+      hbe_debug("%s has been deleted", hbe_fatal_autodelete_file);
+    }
+  }
 
   // NOTE: $errcode must be less than 256 (see man exit(3))
   exit(errcode);

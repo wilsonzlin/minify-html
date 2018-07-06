@@ -17,11 +17,11 @@ int main(int argc, char **argv) {
   // Set up rules
   hb_r_init();
 
+  // Prepare config
   char *input_path = NULL;
   char *output_path = NULL;
 
-  int c;
-
+  // Parse arguments
   while (1) {
     static struct option long_options[] = {
       {"input", required_argument, NULL, 'i'},
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     };
 
     int option_index = 0;
-    c = getopt_long(argc, argv, "i:o:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "i:o:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -52,6 +52,11 @@ int main(int argc, char **argv) {
 
   hbu_fstreamin_t input = hbu_fstreamin_create(input_path);
   hbu_fstreamout_t output = hbu_fstreamout_create(output_path);
+
+  if (output != NULL) {
+    // Set after opening output stream (file is created then)
+    hbe_fatal_set_autodelete(output_path);
+  }
 
   hbu_pipe_t pipe = hbu_pipe_create_blank();
   hbu_pipe_blank_set_input(pipe, input);
