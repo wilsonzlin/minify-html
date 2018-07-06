@@ -21,14 +21,14 @@ void hbs_tag(hbu_pipe_t pipe) {
   hbu_pipe_require(pipe, '<');
   hbu_buffer_t opening_name = hbsh_tagname(pipe);
   while (hbu_pipe_peek(pipe) != '>') {
-    hbu_pipe_require_predicate(pipe, &hb_r_whitespace_check, "whitespace between attributes");
-    hbu_pipe_skip_while_predicate(pipe, &hb_r_whitespace_check);
+    hbu_pipe_require_predicate(pipe, &hbr_whitespace_check, "whitespace between attributes");
+    hbu_pipe_skip_while_predicate(pipe, &hbr_whitespace_check);
 
     hbsh_attr(pipe);
   }
   hbu_pipe_require(pipe, '>');
 
-  if (hb_r_voidtags_check(hbu_buffer_underlying(opening_name))) {
+  if (hbr_voidtags_check(hbu_buffer_underlying(opening_name))) {
     return;
   }
 

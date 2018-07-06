@@ -11,6 +11,6 @@
   });
 
   console.log(lines.map(l => {
-    return `nh_map_str_int32_set(hb_r_entityrefs_map, "${l[0]}", 0x${l[1].toString(16)});`
+    return `nh_map_str_int32_set(hbr_entityrefs_map, "${l[0]}", 0x${l[1].toString(16)});`
   }).sort().join("\n"));
 })();

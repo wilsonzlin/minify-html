@@ -5,10 +5,10 @@
 #include "../../util/hbchar.h"
 #include "./sectioningtags.c"
 
-static nh_set_str_t hb_r_layouttags_set;
+static nh_set_str_t hbr_layouttags_set;
 
-void hb_r_layouttags_add_elems(nh_set_str_t set) {
-  hb_r_sectioningtags_add_elems(set);
+void hbr_layouttags_add_elems(nh_set_str_t set) {
+  hbr_sectioningtags_add_elems(set);
   nh_set_str_add(set, "blockquote");
   nh_set_str_add(set, "body");
   nh_set_str_add(set, "colgroup");
@@ -41,13 +41,13 @@ void hb_r_layouttags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "ul");
 }
 
-void hb_r_layouttags_init(void) {
-  hb_r_layouttags_set = nh_set_str_create();
-  hb_r_layouttags_add_elems(hb_r_layouttags_set);
+void hbr_layouttags_init(void) {
+  hbr_layouttags_set = nh_set_str_create();
+  hbr_layouttags_add_elems(hbr_layouttags_set);
 }
 
-int hb_r_layouttags_check(hb_char_t *tag) {
-  return nh_set_str_has(hb_r_layouttags_set, (char *) tag);
+int hbr_layouttags_check(hb_char_t *tag) {
+  return nh_set_str_has(hbr_layouttags_set, (char *) tag);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_LAYOUTTAGS

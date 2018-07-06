@@ -7,17 +7,17 @@
 #include "./ucalpha.c"
 #include "./digit.c"
 
-static nh_set_int32_t hb_r_tagname_set;
+static nh_set_int32_t hbr_tagname_set;
 
-void hb_r_tagname_init(void) {
-  hb_r_tagname_set = nh_set_int32_create();
-  hb_r_lcalpha_add_elems(hb_r_tagname_set);
-  hb_r_ucalpha_add_elems(hb_r_tagname_set);
-  hb_r_digit_add_elems(hb_r_tagname_set);
+void hbr_tagname_init(void) {
+  hbr_tagname_set = nh_set_int32_create();
+  hbr_lcalpha_add_elems(hbr_tagname_set);
+  hbr_ucalpha_add_elems(hbr_tagname_set);
+  hbr_digit_add_elems(hbr_tagname_set);
 }
 
-int hb_r_tagname_check(hb_char_t c) {
-  return nh_set_int32_has(hb_r_tagname_set, c);
+int hbr_tagname_check(hb_char_t c) {
+  return nh_set_int32_has(hbr_tagname_set, c);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_TAGNAME

@@ -4,9 +4,9 @@
 #include "../../ext/nicehash/set/str.h"
 #include "../../util/hbchar.h"
 
-static nh_set_str_t hb_r_contenttags_set;
+static nh_set_str_t hbr_contenttags_set;
 
-void hb_r_contenttags_add_elems(nh_set_str_t set) {
+void hbr_contenttags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "address");
   nh_set_str_add(set, "audio");
   nh_set_str_add(set, "button");
@@ -29,13 +29,13 @@ void hb_r_contenttags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "video");
 }
 
-void hb_r_contenttags_init(void) {
-  hb_r_contenttags_set = nh_set_str_create();
-  hb_r_contenttags_add_elems(hb_r_contenttags_set);
+void hbr_contenttags_init(void) {
+  hbr_contenttags_set = nh_set_str_create();
+  hbr_contenttags_add_elems(hbr_contenttags_set);
 }
 
-int hb_r_contenttags_check(hb_char_t *tag) {
-  return nh_set_str_has(hb_r_contenttags_set, (char *) tag);
+int hbr_contenttags_check(hb_char_t *tag) {
+  return nh_set_str_has(hbr_contenttags_set, (char *) tag);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_CONTENTTAGS

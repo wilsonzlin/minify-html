@@ -12,7 +12,7 @@ hbu_buffer_t hbsh_tagname(hbu_pipe_t pipe) {
   while (1) {
     hb_char_t c = hbu_pipe_peek(pipe);
 
-    if (!hb_r_tagname_check(c)) {
+    if (!hbr_tagname_check(c)) {
       break;
     }
 

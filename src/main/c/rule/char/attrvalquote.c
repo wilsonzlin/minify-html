@@ -5,16 +5,16 @@
 #include "../../util/hbchar.h"
 #include "./c0.c"
 
-static nh_set_int32_t hb_r_attrvalquote_set;
+static nh_set_int32_t hbr_attrvalquote_set;
 
-void hb_r_attrvalquote_init(void) {
-  hb_r_attrvalquote_set = nh_set_int32_create();
-  nh_set_int32_add(hb_r_attrvalquote_set, '\'');
-  nh_set_int32_add(hb_r_attrvalquote_set, '"');
+void hbr_attrvalquote_init(void) {
+  hbr_attrvalquote_set = nh_set_int32_create();
+  nh_set_int32_add(hbr_attrvalquote_set, '\'');
+  nh_set_int32_add(hbr_attrvalquote_set, '"');
 }
 
-int hb_r_attrvalquote_check(hb_char_t c) {
-  return !nh_set_int32_has(hb_r_attrvalquote_set, c);
+int hbr_attrvalquote_check(hb_char_t c) {
+  return !nh_set_int32_has(hbr_attrvalquote_set, c);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_ATTRVALQUOTE

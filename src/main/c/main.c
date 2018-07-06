@@ -15,7 +15,7 @@
 
 int main(int argc, char **argv) {
   // Set up rules
-  hb_r_init();
+  hbr_init();
 
   // Prepare config
   char *input_path = NULL;
