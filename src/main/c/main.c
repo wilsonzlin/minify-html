@@ -46,6 +46,10 @@ static void _add_tag_set(char *set_name, nh_set_str_t set) {
 static nh_set_str_t _parse_list_of_tags(char *argv) {
   nh_set_str_t set = nh_set_str_create();
 
+  if (argv == NULL) {
+    return set;
+  }
+
   hb_bufferlist_t list = hb_bufferlist_create_from_split((hb_char_t *) argv, ',');
 
   for (size_t i = 0; i < list->length; i++) {
@@ -89,9 +93,9 @@ int main(int argc, char **argv) {
       {"input", required_argument, NULL, 'i'},
       {"output", required_argument, NULL, 'o'},
 
-      {"MXcollapseWhitespace", required_argument, NULL, 1},
-      {"MXdestroyWholeWhitespace", required_argument, NULL, 2},
-      {"MXtrimWhitespace", required_argument, NULL, 3},
+      {"MXcollapseWhitespace", optional_argument, NULL, 1},
+      {"MXdestroyWholeWhitespace", optional_argument, NULL, 2},
+      {"MXtrimWhitespace", optional_argument, NULL, 3},
 
       {"MXtrimClassAttr", no_argument, &(config_stream->trim_class_attr), 0},
       {"MXdecEnt", no_argument, &(config_stream->decode_entities), 0},
