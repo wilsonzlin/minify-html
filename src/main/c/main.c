@@ -7,12 +7,67 @@
 
 #include "rule/init.c"
 
+#include "ext/nicehash/set/str.h"
+#include "datastructure/list/buffer.h"
+
 #include "util/fstreamin.c"
 #include "util/fstreamout.c"
 #include "util/pipe.c"
 
 #include "stream/streamoptions.c"
 #include "stream/content.c"
+
+static void _add_tag_set(char *set_name, nh_set_str_t set) {
+  if (strcmp(set_name, "content") == 0) {
+    hbr_contenttags_add_elems(set);
+  } else if (strcmp(set_name, "contentfirst") == 0) {
+    hbr_contentfirsttags_add_elems(set);
+  } else if (strcmp(set_name, "formatting") == 0) {
+    hbr_formattingtags_add_elems(set);
+  } else if (strcmp(set_name, "layout") == 0) {
+    hbr_layouttags_add_elems(set);
+  } else if (strcmp(set_name, "specific") == 0) {
+    hbr_specifictags_add_elems(set);
+  } else if (strcmp(set_name, "heading") == 0) {
+    hbr_headingtags_add_elems(set);
+  } else if (strcmp(set_name, "media") == 0) {
+    hbr_mediatags_add_elems(set);
+  } else if (strcmp(set_name, "sectioning") == 0) {
+    hbr_sectioningtags_add_elems(set);
+  } else if (strcmp(set_name, "void") == 0) {
+    hbr_voidtags_add_elems(set);
+  } else if (strcmp(set_name, "wss") == 0) {
+    hbr_wsstags_add_elems(set);
+  } else {
+    hbe_fatal(HBE_CLI_INVALID_TAG_SET, "Unrecognised tag set `%s`", set_name);
+  }
+}
+
+static nh_set_str_t _parse_list_of_tags(char *argv) {
+  nh_set_str_t set = nh_set_str_create();
+
+  hb_bufferlist_t list = hb_bufferlist_create_from_split((hb_char_t *) argv, ',');
+
+  for (size_t i = 0; i < list->length; i++) {
+    hbu_buffer_t part = hb_bufferlist_get(list, i);
+    hb_char_t *part_c = hbu_buffer_underlying(part);
+
+    if (hbu_buffer_get(part, 0) == '$') {
+      // Set of tags
+      hbu_buffer_shift(part);
+      _add_tag_set((char *) part_c, set);
+
+    } else {
+      // Single tag
+      if (!hbr_tags_check(part_c)) {
+        hbe_fatal(HBE_CLI_INVALID_TAG, "%s is not a valid tag and was provided as part of an argument's value", part_c);
+      }
+      nh_set_str_add(set, (char *) part_c);
+    }
+  }
+
+  return set;
+}
 
 int main(int argc, char **argv) {
   // Set up rules
@@ -33,6 +88,10 @@ int main(int argc, char **argv) {
       {"verbose", no_argument, NULL, 'v'},
       {"input", required_argument, NULL, 'i'},
       {"output", required_argument, NULL, 'o'},
+
+      {"MXcollapseWhitespace", required_argument, NULL, 1},
+      {"MXdestroyWholeWhitespace", required_argument, NULL, 2},
+      {"MXtrimWhitespace", required_argument, NULL, 3},
 
       {"MXtrimClassAttr", no_argument, &(config_stream->trim_class_attr), 0},
       {"MXdecEnt", no_argument, &(config_stream->decode_entities), 0},
@@ -74,6 +133,18 @@ int main(int argc, char **argv) {
 
     case 'v':
       hbe_info_toggle(1);
+      break;
+
+    case 1:
+      config_stream->ex_collapse_whitespace = _parse_list_of_tags(optarg);
+      break;
+
+    case 2:
+      config_stream->ex_destroy_whole_whitespace = _parse_list_of_tags(optarg);
+      break;
+
+    case 3:
+      config_stream->ex_trim_whitespace = _parse_list_of_tags(optarg);
       break;
     }
   }
