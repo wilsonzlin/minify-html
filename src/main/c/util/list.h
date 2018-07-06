@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_UTIL_LIST
 
 #include <stddef.h>
+#include <stdlib.h>
 
 #define INITIAL_LIST_SIZE 20
 #define LIST_GROWTH_RATE 1.5
