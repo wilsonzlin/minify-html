@@ -54,6 +54,14 @@ hbs_options_t hbs_options_create(void) {
   return opt;
 }
 
+int hbs_options_in_tags_list(nh_set_str_t set, hb_char_t *query) {
+  if (set == NULL) {
+    return 1; // NULL represents the universal set
+  }
+
+  return nh_set_str_has(set, (char *) query);
+}
+
 void hbs_options_log(hbs_options_t opt) {
   hbe_info_kv_boolean("Trim `class` attributes", opt->trim_class_attr);
   hbe_info_kv_boolean("Decode entities", opt->decode_entities);
