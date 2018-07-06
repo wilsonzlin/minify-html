@@ -292,8 +292,9 @@ Remove any whitespace from the start and end of a tag, if the first and/or last 
 
 Useful when combined with whitespace collapsing.
 
-Other whitespace between text nodes and tags are not removed, as it is not recommended to mix non-inline tags with raw text; wrap text in an appropriate tag.
-Basically, a tag should only either contain text and [inline text semantics](https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics), or tags.
+Other whitespace between text nodes and tags are not removed, as it is not recommended to mix non-formatting tags with raw text.
+
+Basically, a tag should only either contain text and [formatting tags](#formatting-tags), or only non-formatting tags.
 
 <table><thead><tr><th>Before<th>After<tbody><tr><td>
 
