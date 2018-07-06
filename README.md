@@ -343,9 +343,9 @@ Don't trim and collapse whitespace in `class` attribute values.
 
 Don't decode any valid entities into their UTF-8 values.
 
-#### `--MXprocessConditionalComments`
+#### `--MXconditionalComments`
 
-Don't process the contents of conditional comments, including downlevel-revealed conditional comments.
+Don't minify the contents of conditional comments, including downlevel-revealed conditional comments.
 
 #### `--MXremoveAttributeQuotes`
 
