@@ -7,6 +7,16 @@
 #include <stdarg.h>
 #include <unistd.h>
 
+#define PC_RED   "\x1B[31m"
+#define PC_GRN   "\x1B[32m"
+#define PC_YEL   "\x1B[33m"
+#define PC_BLU   "\x1B[34m"
+#define PC_MAG   "\x1B[35m"
+#define PC_CYN   "\x1B[36m"
+#define PC_WHT   "\x1B[37m"
+#define PC_RESET "\x1B[0m"
+#define PC_BOLD  "\e[1m"
+
 typedef enum hbe_errcode {
   HBE_INTERR_PEEK_OFFSET_GEQ_ZERO = 1,
 
@@ -36,7 +46,7 @@ void hbe_fatal_set_autodelete(char *path) {
 void hbe_debug(char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  fprintf(stderr, "[DEBUG] ");
+  fprintf(stderr, PC_CYN "[DEBUG] " PC_RESET);
   vfprintf(stderr, fmt, args);
   fprintf(stderr, "\n");
   va_end(args);
@@ -45,7 +55,7 @@ void hbe_debug(char *fmt, ...) {
 void hbe_warn(char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  fprintf(stderr, "[WARN] ");
+  fprintf(stderr, PC_YEL "[WARN] " PC_RESET);
   vfprintf(stderr, fmt, args);
   fprintf(stderr, "\n");
   va_end(args);
@@ -54,7 +64,7 @@ void hbe_warn(char *fmt, ...) {
 void hbe_fatal(hbe_errcode_t errcode, char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  fprintf(stderr, "[FATAL] hyperbuild encountered error %d:\n", errcode);
+  fprintf(stderr, PC_BOLD PC_RED "[FATAL]" PC_RESET PC_RED " Error %d: " PC_RESET, errcode);
   vfprintf(stderr, fmt, args);
   fprintf(stderr, "\n");
   va_end(args);
