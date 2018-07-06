@@ -59,14 +59,10 @@ int main(int argc, char **argv) {
     }
   }
 
-  hbe_debug("Input: %s", input_path);
-  hbe_debug("Output: %s", output_path);
-  if (config_buffer) {
-    hbe_debug("Buffer: %d", config_buffer);
-  }
-  if (config_keep) {
-    hbe_debug("Keep: %d", config_keep);
-  }
+  hbe_info_kv_string("Input", input_path);
+  hbe_info_kv_string("Output", output_path);
+  hbe_info_kv_boolean("Buffer output until success", config_buffer);
+  hbe_info_kv_boolean("Keep output file on error", config_keep);
 
   hbu_pipe_t pipe = hbu_pipe_create_blank();
 
@@ -99,6 +95,6 @@ int main(int argc, char **argv) {
     hbu_fstreamout_write_buffer(output, output_buffer);
   }
 
-  hbe_debug("All done!");
+  hbe_info("All done!");
   exit(EXIT_SUCCESS);
 }

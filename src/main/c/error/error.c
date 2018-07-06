@@ -45,14 +45,8 @@ void hbe_fatal_set_autodelete(char *path) {
   hbe_fatal_autodelete_file = path;
 }
 
-void hbe_debug(char *fmt, ...) {
-  va_list args;
-  va_start(args, fmt);
-  fprintf(stderr, PC_CYN "[DEBUG] " PC_RESET);
-  vfprintf(stderr, fmt, args);
-  fprintf(stderr, "\n");
-  va_end(args);
-}
+void hbe_info(char *fmt, ...) {
+    fprintf(stderr, PC_MAG "[INFO] " PC_RESET);
 void hbe_info_kv_boolean(char *name, int state) {
   const char *color = state ? (PC_BOLD PC_GRN) : PC_MAG;
   const char *label = state ? "ON" : "OFF";
@@ -67,7 +61,7 @@ void hbe_info_kv_string(char *name, char *value) {
 void hbe_warn(char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  fprintf(stderr, PC_YEL "[WARN] " PC_RESET);
+  fprintf(stderr, PC_BOLD PC_YEL "[WARN] " PC_RESET);
   vfprintf(stderr, fmt, args);
   fprintf(stderr, "\n");
   va_end(args);
@@ -85,7 +79,7 @@ void hbe_fatal(hbe_errcode_t errcode, char *fmt, ...) {
     if (unlink(hbe_fatal_autodelete_file)) {
       hbe_warn("Failed to delete file %s with error %d", hbe_fatal_autodelete_file, errno);
     } else {
-      hbe_debug("%s has been deleted", hbe_fatal_autodelete_file);
+      hbe_info("%s has been deleted", _hbe_fatal_autodelete_file);
     }
   }
 
