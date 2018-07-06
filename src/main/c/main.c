@@ -38,6 +38,9 @@ int main(int argc, char **argv) {
     int c = getopt_long(argc, argv, "kbvi:o:", long_options, &option_index);
 
     if (c == -1) {
+      if (optind != argc) {
+        hbe_fatal(HBE_CLI_TOO_MANY_OPTIONS, "Too many arguments provided");
+      }
       break;
     }
 
