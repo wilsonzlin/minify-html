@@ -25,17 +25,6 @@ typedef enum hbe_errcode {
   HBE_PARSE_EXPECTED_NOT_FOUND,
 } hbe_errcode_t;
 
-void hbe_fatal(hbe_errcode_t errcode, char *fmt, ...) {
-  va_list args;
-  va_start(args, fmt);
-  fprintf(stderr, "[FATAL] hyperbuild encountered error %d:\n", errcode);
-  vfprintf(stderr, fmt, args);
-  fprintf(stderr, "\n");
-  va_end(args);
-  // NOTE: $errcode must be less than 256 (see man exit(3))
-  exit(errcode);
-}
-
 void hbe_debug(char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
@@ -43,6 +32,27 @@ void hbe_debug(char *fmt, ...) {
   vfprintf(stderr, fmt, args);
   fprintf(stderr, "\n");
   va_end(args);
+}
+
+void hbe_warn(char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  fprintf(stderr, "[WARN] ");
+  vfprintf(stderr, fmt, args);
+  fprintf(stderr, "\n");
+  va_end(args);
+}
+
+void hbe_fatal(hbe_errcode_t errcode, char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  fprintf(stderr, "[FATAL] hyperbuild encountered error %d:\n", errcode);
+  vfprintf(stderr, fmt, args);
+  fprintf(stderr, "\n");
+  va_end(args);
+
+  // NOTE: $errcode must be less than 256 (see man exit(3))
+  exit(errcode);
 }
 
 #endif // _HDR_HYPERBUILD_ERROR
