@@ -29,7 +29,7 @@ Current limitations:
 
 ### Errors
 
-Errors marked with a `⌫` can be suppressed using the [`--errorEx`](#--errorex) option.
+Errors marked with a `⌫` can be suppressed using the [`--suppress`](#--suppress) option.
 
 #### `HBE_PARSE_INVALID_ENTITY` ⌫
 
