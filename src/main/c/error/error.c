@@ -17,6 +17,8 @@
 #define PC_RESET "\x1B[0m"
 #define PC_BOLD  "\e[1m"
 
+#define _HBE_KV_LOGLINE_LEFTWIDTH "35"
+
 typedef enum hbe_errcode {
   HBE_INTERR_PEEK_OFFSET_GEQ_ZERO = 1,
 
@@ -50,6 +52,16 @@ void hbe_debug(char *fmt, ...) {
   vfprintf(stderr, fmt, args);
   fprintf(stderr, "\n");
   va_end(args);
+}
+void hbe_info_kv_boolean(char *name, int state) {
+  const char *color = state ? (PC_BOLD PC_GRN) : PC_MAG;
+  const char *label = state ? "ON" : "OFF";
+
+  hbe_info("%-" _HBE_KV_LOGLINE_LEFTWIDTH "s%s%s" PC_RESET, name, color, label);
+}
+
+void hbe_info_kv_string(char *name, char *value) {
+  hbe_info("%-" _HBE_KV_LOGLINE_LEFTWIDTH "s" PC_BOLD "%s" PC_RESET, name, value);
 }
 
 void hbe_warn(char *fmt, ...) {
