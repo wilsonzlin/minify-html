@@ -223,6 +223,9 @@ Tags not in one of the categories below are **specific tags**.
 ### Options
 
 For options that have a list of tags as their values, the tags should be separated by a comma.
+
+An `*` (asterisk, U+002A) can be used to represent the complete set of possible tags. It essentially fully enables or disables the option.
+
 For brevity, hyperbuild has built-in sets of tags that can be used in place of declaring all their members; they begin with a `$` sign:
 
 |Name|Tags|Source|
