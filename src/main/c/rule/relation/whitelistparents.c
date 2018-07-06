@@ -15,11 +15,6 @@ void hb_r_whitelistparents_init(void) {
   nh_set_str_add(caption, "table");
   nh_map_str_strset_set(hb_r_whitelistparents_map, "caption", caption);
 
-  // <caption>
-  nh_set_str_t caption = nh_set_str_create();
-  nh_set_str_add(caption, "table");
-  nh_map_str_strset_set(hb_r_whitelistparents_map, "caption", caption);
-
   // <col>
   nh_set_str_t col = nh_set_str_create();
   nh_set_str_add(col, "table");
