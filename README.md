@@ -365,17 +365,14 @@ Don't remove spaces between attributes when possible.
 
 ### Non-options
 
-#### Collapse boolean attributes
+#### Explicitly important
 
-Not provided, as they should not have been declared in the first place.
-(If they exist, it is assumed there is a special reason for being so.)
+The following removal of attributes and tags as minification strategies are not available in hyperbuild, as they should not have been declared in the first place.
 
-#### Remove empty attributes
+If they exist, it is assumed there is a special reason for being so.
 
-#### Remove empty elements
-
-#### Remove redundant attributes
-
-#### Remove `type` attribute on `<script>` tags
-
-#### Remove `type` attribute on `<style>` and `<link>` tags
+- Remove empty attributes
+- Remove empty elements
+- Remove redundant attributes
+- Remove `type` attribute on `<script>` tags
+- Remove `type` attribute on `<style>` and `<link>` tags
