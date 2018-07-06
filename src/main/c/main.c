@@ -11,6 +11,7 @@
 #include "util/fstreamout.c"
 #include "util/pipe.c"
 
+#include "stream/streamoptions.c"
 #include "stream/content.c"
 
 int main(int argc, char **argv) {
@@ -22,15 +23,25 @@ int main(int argc, char **argv) {
   char *output_path = NULL;
   int config_keep = 0;
   int config_buffer = 0;
+  hbs_options_t config_stream = hbs_options_create();
 
   // Parse arguments
   while (1) {
-    static struct option long_options[] = {
+    struct option long_options[] = {
       {"keep", no_argument, NULL, 'k'},
       {"buffer", no_argument, NULL, 'b'},
       {"verbose", no_argument, NULL, 'v'},
       {"input", required_argument, NULL, 'i'},
       {"output", required_argument, NULL, 'o'},
+
+      {"MXtrimClassAttr", no_argument, &(config_stream->trim_class_attr), 0},
+      {"MXdecEnt", no_argument, &(config_stream->decode_entities), 0},
+      {"MXcondComments", no_argument, &(config_stream->min_conditional_comments), 0},
+      {"MXattrQuotes", no_argument, &(config_stream->decode_entities), 0},
+      {"MXcomments", no_argument, &(config_stream->remove_comments), 0},
+      {"MXoptTags", no_argument, &(config_stream->remove_optional_tags), 0},
+      {"MXtagWS", no_argument, &(config_stream->remove_tag_whitespace), 0},
+
       {0, 0, 0, 0}
     };
 
@@ -71,6 +82,7 @@ int main(int argc, char **argv) {
   hbe_info_kv_string("Output", output_path);
   hbe_info_kv_boolean("Buffer output until success", config_buffer);
   hbe_info_kv_boolean("Keep output file on error", config_keep);
+  hbs_options_log(config_stream);
 
   hbu_pipe_t pipe = hbu_pipe_create_blank();
 
