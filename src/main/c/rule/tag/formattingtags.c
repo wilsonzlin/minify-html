@@ -14,7 +14,6 @@ void hbr_formattingtags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "bdi");
   nh_set_str_add(set, "bdo");
   nh_set_str_add(set, "cite");
-  nh_set_str_add(set, "code");
   nh_set_str_add(set, "data");
   nh_set_str_add(set, "del");
   nh_set_str_add(set, "dfn");
