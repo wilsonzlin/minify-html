@@ -44,6 +44,10 @@ static void _add_tag_set(char *set_name, nh_set_str_t set) {
 }
 
 static nh_set_str_t _parse_list_of_tags(char *argv) {
+  if (argv != NULL && strcmp(argv, "*")) {
+    return NULL;
+  }
+
   nh_set_str_t set = nh_set_str_create();
 
   if (argv == NULL) {
