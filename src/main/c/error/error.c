@@ -39,14 +39,28 @@ typedef enum hbe_errcode {
   HBE_PARSE_EXPECTED_NOT_FOUND,
 } hbe_errcode_t;
 
-static char *hbe_fatal_autodelete_file = NULL;
+static char *_hbe_fatal_autodelete_file = NULL;
+static int _hbe_info_enabled = 0;
 
 void hbe_fatal_set_autodelete(char *path) {
-  hbe_fatal_autodelete_file = path;
+  _hbe_fatal_autodelete_file = path;
+}
+
+void hbe_info_toggle(int log_info) {
+  _hbe_info_enabled = log_info;
 }
 
 void hbe_info(char *fmt, ...) {
+  if (_hbe_info_enabled) {
+    va_list args;
+    va_start(args, fmt);
     fprintf(stderr, PC_MAG "[INFO] " PC_RESET);
+    vfprintf(stderr, fmt, args);
+    fprintf(stderr, "\n");
+    va_end(args);
+  }
+}
+
 void hbe_info_kv_boolean(char *name, int state) {
   const char *color = state ? (PC_BOLD PC_GRN) : PC_MAG;
   const char *label = state ? "ON" : "OFF";
@@ -75,9 +89,9 @@ void hbe_fatal(hbe_errcode_t errcode, char *fmt, ...) {
   fprintf(stderr, "\n");
   va_end(args);
 
-  if (hbe_fatal_autodelete_file != NULL) {
-    if (unlink(hbe_fatal_autodelete_file)) {
-      hbe_warn("Failed to delete file %s with error %d", hbe_fatal_autodelete_file, errno);
+  if (_hbe_fatal_autodelete_file != NULL) {
+    if (unlink(_hbe_fatal_autodelete_file)) {
+      hbe_warn("Failed to delete file %s with error %d", _hbe_fatal_autodelete_file, errno);
     } else {
       hbe_info("%s has been deleted", _hbe_fatal_autodelete_file);
     }

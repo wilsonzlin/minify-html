@@ -28,13 +28,14 @@ int main(int argc, char **argv) {
     static struct option long_options[] = {
       {"keep", no_argument, NULL, 'k'},
       {"buffer", no_argument, NULL, 'b'},
+      {"verbose", no_argument, NULL, 'v'},
       {"input", required_argument, NULL, 'i'},
       {"output", required_argument, NULL, 'o'},
       {0, 0, 0, 0}
     };
 
     int option_index = 0;
-    int c = getopt_long(argc, argv, "kbi:o:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "kbvi:o:", long_options, &option_index);
 
     if (c == -1) {
       break;
@@ -55,6 +56,10 @@ int main(int argc, char **argv) {
 
     case 'b':
       config_buffer = 1;
+      break;
+
+    case 'v':
+      hbe_info_toggle(1);
       break;
     }
   }
