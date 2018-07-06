@@ -5,9 +5,9 @@
 #include "../ext/nicehash/set/str.h"
 
 typedef struct hbs_options_s {
-  nh_set_str_t ex_collapse_whitespace;
-  nh_set_str_t ex_destroy_whole_whitespace;
-  nh_set_str_t ex_trim_whitespace;
+  nh_set_str_t ex_collapse_whitespace; // Could be NULL to represent the universal set (i.e. don't enable)
+  nh_set_str_t ex_destroy_whole_whitespace; // Could be NULL to represent the universal set (i.e. don't enable)
+  nh_set_str_t ex_trim_whitespace; // Could be NULL to represent the universal set (i.e. don't enable)
   int trim_class_attr;
   int decode_entities;
   int min_conditional_comments;
@@ -17,11 +17,33 @@ typedef struct hbs_options_s {
   int remove_tag_whitespace;
 } *hbs_options_t;
 
+static nh_set_str_t _hbs_options_default_ex_collapse_whitespace(void) {
+  nh_set_str_t set = nh_set_str_create();
+  hbr_wsstags_add_elems(set);
+  return set;
+}
+
+static nh_set_str_t _hbs_options_default_ex_destroy_whole_whitespace(void) {
+  nh_set_str_t set = nh_set_str_create();
+  hbr_wsstags_add_elems(set);
+  hbr_contenttags_add_elems(set);
+  hbr_formattingtags_add_elems(set);
+  return set;
+}
+
+static nh_set_str_t _hbs_options_default_ex_trim_whitespace(void) {
+  nh_set_str_t set = nh_set_str_create();
+  hbr_wsstags_add_elems(set);
+  hbr_formattingtags_add_elems(set);
+  return set;
+}
+
+// WARNING: Rules must be initialised before calling this function
 hbs_options_t hbs_options_create(void) {
   hbs_options_t opt = malloc(sizeof(struct hbs_options_s));
-  opt->ex_collapse_whitespace = nh_set_str_create();
-  opt->ex_destroy_whole_whitespace = nh_set_str_create();
-  opt->ex_trim_whitespace = nh_set_str_create();
+  opt->ex_collapse_whitespace = _hbs_options_default_ex_collapse_whitespace();
+  opt->ex_destroy_whole_whitespace = _hbs_options_default_ex_destroy_whole_whitespace();
+  opt->ex_trim_whitespace = _hbs_options_default_ex_trim_whitespace();
   opt->trim_class_attr = 1;
   opt->decode_entities = 1;
   opt->min_conditional_comments = 1;
