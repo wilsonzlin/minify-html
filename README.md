@@ -339,27 +339,27 @@ Don't trim and collapse whitespace in `class` attribute values.
 
 </table>
 
-#### `--MXdecodeEntities`
+#### `--MXdecEnt`
 
 Don't decode any valid entities into their UTF-8 values.
 
-#### `--MXconditionalComments`
+#### `--MXcondComments`
 
 Don't minify the contents of conditional comments, including downlevel-revealed conditional comments.
 
-#### `--MXremoveAttributeQuotes`
+#### `--MXattrQuotes`
 
 Don't remove quotes around attribute values when possible.
 
-#### `--MXremoveComments`
+#### `--MXcomments`
 
 Don't remove any comments, except conditional comments.
 
-#### `--MXremoveOptionalTags`
+#### `--MXoptTags`
 
 Don't remove optional starting or ending tags.
 
-#### `--MXremoveTagWhitespace`
+#### `--MXtagWS`
 
 Don't remove spaces between attributes when possible.
 
