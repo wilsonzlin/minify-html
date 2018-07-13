@@ -234,7 +234,7 @@ For brevity, hyperbuild has built-in sets of tags that can be used in place of d
 |`$contentfirst`|`dd`, `details`, `dt`, `iframe`, `label`, `li`, `noscript`, `output`, `progress`, `slot`, `td`, `template`, `th`|[contentfirsttags.c](src/main/c/rule/tag/contentfirsttags.c)|
 |`$formatting`|`a`, `abbr`, `b`, `bdi`, `bdo`, `cite`, `data`, `del`, `dfn`, `em`, `i`, `ins`, `kbd`, `mark`, `q`, `rp`, `rt`, `rtc`, `ruby`, `s`, `samp`, `small`, `span`, `strong`, `sub`, `sup`, `time`, `u`, `var`, `wbr`|[formattingtags.c](src/main/c/rule/tag/formattingtags.c)|
 |`$layout`|`blockquote`, `body`, `colgroup`, `datalist`, `dialog`, `div`, `dl`, `fieldset`, `figure`, `footer`, `form`, `head`, `header`, `hgroup`, `html`, `main`, `map`, `menu`, `nav`, `ol`, `optgroup`, `picture`, `section`, `select`, `table`, `tbody`, `tfoot`, `thead`, `tr`, `ul`|[layouttags.c](src/main/c/rule/tag/layouttags.c)|
-|`$specific`|`area`, `br`, `code`, `col`, `embed`, `hr`, `img`, `input`, `param`, `pre`, `script`, `source`, `track`|[specifictags.c](src/main/c/rule/tag/specifictags.c)|
+|`$specific`|`area`, `base`, `br`, `code`, `col`, `embed`, `hr`, `img`, `input`, `param`, `pre`, `script`, `source`, `track`|[specifictags.c](src/main/c/rule/tag/specifictags.c)|
 |`$heading`|`hgroup`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`|[headingtags.c](src/main/c/rule/tag/headingtags.c)|
 |`$media`|`audio`, `video`|[mediatags.c](src/main/c/rule/tag/mediatags.c)|
 |`$sectioning`|`article`, `aside`, `nav`, `section`|[sectioningtags.c](src/main/c/rule/tag/sectioningtags.c)|

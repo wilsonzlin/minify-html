@@ -9,6 +9,7 @@ static nh_set_str_t hbr_specifictags_set;
 
 void hbr_specifictags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "area");
+  nh_set_str_add(set, "base");
   nh_set_str_add(set, "br");
   nh_set_str_add(set, "code"); // Reason: unlikely to want to minify
   nh_set_str_add(set, "col");
