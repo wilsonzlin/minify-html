@@ -8,6 +8,7 @@
 void hbs_content(hbu_pipe_t pipe);
 
 #include "./tag.c"
+#include "./bang.c"
 
 void hbs_content(hbu_pipe_t pipe) {
   while (1) {
@@ -21,9 +22,14 @@ void hbs_content(hbu_pipe_t pipe) {
       if (hbu_pipe_peek_offset(pipe, 2) == '/') {
         // Callee is responsible for requiring close tag (or not, if root)
         return;
-      }
 
-      hbs_tag(pipe);
+      } else if (hbu_pipe_peek_offset(pipe, 2) == '!') {
+        // Check after comment
+        hbs_bang(pipe);
+
+      } else {
+        hbs_tag(pipe);
+      }
       break;
 
     case '&':
