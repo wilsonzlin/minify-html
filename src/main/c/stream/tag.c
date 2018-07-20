@@ -11,6 +11,7 @@
 
 #include "./helper/tagname.c"
 #include "./helper/attr.c"
+#include "./helper/script.c"
 
 // Declare first before content.c, as content.c depends on it
 void hbs_tag(hbu_pipe_t pipe);
@@ -18,17 +19,31 @@ void hbs_tag(hbu_pipe_t pipe);
 #include "./content.c"
 
 void hbs_tag(hbu_pipe_t pipe) {
+  int self_closing = 0;
+
   hbu_pipe_require(pipe, '<');
   hbu_buffer_t opening_name = hbsh_tagname(pipe);
-  while (hbu_pipe_peek(pipe) != '>') {
-    hbu_pipe_require_predicate(pipe, &hbr_whitespace_check, "whitespace between attributes");
+  while (1) {
+    hbu_pipe_accept_while_predicate(pipe, &hbr_whitespace_check);
+
+    if (hbu_pipe_accept_if(pipe, '>')) {
+      break;
+    }
+
+    if (hbu_pipe_accept_if_matches(pipe, "/>")) {
+      hbu_pipe_warn(pipe, "Self-closing tag");
+      self_closing = 1;
+      break;
+    }
+
+    // TODO Check for whitespace between attributes and before self-closing tag
     hbu_pipe_skip_while_predicate(pipe, &hbr_whitespace_check);
 
     hbsh_attr(pipe);
   }
-  hbu_pipe_require(pipe, '>');
 
-  if (hbr_voidtags_check(hbu_buffer_underlying(opening_name))) {
+  // Self-closing or void tag
+  if (self_closing || hbr_voidtags_check(hbu_buffer_underlying(opening_name))) {
     return;
   }
 
@@ -47,7 +62,7 @@ void hbs_tag(hbu_pipe_t pipe) {
   hbu_pipe_require(pipe, '>');
 
   if (!hbu_buffer_equal(opening_name, closing_name)) {
-    hbe_fatal(HBE_PARSE_UNCLOSED_TAG, "Tag not closed");
+    hbu_pipe_error(pipe, HBE_PARSE_UNCLOSED_TAG, "Tag not closed");
   }
 }
 

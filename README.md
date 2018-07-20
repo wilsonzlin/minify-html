@@ -83,7 +83,6 @@ General syntax errors.
 There are additional implicit errors that are considered as generic syntax errors due to the way the parser works:
 
 - Closing void tags; see [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
-- Self closing tags.
 - Placing whitespace between `=` and attribute names/values.
 - Placing whitespace before the tag name in an opening tag.
 - Placing whitespace around the tag name in a closing tag.
