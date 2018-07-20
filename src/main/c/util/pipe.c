@@ -1,6 +1,7 @@
 #ifndef _HDR_HYPERBUILD_UTIL_PIPE
 #define _HDR_HYPERBUILD_UTIL_PIPE
 
+#include <string.h>
 #include "hbchar.h"
 #include "../error/error.c"
 #include "buffer.c"
@@ -223,6 +224,25 @@ hb_char_t hbu_pipe_peek_offset(hbu_pipe_t pipe, size_t offset) {
   return c;
 }
 
+size_t hbu_pipe_matches(hbu_pipe_t pipe, const char *match) {
+  size_t matchlen = strlen(match);
+
+  for (size_t i = 0; i < matchlen; i++) {
+    if (hbu_pipe_peek_offset(pipe, i + 1) != match[i]) {
+      return 0;
+    }
+  }
+
+  return matchlen;
+}
+
+size_t hbu_pipe_matches_line_terminator(hbu_pipe_t pipe) {
+  // `\r\n` must be before `\r`
+  return hbu_pipe_matches(pipe, "\r\n") ||
+         hbu_pipe_matches(pipe, "\r") ||
+         hbu_pipe_matches(pipe, "\n");
+}
+
 hb_char_t hbu_pipe_accept(hbu_pipe_t pipe) {
   hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
 
@@ -235,6 +255,12 @@ hb_char_t hbu_pipe_accept(hbu_pipe_t pipe) {
   return c;
 }
 
+void hbu_pipe_accept_count(hbu_pipe_t pipe, size_t count) {
+  for (size_t i = 0; i < count; i++) {
+    hbu_pipe_accept(pipe);
+  }
+}
+
 int hbu_pipe_accept_if(hbu_pipe_t pipe, hb_char_t c) {
   hb_eod_char_t n = hbu_pipe_peek_eoi(pipe);
 
@@ -245,6 +271,30 @@ int hbu_pipe_accept_if(hbu_pipe_t pipe, hb_char_t c) {
   hbu_pipe_accept(pipe);
 
   return 1;
+}
+
+int hbu_pipe_accept_if_matches(hbu_pipe_t pipe, const char *match) {
+  size_t matchedlen = hbu_pipe_matches(pipe, match);
+
+  int matched = matchedlen > 0;
+
+  if (matched) {
+    hbu_pipe_accept_count(pipe, matchedlen);
+  }
+
+  return matched;
+}
+
+int hbu_pipe_accept_if_matches_line_terminator(hbu_pipe_t pipe) {
+  size_t matchedlen = hbu_pipe_matches_line_terminator(pipe);
+
+  int matched = matchedlen > 0;
+
+  if (matched) {
+    hbu_pipe_accept_count(pipe, matchedlen);
+  }
+
+  return matched;
 }
 
 int hbu_pipe_accept_if_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
@@ -275,6 +325,12 @@ void hbu_pipe_skip(hbu_pipe_t pipe) {
   _hbu_pipe_update_pos(pipe, c);
 }
 
+void hbu_pipe_skip_amount(hbu_pipe_t pipe, size_t amount) {
+  for (size_t i = 0; i < amount; i++) {
+    hbu_pipe_skip(pipe);
+  }
+}
+
 void hbu_pipe_skip_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
   while (1) {
     hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
@@ -285,6 +341,18 @@ void hbu_pipe_skip_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
 
     hbu_pipe_skip(pipe);
   }
+}
+
+int hbu_pipe_skip_if_matches(hbu_pipe_t pipe, const char *match) {
+  size_t matchedlen = hbu_pipe_matches(pipe, match);
+
+  int matched = matchedlen > 0;
+
+  if (matched) {
+    hbu_pipe_skip_amount(pipe, matchedlen);
+  }
+
+  return matched;
 }
 
 void hbu_pipe_require(hbu_pipe_t pipe, hb_char_t c) {
@@ -305,6 +373,11 @@ hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred,
   return n;
 }
 
+void hbu_pipe_require_match(hbu_pipe_t pipe, const char *match) {
+  if (!hbu_pipe_matches(pipe, match)) {
+    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s at %s", match, hbu_pipe_generate_pos_msg(pipe));
+  }
+}
 
 void hbu_pipe_warn(hbu_pipe_t pipe, const char *msg) {
   hbe_warn("%s at %s", msg, hbu_pipe_generate_pos_msg(pipe));
