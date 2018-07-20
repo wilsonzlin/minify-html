@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_STREAM_OPTIONS
 
 #include "../error/error.c"
+#include "../util/hbchar.h"
 #include "../ext/nicehash/set/str.h"
 
 typedef struct hbs_options_s {
