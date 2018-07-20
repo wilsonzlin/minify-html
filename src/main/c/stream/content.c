@@ -28,6 +28,7 @@ void hbs_content(hbu_pipe_t pipe) {
 
     case '&':
       // TODO
+      hbu_pipe_accept(pipe);
       break;
 
     default:
