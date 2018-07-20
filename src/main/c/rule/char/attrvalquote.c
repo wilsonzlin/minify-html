@@ -14,7 +14,7 @@ void hbr_attrvalquote_init(void) {
 }
 
 int hbr_attrvalquote_check(hb_char_t c) {
-  return !nh_set_int32_has(hbr_attrvalquote_set, c);
+  return nh_set_int32_has(hbr_attrvalquote_set, c);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_ATTRVALQUOTE
