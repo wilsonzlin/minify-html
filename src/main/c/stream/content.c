@@ -9,6 +9,7 @@ void hbs_content(hbu_pipe_t pipe);
 
 #include "./tag.c"
 #include "./bang.c"
+#include "./comment.c"
 
 void hbs_content(hbu_pipe_t pipe) {
   while (1) {
@@ -22,6 +23,9 @@ void hbs_content(hbu_pipe_t pipe) {
       if (hbu_pipe_peek_offset(pipe, 2) == '/') {
         // Callee is responsible for requiring close tag (or not, if root)
         return;
+
+      } else if (hbu_pipe_peek_offset(pipe, 2) == '!' && hbu_pipe_peek_offset(pipe, 3) == '-') {
+        hbs_comment(pipe);
 
       } else if (hbu_pipe_peek_offset(pipe, 2) == '!') {
         // Check after comment
