@@ -69,11 +69,13 @@ static void _hbu_pipe_ensure_buffer(hbu_pipe_t pipe, size_t offset) {
 
   size_t current = pipe->buffer->length;
 
-  if (offset < current) {
+  if (offset <= current) {
     return;
   }
 
-  for (size_t i = current - 1; i < offset; i++) {
+  size_t gap = offset - current;
+
+  for (size_t i = 0; i < gap; i++) {
     hb_eod_char_t c = _hbu_pipe_read_from_input(pipe);
     if (c == HB_EOD) {
       return;
