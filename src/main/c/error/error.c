@@ -50,6 +50,17 @@ void hbe_fatal_set_autodelete(char *path) {
   _hbe_fatal_autodelete_file = path;
 }
 
+void hbe_debug(char *fmt, ...) {
+  if (_hbe_info_enabled) {
+    va_list args;
+    va_start(args, fmt);
+    fprintf(stderr, "[DEBUG] ");
+    vfprintf(stderr, fmt, args);
+    fprintf(stderr, "\n");
+    va_end(args);
+  }
+}
+
 void hbe_info_toggle(int log_info) {
   _hbe_info_enabled = log_info;
 }

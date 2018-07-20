@@ -29,6 +29,18 @@ typedef struct hbu_pipe_s {
 
 /*
  *
+ * POSITIONING
+ *
+ */
+
+char *hbu_pipe_generate_pos_msg(hbu_pipe_t pipe) {
+  char *msg = malloc(SIZEOF_CHAR * (MAX_POS_MSG_LEN + 1));
+  snprintf(msg, MAX_POS_MSG_LEN + 1, "%s [line %d, column %d]", pipe->input->name, pipe->line, pipe->column);
+  return msg;
+}
+
+/*
+ *
  * INTERNAL FUNCTIONS
  *
  */
@@ -104,15 +116,9 @@ static void _hbu_pipe_update_pos(hbu_pipe_t pipe, hb_char_t c) {
   }
 }
 
-static char *_hbu_pipe_generate_pos_msg(hbu_pipe_t pipe) {
-  char *msg = malloc(SIZEOF_CHAR * (MAX_POS_MSG_LEN + 1));
-  snprintf(msg, MAX_POS_MSG_LEN + 1, "%s [line %d, column %d]", pipe->input->name, pipe->line, pipe->column);
-  return msg;
-}
-
 static void _hbu_pipe_assert_not_eoi(hbu_pipe_t pipe, hb_eod_char_t c) {
   if (c == HB_EOD) {
-    hbe_fatal(HBE_PARSE_UNEXPECTED_END, "Unexpected end of input at %s", _hbu_pipe_generate_pos_msg(pipe));
+    hbe_fatal(HBE_PARSE_UNEXPECTED_END, "Unexpected end of input at %s", hbu_pipe_generate_pos_msg(pipe));
   }
 }
 
@@ -297,6 +303,20 @@ hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred,
   }
 
   return n;
+}
+
+
+void hbu_pipe_warn(hbu_pipe_t pipe, const char *msg) {
+  hbe_warn("%s at %s", msg, hbu_pipe_generate_pos_msg(pipe));
+}
+
+void hbu_pipe_debug(hbu_pipe_t pipe, const char *msg) {
+  hbe_debug("%s at %s", msg, hbu_pipe_generate_pos_msg(pipe));
+}
+
+// Don't use this function for error calls in this file, as this function doesn't support varargs
+void hbu_pipe_error(hbu_pipe_t pipe, hbe_errcode_t errcode, const char *reason) {
+  hbe_fatal(errcode, "%s at %s", reason, hbu_pipe_generate_pos_msg(pipe));
 }
 
 void hbu_pipe_write(hbu_pipe_t pipe, hb_char_t c) {
