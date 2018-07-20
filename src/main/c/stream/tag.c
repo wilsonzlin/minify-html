@@ -32,8 +32,13 @@ void hbs_tag(hbu_pipe_t pipe) {
     return;
   }
 
-  // Content
-  hbs_content(pipe);
+  if (hbu_buffer_compare_lit(opening_name, "script") == 0) {
+    // Script tag
+    hbsh_script(pipe);
+  } else {
+    // Content
+    hbs_content(pipe);
+  }
 
   // Closing tag for non-void
   hbu_pipe_require(pipe, '<');
