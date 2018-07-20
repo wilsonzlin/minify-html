@@ -18,6 +18,7 @@ hb_eod_char_t hbu_fstreamin_read(hbu_fstreamin_t fstreamin) {
     }
 
     // Must be EOF
+    hbe_debug("Input stream has reached EOF");
     return HB_EOD;
   }
 
