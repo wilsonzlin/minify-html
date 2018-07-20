@@ -214,11 +214,6 @@ Tags not in one of the categories below are **specific tags**.
 |Content tags|Formatting tags, text nodes|
 |Layout tags|Layout tags, formatting tags|
 
-|Tag|Formatting|Content|Layout|
-|---|---|---|---|
-|`li`, `dd`|-|1|2|
-|`p`, `h1-6`|-|Y|-|
-
 ### Options
 
 For options that have a list of tags as their values, the tags should be separated by a comma.
