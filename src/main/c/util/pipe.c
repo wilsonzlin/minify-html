@@ -361,7 +361,7 @@ void hbu_pipe_require(hbu_pipe_t pipe, hb_char_t c) {
   hb_char_t n = hbu_pipe_accept(pipe);
 
   if (c != n) {
-    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected `%c` (0x%x), got `%c` (0x%x)", c, c, n, n);
+    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected `%c` (0x%x), got `%c` (0x%x) at %s", c, c, n, n, hbu_pipe_generate_pos_msg(pipe));
   }
 }
 
@@ -369,7 +369,7 @@ hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred,
   hb_char_t n = hbu_pipe_accept(pipe);
 
   if (!(*pred)(n)) {
-    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s, got `%c` (0x%x)", name, n, n);
+    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s, got `%c` (0x%x) at %s", name, n, n, hbu_pipe_generate_pos_msg(pipe));
   }
 
   return n;
