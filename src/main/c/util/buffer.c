@@ -12,4 +12,8 @@ int hbu_buffer_compare(hbu_buffer_t a, hbu_buffer_t b) {
   return strcmp((char *) a->data, (char *) b->data);
 }
 
+int hbu_buffer_compare_lit(hbu_buffer_t a, const char *b) {
+  return strcmp((char *) a->data, b);
+}
+
 #endif
