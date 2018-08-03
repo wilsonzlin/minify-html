@@ -4,11 +4,13 @@
 #include "../error/error.c"
 #include "../util/hbchar.h"
 #include "../ext/nicehash/set/str.h"
+#include "../ext/nicehash/set/int32.h"
 
 typedef struct hbs_options_s {
-  nh_set_str_t ex_collapse_whitespace; // Could be NULL to represent the universal set (i.e. don't enable)
-  nh_set_str_t ex_destroy_whole_whitespace; // Could be NULL to represent the universal set (i.e. don't enable)
-  nh_set_str_t ex_trim_whitespace; // Could be NULL to represent the universal set (i.e. don't enable)
+  nh_set_str_t ex_collapse_whitespace; // Could be NULL to represent the universal set (i.e. don't minify)
+  nh_set_str_t ex_destroy_whole_whitespace; // Could be NULL to represent the universal set (i.e. don't minify)
+  nh_set_str_t ex_trim_whitespace; // Could be NULL to represent the universal set (i.e. don't minify)
+  nh_set_int32_t suppressed_errors;
   int trim_class_attr;
   int decode_entities;
   int min_conditional_comments;
@@ -45,6 +47,7 @@ hbs_options_t hbs_options_create(void) {
   opt->ex_collapse_whitespace = _hbs_options_default_ex_collapse_whitespace();
   opt->ex_destroy_whole_whitespace = _hbs_options_default_ex_destroy_whole_whitespace();
   opt->ex_trim_whitespace = _hbs_options_default_ex_trim_whitespace();
+  opt->suppressed_errors = nh_set_int32_create();
   opt->trim_class_attr = 1;
   opt->decode_entities = 1;
   opt->min_conditional_comments = 1;

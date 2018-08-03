@@ -8,6 +8,7 @@
 #include "rule/init.c"
 
 #include "ext/nicehash/set/str.h"
+#include "ext/nicehash/set/int32.h"
 #include "datastructure/list/buffer.h"
 
 #include "util/fstreamin.c"
@@ -77,6 +78,33 @@ static nh_set_str_t _parse_list_of_tags(char *argv) {
   return set;
 }
 
+static void _parse_and_add_errors_to_suppress(nh_set_int32_t suppressed_errors, char *argv) {
+  if (argv == NULL) {
+    return;
+  }
+
+  hb_bufferlist_t list = hb_bufferlist_create_from_split((hb_char_t *) argv, ',');
+
+  for (size_t i = 0; i < list->length; i++) {
+    hbu_buffer_t part = hb_bufferlist_get(list, i);
+    hb_char_t *part_c = hbu_buffer_underlying(part);
+
+    if (hbu_buffer_compare_lit(part, "MALFORMED_ENTITY")) {
+      nh_set_int32_add(suppressed_errors, HBE_PARSE_MALFORMED_ENTITY);
+    } else if (hbu_buffer_compare_lit(part, "INVALID_ENTITY")) {
+      nh_set_int32_add(suppressed_errors, HBE_PARSE_INVALID_ENTITY);
+    } else if (hbu_buffer_compare_lit(part, "NONSTANDARD_TAG")) {
+      nh_set_int32_add(suppressed_errors, HBE_PARSE_NONSTANDARD_TAG);
+    } else if (hbu_buffer_compare_lit(part, "UCASE_TAG")) {
+      nh_set_int32_add(suppressed_errors, HBE_PARSE_UCASE_TAG);
+    } else if (hbu_buffer_compare_lit(part, "UNQUOTED_ATTR")) {
+      nh_set_int32_add(suppressed_errors, HBE_PARSE_UNQUOTED_ATTR);
+    } else {
+      hbe_fatal(HBE_CLI_INVALID_SUPPRESSABLE_ERROR, "Unrecognised suppressable error `%s`", part);
+    }
+  }
+}
+
 int main(int argc, char **argv) {
   // Set up rules
   hbr_init();
@@ -96,6 +124,7 @@ int main(int argc, char **argv) {
       {"verbose", no_argument, NULL, 'v'},
       {"input", required_argument, NULL, 'i'},
       {"output", required_argument, NULL, 'o'},
+      {"suppress", optional_argument, NULL, 's'},
 
       {"MXcollapseWhitespace", optional_argument, NULL, 1},
       {"MXdestroyWholeWhitespace", optional_argument, NULL, 2},
@@ -113,7 +142,7 @@ int main(int argc, char **argv) {
     };
 
     int option_index = 0;
-    int c = getopt_long(argc, argv, "kbvi:o:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "kbvi:o:s:", long_options, &option_index);
 
     if (c == -1) {
       if (optind != argc) {
@@ -141,6 +170,10 @@ int main(int argc, char **argv) {
 
     case 'v':
       hbe_info_toggle(1);
+      break;
+
+    case 's':
+      _parse_and_add_errors_to_suppress(&(config_stream->suppressed_errors), optarg);
       break;
 
     case 1:

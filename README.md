@@ -30,12 +30,34 @@ Current limitations:
 ### Errors
 
 Errors marked with a `⌫` can be suppressed using the [`--suppress`](#--suppress) option.
+Use the error name without the `HBE_PARSE_` prefix.
+
+#### `HBE_PARSE_MALFORMED_ENTITY` ⌫
+
+It's an error if the sequence of characters following an ampersand (`&`) does not form a valid entity.
+
+Technically, entities must be of one of the following forms:
+
+- `&name;`, where *name* is a reference to a valid HTML entity
+- `&nnnn;`, where *nnnn* is a Unicode code point in base 10
+- `&#xhhhh;`, where *hhhh* is a Unicode code point in base 16
+
+A malformed entity is an ampersand not followed by a sequence of characters that matches one of the above forms. This includes when the semicolon is missing, and bare ampersands (i.e. followed by whitespace or as the last character).
+
+Note that this is different from `HBE_PARSE_INVALID_ENTITY`, which is when a well-formed entity references a non-existent entity or Unicode code point.
+
+An ampersand by itself is not *necessarily* an invalid entity. However, HTML parsers and browsers may have different interpretations of bare ampersands, so it's a good idea to always use the encoded form (`&amp;`).
+
+When this error is suppressed, malformed entities are outputted untouched.
 
 #### `HBE_PARSE_INVALID_ENTITY` ⌫
 
 It's an error if an invalid HTML entity is detected.
-If suppressed, invalid entities are simply interpreted literally.
+
+If suppressed, invalid entities are outputted untouched.
+
 See [entityrefs.c](src/main/c/rule/entity/entityrefs.c) for the list of entity references considered valid by hyperbuild.
+
 Valid entities that reference a Unicode code point must be between 0x0 and 0x10FFFF (inclusive).
 
 #### `HBE_PARSE_NONSTANDARD_TAG` ⌫
@@ -59,7 +81,7 @@ This means that `` ` `` and `'` are not valid quote marks.
 #### `HBE_PARSE_ILLEGAL_CHILD`
 
 It's an error if a tag is declared where it can't be a child of.
-This is a very simple check, and does not cover the comprehensive HTML rules, as they involve backtracking, tree traversal, and lots of conditionals.
+This is a very simple check, and does not cover the comprehensive HTML rules, which involve backtracking, tree traversal, and lots of conditionals.
 
 This rule is enforced in four parts:
 [whitelistparents.c](src/main/c/rule/relation/whitelistparents.c),
@@ -110,7 +132,7 @@ This applies even when the output is `stdout`.
 
 Suppress errors specified by this option. hyperbuild will quitely ignore and continue processing when otherwise one of the provided errors would occur.
 
-Separate the error names with commas. Suppressible errors are marked with a `⌫` in the [Errors](#errors) section.
+Omit the `HBE_PARSE_` prefix. Separate the error names with commas. Suppressible errors are marked with a `⌫` in the [Errors](#errors) section.
 
 ## Processing
 
