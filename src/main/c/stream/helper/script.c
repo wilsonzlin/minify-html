@@ -81,13 +81,10 @@ void hbsh_script(hbu_pipe_t pipe) {
     } else if (hbu_pipe_matches(pipe, "/*")) {
       _hbsh_script_mlcomment(pipe);
 
-    } else if (hbu_pipe_matches(pipe, "\"")) {
+    } else if (hbu_pipe_peek(pipe) == '"' || hbu_pipe_peek(pipe) == '\'') {
       _hbsh_script_string(pipe);
 
-    } else if (hbu_pipe_matches(pipe, "'")) {
-      _hbsh_script_string(pipe);
-
-    } else if (hbu_pipe_matches(pipe, "`")) {
+    } else if (hbu_pipe_peek(pipe) == '`') {
       _hbsh_script_template(pipe);
 
     } else {
