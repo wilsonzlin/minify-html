@@ -204,14 +204,14 @@ Read, parse, process, and minify another file, and stream the result.
 ##### Contiguous
 
 ```html
-<ul>↵
-··<li>·········1</li>↵
-··<li>········10</li>↵
-··<li>·······100</li>↵
-··<li>······1000</li>↵
-··<li>·····10000</li>↵
-··<li>····100000</li>↵
-</ul>
+<select>↵
+··<option>Jan:·········1</option>↵
+··<option>Feb:········10</option>↵
+··<option>Mar:·······100</option>↵
+··<option>Apr:······1000</option>↵
+··<option>May:·····10000</option>↵
+··<option>Jun:····100000</option>↵
+</select>
 ```
 
 ##### Whole text
