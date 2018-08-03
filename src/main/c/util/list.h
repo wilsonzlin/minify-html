@@ -15,13 +15,18 @@
     size_t size;                                                                                  \
   } * name##_t;                                                                                   \
                                                                                                   \
-  name##_t name##_create(void)                                                                    \
+  name##_t name##_create_size(size_t initial_list_size)                                           \
   {                                                                                               \
     name##_t buf = malloc(sizeof(struct name##_s));                                               \
-    buf->data = calloc(INITIAL_LIST_SIZE, elem_size);                                             \
+    buf->data = calloc(initial_list_size, elem_size);                                             \
     buf->length = 0;                                                                              \
-    buf->size = INITIAL_LIST_SIZE;                                                                \
+    buf->size = initial_list_size;                                                                \
     return buf;                                                                                   \
+  }                                                                                               \
+                                                                                                  \
+  name##_t name##_create(void)                                                                    \
+  {                                                                                               \
+    return name##_create_size(INITIAL_LIST_SIZE);                                                 \
   }                                                                                               \
                                                                                                   \
   void name##_destroy(name##_t buf)                                                               \
