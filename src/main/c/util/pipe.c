@@ -410,4 +410,58 @@ void hbu_pipe_write(hbu_pipe_t pipe, hb_char_t c) {
   _hbu_pipe_write_to_output(pipe, c);
 }
 
+void hbu_pipe_write_str(hbu_pipe_t pipe, hb_char_t *str) {
+  hb_char_t c;
+  for (size_t i = 0; (c = str[i]); i++) {
+    _hbu_pipe_write_to_output(pipe, c);
+  }
+}
+
+void hbu_pipe_write_str_len(hbu_pipe_t pipe, hb_char_t *str, size_t len) {
+  for (size_t i = 0; i < len; i++) {
+    _hbu_pipe_write_to_output(pipe, str[i]);
+  }
+}
+
+void hbu_pipe_write_buffer(hbu_pipe_t pipe, hbu_buffer_t buffer) {
+  for (size_t i = 0; i < buffer->length; i++) {
+    _hbu_pipe_write_to_output(pipe, hbu_buffer_get(buffer, i));
+  }
+}
+
+// Logic copied from https://gist.github.com/MightyPork/52eda3e5677b4b03524e40c9f0ab1da5
+int hbu_pipe_write_unicode(hbu_pipe_t pipe, uint32_t code_point) {
+   if (code_point <= 0x7F) {
+    // Plain ASCII
+    hbu_pipe_write(pipe, (hb_char_t) code_point);
+    return 1;
+  }
+
+  if (code_point <= 0x07FF) {
+    // 2-byte unicode
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >> 6) & 0x1F) | 0xC0));
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >> 0) & 0x3F) | 0x80));
+    return 2;
+  }
+
+  if (code_point <= 0xFFFF) {
+    // 3-byte unicode
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >> 12) & 0x0F) | 0xE0));
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >>  6) & 0x3F) | 0x80));
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >>  0) & 0x3F) | 0x80));
+    return 3;
+  }
+
+  if (code_point <= 0x10FFFF) {
+    // 4-byte unicode
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >> 18) & 0x07) | 0xF0));
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >> 12) & 0x3F) | 0x80));
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >>  6) & 0x3F) | 0x80));
+    hbu_pipe_write(pipe, (hb_char_t) (((code_point >>  0) & 0x3F) | 0x80));
+    return 4;
+  }
+
+  return 0;
+}
+
 #endif
