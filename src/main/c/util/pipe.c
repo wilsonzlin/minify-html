@@ -319,12 +319,14 @@ void hbu_pipe_accept_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred)
   }
 }
 
-void hbu_pipe_skip(hbu_pipe_t pipe) {
+hb_char_t hbu_pipe_skip(hbu_pipe_t pipe) {
   hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
 
   _hbu_pipe_assert_not_eoi(pipe, c);
 
   _hbu_pipe_update_pos(pipe, c);
+
+  return c;
 }
 
 void hbu_pipe_skip_amount(hbu_pipe_t pipe, size_t amount) {
@@ -365,14 +367,14 @@ void hbu_pipe_require(hbu_pipe_t pipe, hb_char_t c) {
   }
 }
 
-void hbu_pipe_require_skip(hbu_pipe_t pipe, hb_char_t c) {
-  hb_char_t n = hbu_pipe_peek(pipe);
+hb_char_t hbu_pipe_require_skip(hbu_pipe_t pipe, hb_char_t c) {
+  hb_char_t n = hbu_pipe_skip(pipe);
 
   if (c != n) {
     hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected `%c` (0x%x), got `%c` (0x%x) at %s", c, c, n, n, hbu_pipe_generate_pos_msg(pipe));
   }
 
-  hbu_pipe_skip(pipe);
+  return n;
 }
 
 hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred, const char *name) {
