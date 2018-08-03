@@ -5,6 +5,7 @@
 #include "./char/attrvalquote.c"
 #include "./char/c0.c"
 #include "./char/digit.c"
+#include "./char/hex.c"
 #include "./char/lcalpha.c"
 #include "./char/tagname.c"
 #include "./char/ucalpha.c"
@@ -34,6 +35,7 @@ void hbr_init(void) {
   // Core
   hbr_c0_init();
   hbr_digit_init();
+  hbr_hex_init();
   hbr_ucalpha_init();
   hbr_lcalpha_init();
   hbr_whitespace_init();
