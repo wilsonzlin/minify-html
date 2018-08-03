@@ -5,13 +5,15 @@
 #include "../util/pipe.c"
 
 // Declare first before tag.c, as tag.c depends on it
-void hbs_content(hbu_pipe_t pipe);
+void hbs_content(hbs_options_t so, hbu_pipe_t pipe);
 
+#include "./streamoptions.c"
 #include "./tag.c"
 #include "./bang.c"
 #include "./comment.c"
+#include "./entity.c"
 
-void hbs_content(hbu_pipe_t pipe) {
+void hbs_content(hbs_options_t so, hbu_pipe_t pipe) {
   while (1) {
     hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
 
@@ -32,13 +34,12 @@ void hbs_content(hbu_pipe_t pipe) {
         hbs_bang(pipe);
 
       } else {
-        hbs_tag(pipe);
+        hbs_tag(so, pipe);
       }
       break;
 
     case '&':
-      // TODO
-      hbu_pipe_accept(pipe);
+      hbs_entity(so, pipe);
       break;
 
     default:

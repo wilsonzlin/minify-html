@@ -4,6 +4,7 @@
 #include "../util/hbchar.h"
 #include "../util/pipe.c"
 
+#include "./streamoptions.c"
 void hbs_comment(hbu_pipe_t pipe)
 {
   hbu_pipe_require(pipe, '<');

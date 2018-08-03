@@ -12,13 +12,15 @@
 #include "./helper/tagname.c"
 #include "./helper/attr.c"
 #include "./helper/script.c"
+#include "./helper/style.c"
 
 // Declare first before content.c, as content.c depends on it
-void hbs_tag(hbu_pipe_t pipe);
+void hbs_tag(hbs_options_t so, hbu_pipe_t pipe);
 
+#include "./streamoptions.c"
 #include "./content.c"
 
-void hbs_tag(hbu_pipe_t pipe) {
+void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
   int self_closing = 0;
 
   hbu_pipe_require(pipe, '<');
@@ -50,9 +52,12 @@ void hbs_tag(hbu_pipe_t pipe) {
   if (hbu_buffer_compare_lit(opening_name, "script") == 0) {
     // Script tag
     hbsh_script(pipe);
+  } else if (hbu_buffer_compare_lit(opening_name, "style") == 0) {
+    // Style tag
+    hbsh_style(pipe);
   } else {
     // Content
-    hbs_content(pipe);
+    hbs_content(so, pipe);
   }
 
   // Closing tag for non-void

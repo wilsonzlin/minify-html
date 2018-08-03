@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
     hbe_fatal_set_autodelete(output_path);
   }
 
-  hbs_content(pipe);
+  hbs_content(config_stream, pipe);
 
   if (config_buffer) {
     output = hbu_fstreamout_create(output_path);
