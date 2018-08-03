@@ -87,17 +87,16 @@ static void _parse_and_add_errors_to_suppress(nh_set_int32_t suppressed_errors, 
 
   for (size_t i = 0; i < list->length; i++) {
     hbu_buffer_t part = hb_bufferlist_get(list, i);
-    hb_char_t *part_c = hbu_buffer_underlying(part);
 
-    if (hbu_buffer_compare_lit(part, "MALFORMED_ENTITY")) {
+    if (hbu_buffer_compare_lit(part, "MALFORMED_ENTITY") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_MALFORMED_ENTITY);
-    } else if (hbu_buffer_compare_lit(part, "INVALID_ENTITY")) {
+    } else if (hbu_buffer_compare_lit(part, "INVALID_ENTITY") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_INVALID_ENTITY);
-    } else if (hbu_buffer_compare_lit(part, "NONSTANDARD_TAG")) {
+    } else if (hbu_buffer_compare_lit(part, "NONSTANDARD_TAG") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_NONSTANDARD_TAG);
-    } else if (hbu_buffer_compare_lit(part, "UCASE_TAG")) {
+    } else if (hbu_buffer_compare_lit(part, "UCASE_TAG") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_UCASE_TAG);
-    } else if (hbu_buffer_compare_lit(part, "UNQUOTED_ATTR")) {
+    } else if (hbu_buffer_compare_lit(part, "UNQUOTED_ATTR") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_UNQUOTED_ATTR);
     } else {
       hbe_fatal(HBE_CLI_INVALID_SUPPRESSABLE_ERROR, "Unrecognised suppressable error `%s`", part);
@@ -173,7 +172,7 @@ int main(int argc, char **argv) {
       break;
 
     case 's':
-      _parse_and_add_errors_to_suppress(&(config_stream->suppressed_errors), optarg);
+      _parse_and_add_errors_to_suppress(config_stream->suppressed_errors, optarg);
       break;
 
     case 1:
