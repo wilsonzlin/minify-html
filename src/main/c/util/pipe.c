@@ -365,6 +365,16 @@ void hbu_pipe_require(hbu_pipe_t pipe, hb_char_t c) {
   }
 }
 
+void hbu_pipe_require_skip(hbu_pipe_t pipe, hb_char_t c) {
+  hb_char_t n = hbu_pipe_peek(pipe);
+
+  if (c != n) {
+    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected `%c` (0x%x), got `%c` (0x%x) at %s", c, c, n, n, hbu_pipe_generate_pos_msg(pipe));
+  }
+
+  hbu_pipe_skip(pipe);
+}
+
 hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred, const char *name) {
   hb_char_t n = hbu_pipe_accept(pipe);
 
