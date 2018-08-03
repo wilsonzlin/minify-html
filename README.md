@@ -189,11 +189,38 @@ Read, parse, process, and minify another file, and stream the result.
 
 ##### Beginning and end
 
+```html
+<p>↵
+··The·quick·brown·fox↵
+</p>
+```
+
 ##### Between text and tags
+
+```html
+<p>The·quick·brown·fox·<strong>jumps</strong>·over·the·lazy·dog.</p>
+```
 
 ##### Contiguous
 
+```html
+<ul>↵
+··<li>·········1</li>↵
+··<li>········10</li>↵
+··<li>·······100</li>↵
+··<li>······1000</li>↵
+··<li>·····10000</li>↵
+··<li>····100000</li>↵
+</ul>
+```
+
 ##### Whole text
+
+```html
+<p>↵
+···↵
+</p>
+```
 
 #### Content
 
@@ -228,13 +255,20 @@ Tags not in one of the categories below are **specific tags**.
 
 ##### Layout tags
 
+```html
+<div>
+  <div></div>
+</div>
+```
+
 ##### Overview
 
 |Type|Content|
 |---|---|
 |Formatting tags|Text nodes|
 |Content tags|Formatting tags, text nodes|
-|Layout tags|Layout tags, formatting tags|
+|Layout tags|Layout tags, content tags|
+|Content-first tags|Content of content tags or layout tags (but not both)|
 
 ### Options
 
