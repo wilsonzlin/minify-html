@@ -4,6 +4,7 @@
 #include "../../rule/char/tagname.c"
 
 #include "../../util/hbchar.h"
+#include "../../util/buffer.c"
 #include "../../util/pipe.c"
 
 hbu_buffer_t hbsh_tagname(hbu_pipe_t pipe) {
