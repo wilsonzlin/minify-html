@@ -94,6 +94,8 @@ static void _parse_and_add_errors_to_suppress(nh_set_int32_t suppressed_errors, 
       nh_set_int32_add(suppressed_errors, HBE_PARSE_INVALID_ENTITY);
     } else if (hbu_buffer_compare_lit(part, "NONSTANDARD_TAG") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_NONSTANDARD_TAG);
+    } else if (hbu_buffer_compare_lit(part, "UCASE_ATTR") == 0) {
+      nh_set_int32_add(suppressed_errors, HBE_PARSE_UCASE_ATTR);
     } else if (hbu_buffer_compare_lit(part, "UCASE_TAG") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_UCASE_TAG);
     } else if (hbu_buffer_compare_lit(part, "UNQUOTED_ATTR") == 0) {
