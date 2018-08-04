@@ -140,19 +140,19 @@ export function hyperbuild (settings: IHyperbuildSettings): Promise<IHyperbuildR
       args.push(`--out ${escapeOptionValue(settings.inputFile)}`);
     }
 
-    if (settings.suppress) {
+    if (settings.suppress && settings.suppress.length) {
       args.push(`--suppress ${escapeOptionValue(settings.suppress.join(","))}`);
     }
 
-    if (settings.MXcollapseWhitespace) {
+    if (settings.MXcollapseWhitespace && settings.MXcollapseWhitespace.length) {
       args.push(
         `--MXcollapseWhitespace ${escapeOptionValue(settings.MXcollapseWhitespace.join(","))}`);
     }
-    if (settings.MXdestroyWholeWhitespace) {
+    if (settings.MXdestroyWholeWhitespace && settings.MXdestroyWholeWhitespace.length) {
       args.push(
         `--MXdestroyWholeWhitespace ${escapeOptionValue(settings.MXdestroyWholeWhitespace.join(","))}`);
     }
-    if (settings.MXtrimWhitespace) {
+    if (settings.MXtrimWhitespace && settings.MXtrimWhitespace.length) {
       args.push(
         `--MXtrimWhitespace ${escapeOptionValue(settings.MXtrimWhitespace.join(","))}`);
     }
@@ -181,7 +181,9 @@ export function hyperbuild (settings: IHyperbuildSettings): Promise<IHyperbuildR
 
     let code = settings.code;
 
-    let proc = shelljs.exec(`${BIN_PATH} ${args.join(" ")}`, {
+    let cmd = `${BIN_PATH} ${args.join(" ")}`;
+
+    let proc = shelljs.exec(cmd, {
       async: true,
       silent: true,
     }, (status, stdout, stderr) => {
@@ -209,6 +211,15 @@ export function hyperbuild (settings: IHyperbuildSettings): Promise<IHyperbuildR
       if (isReadableStream(code)) {
         code.pipe(proc.stdin);
       } else {
+        proc.stdin.on("error", (e: any) => {
+          if (e.code === "EPIPE") {
+            // An error occurred while writing, which most likely means the input was long,
+            // and so was streamed in portions, and a hyperbuild error occurred before
+            // everything could be written
+          } else {
+            reject(e);
+          }
+        });
         proc.stdin.end(code);
       }
     }
