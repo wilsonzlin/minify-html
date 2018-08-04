@@ -32,12 +32,16 @@ export interface IHyperbuildSettings {
   MXtagWS?: boolean;
 }
 
-export interface IHyperbuildResult {
-  code?: string;
-}
-
 export interface IHyperbuildMessage {
   message: string;
+}
+
+export class HyperbuildUnknownMessage implements IHyperbuildMessage {
+  message: string;
+
+  constructor (message: string) {
+    this.message = message;
+  }
 }
 
 export class HyperbuildDebugMessage implements IHyperbuildMessage {
@@ -74,11 +78,19 @@ export class HyperbuildFatalMessage implements IHyperbuildMessage {
 
 export class HyperbuildError extends Error {
   code: number;
-  constructor (status: number, errors: HyperbuildFatalMessage[]) {
+  constructor (status: number, error: HyperbuildFatalMessage) {
     super();
     this.code = status;
-    this.message = `hyperbuild exited with status ${status} and encountered the following errors:\n\n${errors.map(e => e.message).join("\n\n")}`;
+    this.message = `hyperbuild exited with status ${status} and encountered the following errors:\n\n${error.message}`;
   }
+}
+
+export interface IHyperbuildResult {
+  code?: string;
+  unknown: HyperbuildUnknownMessage[];
+  debug: HyperbuildDebugMessage[];
+  info: HyperbuildInfoMessage[];
+  warnings: HyperbuildWarnMessage[];
 }
 
 const MESSAGE_PREFIX_TO_CLASS_MAP: { [prefix: string]: new (message: string) => IHyperbuildMessage } = {
@@ -107,8 +119,11 @@ function processHyperbuildMessages (stderrOutput: string): IHyperbuildMessage[] 
 
     } else {
       // Assume if no prefix, line is continuation of previous message
-      // NOTE: This breaks if the very first line is not a message
-      messages[messages.length - 1].message += line;
+      if (!messages.length) {
+        messages.push(new HyperbuildUnknownMessage(line));
+      } else {
+        messages[messages.length - 1].message += line;
+      }
     }
   }
 
@@ -191,20 +206,37 @@ export function hyperbuild (settings: IHyperbuildSettings): Promise<IHyperbuildR
         console.error(stderr);
       }
 
-      let messages = processHyperbuildMessages(stderr);
-      let errors = messages.filter(m => m instanceof HyperbuildFatalMessage);
-      if (errors.length) {
-        reject(new HyperbuildError(status, errors));
-        return;
+      let result: IHyperbuildResult = {
+        code: code == undefined ? undefined : stdout,
+        unknown: [],
+        debug: [],
+        info: [],
+        warnings: [],
       }
 
-      if (code != undefined) {
-        resolve({
-          code: stdout,
-        });
-      } else {
-        resolve({});
+      for (let message of processHyperbuildMessages(stderr)) {
+        if (message instanceof HyperbuildFatalMessage) {
+          reject(new HyperbuildError(status, message));
+          return;
+
+        } else if (message instanceof HyperbuildUnknownMessage) {
+          result.unknown.push(message);
+
+        } else if (message instanceof HyperbuildDebugMessage) {
+          result.debug.push(message);
+
+        } else if (message instanceof HyperbuildInfoMessage) {
+          result.info.push(message);
+
+        } else if (message instanceof HyperbuildWarnMessage) {
+          result.warnings.push(message);
+
+        } else {
+          throw new Error(`INTERR Unknown message type with message: ${message}`);
+        }
       }
+
+      resolve(result);
     });
 
     if (code != undefined) {
