@@ -8,9 +8,7 @@
     "out/hyperbuild.js",
     "out/hyperbuild.js.mem"
   ],
-  "devDependencies": {
-    "minimist": "^1.2.0",
-    "uglify-es": "^3.3.9"
+    "buildInternalDocs": "doxygen Doxyfile",
   },
   "repository": {
     "type": "git",

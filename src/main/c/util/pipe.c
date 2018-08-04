@@ -78,6 +78,7 @@ static void _hbu_pipe_ensure_buffer(hbu_pipe_t pipe, size_t offset) {
   for (size_t i = 0; i < gap; i++) {
     hb_eod_char_t c = _hbu_pipe_read_from_input(pipe);
     if (c == HB_EOD) {
+      // EOI flag already set by _hbu_pipe_read_from_input
       return;
     }
     hbu_buffer_append(pipe->buffer, c);
@@ -159,8 +160,18 @@ void hbu_pipe_destroy(hbu_pipe_t pipe) {
   free(pipe);
 }
 
-void hbu_pipe_toggle_output_mask(hbu_pipe_t pipe, int output_masked) {
+/**
+ * Enables or disables the output mask.
+ * When the output mask is enabled, all writes are simply discarded and not actually written to output.
+ *
+ * @param pipe pipe
+ * @param output_masked 1 to enable, 0 to disable
+ * @return previous state
+ */
+int hbu_pipe_toggle_output_mask(hbu_pipe_t pipe, int output_masked) {
+  int current = pipe->output_masked;
   pipe->output_masked = output_masked;
+  return current;
 }
 
 /*
@@ -193,6 +204,13 @@ void hbu_pipe_blank_set_output_buffer(hbu_pipe_t pipe, hbu_buffer_t buf) {
  *
  */
 
+/**
+ * Gets the next character.
+ * If it's the end, {@link HB_EOD} is returned.
+ *
+ * @param pipe pipe
+ * @return character or {@link HB_EOD}
+ */
 hb_eod_char_t hbu_pipe_peek_eoi(hbu_pipe_t pipe) {
   // OPTIMISATION: Read directly from buffer if available (no need to unshift later)
   if (pipe->buffer->length) {
@@ -208,6 +226,13 @@ hb_eod_char_t hbu_pipe_peek_eoi(hbu_pipe_t pipe) {
   return c;
 }
 
+/**
+ * Gets the next character.
+ * Will cause an error if it's the end and there is no next character.
+ *
+ * @param pipe pipe
+ * @return character
+ */
 hb_char_t hbu_pipe_peek(hbu_pipe_t pipe) {
   hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
 
@@ -216,21 +241,54 @@ hb_char_t hbu_pipe_peek(hbu_pipe_t pipe) {
   return c;
 }
 
-hb_char_t hbu_pipe_peek_offset(hbu_pipe_t pipe, size_t offset) {
+/**
+ * Gets the <i>n</i>th character from current, where <i>n</i> is <code>offset</code>.
+ * When <code>offset</code> is 1, the next character is returned (equivalent to {@link hbu_pipe_peek_eoi_offset}).
+ * If <code>offset</code> is after the last character, {@link HB_EOD} is returned.
+ *
+ * @param pipe pipe
+ * @param offset position of character to get
+ * @return character or {@link HB_EOD}
+ */
+hb_eod_char_t hbu_pipe_peek_eoi_offset(hbu_pipe_t pipe, size_t offset) {
   _hbu_pipe_ensure_buffer(pipe, offset);
 
   hb_eod_char_t c = hbu_buffer_get(pipe->buffer, offset - 1);
+
+  return c;
+}
+
+/**
+ * Gets the <i>n</i>th character from current, where <i>n</i> is <code>offset</code>.
+ * When <code>offset</code> is 1, the next character is returned (equivalent to {@link hbu_pipe_peek_offset}).
+ * An error will be caused if <code>offset</code> is after the last character.
+ *
+ * @param pipe pipe
+ * @param offset position of character to get
+ * @return character
+ */
+hb_char_t hbu_pipe_peek_offset(hbu_pipe_t pipe, size_t offset) {
+  hb_eod_char_t c = hbu_pipe_peek_eoi_offset(pipe, offset);
 
   _hbu_pipe_assert_not_eoi(pipe, c);
 
   return c;
 }
 
+/**
+ * Checks if the next sequence of characters is the null-terminated character array <code>match</code>.
+ * Won't cause an error if insufficient amount of characters left.
+ *
+ * @param pipe pipe
+ * @param match characters to match
+ * @return amount of characters matched, which should be equal to <code>strlen(match)</code>
+ */
 size_t hbu_pipe_matches(hbu_pipe_t pipe, const char *match) {
   size_t matchlen = strlen(match);
 
   for (size_t i = 0; i < matchlen; i++) {
-    if (hbu_pipe_peek_offset(pipe, i + 1) != match[i]) {
+    hb_eod_char_t c = hbu_pipe_peek_eoi_offset(pipe, i + 1);
+    if (c == HB_EOD || c != match[i]) {
       return 0;
     }
   }
@@ -238,6 +296,13 @@ size_t hbu_pipe_matches(hbu_pipe_t pipe, const char *match) {
   return matchlen;
 }
 
+/**
+ * Checks if the next sequence of characters is "\r", "\n", or "\r\n".
+ * Won't cause an error if insufficient amount of characters left.
+ *
+ * @param pipe pipe
+ * @return amount of characters matched
+ */
 size_t hbu_pipe_matches_line_terminator(hbu_pipe_t pipe) {
   // `\r\n` must be before `\r`
   return hbu_pipe_matches(pipe, "\r\n") ||
@@ -245,6 +310,13 @@ size_t hbu_pipe_matches_line_terminator(hbu_pipe_t pipe) {
          hbu_pipe_matches(pipe, "\n");
 }
 
+/**
+ * Accepts the next character.
+ * Will cause an error if already at end.
+ *
+ * @param pipe pipe
+ * @param c character to match
+ */
 hb_char_t hbu_pipe_accept(hbu_pipe_t pipe) {
   hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
 
@@ -257,12 +329,27 @@ hb_char_t hbu_pipe_accept(hbu_pipe_t pipe) {
   return c;
 }
 
+/**
+ * Accepts the next <code>count</code> characters.
+ * Requires at least <code>count</code> characters remaining.
+ *
+ * @param pipe pipe
+ * @param c character to match
+ */
 void hbu_pipe_accept_count(hbu_pipe_t pipe, size_t count) {
   for (size_t i = 0; i < count; i++) {
     hbu_pipe_accept(pipe);
   }
 }
 
+/**
+ * Accepts the following character if it is <code>c</code>.
+ * Won't match or cause an error if there are no characters remaining.
+ *
+ * @param pipe pipe
+ * @param c character to match
+ * @return 0 if nothing was accepted, 1 otherwise
+ */
 int hbu_pipe_accept_if(hbu_pipe_t pipe, hb_char_t c) {
   hb_eod_char_t n = hbu_pipe_peek_eoi(pipe);
 
@@ -275,6 +362,14 @@ int hbu_pipe_accept_if(hbu_pipe_t pipe, hb_char_t c) {
   return 1;
 }
 
+/**
+ * Accepts the following characters if they match <code>match</code>.
+ * Won't match or cause an error if there are not enough characters remaining.
+ *
+ * @param pipe pipe
+ * @param match characters to match
+ * @return 0 if nothing was accepted, 1 otherwise
+ */
 int hbu_pipe_accept_if_matches(hbu_pipe_t pipe, const char *match) {
   size_t matchedlen = hbu_pipe_matches(pipe, match);
 
@@ -287,6 +382,14 @@ int hbu_pipe_accept_if_matches(hbu_pipe_t pipe, const char *match) {
   return matched;
 }
 
+/**
+ * Accepts the following characters if they are either "\r", "\r\n", or "\n".
+ * Won't cause an error if insufficient amount of characters left.
+ *
+ * @param pipe pipe
+ * @param pred predicate
+ * @return 0 if nothing was accepted, 1 otherwise
+ */
 int hbu_pipe_accept_if_matches_line_terminator(hbu_pipe_t pipe) {
   size_t matchedlen = hbu_pipe_matches_line_terminator(pipe);
 
@@ -299,6 +402,14 @@ int hbu_pipe_accept_if_matches_line_terminator(hbu_pipe_t pipe) {
   return matched;
 }
 
+/**
+ * Accepts the following character if it satisfies the predicate <code>pred</code>.
+ * Won't do anything if already at the end.
+ *
+ * @param pipe pipe
+ * @param pred predicate
+ * @return 0 if nothing was accepted, 1 otherwise
+ */
 int hbu_pipe_accept_if_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
   hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
 
@@ -311,6 +422,13 @@ int hbu_pipe_accept_if_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
   return 1;
 }
 
+/**
+ * Accepts every following character until one dissatisfies the predicate <code>pred</code>,
+ * or the end is reached.
+ *
+ * @param pipe pipe
+ * @param pred predicate
+ */
 void hbu_pipe_accept_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
   while (1) {
     if (!hbu_pipe_accept_if_predicate(pipe, pred)) {
@@ -319,6 +437,13 @@ void hbu_pipe_accept_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred)
   }
 }
 
+/**
+ * Skips over the next character.
+ * Requires that the file has at least one character remaining.
+ *
+ * @param pipe pipe
+ * @return skipped character
+ */
 hb_char_t hbu_pipe_skip(hbu_pipe_t pipe) {
   hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
 
@@ -329,12 +454,26 @@ hb_char_t hbu_pipe_skip(hbu_pipe_t pipe) {
   return c;
 }
 
+/**
+ * Skips over the next <code>amount</code> characters.
+ * Requires that the file has at least <code>amount</code> characters remaining.
+ *
+ * @param pipe pipe
+ * @param amount amount of characters to skip
+ */
 void hbu_pipe_skip_amount(hbu_pipe_t pipe, size_t amount) {
   for (size_t i = 0; i < amount; i++) {
     hbu_pipe_skip(pipe);
   }
 }
 
+/**
+ * Skips over every following character until one dissatisfies the predicate <code>pred</code>,
+ * or the end is reached.
+ *
+ * @param pipe pipe
+ * @param pred predicate
+ */
 void hbu_pipe_skip_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
   while (1) {
     hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
@@ -347,6 +486,14 @@ void hbu_pipe_skip_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
   }
 }
 
+/**
+ * Skips over the next sequence of characters if they are <code>match</code>.
+ * Requires that the file has at least the length of <code>match</code> characters remaining.
+ *
+ * @param pipe pipe
+ * @param match sequence of characters to match
+ * @return 0 if not matched, 1 otherwise
+ */
 int hbu_pipe_skip_if_matches(hbu_pipe_t pipe, const char *match) {
   size_t matchedlen = hbu_pipe_matches(pipe, match);
 
@@ -359,6 +506,13 @@ int hbu_pipe_skip_if_matches(hbu_pipe_t pipe, const char *match) {
   return matched;
 }
 
+/**
+ * Requires the next character to be <code>c</code>.
+ * The matched character is written to output.
+ *
+ * @param pipe pipe
+ * @param c character to match
+ */
 void hbu_pipe_require(hbu_pipe_t pipe, hb_char_t c) {
   hb_char_t n = hbu_pipe_accept(pipe);
 
@@ -367,6 +521,14 @@ void hbu_pipe_require(hbu_pipe_t pipe, hb_char_t c) {
   }
 }
 
+/**
+ * Requires the next character to be <code>c</code>.
+ * The matched character is skipped over and NOT written to output, and also returned.
+ *
+ * @param pipe pipe
+ * @param c character to match
+ * @return matched character
+ */
 hb_char_t hbu_pipe_require_skip(hbu_pipe_t pipe, hb_char_t c) {
   hb_char_t n = hbu_pipe_skip(pipe);
 
@@ -377,6 +539,14 @@ hb_char_t hbu_pipe_require_skip(hbu_pipe_t pipe, hb_char_t c) {
   return n;
 }
 
+/**
+ * Requires the next character to satisfy the predicate <code>pred</code>.
+ * The matched character is written to output.
+ * If not matched, the error message will describe the expected output using <code>name</code>.
+ *
+ * @param pipe pipe
+ * @param match sequence of characters to require
+ */
 hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred, const char *name) {
   hb_char_t n = hbu_pipe_accept(pipe);
 
@@ -387,35 +557,80 @@ hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred,
   return n;
 }
 
+/**
+ * Requires the next sequence of characters to be equal to <code>match</code>.
+ * Matched characters are written to output.
+ *
+ * @param pipe pipe
+ * @param match sequence of characters to require
+ */
 void hbu_pipe_require_match(hbu_pipe_t pipe, const char *match) {
   if (!hbu_pipe_accept_if_matches(pipe, match)) {
     hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s at %s", match, hbu_pipe_generate_pos_msg(pipe));
   }
 }
 
+/**
+ * Requires the next sequence of characters to be equal to <code>match</code>.
+ * Matched characters are skipped over and NOT written to output.
+ *
+ * @param pipe pipe
+ * @param match sequence of characters to require
+ */
 void hbu_pipe_require_skip_match(hbu_pipe_t pipe, const char *match) {
   if (!hbu_pipe_skip_if_matches(pipe, match)) {
     hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s at %s", match, hbu_pipe_generate_pos_msg(pipe));
   }
 }
 
+/**
+ * Generates a warning message with the current position appended.
+ *
+ * @param pipe pipe
+ * @param msg message
+ */
 void hbu_pipe_warn(hbu_pipe_t pipe, const char *msg) {
   hbe_warn("%s at %s", msg, hbu_pipe_generate_pos_msg(pipe));
 }
 
+/**
+ * Generates a debug message with the current position appended.
+ *
+ * @param pipe pipe
+ * @param msg message
+ */
 void hbu_pipe_debug(hbu_pipe_t pipe, const char *msg) {
   hbe_debug("%s at %s", msg, hbu_pipe_generate_pos_msg(pipe));
 }
 
+/**
+ * Exits with an error using a message with the current position appended.
+ *
+ * @param pipe pipe
+ * @param errcode error code
+ * @param reason message
+ */
 // Don't use this function for error calls in this file, as this function doesn't support varargs
 void hbu_pipe_error(hbu_pipe_t pipe, hbe_errcode_t errcode, const char *reason) {
   hbe_fatal(errcode, "%s at %s", reason, hbu_pipe_generate_pos_msg(pipe));
 }
 
+/**
+ * Writes a character.
+ *
+ * @param pipe pipe
+ * @param c character
+ */
 void hbu_pipe_write(hbu_pipe_t pipe, hb_char_t c) {
   _hbu_pipe_write_to_output(pipe, c);
 }
 
+/**
+ * Writes a character array until a NUL character is reached.
+ *
+ * @param pipe pipe
+ * @param str null-terminated character array
+ */
 void hbu_pipe_write_str(hbu_pipe_t pipe, hb_char_t *str) {
   hb_char_t c;
   for (size_t i = 0; (c = str[i]); i++) {
@@ -423,18 +638,38 @@ void hbu_pipe_write_str(hbu_pipe_t pipe, hb_char_t *str) {
   }
 }
 
+/**
+ * Writes <code>len</code> characters from the beginning of a character array.
+ *
+ * @param pipe pipe
+ * @param str character array
+ * @param len amount of characters to write
+ */
 void hbu_pipe_write_str_len(hbu_pipe_t pipe, hb_char_t *str, size_t len) {
   for (size_t i = 0; i < len; i++) {
     _hbu_pipe_write_to_output(pipe, str[i]);
   }
 }
 
+/**
+ * Writes a buffer.
+ *
+ * @param pipe pipe
+ * @param buffer buffer
+ */
 void hbu_pipe_write_buffer(hbu_pipe_t pipe, hbu_buffer_t buffer) {
   for (size_t i = 0; i < buffer->length; i++) {
     _hbu_pipe_write_to_output(pipe, hbu_buffer_get(buffer, i));
   }
 }
 
+/**
+ * Writes a character from its Unicode code point in UTF-8 encoding, which may be multiple bytes.
+ *
+ * @param pipe pipe
+ * @param code_point Unicode code point
+ * @return amount of bytes written (0 if invalid code point)
+ */
 // Logic copied from https://gist.github.com/MightyPork/52eda3e5677b4b03524e40c9f0ab1da5
 int hbu_pipe_write_unicode(hbu_pipe_t pipe, uint32_t code_point) {
    if (code_point <= 0x7F) {
