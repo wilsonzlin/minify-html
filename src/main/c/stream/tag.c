@@ -24,7 +24,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
   int self_closing = 0;
 
   hbu_pipe_require(pipe, '<');
-  hbu_buffer_t opening_name = hbsh_tagname(pipe);
+  hbu_buffer_t opening_name = hbsh_tagname(so, pipe);
   while (1) {
     hbu_pipe_accept_while_predicate(pipe, &hbr_whitespace_check);
 
@@ -49,9 +49,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
 
   hb_char_t *tag_name = hbu_buffer_underlying(opening_name);
 
-  if (!hbs_options_supressed_error(so, HBE_PARSE_NONSTANDARD_TAG) && !hbr_tags_check(tag_name)) {
-    hbu_pipe_error(pipe, HBE_PARSE_NONSTANDARD_TAG, "Non-standard tag");
-  }
+  // Non-standard tag checking is done in hbsh_tagname
 
   // Self-closing or void tag
   if (self_closing || hbr_voidtags_check(tag_name)) {
@@ -72,7 +70,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
   // Closing tag for non-void
   hbu_pipe_require(pipe, '<');
   hbu_pipe_require(pipe, '/');
-  hbu_buffer_t closing_name = hbsh_tagname(pipe);
+  hbu_buffer_t closing_name = hbsh_tagname(so, pipe);
   hbu_pipe_require(pipe, '>');
 
   if (!hbu_buffer_equal(opening_name, closing_name)) {
