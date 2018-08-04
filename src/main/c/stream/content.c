@@ -63,6 +63,7 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
       next_state = HBS_CONTENT_NEXT_STATE_ENTITY;
 
     } else {
+      // Text
       next_state = HBS_CONTENT_NEXT_STATE_TEXT;
     }
 
@@ -120,6 +121,9 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
 
       case HBS_CONTENT_NEXT_STATE_END:
         return;
+
+      default:
+        hbe_fatal(HBE_INTERR_UNKNOWN_CONTENT_NEXT_STATE, "INTERR $next_state is not a known upcoming content stream state");
       }
     }
 
