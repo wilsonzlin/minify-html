@@ -3,8 +3,6 @@
 
 #include <inttypes.h>
 
-#include "../ext/nicehash/set/int32.h"
-
 #include "../util/hbchar.h"
 #include "../util/buffer.c"
 #include "../util/pipe.c"
@@ -14,6 +12,8 @@
 #include "../rule/char/ucalpha.c"
 #include "../rule/char/digit.c"
 #include "../rule/char/hex.c"
+
+#include "./streamoptions.c"
 
 #define HBS_ENTITY_TYPE_NAME 1
 #define HBS_ENTITY_TYPE_DECIMAL 2
@@ -26,7 +26,7 @@ static void _hbs_entity_interr_unknown_entity(void) {
 }
 
 static void _hbs_entity_handle_error(hbs_options_t so, hbu_pipe_t pipe, int type, hbu_buffer_t entity_raw, int consumed_semicolon, hbe_errcode_t errcode, const char *reason) {
-  if (nh_set_int32_has(so->suppressed_errors, errcode)) {
+  if (hbs_options_supressed_error(so, errcode)) {
     switch (type) {
     case -1:
       hbu_pipe_write(pipe, '&');

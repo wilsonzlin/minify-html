@@ -71,6 +71,10 @@ int hbs_options_in_tags_list(nh_set_str_t set, hb_char_t *query) {
   return nh_set_str_has(set, (char *) query);
 }
 
+int hbs_options_supressed_error(hbs_options_t opt, hbe_errcode_t errcode) {
+  return nh_set_int32_has(opt->suppressed_errors, errcode);
+}
+
 void hbs_options_log(hbs_options_t opt) {
   hbe_info_kv_boolean("Trim `class` attributes", opt->trim_class_attr);
   hbe_info_kv_boolean("Decode entities", opt->decode_entities);
