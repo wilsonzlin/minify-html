@@ -388,7 +388,13 @@ hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred,
 }
 
 void hbu_pipe_require_match(hbu_pipe_t pipe, const char *match) {
-  if (!hbu_pipe_matches(pipe, match)) {
+  if (!hbu_pipe_accept_if_matches(pipe, match)) {
+    hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s at %s", match, hbu_pipe_generate_pos_msg(pipe));
+  }
+}
+
+void hbu_pipe_require_skip_match(hbu_pipe_t pipe, const char *match) {
+  if (!hbu_pipe_skip_if_matches(pipe, match)) {
     hbe_fatal(HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s at %s", match, hbu_pipe_generate_pos_msg(pipe));
   }
 }
