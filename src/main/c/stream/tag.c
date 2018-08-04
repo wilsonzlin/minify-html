@@ -33,7 +33,10 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
     }
 
     if (hbu_pipe_accept_if_matches(pipe, "/>")) {
-      hbu_pipe_warn(pipe, "Self-closing tag");
+      if (!hbs_options_supressed_error(so, HBE_PARSE_SELF_CLOSING_TAG)) {
+        hbu_pipe_error(pipe, HBE_PARSE_SELF_CLOSING_TAG, "Self-closing tag");
+        // Unreachable
+      }
       self_closing = 1;
       break;
     }

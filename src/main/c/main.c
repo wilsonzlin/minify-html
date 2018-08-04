@@ -100,6 +100,8 @@ static void _parse_and_add_errors_to_suppress(nh_set_int32_t suppressed_errors, 
       nh_set_int32_add(suppressed_errors, HBE_PARSE_UCASE_TAG);
     } else if (hbu_buffer_compare_lit(part, "UNQUOTED_ATTR") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_UNQUOTED_ATTR);
+    } else if (hbu_buffer_compare_lit(part, "SELF_CLOSING_TAG") == 0) {
+      nh_set_int32_add(suppressed_errors, HBE_PARSE_SELF_CLOSING_TAG);
     } else {
       hbe_fatal(HBE_CLI_INVALID_SUPPRESSABLE_ERROR, "Unrecognised suppressable error `%s`", hbu_buffer_underlying(part));
     }
@@ -125,11 +127,11 @@ int main(int argc, char **argv) {
       {"verbose", no_argument, NULL, 'v'},
       {"input", required_argument, NULL, 'i'},
       {"output", required_argument, NULL, 'o'},
-      {"suppress", optional_argument, NULL, 's'},
+      {"suppress", required_argument, NULL, 's'},
 
-      {"MXcollapseWhitespace", optional_argument, NULL, 1},
-      {"MXdestroyWholeWhitespace", optional_argument, NULL, 2},
-      {"MXtrimWhitespace", optional_argument, NULL, 3},
+      {"MXcollapseWhitespace", required_argument, NULL, 1},
+      {"MXdestroyWholeWhitespace", required_argument, NULL, 2},
+      {"MXtrimWhitespace", required_argument, NULL, 3},
 
       {"MXtrimClassAttr", no_argument, &(config_stream->trim_class_attr), 0},
       {"MXdecEnt", no_argument, &(config_stream->decode_entities), 0},

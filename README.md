@@ -96,6 +96,10 @@ See [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered
 
 This includes tags that close automatically because of siblings (e.g. `<li><li>`), as it greatly simplifies the complexity of the minifier due to guarantees about the structure.
 
+#### `HBE_PARSE_SELF_CLOSING_TAG`
+
+It's an error if a tag is self-closed. Valid in XML, not in HTML.
+
 #### `HBE_PARSE_UNEXPECTED_END` and `HBE_PARSE_EXPECTED_NOT_FOUND`
 
 General syntax errors.
