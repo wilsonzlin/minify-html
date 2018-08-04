@@ -36,7 +36,7 @@ Use the error name without the `HBE_PARSE_` prefix.
 
 It's an error if the sequence of characters following an ampersand (`&`) does not form a valid entity.
 
-Technically, entities must be of one of the following forms:
+Entities must be of one of the following forms:
 
 - `&name;`, where *name* is a reference to a valid HTML entity
 - `&nnnn;`, where *nnnn* is a Unicode code point in base 10
@@ -44,7 +44,7 @@ Technically, entities must be of one of the following forms:
 
 A malformed entity is an ampersand not followed by a sequence of characters that matches one of the above forms. This includes when the semicolon is missing, and bare ampersands (i.e. followed by whitespace or as the last character).
 
-Note that this is different from `HBE_PARSE_INVALID_ENTITY`, which is when a well-formed entity references a non-existent entity or Unicode code point.
+Note that this is different from `HBE_PARSE_INVALID_ENTITY`, which is when a well-formed entity references a non-existent entity name or Unicode code point.
 
 An ampersand by itself is not *necessarily* an invalid entity. However, HTML parsers and browsers may have different interpretations of bare ampersands, so it's a good idea to always use the encoded form (`&amp;`).
 
@@ -102,7 +102,7 @@ General syntax errors.
 
 #### Additional errors
 
-There are additional implicit errors that are considered as generic syntax errors due to the way the parser works:
+There are additional implicit errors that are considered as general syntax errors due to the way the parser works:
 
 - Closing void tags; see [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
 - Placing whitespace between `=` and attribute names/values.
