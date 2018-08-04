@@ -63,6 +63,11 @@ int hbs_options_in_tags_list(nh_set_str_t set, hb_char_t *query) {
     return 1; // NULL represents the universal set
   }
 
+  if (query == NULL) {
+    // When parent is #root
+    return 0;
+  }
+
   return nh_set_str_has(set, (char *) query);
 }
 

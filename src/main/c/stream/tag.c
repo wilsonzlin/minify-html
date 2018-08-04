@@ -57,7 +57,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
     hbsh_style(pipe);
   } else {
     // Content
-    hbs_content(so, pipe);
+    hbs_content(so, pipe, hbu_buffer_underlying(opening_name));
   }
 
   // Closing tag for non-void
@@ -69,6 +69,8 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
   if (!hbu_buffer_equal(opening_name, closing_name)) {
     hbu_pipe_error(pipe, HBE_PARSE_UNCLOSED_TAG, "Tag not closed");
   }
+
+  hbu_buffer_destroy(opening_name);
 }
 
 #endif // _HDR_HYPERBUILD_STREAM_TAG

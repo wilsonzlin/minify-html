@@ -25,6 +25,8 @@ void hbsh_attr(hbu_pipe_t pipe) {
     }
   }
 
+  hbu_buffer_destroy(name);
+
   if (hbu_pipe_accept_if(pipe, '=')) {
     if (hbr_attrvalquote_check(hbu_pipe_peek(pipe))) {
       // Quoted attribute value
