@@ -27,10 +27,11 @@
 #include "./tag/mediatags.c"
 #include "./tag/sectioningtags.c"
 #include "./tag/specifictags.c"
-#include "./tag/tags.c"
 #include "./tag/voidtags.c"
 #include "./tag/wsstags.c"
+#include "./tag/htmltags.c"
 #include "./tag/svgtags.c"
+#include "./tag/tags.c"
 
 void hbr_init(void) {
   // Core
@@ -58,6 +59,7 @@ void hbr_init(void) {
   hbr_voidtags_init();
   hbr_wsstags_init();
 
+  hbr_htmltags_init();
   hbr_svgtags_init();
   hbr_tags_init();
 
