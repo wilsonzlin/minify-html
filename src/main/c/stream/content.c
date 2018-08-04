@@ -22,11 +22,21 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent);
 #define HBS_CONTENT_NEXT_STATE_ENTITY 5
 #define HBS_CONTENT_NEXT_STATE_TEXT 6
 
+static int _hbs_content_state_is_comment_bang_or_opening_tag(int state) {
+  return state == HBS_CONTENT_NEXT_STATE_COMMENT ||
+         state == HBS_CONTENT_NEXT_STATE_BANG ||
+         state == HBS_CONTENT_NEXT_STATE_OPENING_TAG;
+}
+
 // $parent can be NULL for top-level content
 void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
   int is_first_char = 1;
   // Set to 1 when $whitespace is instantiated when $is_first_char is 1
   int whitespace_buffer_started_at_beginning = 0;
+
+  // Set to one after calling hbs_comment, hbs_bang, or hbs_tag
+  int returned_from_comment_bang_or_tag = 0;
+  int whitespace_buffer_started_after_right_chevron = 0;
 
   int should_collapse_whitespace = !hbs_options_in_tags_list(so->ex_collapse_whitespace, parent);
   int should_destroy_whole_whitespace = !hbs_options_in_tags_list(so->ex_destroy_whole_whitespace, parent);
@@ -72,6 +82,7 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
       if (whitespace == NULL) {
         whitespace = hbu_buffer_create();
         whitespace_buffer_started_at_beginning = is_first_char;
+        whitespace_buffer_started_after_right_chevron = returned_from_comment_bang_or_tag;
       }
       hbu_buffer_append(whitespace, c);
       hbu_pipe_skip(pipe);
@@ -80,8 +91,8 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
       if (whitespace != NULL) {
         // Next character is not whitespace, deal with existing buffered whitespace
         if (should_destroy_whole_whitespace &&
-            whitespace_buffer_started_at_beginning &&
-            next_state == HBS_CONTENT_NEXT_STATE_END
+            whitespace_buffer_started_after_right_chevron &&
+            _hbs_content_state_is_comment_bang_or_opening_tag(next_state)
         ) {
           // Do nothing
 
@@ -125,6 +136,8 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
       default:
         hbe_fatal(HBE_INTERR_UNKNOWN_CONTENT_NEXT_STATE, "INTERR $next_state is not a known upcoming content stream state");
       }
+
+      returned_from_comment_bang_or_tag = _hbs_content_state_is_comment_bang_or_opening_tag(next_state);
     }
 
     is_first_char = 0;
