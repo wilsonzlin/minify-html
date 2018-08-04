@@ -99,7 +99,7 @@ static void _parse_and_add_errors_to_suppress(nh_set_int32_t suppressed_errors, 
     } else if (hbu_buffer_compare_lit(part, "UNQUOTED_ATTR") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_UNQUOTED_ATTR);
     } else {
-      hbe_fatal(HBE_CLI_INVALID_SUPPRESSABLE_ERROR, "Unrecognised suppressable error `%s`", part);
+      hbe_fatal(HBE_CLI_INVALID_SUPPRESSABLE_ERROR, "Unrecognised suppressable error `%s`", hbu_buffer_underlying(part));
     }
   }
 }
