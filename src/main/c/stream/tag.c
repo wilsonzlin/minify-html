@@ -44,8 +44,14 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
     hbsh_attr(pipe);
   }
 
+  hb_char_t *tag_name = hbu_buffer_underlying(opening_name);
+
+  if (!hbs_options_supressed_error(so, HBE_PARSE_NONSTANDARD_TAG) && !hbr_tags_check(tag_name)) {
+    hbu_pipe_error(pipe, HBE_PARSE_NONSTANDARD_TAG, "Non-standard tag");
+  }
+
   // Self-closing or void tag
-  if (self_closing || hbr_voidtags_check(hbu_buffer_underlying(opening_name))) {
+  if (self_closing || hbr_voidtags_check(tag_name)) {
     return;
   }
 
@@ -57,7 +63,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
     hbsh_style(pipe);
   } else {
     // Content
-    hbs_content(so, pipe, hbu_buffer_underlying(opening_name));
+    hbs_content(so, pipe, tag_name);
   }
 
   // Closing tag for non-void
