@@ -1,7 +1,7 @@
 # hyperbuild
 
 A fast HTML parser, preprocessor, and minifier, written in C.
-Designed to be used in C projects, but also runnable on Node.js thanks to Emscripten.
+Designed to be used in C projects, but also runnable on Node.js.
 Minifier heavily influenced by [kangax's html-minifier](https://github.com/kangax/html-minifier).
 
 ## Features
@@ -16,7 +16,7 @@ hyperbuild is aware of strings and comments in JS and CSS sections, and deals wi
 
 ### Super low level
 
-hyperbuild is written in C, and exposed to Node.js using Emscripten.
+hyperbuild is written in C, and has a small Node.js wrapper module that simplifies calling the executable.
 
 ## Parsing
 
