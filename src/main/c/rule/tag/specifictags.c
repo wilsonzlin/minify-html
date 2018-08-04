@@ -5,9 +5,12 @@
 #include "../../util/hbchar.h"
 #include "./sectioningtags.c"
 
+#include "./svgtags.c"
+
 static nh_set_str_t hbr_specifictags_set;
 
 void hbr_specifictags_add_elems(nh_set_str_t set) {
+  hbr_svgtags_add_elems(set);
   nh_set_str_add(set, "area");
   nh_set_str_add(set, "base");
   nh_set_str_add(set, "br");
