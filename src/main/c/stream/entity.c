@@ -25,32 +25,25 @@ static void _hbs_entity_interr_unknown_entity(void) {
   hbe_fatal(HBE_INTERR_UNKNOWN_ENTITY_TYPE, "INTERR $type is not a known entity type");
 }
 
+static void _hbs_entity_write_literal(hbu_pipe_t pipe, int type, hbu_buffer_t entity_raw, int consumed_semicolon) {
+  hbu_pipe_write(pipe, '&');
+  if (type == HBS_ENTITY_TYPE_HEXADECIMAL || type == HBS_ENTITY_TYPE_DECIMAL) {
+    hbu_pipe_write(pipe, '#');
+    if (type == HBS_ENTITY_TYPE_HEXADECIMAL) {
+      hbu_pipe_write(pipe, 'x');
+    }
+  }
+
+  hbu_pipe_write_buffer(pipe, entity_raw);
+
+  if (consumed_semicolon) {
+    hbu_pipe_write(pipe, ';');
+  }
+}
+
 static void _hbs_entity_handle_error(hbs_options_t so, hbu_pipe_t pipe, int type, hbu_buffer_t entity_raw, int consumed_semicolon, hbe_errcode_t errcode, const char *reason) {
   if (hbs_options_supressed_error(so, errcode)) {
-    switch (type) {
-    case -1:
-      hbu_pipe_write(pipe, '&');
-      break;
-
-    case HBS_ENTITY_TYPE_NAME:
-    case HBS_ENTITY_TYPE_DECIMAL:
-      hbu_pipe_write(pipe, '&');
-      // fall through
-
-    case HBS_ENTITY_TYPE_HEXADECIMAL:
-      hbu_pipe_write(pipe, '#');
-      break;
-
-    default:
-      _hbs_entity_interr_unknown_entity();
-    }
-
-    hbu_pipe_write_buffer(pipe, entity_raw);
-
-    if (consumed_semicolon) {
-      hbu_pipe_write(pipe, ';');
-    }
-
+    _hbs_entity_write_literal(pipe, type, entity_raw, consumed_semicolon);
     return;
   }
 
@@ -154,6 +147,10 @@ void hbs_entity(hbs_options_t so, hbu_pipe_t pipe) {
 
   if (!valid) {
     return _hbs_entity_handle_error(so, pipe, type, entity_raw, 1, HBE_PARSE_INVALID_ENTITY, "Invalid entity");
+  }
+
+  if (!so->decode_entities) {
+    _hbs_entity_write_literal(pipe, type, entity_raw, 1);
   }
 }
 
