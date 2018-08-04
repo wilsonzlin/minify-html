@@ -41,7 +41,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
     // TODO Check for whitespace between attributes and before self-closing tag
     hbu_pipe_skip_while_predicate(pipe, &hbr_whitespace_check);
 
-    hbsh_attr(pipe);
+    hbsh_attr(so, pipe);
   }
 
   hb_char_t *tag_name = hbu_buffer_underlying(opening_name);
