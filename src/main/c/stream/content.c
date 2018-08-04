@@ -104,7 +104,7 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
         break;
 
       case HBS_CONTENT_NEXT_STATE_COMMENT:
-        hbs_comment(pipe);
+        hbs_comment(so, pipe);
         break;
 
       case HBS_CONTENT_NEXT_STATE_BANG:

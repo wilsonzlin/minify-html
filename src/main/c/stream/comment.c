@@ -5,26 +5,24 @@
 #include "../util/pipe.c"
 
 #include "./streamoptions.c"
-void hbs_comment(hbu_pipe_t pipe)
+
+void hbs_comment(hbs_options_t so, hbu_pipe_t pipe)
 {
-  hbu_pipe_require(pipe, '<');
-  hbu_pipe_require(pipe, '!');
-  hbu_pipe_require(pipe, '-');
-  hbu_pipe_require(pipe, '-');
+  hbu_pipe_toggle_output_mask(pipe, so->remove_comments);
+
+  hbu_pipe_require_match(pipe, "<!--");
 
   while (1)
   {
-    if (hbu_pipe_peek_offset(pipe, 1) == '-' &&
-        hbu_pipe_peek_offset(pipe, 2) == '-' &&
-        hbu_pipe_peek_offset(pipe, 3) == '>')
+    if (hbu_pipe_accept_if_matches(pipe, "-->"))
     {
       break;
     }
 
-    hbu_pipe_skip(pipe);
+    hbu_pipe_accept(pipe);
   }
 
-  hbu_pipe_skip_amount(pipe, 3);
+  hbu_pipe_toggle_output_mask(pipe, 0);
 }
 
 #endif // _HDR_HYPERBUILD_STREAM_COMMENT
