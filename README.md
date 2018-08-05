@@ -75,8 +75,8 @@ It's an error if an attribute's name has any uppercase characters.
 
 #### `HBE_PARSE_UNQUOTED_ATTR` ⌫
 
-It's an error if an attribute's value is not quoted with `"` (U+0022).
-This means that `` ` `` and `'` are not valid quote marks.
+It's an error if an attribute's value is not quoted with `"` (U+0022) or `'` (U+0027).
+This means that `` ` `` is not a valid quote mark regardless of whether this error is suppressed or not. Backticks are valid attribute value quotes in Internet Explorer.
 
 #### `HBE_PARSE_ILLEGAL_CHILD`
 

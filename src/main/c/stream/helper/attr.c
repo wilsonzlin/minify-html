@@ -39,6 +39,9 @@ void hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
       // Quoted attribute value
       hbsh_quoteattrval(pipe);
     } else {
+      if (!hbs_options_supressed_error(so, HBE_PARSE_UNQUOTED_ATTR)) {
+        hbu_pipe_error(pipe, HBE_PARSE_UNQUOTED_ATTR, "Unquoted attribute value");
+      }
       // Unquoted attribute value
       hbsh_unquoteattrval(pipe);
     }
