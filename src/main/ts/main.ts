@@ -14,8 +14,8 @@ export interface IHyperbuildSettings {
   verbose?: boolean;
 
   code?: string | ReadableStream;
-  inputFile?: string;
-  outputFile?: string;
+  in?: string;
+  out?: string;
 
   suppress?: string[];
 
@@ -32,75 +32,53 @@ export interface IHyperbuildSettings {
   MXtagWS?: boolean;
 }
 
-export interface IHyperbuildMessage {
+export type IHyperbuildMessage = IHyperbuildUnknownMessage | IHyperbuildDebugMessage | IHyperbuildInfoMessage | IHyperbuildWarnMessage | IHyperbuildFatalMessage;
+
+export interface IHyperbuildUnknownMessage {
+  type: "UNKNOWN";
   message: string;
 }
 
-export class HyperbuildUnknownMessage implements IHyperbuildMessage {
+export interface IHyperbuildDebugMessage {
+  type: "DEBUG";
   message: string;
-
-  constructor (message: string) {
-    this.message = message;
-  }
 }
 
-export class HyperbuildDebugMessage implements IHyperbuildMessage {
+export interface IHyperbuildInfoMessage {
+  type: "INFO";
   message: string;
-
-  constructor (message: string) {
-    this.message = message;
-  }
 }
 
-export class HyperbuildInfoMessage implements IHyperbuildMessage {
+export interface IHyperbuildWarnMessage {
+  type: "WARN";
   message: string;
-
-  constructor (message: string) {
-    this.message = message;
-  }
 }
 
-export class HyperbuildWarnMessage implements IHyperbuildMessage {
+export interface IHyperbuildFatalMessage {
+  type: "FATAL";
   message: string;
-
-  constructor (message: string) {
-    this.message = message;
-  }
-}
-
-export class HyperbuildFatalMessage implements IHyperbuildMessage {
-  message: string;
-
-  constructor (message: string) {
-    this.message = message;
-  }
 }
 
 export class HyperbuildError extends Error {
   code: number;
-  constructor (status: number, error: HyperbuildFatalMessage) {
+  constructor(status: number, message: string) {
     super();
     this.code = status;
-    this.message = `hyperbuild exited with status ${status} and encountered the following errors:\n\n${error.message}`;
+    this.message = `hyperbuild exited with status ${status} and encountered the following errors:\n\n${message}`;
   }
 }
 
 export interface IHyperbuildResult {
   code?: string;
-  unknown: HyperbuildUnknownMessage[];
-  debug: HyperbuildDebugMessage[];
-  info: HyperbuildInfoMessage[];
-  warnings: HyperbuildWarnMessage[];
+  messages: {
+    unknown: IHyperbuildUnknownMessage[];
+    debug: IHyperbuildDebugMessage[];
+    info: IHyperbuildInfoMessage[];
+  };
+  warnings: IHyperbuildWarnMessage[];
 }
 
-const MESSAGE_PREFIX_TO_CLASS_MAP: { [prefix: string]: new (message: string) => IHyperbuildMessage } = {
-  "DEBUG": HyperbuildDebugMessage,
-  "INFO": HyperbuildInfoMessage,
-  "WARN": HyperbuildWarnMessage,
-  "FATAL": HyperbuildFatalMessage,
-};
-
-function processHyperbuildMessages (stderrOutput: string): IHyperbuildMessage[] {
+function processHyperbuildMessages(stderrOutput: string): IHyperbuildMessage[] {
   let messages: IHyperbuildMessage[] = [];
 
   // Be careful to keep messages intact, including keeping CR, LF, and CRLF differences
@@ -112,15 +90,20 @@ function processHyperbuildMessages (stderrOutput: string): IHyperbuildMessage[] 
     let prefixMatch = /^\[([A-Z]+)] /.exec(line);
 
     if (prefixMatch) {
-      let cls = MESSAGE_PREFIX_TO_CLASS_MAP[prefixMatch[1]];
       // Don't trim: it's possible trailing newline is part of message,
       // and if message continues past newline, the newline is intentional
-      messages.push(new cls(line.slice(prefixMatch[0].length)));
+      messages.push({
+        type: prefixMatch[1],
+        message: line.slice(prefixMatch[0].length),
+      } as IHyperbuildMessage);
 
     } else {
       // Assume if no prefix, line is continuation of previous message
       if (!messages.length) {
-        messages.push(new HyperbuildUnknownMessage(line));
+        messages.push({
+          type: "UNKNOWN",
+          message: line,
+        });
       } else {
         messages[messages.length - 1].message += line;
       }
@@ -132,107 +115,76 @@ function processHyperbuildMessages (stderrOutput: string): IHyperbuildMessage[] 
 
 const BIN_PATH = __dirname + "/hyperbuild";
 
-function escapeOptionValue (val: string): string {
+function escapeOptionValue(val: string): string {
   return `'${val.replace(/'/g, "\\'")}'`;
 }
 
-export function hyperbuild (settings: IHyperbuildSettings): Promise<IHyperbuildResult> {
+function stringifyToArguments(args: object): string {
+  return Object.keys(args).map(k => {
+    let a = `--${k}`;
+    let v = args[k];
+
+    if (typeof v == "boolean") {
+      return v ? a : null;
+
+    } else if (typeof v == "string" || typeof v == "number") {
+      return `${a} ${escapeOptionValue(`${v}`)}`;
+
+    } else if (Array.isArray(v)) {
+      return !v.length ? null : `${a} ${escapeOptionValue(v.join(","))}`;
+
+    } else {
+      throw new TypeError(`Unknown argument value type for argument "${k}" with value: ${v}`);
+    }
+  }).join(" ");
+}
+
+export function hyperbuild(settings: IHyperbuildSettings): Promise<IHyperbuildResult> {
   return new Promise((resolve, reject) => {
-    let args = [];
+    let { showLogging, code, ...argsRaw } = settings;
+    let args = stringifyToArguments(argsRaw);
 
-    if (settings.keep) {
-      args.push("--keep");
-    }
-    if (settings.buffer) {
-      args.push("--buffer");
-    }
-    if (settings.verbose) {
-      args.push("--verbose");
-    }
-
-    if (settings.inputFile) {
-      args.push(`--in ${escapeOptionValue(settings.inputFile)}`);
-      args.push(`--out ${escapeOptionValue(settings.inputFile)}`);
-    }
-
-    if (settings.suppress && settings.suppress.length) {
-      args.push(`--suppress ${escapeOptionValue(settings.suppress.join(","))}`);
-    }
-
-    if (settings.MXcollapseWhitespace && settings.MXcollapseWhitespace.length) {
-      args.push(
-        `--MXcollapseWhitespace ${escapeOptionValue(settings.MXcollapseWhitespace.join(","))}`);
-    }
-    if (settings.MXdestroyWholeWhitespace && settings.MXdestroyWholeWhitespace.length) {
-      args.push(
-        `--MXdestroyWholeWhitespace ${escapeOptionValue(settings.MXdestroyWholeWhitespace.join(","))}`);
-    }
-    if (settings.MXtrimWhitespace && settings.MXtrimWhitespace.length) {
-      args.push(
-        `--MXtrimWhitespace ${escapeOptionValue(settings.MXtrimWhitespace.join(","))}`);
-    }
-
-    if (settings.MXtrimClassAttr) {
-      args.push("--MXtrimClassAttr");
-    }
-    if (settings.MXdecEnt) {
-      args.push("--MXdecEnt");
-    }
-    if (settings.MXcondComments) {
-      args.push("--MXcondComments");
-    }
-    if (settings.MXattrQuotes) {
-      args.push("--MXattrQuotes");
-    }
-    if (settings.MXcomments) {
-      args.push("--MXcomments");
-    }
-    if (settings.MXoptTags) {
-      args.push("--MXoptTags");
-    }
-    if (settings.MXtagWS) {
-      args.push("--MXtagWS");
-    }
-
-    let code = settings.code;
-
-    let cmd = `${BIN_PATH} ${args.join(" ")}`;
+    let cmd = `${BIN_PATH} ${args}`;
 
     let proc = shelljs.exec(cmd, {
       async: true,
       silent: true,
     }, (status, stdout, stderr) => {
-      if (settings.showLogging) {
+      if (showLogging) {
         console.error(stderr);
       }
 
       let result: IHyperbuildResult = {
         code: code == undefined ? undefined : stdout,
-        unknown: [],
-        debug: [],
-        info: [],
+        messages: {
+          unknown: [],
+          debug: [],
+          info: [],
+        },
         warnings: [],
       }
 
       for (let message of processHyperbuildMessages(stderr)) {
-        if (message instanceof HyperbuildFatalMessage) {
-          reject(new HyperbuildError(status, message));
-          return;
+        switch (message.type) {
+          case "FATAL":
+            reject(new HyperbuildError(status, message.message));
+            return;
 
-        } else if (message instanceof HyperbuildUnknownMessage) {
-          result.unknown.push(message);
+          case "UNKNOWN":
+            result.messages.unknown.push(message);
+            break;
 
-        } else if (message instanceof HyperbuildDebugMessage) {
-          result.debug.push(message);
+          case "DEBUG":
+            result.messages.debug.push(message);
+            break;
 
-        } else if (message instanceof HyperbuildInfoMessage) {
-          result.info.push(message);
+          case "INFO":
+            result.messages.info.push(message);
+            break;
 
-        } else if (message instanceof HyperbuildWarnMessage) {
-          result.warnings.push(message);
-
-        } else {
-          throw new Error(`INTERR Unknown message type with message: ${message}`);
+          case "WARN":
+            result.warnings.push(message);
+            break;
         }
       }
 
