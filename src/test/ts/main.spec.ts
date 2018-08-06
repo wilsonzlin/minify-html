@@ -1,69 +1,80 @@
-import chai, {expect} from "chai";
+import chai, { expect } from "chai";
 import "mocha";
-import {hyperbuild, HyperbuildError} from "../../main/ts/main";
+import { hyperbuild, HyperbuildError } from "../../main/ts/main";
 import chaiAsPromised = require("chai-as-promised");
 
 chai.use(chaiAsPromised);
 
+const DEFAULT_RESULT = {
+  messages: {
+    debug: [],
+    info: [],
+    unknown: [],
+  },
+  warnings: [],
+};
+
 describe("hyperbuild", () => {
   it("should trim whitespace", () => {
-    let res = hyperbuild({
-      code: "<h1>    a    </h1>"
-    });
-    return expect(res).to.eventually.deep.equal({
+    return expect(hyperbuild({
+      code: `<h1>    a    </h1>`,
+    })).to.eventually.deep.equal({
+      ...DEFAULT_RESULT,
       code: "<h1>a</h1>",
     });
   });
 
   it("should destroy whole whitespace", () => {
-    let res = hyperbuild({
+    return expect(hyperbuild({
       code: `<div>
         <section></section>
-      
+
         <section>
           <h1>  Helloo  </h1>
         </section>
       </div>`,
-    });
-    return expect(res).to.eventually.deep.equal({
+    })).to.eventually.deep.equal({
+      ...DEFAULT_RESULT,
       code: "<div><section></section><section><h1>Helloo</h1></section></div>",
     });
   });
 
   it("should throw an error on malformed entities", () => {
-    let res1 = hyperbuild({
-      code: `<div>&x10FFF;</div>`,
-    });
-    let res2 = hyperbuild({
-      code: `<div>Johnson & Johnson</div>`,
-    });
-    let res3 = hyperbuild({
-      code: `<div>&10FFFF;</div>`,
-    });
-    let res4 = hyperbuild({
-      code: `<div>&mdash</div>`,
-    });
-
-    [res1, res2, res3, res4].forEach(p => {
-      expect(p).to.eventually.be.rejected
+    return Promise.all([
+      hyperbuild({
+        code: `<div>&x10FFF;</div>`,
+      }),
+      hyperbuild({
+        code: `<div>Johnson & Johnson</div>`,
+      }),
+      hyperbuild({
+        code: `<div>&10FFFF;</div>`,
+      }),
+      hyperbuild({
+        code: `<div>&mdash</div>`,
+      }),
+    ].map(p => {
+      return expect(p).to.eventually.be.rejected
         .and.be.an.instanceOf(HyperbuildError)
         .and.have.property("code", 65);
-    });
+    }));
   });
 
   it("should decode valid entities", () => {
-    let res1 = hyperbuild({
-      code: `<div>&#x10FFF;</div>`,
-    });
-    expect(res1).to.eventually.deep.equal({
-      code: `<div>\u{10FFF}</div>`,
-    });
+    return Promise.all([
+      expect(hyperbuild({
+        code: `<div>&#x10FFF;</div>`,
+      })).to.eventually.deep.equal({
+        ...DEFAULT_RESULT,
+        code: `<div>\u{10FFF}</div>`,
+      }),
 
-    let res2 = hyperbuild({
-      code: `<div>&apos;</div>`,
-    });
-    expect(res2).to.eventually.deep.equal({
-      code: `<div>'</div>`,
-    });
+      expect(hyperbuild({
+        code: `<div>&apos;</div>`,
+      })).to.eventually.deep.equal({
+        ...DEFAULT_RESULT,
+        code: `<div>'</div>`,
+      }),
+    ]);
   });
 });
