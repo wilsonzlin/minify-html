@@ -92,6 +92,8 @@ static void _parse_and_add_errors_to_suppress(nh_set_int32_t suppressed_errors, 
 
     if (hbu_buffer_compare_lit(part, "MALFORMED_ENTITY") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_MALFORMED_ENTITY);
+    } else if (hbu_buffer_compare_lit(part, "BARE_AMPERSAND") == 0) {
+      nh_set_int32_add(suppressed_errors, HBE_PARSE_BARE_AMPERSAND);
     } else if (hbu_buffer_compare_lit(part, "INVALID_ENTITY") == 0) {
       nh_set_int32_add(suppressed_errors, HBE_PARSE_INVALID_ENTITY);
     } else if (hbu_buffer_compare_lit(part, "NONSTANDARD_TAG") == 0) {

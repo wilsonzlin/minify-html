@@ -42,13 +42,21 @@ Entities must be of one of the following forms:
 - `&nnnn;`, where *nnnn* is a Unicode code point in base 10
 - `&#xhhhh;`, where *hhhh* is a Unicode code point in base 16
 
-A malformed entity is an ampersand not followed by a sequence of characters that matches one of the above forms. This includes when the semicolon is missing, and bare ampersands (i.e. followed by whitespace or as the last character).
+A malformed entity is an ampersand not followed by a sequence of characters that matches one of the above forms. This includes when the semicolon is missing.
 
 Note that this is different from `HBE_PARSE_INVALID_ENTITY`, which is when a well-formed entity references a non-existent entity name or Unicode code point.
 
+While an ampersand by itself (i.e. followed by whitespace or as the last character) is a malformed entity, it is covered by `HBE_PARSE_BARE_AMPERSAND`.
+
+#### `HBE_PARSE_BARE_AMPERSAND` ⌫
+
+It's an error to have an ampersand followed by whitespace or as the last character.
+
+This is intentionally a different error to `HBE_PARSE_MALFORMED_ENTITY` due to the ubiquity of bare ampersands.
+
 An ampersand by itself is not *necessarily* an invalid entity. However, HTML parsers and browsers may have different interpretations of bare ampersands, so it's a good idea to always use the encoded form (`&amp;`).
 
-When this error is suppressed, malformed entities are outputted untouched.
+When this error is suppressed, bare ampersands are outputted untouched.
 
 #### `HBE_PARSE_INVALID_ENTITY` ⌫
 

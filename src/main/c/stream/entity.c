@@ -54,6 +54,14 @@ static void _hbs_entity_handle_error(hbs_options_t so, hbu_pipe_t pipe, int type
 void hbs_entity(hbs_options_t so, hbu_pipe_t pipe) {
   hbu_pipe_require_skip(pipe, '&');
 
+  // Quickly check and short circuit if BARE_AMPERSAND is suppressed
+  // and next character is whitespace
+  if (hbs_options_supressed_error(so, HBE_PARSE_BARE_AMPERSAND) &&
+      hbr_whitespace_check(hbu_pipe_peek_eoi(pipe))) {
+    hbu_pipe_write(pipe, '&');
+    return;
+  }
+
   hb_char_t c = hbu_pipe_peek(pipe);
 
   // _hbs_entity_handle_error will free this in case of error
