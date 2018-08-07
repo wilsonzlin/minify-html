@@ -15,10 +15,10 @@ void hbs_bang(hbu_pipe_t pipe)
       break;
     }
 
-    hbu_pipe_skip(pipe);
+    hbu_pipe_accept(pipe);
   }
 
-  hbu_pipe_skip(pipe);
+  hbu_pipe_accept(pipe);
 }
 
 #endif // _HDR_HYPERBUILD_STREAM_BANG
