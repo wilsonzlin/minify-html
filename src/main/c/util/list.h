@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include "./mem.c"
+
 #define INITIAL_LIST_SIZE 20
 #define LIST_GROWTH_RATE 1.5
 
@@ -86,8 +88,6 @@
     {                                                                                             \
       new_data[i] = 0;                                                                            \
     }                                                                                             \
-                                                                                                  \
-    free(buf->data);                                                                              \
                                                                                                   \
     buf->data = new_data;                                                                         \
     buf->size = new_size;                                                                         \
