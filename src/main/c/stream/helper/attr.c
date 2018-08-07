@@ -36,12 +36,15 @@ void hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
     }
   }
 
+  int collapse_and_trim_whitespace = hbu_buffer_compare_lit(name, "class") == 0 &&
+                                     so->trim_class_attr;
+
   hbu_buffer_destroy(name);
 
   if (hbu_pipe_accept_if(pipe, '=')) {
     if (hbr_attrvalquote_check(hbu_pipe_peek(pipe))) {
       // Quoted attribute value
-      hbsh_quoteattrval(pipe);
+      hbsh_quoteattrval(pipe, collapse_and_trim_whitespace);
     } else {
       if (!hbs_options_supressed_error(so, HBE_PARSE_UNQUOTED_ATTR)) {
         hbu_pipe_error(pipe, HBE_PARSE_UNQUOTED_ATTR, "Unquoted attribute value");

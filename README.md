@@ -276,6 +276,8 @@ Tags not in one of the categories below are **specific tags**.
 
 ### Options
 
+Note that only existing whitespace will be up for removal via minification. Entities that represent whitespace will not be decoded and then removed.
+
 For options that have a list of tags as their values, the tags should be separated by a comma.
 
 An `*` (asterisk, U+002A) can be used to represent the complete set of possible tags. It essentially fully enables or disables the option.
@@ -429,7 +431,7 @@ The following removal of attributes and tags as minification strategies are not 
 
 If they exist, it is assumed there is a special reason for being so.
 
-- Remove empty attributes
+- Remove empty attributes (including ones that would be empty after minification e.g. `class="   "`)
 - Remove empty elements
 - Remove redundant attributes
 - Remove `type` attribute on `<script>` tags
