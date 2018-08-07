@@ -18,11 +18,15 @@ void hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
     // Char matched by $attrname required at least once
     hb_char_t c = hbu_pipe_require_predicate(pipe, &hbr_attrname_check, "attribute name");
 
-    if (!hbs_options_supressed_error(so, HBE_PARSE_UCASE_ATTR)) {
-      hbu_pipe_error(pipe, HBE_PARSE_UCASE_ATTR, "Uppercase letter in attribute name");
+    if (hbr_ucalpha_check(c)) {
+      if (!hbs_options_supressed_error(so, HBE_PARSE_UCASE_ATTR)) {
+        hbu_pipe_error(pipe, HBE_PARSE_UCASE_ATTR, "Uppercase letter in attribute name");
+      }
+      // Lowercase to normalise when checking against rules and closing tag
+      hbu_buffer_append(name, c + 32);
+    } else {
+      hbu_buffer_append(name, c);
     }
-
-    hbu_buffer_append(name, c);
 
     // Don't use hbu_pipe_accept_while_predicate as advanced checks might be needed
     hb_char_t n = hbu_pipe_peek(pipe);
