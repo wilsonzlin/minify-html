@@ -30,6 +30,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
 
   hbu_pipe_require(pipe, '<');
   hbu_buffer_t opening_name = hbsh_tagname(so, pipe);
+
   while (1) {
     hbu_pipe_accept_while_predicate(pipe, &hbr_whitespace_check);
 
@@ -40,7 +41,6 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
     if (hbu_pipe_accept_if_matches(pipe, "/>")) {
       if (!hbs_options_supressed_error(so, HBE_PARSE_SELF_CLOSING_TAG)) {
         hbu_pipe_error(pipe, HBE_PARSE_SELF_CLOSING_TAG, "Self-closing tag");
-        // Unreachable
       }
       self_closing = 1;
       break;
@@ -65,7 +65,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
 
   // Self-closing or void tag
   if (self_closing || hbr_voidtags_check(tag_name)) {
-    return;
+    goto cleanup;
   }
 
   if (hbu_buffer_compare_lit(opening_name, "script") == 0) {
@@ -89,7 +89,12 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
     hbu_pipe_error(pipe, HBE_PARSE_UNCLOSED_TAG, "Tag not closed");
   }
 
-  hbu_buffer_destroy(opening_name);
+  goto cleanup;
+
+  cleanup:
+    hbu_buffer_destroy(opening_name);
+    opening_name = NULL;
+    return;
 }
 
 #endif // _HDR_HYPERBUILD_STREAM_TAG

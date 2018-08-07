@@ -71,9 +71,11 @@ static nh_set_str_t _parse_list_of_tags(char *argv) {
       if (!hbr_tags_check(part_c)) {
         hbe_fatal(HBE_CLI_INVALID_TAG, "%s is not a valid tag and was provided as part of an argument's value", part_c);
       }
-      nh_set_str_add(set, (char *) part_c);
+      nh_set_str_add(set, (char *) hbu_buffer_underlying_copy(part));
     }
   }
+
+  hb_bufferlist_destroy_from_split(list);
 
   return set;
 }
@@ -106,6 +108,8 @@ static void _parse_and_add_errors_to_suppress(nh_set_int32_t suppressed_errors, 
       hbe_fatal(HBE_CLI_INVALID_SUPPRESSABLE_ERROR, "Unrecognised suppressable error `%s`", hbu_buffer_underlying(part));
     }
   }
+
+  hb_bufferlist_destroy_from_split(list);
 }
 
 int main(int argc, char **argv) {

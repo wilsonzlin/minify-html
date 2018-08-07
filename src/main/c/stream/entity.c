@@ -44,6 +44,7 @@ static void _hbs_entity_write_literal(hbu_pipe_t pipe, int type, hbu_buffer_t en
 static void _hbs_entity_handle_error(hbs_options_t so, hbu_pipe_t pipe, int type, hbu_buffer_t entity_raw, int consumed_semicolon, hbe_errcode_t errcode, const char *reason) {
   if (hbs_options_supressed_error(so, errcode)) {
     _hbs_entity_write_literal(pipe, type, entity_raw, consumed_semicolon);
+    hbu_buffer_destroy(entity_raw);
     return;
   }
 
@@ -55,6 +56,7 @@ void hbs_entity(hbs_options_t so, hbu_pipe_t pipe) {
 
   hb_char_t c = hbu_pipe_peek(pipe);
 
+  // _hbs_entity_handle_error will free this in case of error
   hbu_buffer_t entity_raw = hbu_buffer_create_size(HBS_ENTITY_MAX_ENTITY_LENGTH + 1);
 
   int type = -1;

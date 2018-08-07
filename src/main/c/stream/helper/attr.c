@@ -40,6 +40,7 @@ void hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
                                      so->trim_class_attr;
 
   hbu_buffer_destroy(name);
+  name = NULL;
 
   if (hbu_pipe_accept_if(pipe, '=')) {
     if (hbr_attrvalquote_check(hbu_pipe_peek(pipe))) {

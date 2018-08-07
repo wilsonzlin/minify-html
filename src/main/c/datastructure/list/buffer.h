@@ -62,4 +62,12 @@ hb_bufferlist_t hb_bufferlist_create_from_split(hb_char_t *source, hb_char_t del
   return parts;
 }
 
+void hb_bufferlist_destroy_from_split(hb_bufferlist_t list)
+{
+  for (size_t i = 0; i < list->length; i++) {
+    hbu_buffer_destroy(hb_bufferlist_get(list, i));
+  }
+  hb_bufferlist_destroy(list);
+}
+
 #endif // _HDR_HYPERBUILD_DATASTRUCTURE_LIST_BUFFER

@@ -40,6 +40,13 @@
     return buf->data;                                                                             \
   }                                                                                               \
                                                                                                   \
+  elem_type *name##_underlying_copy(name##_t buf)                                                 \
+  {                                                                                               \
+    elem_type *copy = hbu_mem_calloc(buf->length + 1, elem_size);                                    \
+    memcpy(copy, buf->data, buf->length *elem_size);                                              \
+    return copy;                                                                                  \
+  }                                                                                               \
+                                                                                                  \
   int name##_valid_index(name##_t buf, size_t idx)                                                \
   {                                                                                               \
     return idx < buf->length;                                                                     \
