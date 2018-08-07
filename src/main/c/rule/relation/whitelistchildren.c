@@ -93,13 +93,9 @@ void hbr_whitelistchildren_init(void) {
   nh_map_str_strset_set(hbr_whitelistchildren_map, "ul", ul);
 }
 
-int hbr_whitelistchildren_check(hb_char_t *parent) {
-  return nh_map_str_strset_has(hbr_whitelistchildren_map, (char *) parent);
-}
-
-int hbr_whitelistchildren_has(hb_char_t *parent, hb_char_t *child) {
+int hbr_whitelistchildren_allowed(hb_char_t *parent, hb_char_t *child) {
   nh_set_str_t set = nh_map_str_strset_get(hbr_whitelistchildren_map, (char *) parent, NULL);
-  return nh_set_str_has(set, (char *) child);
+  return set == NULL || nh_set_str_has(set, (char *) child);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_WHITELISTCHILDREN

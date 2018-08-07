@@ -138,13 +138,9 @@ void hbr_whitelistparents_init(void) {
   // Should be <body>, <frameset>, <head>, <dl>, <colgroup>, but ignoring
 }
 
-int hbr_whitelistparents_check(hb_char_t *child) {
-  return nh_map_str_strset_has(hbr_whitelistparents_map, (char *) child);
-}
-
-int hbr_whitelistparents_has(hb_char_t *child, hb_char_t *parent) {
+int hbr_whitelistparents_allowed(hb_char_t *child, hb_char_t *parent) {
   nh_set_str_t set = nh_map_str_strset_get(hbr_whitelistparents_map, (char *) child, NULL);
-  return nh_set_str_has(set, (char *) parent);
+  return set == NULL || nh_set_str_has(set, (char *) parent);
 }
 
 #endif // _HDR_HYPERBUILD_RULE_WHITELISTPARENTS

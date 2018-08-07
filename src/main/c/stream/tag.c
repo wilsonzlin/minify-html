@@ -5,6 +5,10 @@
 
 #include "../rule/char/whitespace.c"
 #include "../rule/tag/voidtags.c"
+#include "../rule/relation/blacklistchildren.c"
+#include "../rule/relation/blacklistparents.c"
+#include "../rule/relation/whitelistchildren.c"
+#include "../rule/relation/whitelistparents.c"
 
 #include "../util/hbchar.h"
 #include "../util/pipe.c"
@@ -15,12 +19,13 @@
 #include "./helper/style.c"
 
 // Declare first before content.c, as content.c depends on it
-void hbs_tag(hbs_options_t so, hbu_pipe_t pipe);
+void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent);
 
 #include "./streamoptions.c"
 #include "./content.c"
 
-void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
+// $parent could be NULL
+void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
   int self_closing = 0;
 
   hbu_pipe_require(pipe, '<');
@@ -50,6 +55,13 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe) {
   hb_char_t *tag_name = hbu_buffer_underlying(opening_name);
 
   // Non-standard tag checking is done in hbsh_tagname
+  if (parent != NULL && (
+      !hbr_whitelistparents_allowed(tag_name, parent) ||
+      !hbr_whitelistchildren_allowed(parent, tag_name) ||
+      !hbr_blacklistparents_allowed(tag_name, parent) ||
+      !hbr_blacklistchildren_allowed(parent, tag_name))) {
+    hbu_pipe_error(pipe, HBE_PARSE_ILLEGAL_CHILD, "Tag can't be a child there");
+  }
 
   // Self-closing or void tag
   if (self_closing || hbr_voidtags_check(tag_name)) {

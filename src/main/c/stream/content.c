@@ -123,7 +123,7 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
         break;
 
       case HBS_CONTENT_NEXT_STATE_OPENING_TAG:
-        hbs_tag(so, pipe);
+        hbs_tag(so, pipe, parent);
         break;
 
       case HBS_CONTENT_NEXT_STATE_ENTITY:
