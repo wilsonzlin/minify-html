@@ -64,7 +64,7 @@ export class HyperbuildError extends Error {
   constructor(status: number, message: string) {
     super();
     this.code = status;
-    this.message = `hyperbuild exited with status ${status} and encountered the following errors:\n\n${message}`;
+    this.message = `hyperbuild exited with status ${status} due to the following error:\n${message}`;
   }
 }
 
@@ -92,6 +92,8 @@ function processHyperbuildMessages(stderrOutput: string): IHyperbuildMessage[] {
     if (prefixMatch) {
       // Don't trim: it's possible trailing newline is part of message,
       // and if message continues past newline, the newline is intentional
+      // e.g. Expected `=`, got `
+      // ` (U+000A)
       messages.push({
         type: prefixMatch[1],
         message: line.slice(prefixMatch[0].length),
@@ -109,6 +111,10 @@ function processHyperbuildMessages(stderrOutput: string): IHyperbuildMessage[] {
       }
     }
   }
+
+  messages.forEach(m => {
+    m.message = m.message.trim(); // Safe to trim now, as no message should end with raw user content
+  });
 
   return messages;
 }
