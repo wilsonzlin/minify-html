@@ -2,6 +2,7 @@
 #define _HDR_HYPERBUILD_UTIL_PIPE
 
 #include <string.h>
+#include <stdint.h>
 #include "hbchar.h"
 #include "../error/error.c"
 #include "buffer.c"
@@ -315,7 +316,7 @@ size_t hbu_pipe_matches_line_terminator(hbu_pipe_t pipe) {
  * Will cause an error if already at end.
  *
  * @param pipe pipe
- * @param c character to match
+ * @return next character
  */
 hb_char_t hbu_pipe_accept(hbu_pipe_t pipe) {
   hb_eod_char_t c = _hbu_pipe_read_from_buffer_or_input(pipe);
@@ -334,7 +335,7 @@ hb_char_t hbu_pipe_accept(hbu_pipe_t pipe) {
  * Requires at least <code>count</code> characters remaining.
  *
  * @param pipe pipe
- * @param c character to match
+ * @param count amount of characters
  */
 void hbu_pipe_accept_count(hbu_pipe_t pipe, size_t count) {
   for (size_t i = 0; i < count; i++) {
@@ -387,19 +388,16 @@ int hbu_pipe_accept_if_matches(hbu_pipe_t pipe, const char *match) {
  * Won't cause an error if insufficient amount of characters left.
  *
  * @param pipe pipe
- * @param pred predicate
- * @return 0 if nothing was accepted, 1 otherwise
+ * @return amount of characters matched
  */
-int hbu_pipe_accept_if_matches_line_terminator(hbu_pipe_t pipe) {
+size_t hbu_pipe_accept_if_matches_line_terminator(hbu_pipe_t pipe) {
   size_t matchedlen = hbu_pipe_matches_line_terminator(pipe);
 
-  int matched = matchedlen > 0;
-
-  if (matched) {
+  if (matchedlen) {
     hbu_pipe_accept_count(pipe, matchedlen);
   }
 
-  return matched;
+  return matchedlen;
 }
 
 /**
@@ -545,7 +543,9 @@ hb_char_t hbu_pipe_require_skip(hbu_pipe_t pipe, hb_char_t c) {
  * If not matched, the error message will describe the expected output using <code>name</code>.
  *
  * @param pipe pipe
- * @param match sequence of characters to require
+ * @param pred predicate
+ * @param name what to output in the error message to describe the requirement
+ * @return required character
  */
 hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred, const char *name) {
   hb_char_t n = hbu_pipe_accept(pipe);
