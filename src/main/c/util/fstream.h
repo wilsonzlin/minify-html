@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include "../error/error.c"
+#include "./mem.c"
 
 #define HBU_FSTREAM_BUILD_INFRA(type, mode, noun, verb, std) \
   typedef struct hbu_fstream##type##_s { \
@@ -12,7 +13,7 @@
   } *hbu_fstream##type##_t; \
   \
   hbu_fstream##type##_t hbu_fstream##type##_create(char *path) { \
-    hbu_fstream##type##_t fstream = malloc(sizeof(struct hbu_fstream##type##_s)); \
+    hbu_fstream##type##_t fstream = hbu_mem_malloc(sizeof(struct hbu_fstream##type##_s)); \
     \
     if (path == NULL) { \
       fstream->name = #std; \

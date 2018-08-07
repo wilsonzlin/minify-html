@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "hbchar.h"
+#include "mem.c"
 #include "../error/error.c"
 #include "buffer.c"
 #include "fstreamin.c"
@@ -36,7 +37,7 @@ typedef struct hbu_pipe_s {
  */
 
 char *hbu_pipe_generate_pos_msg(hbu_pipe_t pipe) {
-  char *msg = malloc(SIZEOF_CHAR * (MAX_POS_MSG_LEN + 1));
+  char *msg = hbu_mem_malloc(SIZEOF_CHAR * (MAX_POS_MSG_LEN + 1));
   snprintf(msg, MAX_POS_MSG_LEN + 1, "%s [line %d, column %d]", pipe->input->name, pipe->line, pipe->column);
   return msg;
 }
@@ -140,7 +141,7 @@ static void _hbu_pipe_write_to_output(hbu_pipe_t pipe, hb_char_t c) {
  */
 
 hbu_pipe_t hbu_pipe_create(hbu_fstreamin_t input, void *output, hbu_pipe_writer_cb_t writer) {
-  hbu_pipe_t pipe = malloc(sizeof(struct hbu_pipe_s));
+  hbu_pipe_t pipe = hbu_mem_malloc(sizeof(struct hbu_pipe_s));
   pipe->input = input;
   pipe->output = output;
   pipe->writer = writer;

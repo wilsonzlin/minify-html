@@ -17,8 +17,8 @@
                                                                                                   \
   name##_t name##_create_size(size_t initial_list_size)                                           \
   {                                                                                               \
-    name##_t buf = malloc(sizeof(struct name##_s));                                               \
-    buf->data = calloc(initial_list_size, elem_size);                                             \
+    name##_t buf = hbu_mem_malloc(sizeof(struct name##_s));                                       \
+    buf->data = hbu_mem_calloc(initial_list_size, elem_size);                                     \
     buf->length = 0;                                                                              \
     buf->size = initial_list_size;                                                                \
     return buf;                                                                                   \
@@ -74,7 +74,7 @@
       return;                                                                                     \
     }                                                                                             \
                                                                                                   \
-    elem_type *new_data = realloc(buf->data, SIZEOF_CHAR * new_size);                             \
+    elem_type *new_data = hbu_mem_realloc(buf->data, SIZEOF_CHAR * new_size);                     \
     for (size_t i = old_size; i < new_size; i++)                                                  \
     {                                                                                             \
       new_data[i] = 0;                                                                            \
@@ -95,7 +95,7 @@
       return;                                                                                     \
     }                                                                                             \
                                                                                                   \
-    elem_type *new_data = malloc(SIZEOF_CHAR * new_size);                                         \
+    elem_type *new_data = hbu_mem_malloc(SIZEOF_CHAR * new_size);                                 \
     memcpy(new_data, buf->data, SIZEOF_CHAR *(new_size)-1);                                       \
     new_data[new_size - 1] = 0;                                                                   \
                                                                                                   \

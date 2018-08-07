@@ -3,6 +3,7 @@
 
 #include "../error/error.c"
 #include "../util/hbchar.h"
+#include "../util/mem.c"
 #include "../ext/nicehash/set/str.h"
 #include "../ext/nicehash/set/int32.h"
 
@@ -43,7 +44,7 @@ static nh_set_str_t _hbs_options_default_ex_trim_whitespace(void) {
 
 // WARNING: Rules must be initialised before calling this function
 hbs_options_t hbs_options_create(void) {
-  hbs_options_t opt = malloc(sizeof(struct hbs_options_s));
+  hbs_options_t opt = hbu_mem_malloc(sizeof(struct hbs_options_s));
   opt->ex_collapse_whitespace = _hbs_options_default_ex_collapse_whitespace();
   opt->ex_destroy_whole_whitespace = _hbs_options_default_ex_destroy_whole_whitespace();
   opt->ex_trim_whitespace = _hbs_options_default_ex_trim_whitespace();
