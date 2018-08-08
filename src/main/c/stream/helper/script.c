@@ -8,7 +8,10 @@
 static void _hbsh_script_slcomment(hbu_pipe_t pipe) {
   hbu_pipe_require_match(pipe, "//");
 
-  while (!hbu_pipe_accept_if_matches_line_terminator(pipe)) {
+  // Comment can end at closing </script>
+  // NOTE: Closing tag must not contain whitespace
+  while (!hbu_pipe_accept_if_matches_line_terminator(pipe) &&
+         !hbu_pipe_matches_i(pipe, "</script>")) {
     hbu_pipe_accept(pipe);
   }
 }
@@ -16,7 +19,10 @@ static void _hbsh_script_slcomment(hbu_pipe_t pipe) {
 static void _hbsh_script_mlcomment(hbu_pipe_t pipe) {
   hbu_pipe_require_match(pipe, "/*");
 
-  while (!hbu_pipe_accept_if_matches(pipe, "*/")) {
+  // Comment can end at closing </script>
+  // NOTE: Closing tag must not contain whitespace
+  while (!hbu_pipe_accept_if_matches(pipe, "*/") &&
+         !hbu_pipe_matches_i(pipe, "</script>")) {
     hbu_pipe_accept(pipe);
   }
 }

@@ -8,6 +8,7 @@
 static void _hbsh_style_comment(hbu_pipe_t pipe) {
   hbu_pipe_require_match(pipe, "/*");
 
+  // Unlike script tags, style comments do NOT end at closing tag
   while (!hbu_pipe_accept_if_matches(pipe, "*/")) {
     hbu_pipe_accept(pipe);
   }
