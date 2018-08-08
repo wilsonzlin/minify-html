@@ -55,6 +55,8 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
       break;
     }
 
+    // HBE_PARSE_NO_SPACE_BEFORE_ATTR is not suppressable as then there would be difficulty
+    // in determining what is the end of a tag/attribute name/attribute value
     if (!ws_accepted) {
       hbu_pipe_error(pipe, HBE_PARSE_NO_SPACE_BEFORE_ATTR, "No whitespace before attribute");
     }

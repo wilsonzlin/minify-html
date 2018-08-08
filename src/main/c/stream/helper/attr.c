@@ -3,17 +3,15 @@
 
 #include "../../rule/char/attrname.c"
 #include "../../rule/char/attrvalquote.c"
-#include "./quoteattrval.c"
-#include "./unquoteattrval.c"
 
 #include "../../util/hbchar.h"
 #include "../../util/pipe.c"
 
 #include "../streamoptions.c"
 
-#define HBSH_ATTR_QUOTED 1
-#define HBSH_ATTR_UNQUOTED 2
-#define HBSH_ATTR_NOVAL 3
+#include "./attrval.h"
+#include "./quoteattrval.c"
+#include "./unquoteattrval.c"
 
 int hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
   hbu_buffer_t name = hbu_buffer_create();
@@ -49,8 +47,7 @@ int hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
   if (hbu_pipe_accept_if(pipe, '=')) {
     if (hbr_attrvalquote_check(hbu_pipe_peek(pipe))) {
       // Quoted attribute value
-      hbsh_quoteattrval(pipe, collapse_and_trim_whitespace);
-      return HBSH_ATTR_QUOTED;
+      return hbsh_quoteattrval(so, pipe, collapse_and_trim_whitespace);
     }
 
     if (!hbs_options_supressed_error(so, HBE_PARSE_UNQUOTED_ATTR)) {
