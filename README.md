@@ -215,6 +215,22 @@ Read, parse, process, and minify another file, and stream the result.
 |---|---|---|---|
 |path|Relative or absolute file system path|Y|The path to the file. If it starts with a slash, it is interpreted as an absolute path; otherwise, it's a path relative to the directory of the importee, or the working directory if the input is `stdin`.|
 
+#### `readraw`
+
+Stream another file.
+
+|Argument|Format|Required|Description|
+|---|---|---|---|
+|path|Relative or absolute file system path|Y|The path to the file. If it starts with a slash, it is interpreted as an absolute path; otherwise, it's a path relative to the directory of the importee, or the working directory if the input is `stdin`.|
+
+#### `readtext`
+
+Stream another file, replacing any `&`, `"`, `` ` ``, `'`, `<`, and `>` characters with their encoded entity form.
+
+|Argument|Format|Required|Description|
+|---|---|---|---|
+|path|Relative or absolute file system path|Y|The path to the file. If it starts with a slash, it is interpreted as an absolute path; otherwise, it's a path relative to the directory of the importee, or the working directory if the input is `stdin`.|
+
 ## Minification
 
 ### Theory
