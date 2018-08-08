@@ -22,6 +22,7 @@ void hbsh_quoteattrval(hbu_pipe_t pipe, int collapse_and_trim_whitespace) {
       hbu_pipe_skip(pipe);
     } else {
       if (whitespace) {
+        whitespace = 0;
         hbu_pipe_write(pipe, ' ');
       }
       hbu_pipe_accept(pipe);
