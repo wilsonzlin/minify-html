@@ -22,7 +22,9 @@ typedef struct hbu_pipe_s {
   hbu_fstreamin_t input;
   void *output;
   hbu_pipe_writer_cb_t writer;
+
   int output_masked;
+  hbu_buffer_t output_redirect;
 
   hbu_buffer_t buffer;
 
@@ -176,7 +178,12 @@ static void _hbu_pipe_assert_not_eoi(hbu_pipe_t pipe, hb_eod_char_t c) {
 
 static void _hbu_pipe_write_to_output(hbu_pipe_t pipe, hb_char_t c) {
   if (!pipe->output_masked) {
-    (*pipe->writer)(pipe->output, c);
+    hbu_buffer_t redirect = pipe->output_redirect;
+    if (redirect != NULL) {
+      hbu_buffer_append(redirect, c);
+    } else {
+      (*pipe->writer)(pipe->output, c);
+    }
   }
 }
 
@@ -192,6 +199,7 @@ hbu_pipe_t hbu_pipe_create(hbu_fstreamin_t input, void *output, hbu_pipe_writer_
   pipe->output = output;
   pipe->writer = writer;
   pipe->output_masked = 0;
+  pipe->output_redirect = NULL;
 
   pipe->buffer = hbu_buffer_create();
 
@@ -220,6 +228,17 @@ int hbu_pipe_toggle_output_mask(hbu_pipe_t pipe, int output_masked) {
   int current = pipe->output_masked;
   pipe->output_masked = output_masked;
   return current;
+}
+
+/**
+ * Enables or disables the output redirect.
+ * When the output redirect is enabled, all writes are written to a buffer instead of the output.
+ *
+ * @param pipe pipe
+ * @param output_redirect buffer to redirect writes to, or NULL to disable
+ */
+void hbu_pipe_set_output_redirect(hbu_pipe_t pipe, hbu_buffer_t output_redirect) {
+  pipe->output_redirect = output_redirect;
 }
 
 /*
