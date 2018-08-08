@@ -345,6 +345,34 @@ size_t hbu_pipe_matches(hbu_pipe_t pipe, const char *match) {
 }
 
 /**
+ * Checks if the next sequence of characters matches the null-terminated character array <code>match</code>
+ * of lowercase characters case-insensitively.
+ * Won't cause an error if insufficient amount of characters left.
+ *
+ * @param pipe pipe
+ * @param match characters to match case-insensitively
+ * @return amount of characters matched, which should be equal to <code>strlen(match)</code>
+ */
+size_t hbu_pipe_matches_i(hbu_pipe_t pipe, const char *match) {
+  size_t matchlen = strlen(match);
+
+  for (size_t i = 0; i < matchlen; i++) {
+    hb_eod_char_t c = hbu_pipe_peek_eoi_offset(pipe, i + 1);
+    if (!(
+      c != HB_EOD &&
+      (
+        c == match[i] ||
+        (hbr_ucalpha_check(c) && (c + 32) == match[i])
+      )
+    )) {
+      return 0;
+    }
+  }
+
+  return matchlen;
+}
+
+/**
  * Checks if the next sequence of characters is "\r", "\n", or "\r\n".
  * Won't cause an error if insufficient amount of characters left.
  *
