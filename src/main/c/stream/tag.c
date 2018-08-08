@@ -32,7 +32,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
   hbu_buffer_t opening_name = hbsh_tagname(so, pipe);
 
   while (1) {
-    hbu_pipe_accept_while_predicate(pipe, &hbr_whitespace_check);
+    size_t ws_accepted = hbu_pipe_accept_while_predicate(pipe, &hbr_whitespace_check);
 
     if (hbu_pipe_accept_if(pipe, '>')) {
       break;
@@ -47,7 +47,9 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
     }
 
     // TODO Check for whitespace between attributes and before self-closing tag
-    hbu_pipe_skip_while_predicate(pipe, &hbr_whitespace_check);
+    if (!ws_accepted) {
+      hbu_pipe_require_predicate(pipe, &hbr_whitespace_check, "whitespace between attributes");
+    }
 
     hbsh_attr(so, pipe);
   }
