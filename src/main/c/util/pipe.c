@@ -664,6 +664,26 @@ hb_char_t hbu_pipe_require_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred,
 }
 
 /**
+ * Requires the next character to satisfy the predicate <code>pred</code>.
+ * The matched character is skipped over and NOT written to output.
+ * If not matched, the error message will describe the expected output using <code>name</code>.
+ *
+ * @param pipe pipe
+ * @param pred predicate
+ * @param name what to output in the error message to describe the requirement
+ * @return required character
+ */
+hb_char_t hbu_pipe_require_skip_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred, const char *name) {
+  hb_char_t n = hbu_pipe_skip(pipe);
+
+  if (!(*pred)(n)) {
+    hbu_pipe_error(pipe, HBE_PARSE_EXPECTED_NOT_FOUND, "Expected %s, got `%c` (0x%x)", name, n, n);
+  }
+
+  return n;
+}
+
+/**
  * Requires the next sequence of characters to be equal to <code>match</code>.
  * Matched characters are written to output.
  *
