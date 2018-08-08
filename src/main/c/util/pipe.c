@@ -501,13 +501,19 @@ int hbu_pipe_accept_if_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
  *
  * @param pipe pipe
  * @param pred predicate
+ * @return amount of characters accepted
  */
-void hbu_pipe_accept_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
+size_t hbu_pipe_accept_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
+  size_t count = 0;
+
   while (1) {
     if (!hbu_pipe_accept_if_predicate(pipe, pred)) {
       break;
     }
+    count++;
   }
+
+  return count;
 }
 
 /**
