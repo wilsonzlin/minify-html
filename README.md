@@ -443,7 +443,7 @@ Don't remove quotes around attribute values when possible.
 
 #### `--MXcomments`
 
-Don't remove any comments, except conditional comments.
+Don't remove any comments. Conditional comments are never removed regardless of this setting.
 
 #### `--MXoptTags`
 
