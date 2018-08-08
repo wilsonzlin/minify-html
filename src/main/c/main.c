@@ -69,7 +69,7 @@ static nh_set_str_t _parse_list_of_tags(char *argv) {
     } else {
       // Single tag
       if (!hbr_tags_check(part_c)) {
-        hbe_fatal(HBE_CLI_INVALID_TAG, "%s is not a valid tag and was provided as part of an argument's value", part_c);
+        hbe_fatal(HBE_CLI_INVALID_TAG, "%s is not a standard tag and was provided as part of an argument's value", part_c);
       }
       nh_set_str_add(set, (char *) hbu_buffer_underlying_copy(part));
     }
