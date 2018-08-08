@@ -1,6 +1,6 @@
 {
   "name": "hyperbuild",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Streaming HTML preprocessor and minifier for C and Node.js",
   "main": "out/main.js",
   "files": [
