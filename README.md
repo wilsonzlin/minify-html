@@ -18,6 +18,10 @@ hyperbuild is aware of strings and comments in JS and CSS sections, and deals wi
 
 hyperbuild is written in C, and has a small Node.js wrapper module that simplifies calling the executable.
 
+### Special precise whitespace handling
+
+hyperbuild can minify whitespace in different ways and depending on the surrounding context, according to precise and advanced rules.
+
 ## Parsing
 
 Current limitations:
@@ -121,6 +125,11 @@ There are additional implicit errors that are considered as general syntax error
 - Placing whitespace before the tag name in an opening tag.
 - Placing whitespace around the tag name in a closing tag.
 - Not closing a tag before the end of the file/input.
+
+#### Notes
+
+- Closing `</script>` tags end single-line and multi-line JavaScript comments in `script` tags.
+  For this to be detected by hyperbuild, the closing tag must not contain any whitespace (e.g. `</script  >`).
 
 ### Options
 
