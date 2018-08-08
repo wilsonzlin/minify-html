@@ -112,7 +112,7 @@ This includes tags that close automatically because of siblings (e.g. `<li><li>`
 
 It's an error if a tag is self-closed. Valid in XML, not in HTML.
 
-#### `HBE_PARSE_NO_SPACE_BEFORE_ATTR` ⌫
+#### `HBE_PARSE_NO_SPACE_BEFORE_ATTR`
 
 It's an error if there is no whitespace before an attribute.
 
