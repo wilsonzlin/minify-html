@@ -86,7 +86,7 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
   hbu_pipe_require(pipe, '>');
 
   if (!hbu_buffer_equal(opening_name, closing_name)) {
-    hbu_pipe_error(pipe, HBE_PARSE_UNCLOSED_TAG, "Tag not closed");
+    hbu_pipe_error(pipe, HBE_PARSE_UNCLOSED_TAG, "Tag not closed (expected `%s` closing tag, got `%s`)", tag_name, hbu_buffer_underlying(closing_name));
   }
 
   goto cleanup;
