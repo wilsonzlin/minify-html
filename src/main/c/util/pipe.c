@@ -552,8 +552,11 @@ void hbu_pipe_skip_amount(hbu_pipe_t pipe, size_t amount) {
  *
  * @param pipe pipe
  * @param pred predicate
+ * @return amount of characters skipped
  */
-void hbu_pipe_skip_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
+size_t hbu_pipe_skip_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
+  size_t count = 0;
+
   while (1) {
     hb_eod_char_t c = hbu_pipe_peek_eoi(pipe);
 
@@ -562,7 +565,10 @@ void hbu_pipe_skip_while_predicate(hbu_pipe_t pipe, hbu_pipe_predicate_t pred) {
     }
 
     hbu_pipe_skip(pipe);
+    count++;
   }
+
+  return count;
 }
 
 /**

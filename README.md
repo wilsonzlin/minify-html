@@ -112,6 +112,18 @@ This includes tags that close automatically because of siblings (e.g. `<li><li>`
 
 It's an error if a tag is self-closed. Valid in XML, not in HTML.
 
+#### `HBE_PARSE_NO_SPACE_BEFORE_ATTR` ⌫
+
+It's an error if there is no whitespace before an attribute.
+
+Most likely, the cause of this error is either invalid syntax or something like:
+
+```html
+<div class="a"name="1"></div>
+```
+
+(Note the lack of space between the end of the `class` attribute and the beginning of the `name` attribute.)
+
 #### `HBE_PARSE_UNEXPECTED_END` and `HBE_PARSE_EXPECTED_NOT_FOUND`
 
 General syntax errors.

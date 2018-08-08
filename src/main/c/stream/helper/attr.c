@@ -11,7 +11,11 @@
 
 #include "../streamoptions.c"
 
-void hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
+#define HBSH_ATTR_QUOTED 1
+#define HBSH_ATTR_UNQUOTED 2
+#define HBSH_ATTR_NOVAL 3
+
+int hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
   hbu_buffer_t name = hbu_buffer_create();
 
   while (1) {
@@ -46,14 +50,18 @@ void hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
     if (hbr_attrvalquote_check(hbu_pipe_peek(pipe))) {
       // Quoted attribute value
       hbsh_quoteattrval(pipe, collapse_and_trim_whitespace);
-    } else {
-      if (!hbs_options_supressed_error(so, HBE_PARSE_UNQUOTED_ATTR)) {
-        hbu_pipe_error(pipe, HBE_PARSE_UNQUOTED_ATTR, "Unquoted attribute value");
-      }
-      // Unquoted attribute value
-      hbsh_unquoteattrval(pipe);
+      return HBSH_ATTR_QUOTED;
     }
+
+    if (!hbs_options_supressed_error(so, HBE_PARSE_UNQUOTED_ATTR)) {
+      hbu_pipe_error(pipe, HBE_PARSE_UNQUOTED_ATTR, "Unquoted attribute value");
+    }
+    // Unquoted attribute value
+    hbsh_unquoteattrval(pipe);
+    return HBSH_ATTR_UNQUOTED;
   }
+
+  return HBSH_ATTR_NOVAL;
 }
 
 #endif // _HDR_HYPERBUILD_STREAM_HELPER_ATTR

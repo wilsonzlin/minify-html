@@ -31,8 +31,17 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
   hbu_pipe_require(pipe, '<');
   hbu_buffer_t opening_name = hbsh_tagname(so, pipe);
 
+  int last_attr_type = -1;
+
   while (1) {
-    size_t ws_accepted = hbu_pipe_accept_while_predicate(pipe, &hbr_whitespace_check);
+    // At the beginning of this loop, the last parsed unit was either the tag name
+    // or an attribute (including its value, if it had one)
+    size_t ws_accepted;
+    if (so->remove_tag_whitespace) {
+      ws_accepted = hbu_pipe_skip_while_predicate(pipe, &hbr_whitespace_check);
+    } else {
+      ws_accepted = hbu_pipe_accept_while_predicate(pipe, &hbr_whitespace_check);
+    }
 
     if (hbu_pipe_accept_if(pipe, '>')) {
       break;
@@ -46,12 +55,17 @@ void hbs_tag(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
       break;
     }
 
-    // TODO Check for whitespace between attributes and before self-closing tag
     if (!ws_accepted) {
-      hbu_pipe_require_predicate(pipe, &hbr_whitespace_check, "whitespace between attributes");
+      hbu_pipe_error(pipe, HBE_PARSE_NO_SPACE_BEFORE_ATTR, "No whitespace before attribute");
     }
 
-    hbsh_attr(so, pipe);
+    if (so->remove_tag_whitespace) {
+      if (last_attr_type != HBSH_ATTR_QUOTED) {
+        hbu_pipe_write(pipe, ' ');
+      }
+    }
+
+    last_attr_type = hbsh_attr(so, pipe);
   }
 
   hb_char_t *tag_name = hbu_buffer_underlying(opening_name);
