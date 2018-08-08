@@ -14,6 +14,8 @@ void hbr_tagname_init(void) {
   hbr_lcalpha_add_elems(hbr_tagname_set);
   hbr_ucalpha_add_elems(hbr_tagname_set);
   hbr_digit_add_elems(hbr_tagname_set);
+  nh_set_int32_add(hbr_tagname_set, ':');
+  nh_set_int32_add(hbr_tagname_set, '-');
 }
 
 int hbr_tagname_check(hb_char_t c) {
