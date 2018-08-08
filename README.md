@@ -120,6 +120,7 @@ There are additional implicit errors that are considered as general syntax error
 - Placing whitespace between `=` and attribute names/values.
 - Placing whitespace before the tag name in an opening tag.
 - Placing whitespace around the tag name in a closing tag.
+- Not closing a tag before the end of the file/input.
 
 ### Options
 
