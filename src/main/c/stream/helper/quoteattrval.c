@@ -10,6 +10,7 @@
 #include "../streamoptions.c"
 
 #include "./attrval.h"
+#include "./entity.c"
 
 int hbsh_quoteattrval(hbs_options_t so, hbu_pipe_t pipe, int collapse_and_trim_whitespace) {
   int should_remove_attr_quotes = so->remove_attr_quotes;
@@ -48,7 +49,13 @@ int hbsh_quoteattrval(hbs_options_t so, hbu_pipe_t pipe, int collapse_and_trim_w
         whitespace = 0;
         hbu_pipe_write(pipe, ' ');
       }
-      hbu_pipe_accept(pipe);
+
+      if (c == '&') {
+        // Call hbsh_entity even if not decoding entities, as it will validate the entity
+        hbsh_entity(so, pipe);
+      } else {
+        hbu_pipe_accept(pipe);
+      }
     }
   }
 

@@ -13,19 +13,19 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent);
 #include "./tag.c"
 #include "./bang.c"
 #include "./comment.c"
-#include "./entity.c"
+#include "./helper/entity.c"
 
-#define HBS_CONTENT_NEXT_STATE_END 1
-#define HBS_CONTENT_NEXT_STATE_COMMENT 2
-#define HBS_CONTENT_NEXT_STATE_BANG 3
-#define HBS_CONTENT_NEXT_STATE_OPENING_TAG 4
-#define HBS_CONTENT_NEXT_STATE_ENTITY 5
-#define HBS_CONTENT_NEXT_STATE_TEXT 6
+#define HBS_CONTENT_STATE_END 1
+#define HBS_CONTENT_STATE_COMMENT 2
+#define HBS_CONTENT_STATE_BANG 3
+#define HBS_CONTENT_STATE_OPENING_TAG 4
+#define HBS_CONTENT_STATE_ENTITY 5
+#define HBS_CONTENT_STATE_TEXT 6
 
 static int _hbs_content_state_is_comment_bang_or_opening_tag(int state) {
-  return state == HBS_CONTENT_NEXT_STATE_COMMENT ||
-         state == HBS_CONTENT_NEXT_STATE_BANG ||
-         state == HBS_CONTENT_NEXT_STATE_OPENING_TAG;
+  return state == HBS_CONTENT_STATE_COMMENT ||
+         state == HBS_CONTENT_STATE_BANG ||
+         state == HBS_CONTENT_STATE_OPENING_TAG;
 }
 
 // $parent can be NULL for top-level content
@@ -52,32 +52,32 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
 
     if (c == HB_EOD || hbu_pipe_matches(pipe, "</")) {
       // End of content
-      next_state = HBS_CONTENT_NEXT_STATE_END;
+      next_state = HBS_CONTENT_STATE_END;
 
     } else if (hbu_pipe_matches(pipe, "<!--")) {
       // Comment
-      next_state = HBS_CONTENT_NEXT_STATE_COMMENT;
+      next_state = HBS_CONTENT_STATE_COMMENT;
 
     } else if (hbu_pipe_matches(pipe, "<!")) {
       // Bang
       // NOTE: Check after comment
-      next_state = HBS_CONTENT_NEXT_STATE_BANG;
+      next_state = HBS_CONTENT_STATE_BANG;
 
     } else if (c == '<') {
       // Opening tag
       // NOTE: Check after comment and bang
-      next_state = HBS_CONTENT_NEXT_STATE_OPENING_TAG;
+      next_state = HBS_CONTENT_STATE_OPENING_TAG;
 
     } else if (c == '&') {
       // Entity
-      next_state = HBS_CONTENT_NEXT_STATE_ENTITY;
+      next_state = HBS_CONTENT_STATE_ENTITY;
 
     } else {
       // Text
-      next_state = HBS_CONTENT_NEXT_STATE_TEXT;
+      next_state = HBS_CONTENT_STATE_TEXT;
     }
 
-    if (next_state == HBS_CONTENT_NEXT_STATE_TEXT && hbr_whitespace_check(c) && should_buffer_whitespace) {
+    if (next_state == HBS_CONTENT_STATE_TEXT && hbr_whitespace_check(c) && should_buffer_whitespace) {
       // Next character is whitespace and whitespace should be buffered
       if (whitespace == NULL) {
         whitespace = hbu_buffer_create();
@@ -97,7 +97,7 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
           // Do nothing
 
         } else if (should_trim_whitespace &&
-                   (whitespace_buffer_started_at_beginning || next_state == HBS_CONTENT_NEXT_STATE_END)) {
+                   (whitespace_buffer_started_at_beginning || next_state == HBS_CONTENT_STATE_END)) {
           // Do nothing
 
         } else if (should_collapse_whitespace) {
@@ -110,27 +110,27 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
       }
 
       switch (next_state) {
-      case HBS_CONTENT_NEXT_STATE_TEXT:
+      case HBS_CONTENT_STATE_TEXT:
         hbu_pipe_accept(pipe);
         break;
 
-      case HBS_CONTENT_NEXT_STATE_COMMENT:
+      case HBS_CONTENT_STATE_COMMENT:
         hbs_comment(so, pipe);
         break;
 
-      case HBS_CONTENT_NEXT_STATE_BANG:
+      case HBS_CONTENT_STATE_BANG:
         hbs_bang(pipe);
         break;
 
-      case HBS_CONTENT_NEXT_STATE_OPENING_TAG:
+      case HBS_CONTENT_STATE_OPENING_TAG:
         hbs_tag(so, pipe, parent);
         break;
 
-      case HBS_CONTENT_NEXT_STATE_ENTITY:
+      case HBS_CONTENT_STATE_ENTITY:
         hbs_entity(so, pipe);
         break;
 
-      case HBS_CONTENT_NEXT_STATE_END:
+      case HBS_CONTENT_STATE_END:
         return;
 
       default:

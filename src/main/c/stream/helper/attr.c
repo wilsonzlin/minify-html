@@ -54,7 +54,7 @@ int hbsh_attr(hbs_options_t so, hbu_pipe_t pipe) {
       hbu_pipe_error(pipe, HBE_PARSE_UNQUOTED_ATTR, "Unquoted attribute value");
     }
     // Unquoted attribute value
-    hbsh_unquoteattrval(pipe);
+    hbsh_unquoteattrval(so, pipe);
     return HBSH_ATTR_UNQUOTED;
   }
 
