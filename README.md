@@ -324,9 +324,10 @@ Tags not in one of the categories below are **specific tags**.
 
 Note that only existing whitespace will be up for removal via minification. Entities that represent whitespace will not be decoded and then removed.
 
-For options that have a list of tags as their values, the tags should be separated by a comma.
+For options that have a list of tags as their value, the tags should be separated by a comma.
 
-An `*` (asterisk, U+002A) can be used to represent the complete set of possible tags. It essentially fully enables or disables the option.
+An `*` (asterisk, U+002A) can be used to represent the complete set of possible tags. Providing no value represents the empty set.
+Both values essentially fully enables or disables the option.
 
 For brevity, hyperbuild has built-in sets of tags that can be used in place of declaring all their members; they begin with a `$` sign:
 
@@ -342,6 +343,17 @@ For brevity, hyperbuild has built-in sets of tags that can be used in place of d
 |`$sectioning`|`article`, `aside`, `nav`, `section`|[sectioningtags.c](src/main/c/rule/tag/sectioningtags.c)|
 |`$void`|`area`, `base`, `br`, `col`, `embed`, `hr`, `img`, `input`, `keygen`, `link`, `meta`, `param`, `source`, `track`, `wbr`|[voidtags.c](src/main/c/rule/tag/voidtags.c)|
 |`$wss`|`pre`, `code`|[wsstags.c](src/main/c/rule/tag/wsstags.c)|
+
+As an example, for `--MXcollapseWhitespace`, here are some possible values:
+
+|Arguments|Description|
+|---|---|
+|`--MXcollapseWhitespace $wss`|Collapse whitespace in all tags except `$wss` ones|
+|`--MXcollapseWhitespace $content,$wss`|Collapse whitespace in all tags except `$content` and `$wss` ones|
+|`--MXcollapseWhitespace $content,$wss,dd`|Collapse whitespace in all tags except `$content` and `$wss` ones, as well as the `dd` tag|
+|`--MXcollapseWhitespace sup,dd`|Collapse whitespace in all tags except `sup` and `dd`|
+|`--MXcollapseWhitespace`|Collapse whitespace in all tags|
+|`--MXcollapseWhitespace *`|Don't collapse whitespace in any tag|
 
 #### `--MXcollapseWhitespace $wss`
 
