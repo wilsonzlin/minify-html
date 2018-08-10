@@ -125,6 +125,10 @@ int main(int argc, char **argv) {
   int config_buffer = 0;
   hbs_options_t config_stream = hbs_options_create();
 
+  int nondefault_ex_collapse_whitespace = 0;
+  int nondefault_ex_destroy_whole_whitespace = 0;
+  int nondefault_ex_trim_whitespace = 0;
+
   // Parse arguments
   while (1) {
     struct option long_options[] = {
@@ -135,9 +139,9 @@ int main(int argc, char **argv) {
       {"output", required_argument, NULL, 'o'},
       {"suppress", required_argument, NULL, 's'},
 
-      {"MXcollapseWhitespace", required_argument, NULL, 1},
-      {"MXdestroyWholeWhitespace", required_argument, NULL, 2},
-      {"MXtrimWhitespace", required_argument, NULL, 3},
+      {"MXcollapseWhitespace", optional_argument, NULL, 1},
+      {"MXdestroyWholeWhitespace", optional_argument, NULL, 2},
+      {"MXtrimWhitespace", optional_argument, NULL, 3},
 
       {"MXtrimClassAttr", no_argument, &(config_stream->trim_class_attr), 0},
       {"MXdecEnt", no_argument, &(config_stream->decode_entities), 0},
@@ -186,18 +190,25 @@ int main(int argc, char **argv) {
       break;
 
     case 1:
+      nondefault_ex_collapse_whitespace = 1;
       config_stream->ex_collapse_whitespace = _parse_list_of_tags(optarg);
       break;
 
     case 2:
+      nondefault_ex_destroy_whole_whitespace = 1;
       config_stream->ex_destroy_whole_whitespace = _parse_list_of_tags(optarg);
       break;
 
     case 3:
+      nondefault_ex_trim_whitespace = 1;
       config_stream->ex_trim_whitespace = _parse_list_of_tags(optarg);
       break;
     }
   }
+
+  if (!nondefault_ex_collapse_whitespace) config_stream->ex_collapse_whitespace = hbs_options_default_ex_collapse_whitespace();
+  if (!nondefault_ex_destroy_whole_whitespace) config_stream->ex_destroy_whole_whitespace = hbs_options_default_ex_destroy_whole_whitespace();
+  if (!nondefault_ex_trim_whitespace) config_stream->ex_trim_whitespace = hbs_options_default_ex_trim_whitespace();
 
   hbe_info_kv_string("Input", input_path);
   hbe_info_kv_string("Output", output_path);

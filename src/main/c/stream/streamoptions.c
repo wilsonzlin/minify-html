@@ -21,33 +21,45 @@ typedef struct hbs_options_s {
   int remove_tag_whitespace;
 } *hbs_options_t;
 
-static nh_set_str_t _hbs_options_default_ex_collapse_whitespace(void) {
-  nh_set_str_t set = nh_set_str_create();
-  hbr_wsstags_add_elems(set);
-  return set;
+static nh_set_str_t _hbs_options_default_ex_collapse_whitespace = NULL;
+
+nh_set_str_t hbs_options_default_ex_collapse_whitespace(void) {
+  if (_hbs_options_default_ex_collapse_whitespace == NULL) {
+    _hbs_options_default_ex_collapse_whitespace = nh_set_str_create();
+    hbr_wsstags_add_elems(_hbs_options_default_ex_collapse_whitespace);
+  }
+  return _hbs_options_default_ex_collapse_whitespace;
 }
 
-static nh_set_str_t _hbs_options_default_ex_destroy_whole_whitespace(void) {
-  nh_set_str_t set = nh_set_str_create();
-  hbr_wsstags_add_elems(set);
-  hbr_contenttags_add_elems(set);
-  hbr_formattingtags_add_elems(set);
-  return set;
+static nh_set_str_t _hbs_options_default_ex_destroy_whole_whitespace = NULL;
+
+nh_set_str_t hbs_options_default_ex_destroy_whole_whitespace(void) {
+  if (_hbs_options_default_ex_destroy_whole_whitespace == NULL) {
+    _hbs_options_default_ex_destroy_whole_whitespace = nh_set_str_create();
+    hbr_wsstags_add_elems(_hbs_options_default_ex_destroy_whole_whitespace);
+    hbr_contenttags_add_elems(_hbs_options_default_ex_destroy_whole_whitespace);
+    hbr_formattingtags_add_elems(_hbs_options_default_ex_destroy_whole_whitespace);
+  }
+  return _hbs_options_default_ex_destroy_whole_whitespace;
 }
 
-static nh_set_str_t _hbs_options_default_ex_trim_whitespace(void) {
-  nh_set_str_t set = nh_set_str_create();
-  hbr_wsstags_add_elems(set);
-  hbr_formattingtags_add_elems(set);
-  return set;
+static nh_set_str_t _hbs_options_default_ex_trim_whitespace = NULL;
+
+nh_set_str_t hbs_options_default_ex_trim_whitespace(void) {
+  if (_hbs_options_default_ex_trim_whitespace == NULL) {
+    _hbs_options_default_ex_trim_whitespace = nh_set_str_create();
+    hbr_wsstags_add_elems(_hbs_options_default_ex_trim_whitespace);
+    hbr_formattingtags_add_elems(_hbs_options_default_ex_trim_whitespace);
+  }
+  return _hbs_options_default_ex_trim_whitespace;
 }
 
 // WARNING: Rules must be initialised before calling this function
 hbs_options_t hbs_options_create(void) {
   hbs_options_t opt = hbu_mem_malloc(sizeof(struct hbs_options_s));
-  opt->ex_collapse_whitespace = _hbs_options_default_ex_collapse_whitespace();
-  opt->ex_destroy_whole_whitespace = _hbs_options_default_ex_destroy_whole_whitespace();
-  opt->ex_trim_whitespace = _hbs_options_default_ex_trim_whitespace();
+  opt->ex_collapse_whitespace = NULL;
+  opt->ex_destroy_whole_whitespace = NULL;
+  opt->ex_trim_whitespace = NULL;
   opt->suppressed_errors = nh_set_int32_create();
   opt->trim_class_attr = 1;
   opt->decode_entities = 1;
