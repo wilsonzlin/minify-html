@@ -216,10 +216,10 @@ int main(int argc, char **argv) {
   hbe_info_kv_boolean("Keep output file on error", config_keep);
   hbs_options_log(config_stream);
 
-  hbu_pipe_t pipe = hbu_pipe_create_blank();
+  hbu_pipe_t pipe = hbu_pipe_create_blank(input_path);
 
   hbu_fstreamin_t input = hbu_fstreamin_create(input_path);
-  hbu_pipe_blank_set_input(pipe, input);
+  hbu_pipe_blank_set_input_fstreamin(pipe, input);
 
   hbu_fstreamout_t output;
   hbu_buffer_t output_buffer;

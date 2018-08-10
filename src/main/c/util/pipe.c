@@ -16,12 +16,16 @@
 
 typedef int (*hbu_pipe_predicate_t)(hb_char_t);
 
+typedef hb_eod_char_t (*hbu_pipe_reader_cb_t)(void *);
 typedef void (*hbu_pipe_writer_cb_t)(void *, hb_char_t);
 
 typedef struct hbu_pipe_s {
-  hbu_fstreamin_t input;
+  void* input;
+  hbu_pipe_reader_cb_t reader;
   void *output;
   hbu_pipe_writer_cb_t writer;
+
+  char *input_name;
 
   int output_masked;
   hbu_buffer_t output_redirect;
@@ -42,7 +46,7 @@ typedef struct hbu_pipe_s {
 
 char *hbu_pipe_generate_pos_msg(hbu_pipe_t pipe) {
   char *msg = hbu_mem_calloc(MAX_POS_MSG_LEN + 1, SIZEOF_CHAR);
-  snprintf(msg, MAX_POS_MSG_LEN, "%s [line %d, column %d]", pipe->input->name, pipe->line, pipe->column);
+  snprintf(msg, MAX_POS_MSG_LEN, "%s [line %d, column %d]", pipe->input_name, pipe->line, pipe->column);
   return msg;
 }
 
@@ -97,7 +101,7 @@ void hbu_pipe_error(hbu_pipe_t pipe, hbe_errcode_t errcode, const char *reason, 
  */
 
 static hb_eod_char_t _hbu_pipe_read_from_input(hbu_pipe_t pipe) {
-  hb_eod_char_t c = hbu_fstreamin_read(pipe->input);
+  hb_eod_char_t c = (*pipe->reader)(pipe->input);
   if (c == HB_EOD) {
     pipe->EOI = 1;
   }
@@ -193,11 +197,15 @@ static void _hbu_pipe_write_to_output(hbu_pipe_t pipe, hb_char_t c) {
  *
  */
 
-hbu_pipe_t hbu_pipe_create(hbu_fstreamin_t input, void *output, hbu_pipe_writer_cb_t writer) {
+hbu_pipe_t hbu_pipe_create(void *input, hbu_pipe_reader_cb_t reader, char *input_name, void *output, hbu_pipe_writer_cb_t writer) {
   hbu_pipe_t pipe = hbu_mem_malloc(sizeof(struct hbu_pipe_s));
   pipe->input = input;
+  pipe->reader = reader;
   pipe->output = output;
   pipe->writer = writer;
+
+  pipe->input_name = input_name;
+
   pipe->output_masked = 0;
   pipe->output_redirect = NULL;
 
@@ -247,12 +255,18 @@ void hbu_pipe_set_output_redirect(hbu_pipe_t pipe, hbu_buffer_t output_redirect)
  *
  */
 
-hbu_pipe_t hbu_pipe_create_blank(void) {
-  return hbu_pipe_create(NULL, NULL, NULL);
+hbu_pipe_t hbu_pipe_create_blank(char *input_name) {
+  return hbu_pipe_create(NULL, NULL, input_name, NULL, NULL);
 }
 
-void hbu_pipe_blank_set_input(hbu_pipe_t pipe, hbu_fstreamin_t fstreamin) {
+void hbu_pipe_blank_set_input_fstreamin(hbu_pipe_t pipe, hbu_fstreamin_t fstreamin) {
   pipe->input = fstreamin;
+  pipe->reader = (hbu_pipe_reader_cb_t) &hbu_fstreamin_read;
+}
+
+void hbu_pipe_blank_set_input_buffer(hbu_pipe_t pipe, hbu_buffer_t buf) {
+  pipe->input = buf;
+  pipe->reader = (hbu_pipe_reader_cb_t) &hbu_buffer_shift;
 }
 
 void hbu_pipe_blank_set_output_fstreamout(hbu_pipe_t pipe, hbu_fstreamout_t fstreamout) {
