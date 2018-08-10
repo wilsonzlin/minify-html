@@ -3,17 +3,17 @@
 
 #include <inttypes.h>
 
-#include "../util/hbchar.h"
-#include "../util/buffer.c"
-#include "../util/pipe.c"
+#include "../../util/hbchar.h"
+#include "../../util/buffer.c"
+#include "../../util/pipe.c"
 
-#include "../rule/entity/entityrefs.c"
-#include "../rule/char/lcalpha.c"
-#include "../rule/char/ucalpha.c"
-#include "../rule/char/digit.c"
-#include "../rule/char/hex.c"
+#include "../../rule/entity/entityrefs.c"
+#include "../../rule/char/lcalpha.c"
+#include "../../rule/char/ucalpha.c"
+#include "../../rule/char/digit.c"
+#include "../../rule/char/hex.c"
 
-#include "./streamoptions.c"
+#include "../streamoptions.c"
 
 #define HBSH_ENTITY_TYPE_NAME 1
 #define HBSH_ENTITY_TYPE_DECIMAL 2

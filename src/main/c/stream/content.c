@@ -127,7 +127,7 @@ void hbs_content(hbs_options_t so, hbu_pipe_t pipe, hb_char_t *parent) {
         break;
 
       case HBS_CONTENT_STATE_ENTITY:
-        hbs_entity(so, pipe);
+        hbsh_entity(so, pipe);
         break;
 
       case HBS_CONTENT_STATE_END:
