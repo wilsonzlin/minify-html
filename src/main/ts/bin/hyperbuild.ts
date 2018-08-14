@@ -59,11 +59,11 @@ export function launchHyperbuild (settings: IHyperbuildSettings, callback: Hyper
     }
   });
 
-  proc.stdout.on("data", data => {
+  proc.stdout.on("data", (data: Buffer) => {
     stdout += data.toString("utf8");
   });
 
-  proc.stderr.on("data", data => {
+  proc.stderr.on("data", (data: Buffer) => {
     stderr += data.toString("utf8");
   });
 
