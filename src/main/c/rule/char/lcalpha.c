@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_LCALPHA
-#define _HDR_HYPERBUILD_RULE_LCALPHA
-
-#include "../../ext/nicehash/set/int32.h"
-#include "../../util/hbchar.h"
-
 static nh_set_int32_t hbr_lcalpha_set;
 
 void hbr_lcalpha_add_elems(nh_set_int32_t set) {
@@ -20,5 +14,3 @@ void hbr_lcalpha_init(void) {
 int hbr_lcalpha_check(hb_char_t c) {
   return nh_set_int32_has(hbr_lcalpha_set, c);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_LCALPHA

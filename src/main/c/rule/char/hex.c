@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_HEX
-#define _HDR_HYPERBUILD_RULE_HEX
-
-#include "../../ext/nicehash/set/int32.h"
-#include "../../util/hbchar.h"
-
 static nh_set_int32_t hbr_hex_set;
 
 void hbr_hex_add_elems(nh_set_int32_t set) {
@@ -26,5 +20,3 @@ void hbr_hex_init(void) {
 int hbr_hex_check(hb_char_t c) {
   return nh_set_int32_has(hbr_hex_set, c);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_HEX

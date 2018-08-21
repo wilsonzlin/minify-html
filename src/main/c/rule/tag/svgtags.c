@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_SVGTAGS
-#define _HDR_HYPERBUILD_RULE_SVGTAGS
-
-#include "../../ext/nicehash/set/str.h"
-#include "../../util/hbchar.h"
-
 // Sourced from https://developer.mozilla.org/en-US/docs/Web/SVG/Element at 2018-08-04T03:50:00Z
 
 static nh_set_str_t hbr_svgtags_set;
@@ -109,5 +103,3 @@ void hbr_svgtags_init(void) {
 int hbr_svgtags_check(hb_char_t *tag) {
   return nh_set_str_has(hbr_svgtags_set, (char *) tag);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_SVGTAGS

@@ -1,8 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_UNQUOTEDATTRVAL
-#define _HDR_HYPERBUILD_RULE_UNQUOTEDATTRVAL
-
-#include "../../ext/nicehash/set/int32.h"
-#include "../../util/hbchar.h"
 #include "./whitespace.c"
 
 static nh_set_int32_t hbr_unquotedattrval_blacklist;
@@ -21,5 +16,3 @@ void hbr_unquotedattrval_init(void) {
 int hbr_unquotedattrval_check(hb_char_t c) {
   return !nh_set_int32_has(hbr_unquotedattrval_blacklist, c);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_UNQUOTEDATTRVAL

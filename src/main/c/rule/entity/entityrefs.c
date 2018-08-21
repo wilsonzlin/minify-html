@@ -1,10 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_ENTITYREFS
-#define _HDR_HYPERBUILD_RULE_ENTITYREFS
-
-#include <stdint.h>
-#include "../../datastructure/map/str-int32.h"
-#include "../../util/hbchar.h"
-
 // Sourced from https://dev.w3.org/html5/html-author/charref at 2018-07-02T10:00:00Z
 
 static nh_map_str_int32_t hbr_entityrefs_map;
@@ -2051,5 +2044,3 @@ int hbr_entityrefs_check(hb_char_t *ref) {
 uint32_t hbr_entityrefs_get(hb_char_t *ref) {
   return nh_map_str_int32_get(hbr_entityrefs_map, (char *) ref, 0);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_ENTITYREFS

@@ -1,8 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_WHITELISTCHILDREN
-#define _HDR_HYPERBUILD_RULE_WHITELISTCHILDREN
-
-#include "../../datastructure/map/str-strset.h"
-#include "../../util/hbchar.h"
 #include "../tag/headingtags.c"
 
 static nh_map_str_strset_t hbr_whitelistchildren_map;
@@ -97,5 +92,3 @@ int hbr_whitelistchildren_allowed(hb_char_t *parent, hb_char_t *child) {
   nh_set_str_t set = nh_map_str_strset_get(hbr_whitelistchildren_map, (char *) parent, NULL);
   return set == NULL || nh_set_str_has(set, (char *) child);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_WHITELISTCHILDREN

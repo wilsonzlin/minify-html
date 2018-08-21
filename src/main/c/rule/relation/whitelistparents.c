@@ -1,8 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_WHITELISTPARENTS
-#define _HDR_HYPERBUILD_RULE_WHITELISTPARENTS
-
-#include "../../datastructure/map/str-strset.h"
-#include "../../util/hbchar.h"
 #include "../tag/mediatags.c"
 
 static nh_map_str_strset_t hbr_whitelistparents_map;
@@ -142,5 +137,3 @@ int hbr_whitelistparents_allowed(hb_char_t *child, hb_char_t *parent) {
   nh_set_str_t set = nh_map_str_strset_get(hbr_whitelistparents_map, (char *) child, NULL);
   return set == NULL || nh_set_str_has(set, (char *) parent);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_WHITELISTPARENTS

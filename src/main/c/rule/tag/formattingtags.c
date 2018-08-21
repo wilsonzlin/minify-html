@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_FORMATTINGTAGS
-#define _HDR_HYPERBUILD_RULE_FORMATTINGTAGS
-
-#include "../../ext/nicehash/set/str.h"
-#include "../../util/hbchar.h"
-
 static nh_set_str_t hbr_formattingtags_set;
 
 void hbr_formattingtags_add_elems(nh_set_str_t set) {
@@ -48,5 +42,3 @@ void hbr_formattingtags_init(void) {
 int hbr_formattingtags_check(hb_char_t *tag) {
   return nh_set_str_has(hbr_formattingtags_set, (char *) tag);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_FORMATTINGTAGS

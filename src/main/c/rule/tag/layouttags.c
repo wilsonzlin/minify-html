@@ -1,8 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_LAYOUTTAGS
-#define _HDR_HYPERBUILD_RULE_LAYOUTTAGS
-
-#include "../../ext/nicehash/set/str.h"
-#include "../../util/hbchar.h"
 #include "./sectioningtags.c"
 
 static nh_set_str_t hbr_layouttags_set;
@@ -49,5 +44,3 @@ void hbr_layouttags_init(void) {
 int hbr_layouttags_check(hb_char_t *tag) {
   return nh_set_str_has(hbr_layouttags_set, (char *) tag);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_LAYOUTTAGS

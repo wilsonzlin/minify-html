@@ -1,10 +1,4 @@
-#ifndef _HDR_HYPERBUILD_RULE_SPECIFICTAGS
-#define _HDR_HYPERBUILD_RULE_SPECIFICTAGS
-
-#include "../../ext/nicehash/set/str.h"
-#include "../../util/hbchar.h"
 #include "./sectioningtags.c"
-
 #include "./svgtags.c"
 
 static nh_set_str_t hbr_specifictags_set;
@@ -35,5 +29,3 @@ void hbr_specifictags_init(void) {
 int hbr_specifictags_check(hb_char_t *tag) {
   return nh_set_str_has(hbr_specifictags_set, (char *) tag);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_SPECIFICTAGS

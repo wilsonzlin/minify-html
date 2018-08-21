@@ -1,7 +1,7 @@
 # hyperbuild
 
 A fast HTML parser, preprocessor, and minifier, written in C.
-Designed to be used in C projects, but also runnable on Node.js.
+Designed to be used in C projects, and Node.js thanks to Emscripten.
 Minifier heavily influenced by [kangax's html-minifier](https://github.com/kangax/html-minifier).
 
 ## Features
@@ -166,7 +166,7 @@ This applies even when the output is `stdout`.
 
 Suppress errors specified by this option. hyperbuild will quitely ignore and continue processing when otherwise one of the provided errors would occur.
 
-Omit the `HBE_PARSE_` prefix. Separate the error names with commas. Suppressible errors are marked with a `⌫` in the [Errors](#errors) section.
+Suppressible errors are marked with a `⌫` in the [Errors](#errors) section. Omit the `HBE_PARSE_` prefix. Separate the error names with commas.
 
 ## Processing
 

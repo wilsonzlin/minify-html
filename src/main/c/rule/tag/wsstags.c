@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_WSSTAGS
-#define _HDR_HYPERBUILD_RULE_WSSTAGS
-
-#include "../../ext/nicehash/set/str.h"
-#include "../../util/hbchar.h"
-
 static nh_set_str_t hbr_wsstags_set;
 
 void hbr_wsstags_add_elems(nh_set_str_t set) {
@@ -19,5 +13,3 @@ void hbr_wsstags_init(void) {
 int hbr_wsstags_check(hb_char_t *tag) {
   return nh_set_str_has(hbr_wsstags_set, (char *) tag);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_WSSTAGS

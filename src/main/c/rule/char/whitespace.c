@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_WHITESPACE
-#define _HDR_HYPERBUILD_RULE_WHITESPACE
-
-#include "../../ext/nicehash/set/int32.h"
-#include "../../util/hbchar.h"
-
 static nh_set_int32_t hbr_whitespace_set;
 
 void hbr_whitespace_add_elems(nh_set_int32_t set) {
@@ -22,5 +16,3 @@ void hbr_whitespace_init(void) {
 int hbr_whitespace_check(hb_char_t c) {
   return nh_set_int32_has(hbr_whitespace_set, c);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_WHITESPACE

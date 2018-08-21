@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_HEADINGTAGS
-#define _HDR_HYPERBUILD_RULE_HEADINGTAGS
-
-#include "../../ext/nicehash/set/str.h"
-#include "../../util/hbchar.h"
-
 static nh_set_str_t hbr_headingtags_set;
 
 void hbr_headingtags_add_elems(nh_set_str_t set) {
@@ -24,5 +18,3 @@ void hbr_headingtags_init(void) {
 int hbr_headingtags_check(hb_char_t *tag) {
   return nh_set_str_has(hbr_headingtags_set, (char *) tag);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_HEADINGTAGS

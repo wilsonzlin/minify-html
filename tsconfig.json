@@ -1,12 +1,14 @@
 {
   "include": [
-    "src/main/ts/**/*.ts"
+    "src/**/*.ts"
   ],
   "compilerOptions": {
-    "target": "es6",
+    "target": "es5",
     "lib": [
       "es5",
-      "es6"
+      "es6",
+      "es7",
+      "es2017"
     ],
     "module": "commonjs",
     "esModuleInterop": true,

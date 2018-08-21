@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_CONTENTFIRSTTAGS
-#define _HDR_HYPERBUILD_RULE_CONTENTFIRSTTAGS
-
-#include "../../ext/nicehash/set/str.h"
-#include "../../util/hbchar.h"
-
 static nh_set_str_t hbr_contentfirsttags_set;
 
 void hbr_contentfirsttags_add_elems(nh_set_str_t set) {
@@ -30,5 +24,3 @@ void hbr_contentfirsttags_init(void) {
 int hbr_contentfirsttags_check(hb_char_t *tag) {
   return nh_set_str_has(hbr_contentfirsttags_set, (char *) tag);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_CONTENTFIRSTTAGS

@@ -1,9 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_HTMLTAGS
-#define _HDR_HYPERBUILD_RULE_HTMLTAGS
-
-#include "../../ext/nicehash/set/str.h"
-#include "../../util/hbchar.h"
-
 // Sourced from https://developer.mozilla.org/en-US/docs/Web/HTML/Element at 2018-07-01T05:55:00Z
 
 static nh_set_str_t hbr_htmltags_set;
@@ -166,5 +160,3 @@ void hbr_htmltags_init(void) {
 int hbr_htmltags_check(hb_char_t *tag) {
   return nh_set_str_has(hbr_htmltags_set, (char *) tag);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_HTMLTAGS

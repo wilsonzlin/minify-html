@@ -1,8 +1,3 @@
-#ifndef _HDR_HYPERBUILD_RULE_BLACKLISTCHILDREN
-#define _HDR_HYPERBUILD_RULE_BLACKLISTCHILDREN
-
-#include "../../datastructure/map/str-strset.h"
-#include "../../util/hbchar.h"
 #include "../tag/headingtags.c"
 #include "../tag/mediatags.c"
 #include "../tag/sectioningtags.c"
@@ -84,5 +79,3 @@ int hbr_blacklistchildren_allowed(hb_char_t *parent, hb_char_t *child) {
   nh_set_str_t set = nh_map_str_strset_get(hbr_blacklistchildren_map, (char *) parent, NULL);
   return set == NULL || !nh_set_str_has(set, (char *) child);
 }
-
-#endif // _HDR_HYPERBUILD_RULE_BLACKLISTCHILDREN
