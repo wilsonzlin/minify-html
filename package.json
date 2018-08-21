@@ -5,7 +5,9 @@
   "types": "out/main.d.js",
   "main": "out/hyperbuild.em.js",
   "files": [
-    "out/**"
+    "out/hyperbuild.em.js",
+    "out/hyperbuild.em.wasm",
+    "out/main.d.ts"
   ],
   "scripts": {
     "clean": "rm -rf tmp out",
