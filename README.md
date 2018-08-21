@@ -16,7 +16,7 @@ hyperbuild is aware of strings and comments in JS and CSS sections, and deals wi
 
 ### Super low level
 
-hyperbuild is written in C, and has a small Node.js wrapper module that simplifies calling the executable.
+hyperbuild is written in C, and can be run on Node.js using Emscripten, which generates fast Wasm code.
 
 ### Special precise whitespace handling
 
@@ -26,7 +26,7 @@ hyperbuild can minify whitespace in different ways and depending on the surround
 
 Current limitations:
 
-- UTF-8 in, UTF-8 out, no BOM at any time.
+- UTF-8 in, UTF-8 out, no BOM.
 - Not aware of exotic Unicode whitespace characters.
 - Tested and designed for Linux only.
 - Follows HTML5 only.
