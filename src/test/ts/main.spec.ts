@@ -26,6 +26,19 @@ describe("hyperbuild", () => {
     })).to.equal("<div><section></section><section><h1>Helloo</h1></section></div>");
   });
 
+  it("should destroy whole whitespace at root", () => {
+    expect(hyperbuild({
+      inputCode: `
+        <div>
+            <section></section>
+        </div>
+
+        <div>
+        </div>
+      `,
+    })).to.equal("<div><section></section></div><div></div>");
+  });
+
   it("should throw an error on malformed entities", () => {
     [
       `<div>&x10FFF;</div>`,
