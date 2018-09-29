@@ -1,7 +1,7 @@
 # hyperbuild
 
-A fast HTML parser, preprocessor, and minifier, written in C.
-Designed to be used in C projects, and Node.js thanks to Emscripten.
+A fast HTML minifier written in C.
+Designed to be used in C projects, as an executable, and in Node.js thanks to Emscripten.
 Minifier heavily influenced by [kangax's html-minifier](https://github.com/kangax/html-minifier).
 
 ## Features
@@ -10,17 +10,13 @@ Minifier heavily influenced by [kangax's html-minifier](https://github.com/kanga
 
 hyperbuild minifies as it parses, directly streaming processed HTML to the output without having to build a DOM/AST or iterate/traverse around in multiple passes, allowing for super-fast compilation times and near-constant memory usage.
 
-### Smart parsing
-
-hyperbuild is aware of strings and comments in JS and CSS sections, and deals with them correctly.
-
-### Super low level
+### Super fast
 
 hyperbuild is written in C, and can be run on Node.js using Emscripten, which generates fast Wasm code.
 
-### Special precise whitespace handling
+### Smart whitespace handling
 
-hyperbuild can minify whitespace in different ways and depending on the surrounding context, according to precise and advanced rules.
+hyperbuild has advanced whitespace minification with smart defaults that leaves whitespace untouched in `pre` and `code`, trims and collapses them in content tags, and removes them in layout tags allowing the use of `inline-block` without ugly syntax or CSS hacks.
 
 ## Parsing
 
@@ -147,7 +143,7 @@ There are additional implicit errors that are considered as general syntax error
 
 #### `--in`
 
-Path to a file to process. If omitted, hyperbuild will read from `stdin`, and imports will be relative to the working directory.
+Path to a file to process. If omitted, hyperbuild will read from `stdin`.
 
 #### `--out`
 
@@ -167,69 +163,6 @@ This applies even when the output is `stdout`.
 Suppress errors specified by this option. hyperbuild will quitely ignore and continue processing when otherwise one of the provided errors would occur.
 
 Suppressible errors are marked with a `⌫` in the [Errors](#errors) section. Omit the `HBE_PARSE_` prefix. Separate the error names with commas.
-
-## Processing
-
-hyperbuild sits somewhere between Server Side Includes and a templating library, and is designed for simplistic compilation of apps statically rather than dynamic generation of live content.
-
-To achieve this, hyperbuild has special **directives** that allow special action to be taken when it's processing some HTML code.
-This includes importing files, getting and setting variables, and escaping text for HTML.
-
-Directives are like functions in any common language: they take some arguments, and return some value.
-In hyperbuild, all arguments are simple strings, and the return value is directly streamed while processing.
-
-### Using directives
-
-There are two methods of getting hyperbuild's attention: using a special tag, and using a special entity.
-
-#### Directive tags
-
-```html
-<hb-dir arg1="val1" arg2="val2">valarg</hb-dir>
-```
-
-- Replace `dir` with a hyperbuild directive name
-- The value for the argument `value` is provided via the inner content of the tag
-- All other arguments are provided via attributes
-- Directive entities inside argument values, and nested directive tags, will be processed
-
-#### Directive entities
-
-```html
-&hb-dir(arg1=val1, arg2=val2);
-```
-
-- Replace `dir` with a hyperbuild directive name
-- Arguments are provided in name-value pairs between parentheses, separated by commas
-- All characters between the `=` and next `,` or `)` count as the argument's value, including whitespace characters
-- To use commas, right parentheses, or ampersands in argument values, use HTML entities (`&#44;`, `&#41;`, and `&amp;`)
-- Directive entities inside argument values will be processed
-
-### Available directives
-
-#### `import`
-
-Read, parse, process, and minify another file, and stream the result.
-
-|Argument|Format|Required|Description|
-|---|---|---|---|
-|path|Relative or absolute file system path|Y|The path to the file. If it starts with a slash, it is interpreted as an absolute path; otherwise, it's a path relative to the directory of the importee, or the working directory if the input is `stdin`.|
-
-#### `readraw`
-
-Stream another file.
-
-|Argument|Format|Required|Description|
-|---|---|---|---|
-|path|Relative or absolute file system path|Y|The path to the file. If it starts with a slash, it is interpreted as an absolute path; otherwise, it's a path relative to the directory of the importee, or the working directory if the input is `stdin`.|
-
-#### `readtext`
-
-Stream another file, replacing any `&`, `"`, `` ` ``, `'`, `<`, and `>` characters with their encoded entity form.
-
-|Argument|Format|Required|Description|
-|---|---|---|---|
-|path|Relative or absolute file system path|Y|The path to the file. If it starts with a slash, it is interpreted as an absolute path; otherwise, it's a path relative to the directory of the importee, or the working directory if the input is `stdin`.|
 
 ## Minification
 

@@ -1,7 +1,7 @@
 {
   "name": "hyperbuild",
   "version": "0.0.3",
-  "description": "Streaming HTML preprocessor and minifier written in C and Emscripten for Node.js",
+  "description": "Streaming HTML minifier written in C and Emscripten for Node.js",
   "types": "out/main.d.js",
   "main": "out/hyperbuild.em.js",
   "files": [
