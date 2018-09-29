@@ -138,5 +138,5 @@ int main(int argc, char **argv) {
     if (logging) {
       hbl_log(HBL_LOG_INFO, "All done!");
     }
-    exit(EXIT_SUCCESS);
+    exit(0);
 }
