@@ -671,6 +671,27 @@ void hbu_pipe_skip_amount(hbe_err_t *hbe_err, hbu_pipe_t pipe, size_t amount) {
 }
 
 /**
+ * Skips over the following character if it is <code>c</code>.
+ * Won't cause an error if the end is reached.
+ *
+ * @param hbe_err pointer to hbe_err_t
+ * @param pipe pipe
+ * @param c character to skip if next
+ * @return 1 if skipped, 0 otherwise
+ * @throws on read error
+ */
+int hbu_pipe_skip_if(hbe_err_t *hbe_err, hbu_pipe_t pipe, hb_char_t c) {
+  hb_eod_char_t n = HBE_CATCH(hbu_pipe_peek_eoi, pipe);
+
+  if (n == HB_EOD || n != c) {
+    return 0;
+  }
+
+  HBE_CATCH(hbu_pipe_skip, pipe);
+  return 1;
+}
+
+/**
  * Skips over every following character until one dissatisfies the predicate <code>pred</code>,
  * or the end is reached.
  *
