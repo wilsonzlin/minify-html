@@ -1,8 +1,15 @@
 # hyperbuild
 
-A fast HTML minifier written in C.
-Designed to be used in C projects, as an executable, and in Node.js thanks to Emscripten.
-Minifier heavily influenced by [kangax's html-minifier](https://github.com/kangax/html-minifier).
+A fast HTML minifier written in C, heavily influenced by [kangax's html-minifier](https://github.com/kangax/html-minifier).
+
+Available in different flavours:
+
+- Standalone 64-bit Linux executable (this)
+- [Node.js](https://github.com/wilsonzlin/hyperbuild-nodejs)
+- [Express](https://github.com/wilsonzlin/hyperbuild-express)
+- [Webpack](https://github.com/wilsonzlin/hyperbuild-webpack)
+- [Apache](https://github.com/wilsonzlin/hyperbuild-apache)
+- [Nginx](https://github.com/wilsonzlin/hyperbuild-nginx)
 
 ## Features
 
@@ -12,7 +19,7 @@ hyperbuild minifies as it parses, directly streaming processed HTML to the outpu
 
 ### Super fast
 
-hyperbuild is written in C, and can be run on Node.js using Emscripten, which generates fast Wasm code.
+hyperbuild is written in C, and uses technologies like Emscripten and Cython to preserve performance in higher-level languages.
 
 ### Smart whitespace handling
 
