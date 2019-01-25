@@ -1,8 +1,8 @@
 // Sourced from https://developer.mozilla.org/en-US/docs/Web/SVG/Element at 2018-08-04T03:50:00Z
 
-static nh_set_str_t hbr_svgtags_set;
+static nh_set_str_t hb_rule_svgtags_set;
 
-void hbr_svgtags_add_elems(nh_set_str_t set) {
+void hb_rule_svgtags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "a");
   nh_set_str_add(set, "altGlyph");
   nh_set_str_add(set, "altGlyphDef");
@@ -95,11 +95,11 @@ void hbr_svgtags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "vkern");
 }
 
-void hbr_svgtags_init(void) {
-  hbr_svgtags_set = nh_set_str_create();
-  hbr_svgtags_add_elems(hbr_svgtags_set);
+void hb_rule_svgtags_init(void) {
+  hb_rule_svgtags_set = nh_set_str_create();
+  hb_rule_svgtags_add_elems(hb_rule_svgtags_set);
 }
 
-int hbr_svgtags_check(hb_char_t *tag) {
-  return nh_set_str_has(hbr_svgtags_set, (char *) tag);
+int hb_rule_svgtags_check(hb_proc_char_t *tag) {
+  return nh_set_str_has(hb_rule_svgtags_set, (char *) tag);
 }

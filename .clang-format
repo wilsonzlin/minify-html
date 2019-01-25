@@ -1,0 +1,24 @@
+# Linux kernel style
+BasedOnStyle: LLVM
+IndentWidth: 8
+UseTab: Always
+AlignAfterOpenBracket: true
+AlignEscapedNewlinesLeft: false
+AlignTrailingComments: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakBeforeMultilineStrings: true
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Linux
+BreakStringLiterals: false
+ContinuationIndentWidth: 8
+IndentCaseLabels: false
+MaxEmptyLinesToKeep: 2
+SortIncludes: false
+
+# Custom
+DerivePointerAlignment: false
+PointerAlignment: Left
+SpaceAfterCStyleCast: true

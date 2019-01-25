@@ -1,10 +1,10 @@
 #include "./htmltags.c"
 #include "./svgtags.c"
 
-void hbr_tags_init(void) {
+void hb_rule_tags_init(void) {
 }
 
-int hbr_tags_check(hb_char_t *tag) {
-  return hbr_htmltags_check(tag) ||
-         hbr_svgtags_check(tag);
+int hb_rule_tags_check(hb_proc_char_t *tag) {
+  return hb_rule_htmltags_check(tag) ||
+         hb_rule_svgtags_check(tag);
 }

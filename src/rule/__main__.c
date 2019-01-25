@@ -12,7 +12,7 @@
 #include "./char/unquotedattrval.c"
 #include "./char/whitespace.c"
 
-#include "./entity/entityrefs.c"
+#include "./entity/entity_references.c"
 
 #include "./relation/blacklistchildren.c"
 #include "./relation/blacklistparents.c"
@@ -33,48 +33,48 @@
 #include "./tag/svgtags.c"
 #include "./tag/tags.c"
 
-void hbr_init(void) {
+void hb_rule_init(void) {
   // Core
-  hbr_c0_init();
-  hbr_digit_init();
-  hbr_hex_init();
-  hbr_ucalpha_init();
-  hbr_lcalpha_init();
-  hbr_whitespace_init();
+  hb_rule_c0_init();
+  hb_rule_digit_init();
+  hb_rule_hex_init();
+  hb_rule_ucalpha_init();
+  hb_rule_lcalpha_init();
+  hb_rule_whitespace_init();
 
   // Identifiers
-  hbr_tagname_init();
-  hbr_attrname_init();
+  hb_rule_tagname_init();
+  hb_rule_attrname_init();
 
   // Values
-  hbr_attrvalquote_init();
-  hbr_unquotedattrval_init();
-  hbr_entityrefs_init();
+  hb_rule_attrvalquote_init();
+  hb_rule_unquotedattrval_init();
+  hb_rule_entity_references_init();
 
   // Specification tag categories
-  hbr_headingtags_init();
-  hbr_mediatags_init();
-  hbr_sectioningtags_init();
+  hb_rule_headingtags_init();
+  hb_rule_mediatags_init();
+  hb_rule_sectioningtags_init();
 
-  hbr_voidtags_init();
-  hbr_wsstags_init();
+  hb_rule_voidtags_init();
+  hb_rule_wsstags_init();
 
-  hbr_htmltags_init();
-  hbr_svgtags_init();
-  hbr_tags_init();
+  hb_rule_htmltags_init();
+  hb_rule_svgtags_init();
+  hb_rule_tags_init();
 
   // Hyperbuild tag categories
-  hbr_contentfirsttags_init();
-  hbr_contenttags_init();
-  hbr_formattingtags_init();
-  hbr_layouttags_init();
-  hbr_specifictags_init();
+  hb_rule_contentfirsttags_init();
+  hb_rule_contenttags_init();
+  hb_rule_formattingtags_init();
+  hb_rule_layouttags_init();
+  hb_rule_specifictags_init();
 
   // Relations
-  hbr_whitelistparents_init();
-  hbr_blacklistparents_init();
-  hbr_whitelistchildren_init();
-  hbr_blacklistchildren_init();
+  hb_rule_whitelistparents_init();
+  hb_rule_blacklistparents_init();
+  hb_rule_whitelistchildren_init();
+  hb_rule_blacklistchildren_init();
 }
 
 #endif // _HDR_HYPERBUILD_RULE_INIT

@@ -1,15 +1,15 @@
-static nh_set_str_t hbr_wsstags_set;
+static nh_set_str_t hb_rule_wsstags_set;
 
-void hbr_wsstags_add_elems(nh_set_str_t set) {
+void hb_rule_wsstags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "code");
   nh_set_str_add(set, "pre");
 }
 
-void hbr_wsstags_init(void) {
-  hbr_wsstags_set = nh_set_str_create();
-  hbr_wsstags_add_elems(hbr_wsstags_set);
+void hb_rule_wsstags_init(void) {
+  hb_rule_wsstags_set = nh_set_str_create();
+  hb_rule_wsstags_add_elems(hb_rule_wsstags_set);
 }
 
-int hbr_wsstags_check(hb_char_t *tag) {
-  return nh_set_str_has(hbr_wsstags_set, (char *) tag);
+int hb_rule_wsstags_check(hb_proc_char_t *tag) {
+  return nh_set_str_has(hb_rule_wsstags_set, (char *) tag);
 }

@@ -1,6 +1,6 @@
-static nh_set_str_t hbr_formattingtags_set;
+static nh_set_str_t hb_rule_formattingtags_set;
 
-void hbr_formattingtags_add_elems(nh_set_str_t set) {
+void hb_rule_formattingtags_add_elems(nh_set_str_t set) {
   // Difference to MDN's inline text semantics list: -br, +del, +ins
   nh_set_str_add(set, "a");
   nh_set_str_add(set, "abbr");
@@ -34,11 +34,11 @@ void hbr_formattingtags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "wbr");
 }
 
-void hbr_formattingtags_init(void) {
-  hbr_formattingtags_set = nh_set_str_create();
-  hbr_formattingtags_add_elems(hbr_formattingtags_set);
+void hb_rule_formattingtags_init(void) {
+  hb_rule_formattingtags_set = nh_set_str_create();
+  hb_rule_formattingtags_add_elems(hb_rule_formattingtags_set);
 }
 
-int hbr_formattingtags_check(hb_char_t *tag) {
-  return nh_set_str_has(hbr_formattingtags_set, (char *) tag);
+int hb_rule_formattingtags_check(hb_proc_char_t *tag) {
+  return nh_set_str_has(hb_rule_formattingtags_set, (char *) tag);
 }

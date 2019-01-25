@@ -1,10 +1,10 @@
 #include "./sectioningtags.c"
 #include "./svgtags.c"
 
-static nh_set_str_t hbr_specifictags_set;
+static nh_set_str_t hb_rule_specifictags_set;
 
-void hbr_specifictags_add_elems(nh_set_str_t set) {
-  hbr_svgtags_add_elems(set);
+void hb_rule_specifictags_add_elems(nh_set_str_t set) {
+  hb_rule_svgtags_add_elems(set);
   nh_set_str_add(set, "area");
   nh_set_str_add(set, "base");
   nh_set_str_add(set, "br");
@@ -21,11 +21,11 @@ void hbr_specifictags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "track");
 }
 
-void hbr_specifictags_init(void) {
-  hbr_specifictags_set = nh_set_str_create();
-  hbr_specifictags_add_elems(hbr_specifictags_set);
+void hb_rule_specifictags_init(void) {
+  hb_rule_specifictags_set = nh_set_str_create();
+  hb_rule_specifictags_add_elems(hb_rule_specifictags_set);
 }
 
-int hbr_specifictags_check(hb_char_t *tag) {
-  return nh_set_str_has(hbr_specifictags_set, (char *) tag);
+int hb_rule_specifictags_check(hb_proc_char_t *tag) {
+  return nh_set_str_has(hb_rule_specifictags_set, (char *) tag);
 }

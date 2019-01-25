@@ -1,9 +1,9 @@
 #include "./sectioningtags.c"
 
-static nh_set_str_t hbr_layouttags_set;
+static nh_set_str_t hb_rule_layouttags_set;
 
-void hbr_layouttags_add_elems(nh_set_str_t set) {
-  hbr_sectioningtags_add_elems(set);
+void hb_rule_layouttags_add_elems(nh_set_str_t set) {
+  hb_rule_sectioningtags_add_elems(set);
   nh_set_str_add(set, "blockquote");
   nh_set_str_add(set, "body");
   nh_set_str_add(set, "colgroup");
@@ -36,11 +36,11 @@ void hbr_layouttags_add_elems(nh_set_str_t set) {
   nh_set_str_add(set, "ul");
 }
 
-void hbr_layouttags_init(void) {
-  hbr_layouttags_set = nh_set_str_create();
-  hbr_layouttags_add_elems(hbr_layouttags_set);
+void hb_rule_layouttags_init(void) {
+  hb_rule_layouttags_set = nh_set_str_create();
+  hb_rule_layouttags_add_elems(hb_rule_layouttags_set);
 }
 
-int hbr_layouttags_check(hb_char_t *tag) {
-  return nh_set_str_has(hbr_layouttags_set, (char *) tag);
+int hb_rule_layouttags_check(hb_proc_char_t *tag) {
+  return nh_set_str_has(hb_rule_layouttags_set, (char *) tag);
 }
