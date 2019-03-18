@@ -6,56 +6,6 @@ void hbs_content(hbe_err_t *hbe_err, hbu_streamoptions_t so, hb_proc_t pipe, hb_
 #include "../comment/comment.c"
 #include "../entity/entity.c"
 
-#define HBS_CONTENT_STATE_END 1
-#define HBS_CONTENT_STATE_COMMENT 2
-#define HBS_CONTENT_STATE_BANG 3
-#define HBS_CONTENT_STATE_OPENING_TAG 4
-#define HBS_CONTENT_STATE_ENTITY 5
-#define HBS_CONTENT_STATE_TEXT 6
-
-static int _hbs_content_state_is_comment_bang_or_opening_tag(int state) {
-  return state == HBS_CONTENT_STATE_COMMENT ||
-         state == HBS_CONTENT_STATE_BANG ||
-         state == HBS_CONTENT_STATE_OPENING_TAG;
-}
-
-static int _hbs_content_get_next_state(hbe_err_t *hbe_err, hb_proc_t pipe, hb_eod_char_t c) {
-  int end_tag = HBE_CATCH(hb_proc_matches, pipe, "</");
-  if (c == HB_EOD || end_tag) {
-    // End of content
-    return HBS_CONTENT_STATE_END;
-  }
-
-  int comment = HBE_CATCH(hb_proc_matches, pipe, "<!--");
-  if (comment) {
-    // Comment
-    return HBS_CONTENT_STATE_COMMENT;
-  }
-
-  int bang = HBE_CATCH(hb_proc_matches, pipe, "<!");
-  if (bang) {
-    // Bang
-    // NOTE: Check after comment
-    return HBS_CONTENT_STATE_BANG;
-  }
-
-  int opening_tag = c == '<';
-  if (opening_tag) {
-    // Opening tag
-    // NOTE: Check after comment and bang
-    return HBS_CONTENT_STATE_OPENING_TAG;
-  }
-
-  int entity = c == '&';
-  if (entity) {
-    // Entity
-    return HBS_CONTENT_STATE_ENTITY;
-  }
-
-  // Text
-  return HBS_CONTENT_STATE_TEXT;
-}
-
 // $parent can be NULL for top-level content
 void hbs_content(hbe_err_t *hbe_err, hbu_streamoptions_t so, hb_proc_t pipe, hb_proc_char_t *parent) {
   int is_first_char = 1;
