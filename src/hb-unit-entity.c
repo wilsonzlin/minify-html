@@ -47,7 +47,7 @@ static int _hbs_entity_process_prefix(hbe_err_t *hbe_err, hb_proc_t pipe, hbu_st
     return HBS_ENTITY_TYPE_NAME;
   }
 
-  hb_eod_char_t c2 = HBE_CATCH(hb_proc_peek_eoi_offset, pipe, 2);
+  hb_eod_char_t c2 = HBE_CATCH(hb_proc_peek_eof_offset, pipe, 2);
 
   if (c == '#' && c2 == 'x') {
     // Hexadecimal-based entity

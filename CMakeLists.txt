@@ -6,35 +6,6 @@ set(CMAKE_C_STANDARD 11)
 include_directories(src lib)
 
 add_executable(hyperbuild
-        src/rule/__main__.c
-        src/rule/tag/contenttags.c
-        src/rule/tag/specifictags.c
-        src/rule/tag/voidtags.c
-        src/rule/tag/svgtags.c
-        src/rule/tag/sectioningtags.c
-        src/rule/tag/layouttags.c
-        src/rule/tag/mediatags.c
-        src/rule/tag/tags.c
-        src/rule/tag/htmltags.c
-        src/rule/tag/formattingtags.c
-        src/rule/tag/headingtags.c
-        src/rule/tag/wsstags.c
-        src/rule/tag/contentfirsttags.c
-        src/rule/char/attrname.c
-        src/rule/char/whitespace.c
-        src/rule/char/digit.c
-        src/rule/char/unquotedattrval.c
-        src/rule/char/c0.c
-        src/rule/char/hex.c
-        src/rule/char/attrvalquote.c
-        src/rule/char/tagname.c
-        src/rule/char/lcalpha.c
-        src/rule/char/ucalpha.c
-        src/rule/entity/entityrefs.c
-        src/rule/relation/blacklistchildren.c
-        src/rule/relation/whitelistchildren.c
-        src/rule/relation/blacklistparents.c
-        src/rule/relation/whitelistparents.c
         src/hb/rune.h
         src/hb/proc.h
         src/hb/proc/matches.c
@@ -54,4 +25,24 @@ add_executable(hyperbuild
         src/hb/unit.h
         src/hb/err.h
         src/hb/cfg.h
-        src/hb/proc/view.c)
+        src/hb/proc/view.c
+        src/hb/err.c
+        src/hb/proc/error.c
+        src/hb/proc/bounds.c
+        src/hb/proc/accept.c
+        src/hb/proc/write.c
+        src/hb/proc/require.c
+        src/hb/proc/skip.c
+        src/hb/rule/attr/name.c
+        src/hb/rule/ascii/control.c
+        src/hb/rule.h
+        src/hb/rule/ascii/digit.c
+        src/hb/rule/ascii/hex.c
+        src/hb/rule/ascii/lowercase.c
+        src/hb/rule/ascii/uppercase.c
+        src/hb/rule/ascii/whitespace.c
+        src/hb/rule/attr/quote.c
+        src/hb/rule/tag/name.c
+        src/hb/rule/attr/unquotedvalue.c
+        src/hb/rule/entity/reference.c
+        src/hb/collection.h)

@@ -1,6 +1,7 @@
 #pragma once
 
 typedef enum {
+	// WARNING: The __HB_NUMBER_OF_ERROR_CODES value only works if the first value of this enum is set to zero.
 	HB_ERR_OK = 0,
 
 	HB_ERR_INTERR_UNKNOWN_ENTITY_TYPE,
@@ -30,25 +31,18 @@ typedef enum {
 
 	HB_ERR_PARSE_UNEXPECTED_END,
 	HB_ERR_PARSE_EXPECTED_NOT_FOUND,
+
+	// Special value to represent the amount of values above in this enum.
+	// WARNING: This only works if the first value is set to zero.
+	__HB_NUMBER_OF_ERROR_CODES,
 } hb_err;
 
+// Set of error codes. Used for suppressing errors.
 typedef struct {
-	bool set[32];
+	bool set[__HB_NUMBER_OF_ERROR_CODES];
 } hb_err_set;
 
-hb_err_set* hb_err_set_create(void) {
-  hb_err_set* set = calloc(1, sizeof(hb_err_set));
-  return set;
-}
-
-void hb_err_set_add(hb_err_set* set, hb_err err) {
-  set[err] = true;
-}
-
-void hb_err_set_remove(hb_err_set* set, hb_err err) {
-  set[err] = false;
-}
-
-bool hb_err_set_has(hb_err_set* set, hb_err err) {
-  return set[err];
-}
+hb_err_set* hb_err_set_create(void);
+void hb_err_set_add(hb_err_set* set, hb_err err);
+void hb_err_set_remove(hb_err_set* set, hb_err err);
+bool hb_err_set_has(hb_err_set* set, hb_err err);
