@@ -2043,12 +2043,12 @@ void hb_rule_entity_reference_map_add_entries(nh_map_str_int32* map) {
     nh_map_str_int32_set(map, "zwnj", 0x200c);
 }
 
-void hb_rule_entity_reference_map_init(void) {
+void hb_rule_entity_reference_init(void) {
     hb_rule_entity_reference_map = nh_map_str_int32_create();
     hb_rule_entity_reference_map_add_entries(hb_rule_entity_reference_map);
 }
 
-bool hb_rule_entity_reference_map_check(hb_rune* ref) {
+bool hb_rule_entity_reference_exists(hb_rune* ref) {
     return nh_map_str_int32_has(hb_rule_entity_reference_map, ref);
 }
 
