@@ -16,9 +16,9 @@ BreakStringLiterals: false
 ContinuationIndentWidth: 8
 IndentCaseLabels: false
 MaxEmptyLinesToKeep: 2
-SortIncludes: false
 
 # Custom
 DerivePointerAlignment: false
 PointerAlignment: Left
 SpaceAfterCStyleCast: true
+SortIncludes: true

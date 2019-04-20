@@ -1,10 +1,13 @@
 #pragma once
 
+#include <hb/collection.h>
+
 typedef enum {
-	// WARNING: The __HB_NUMBER_OF_ERROR_CODES value only works if the first value of this enum is set to zero.
+	// WARNING: The __HB_ERR_COUNT value only works if the first value of this enum is set to zero.
 	HB_ERR_OK = 0,
 
 	HB_ERR_INTERR_UNKNOWN_ENTITY_TYPE,
+	HB_ERR_INTERR_UNKNOWN_ATTR_QUOTE,
 	HB_ERR_INTERR_UNKNOWN_CONTENT_NEXT_STATE,
 
 	HB_ERR_CLI_TOO_MANY_OPTIONS,
@@ -18,7 +21,6 @@ typedef enum {
 	HB_ERR_IO_FWRITE_FAIL,
 
 	HB_ERR_PARSE_MALFORMED_ENTITY,
-	HB_ERR_PARSE_BARE_AMPERSAND,
 	HB_ERR_PARSE_INVALID_ENTITY,
 	HB_ERR_PARSE_NONSTANDARD_TAG,
 	HB_ERR_PARSE_UCASE_TAG,
@@ -34,15 +36,8 @@ typedef enum {
 
 	// Special value to represent the amount of values above in this enum.
 	// WARNING: This only works if the first value is set to zero.
-	__HB_NUMBER_OF_ERROR_CODES,
+	__HB_ERR_COUNT,
 } hb_err;
 
 // Set of error codes. Used for suppressing errors.
-typedef struct {
-	bool set[__HB_NUMBER_OF_ERROR_CODES];
-} hb_err_set;
-
-hb_err_set* hb_err_set_create(void);
-void hb_err_set_add(hb_err_set* set, hb_err err);
-void hb_err_set_remove(hb_err_set* set, hb_err err);
-bool hb_err_set_has(hb_err_set* set, hb_err err);
+NH_BITFIELD_PROTO(hb_err_set, hb_err, __HB_ERR_COUNT)

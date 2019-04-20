@@ -1,20 +1,18 @@
-#pragma once
-
 #include <hb/rune.h>
 #include <hb/proc.h>
 
 /**
- * Skips over the next character.
+ * Skip over the next character.
  * Requires that the file has at least one character remaining.
  *
  * @param proc proc
  * @return skipped character
- * @throws on HBE_PARSE_UNEXPECTED_END
+ * @throws on HB_ERR_PARSE_UNEXPECTED_END
  */
 hb_rune hb_proc_skip(hb_proc* proc) {
-    hb_rune c = proc->src[proc->src_next];
+    hb_proc_bounds_assert_not_eof(proc);
 
-    hb_proc_bounds_assert_not_eof(proc, c);
+    hb_rune c = proc->src[proc->src_next];
 
     proc->src_next++;
 
@@ -22,24 +20,27 @@ hb_rune hb_proc_skip(hb_proc* proc) {
 }
 
 /**
- * Skips over the next <code>amount</code> characters.
- * Requires that the file has at least <code>amount</code> characters remaining.
+ * Skip over the next `amount` characters.
+ * Requires that the file has at least `amount` characters remaining.
  *
  * @param proc proc
  * @param amount amount of characters to skip
- * @throws on HBE_PARSE_UNEXPECTED_END
+ * @return amount of characters skipped
+ * @throws on HB_ERR_PARSE_UNEXPECTED_END
  */
-void hb_proc_skip_amount(hb_proc* proc, size_t amount) {
+size_t hb_proc_skip_amount(hb_proc* proc, size_t amount) {
     hb_proc_bounds_assert_offset(proc, amount);
 
     proc->src_next += amount;
+
+    return amount;
 }
 
 /**
- * Skips over the following character if it is <code>c</code>.
+ * Skip over the following character if it is `c`.
  * Won't cause an error if the end is reached.
  * Returns the amount of characters skipped.
- * Undefined behaviour if <code>c == HB_EOF</code>.
+ * Undefined behaviour if `c == HB_EOF`.
  *
  * @param proc proc
  * @param c character to skip if next
@@ -59,7 +60,7 @@ size_t hb_proc_skip_if(hb_proc* proc, hb_rune c) {
 }
 
 /**
- * Skips over every following character until one dissatisfies the predicate <code>pred</code>,
+ * Skip over every following character until one dissatisfies the predicate `pred`,
  * or the end is reached.
  *
  * @param proc proc
@@ -82,25 +83,4 @@ size_t hb_proc_skip_while_predicate(hb_proc* proc, hb_proc_pred* pred) {
     proc->src_next += count;
 
     return count;
-}
-
-/**
- * Skips over the next sequence of characters if they are <code>match</code>.
- * Requires that the file has at least the length of <code>match</code> characters remaining.
- * Returns the amount of characters skipped.
- * Undefined behaviour if <code>match</code> is empty.
- *
- * @param proc proc
- * @param match sequence of characters to match
- * @return 0 if not matched, length of <code>match</code> otherwise
- * @throws on HBE_PARSE_UNEXPECTED_END
- */
-size_t hb_proc_skip_if_matches(hb_proc* proc, char const* match) {
-    size_t match_len = hb_proc_matches(proc, match);
-
-    if (match_len) {
-        proc->src_next += match_len;
-    }
-
-    return match_len;
 }

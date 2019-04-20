@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <hb/rune.h>
+#include <hb/collection.h>
 #include <hb/cfg.h>
 #include <hb/err.h>
 #include <setjmp.h>
@@ -18,15 +19,6 @@ typedef struct {
   // The value of src_next at the time of error.
   size_t pos;
 } hb_proc_result;
-
-// A view represents a substring of the source. Faster, easier, safer, and more efficient than making a copy.
-// If the end is before or at the start, it's invalid, like NaN. Can be used for special meaning.
-typedef struct {
-    // Inclusive.
-    size_t start;
-    // Exclusive.
-    size_t end;
-} hb_proc_view;
 
 // Processing state of a file. Most fields are used internally and set during processing.
 // Single use only; create one per processing.
@@ -66,25 +58,26 @@ typedef bool hb_proc_pred(hb_rune);
 
 hb_rune hb_proc_accept(hb_proc* proc);
 void hb_proc_accept_count(hb_proc* proc, size_t count);
-size_t hb_proc_accept_if(hb_proc* proc, hb_rune c);
+bool hb_proc_accept_if(hb_proc* proc, hb_rune c);
 size_t hb_proc_accept_if_matches(hb_proc* proc, char const* match);
 size_t hb_proc_accept_if_matches_line_terminator(hb_proc* proc);
-size_t hb_proc_accept_if_predicate(hb_proc* proc, hb_proc_pred* pred);
+bool hb_proc_accept_if_predicate(hb_proc* proc, hb_proc_pred* pred);
 size_t hb_proc_accept_while_predicate(hb_proc* proc, hb_proc_pred* pred);
 
-void hb_proc_bounds_assert_not_eof(hb_proc* proc, hb_eof_rune c);
+void hb_proc_bounds_assert_not_eof(hb_proc* proc);
 bool hb_proc_bounds_check_offset(hb_proc* proc, size_t offset);
 void hb_proc_bounds_assert_offset(hb_proc* proc, size_t offset);
 
-#define hb_proc_matches(proc, match) hb_proc_matches_len(proc, match, sizeof(match))
+#define hb_proc_matches(proc, match) hb_proc_matches_len(proc, match, hb_string_literal_length(match))
 size_t hb_proc_matches_len(hb_proc* proc, char const* match, size_t match_len);
-#define hb_proc_matches_i(proc, match) hb_proc_matches_len_i(proc, match, sizeof(match))
+#define hb_proc_matches_i(proc, match) hb_proc_matches_len_i(proc, match, hb_string_literal_length(match))
 size_t hb_proc_matches_len_i(hb_proc* proc, char const* match, size_t match_len);
 size_t hb_proc_matches_line_terminator(hb_proc* proc);
 
-#define hb_proc_error(proc, code, msg) hb_proc_error_pos(proc, code, proc->src_next, msg)
+#define hb_proc_error_if_not_suppressed(proc, code, msg) if (!hb_err_set_has(&(proc)->cfg->suppressed_errors, code)) hb_proc_error(proc, code, msg);
+#define hb_proc_error(proc, code, msg) hb_proc_error_pos(proc, code, (proc)->src_next, msg)
 void hb_proc_error_pos(hb_proc* proc, hb_err code, size_t pos, char const* msg);
-#define hb_proc_error_custom(proc, code, format, ...) hb_proc_error_custom_pos(proc, code, proc->src_next, format, __VA_ARGS__)
+#define hb_proc_error_custom(proc, code, format, ...) hb_proc_error_custom_pos(proc, code, (proc)->src_next, format, __VA_ARGS__)
 void hb_proc_error_custom_pos(hb_proc* proc, hb_err code, size_t pos, char const* format, ...);
 
 hb_eof_rune hb_proc_peek_eof(hb_proc* proc);
@@ -100,16 +93,22 @@ void hb_proc_require_match(hb_proc* proc, char const* match);
 void hb_proc_require_skip_match(hb_proc* proc, char const* match);
 
 hb_rune hb_proc_skip(hb_proc* proc);
-void hb_proc_skip_amount(hb_proc* proc, size_t amount);
+size_t hb_proc_skip_amount(hb_proc* proc, size_t amount);
 size_t hb_proc_skip_if(hb_proc* proc, hb_rune c);
 size_t hb_proc_skip_while_predicate(hb_proc* proc, hb_proc_pred* pred);
-size_t hb_proc_skip_if_matches(hb_proc* proc, char const* match);
+#define hb_proc_skip_if_matches(proc, match) hb_proc_skip_amount(proc, hb_proc_matches(proc, match))
 
-// Check that a view is invalid, i.e. the end is before or at the start.
-bool hb_proc_view_invalid(hb_proc_view view);
-void hb_proc_view_mark_start_with_prev(hb_proc_view* view, hb_proc* proc);
-void hb_proc_view_mark_start_with_next(hb_proc_view* view, hb_proc* proc);
-void hb_proc_view_mark_end_with_prev(hb_proc_view* view, hb_proc* proc);
-void hb_proc_view_mark_end_with_next(hb_proc_view* view, hb_proc* proc);
+#define hb_proc_view_init_src(name, proc) \
+    nh_view_str name; \
+    nh_view_str_init(&name, (proc)->src, 0, 0)
+#define hb_proc_view_init_out(name, proc) \
+    nh_view_str name; \
+    nh_view_str_init(&name, (proc)->out, 0, 0)
+void hb_proc_view_start_with_src_next(nh_view_str* view, hb_proc* proc);
+void hb_proc_view_end_with_src_prev(nh_view_str* view, hb_proc* proc);
+void hb_proc_view_start_with_out_next(nh_view_str* view, hb_proc* proc);
+void hb_proc_view_end_with_out_prev(nh_view_str* view, hb_proc* proc);
 
 void hb_proc_write(hb_proc* proc, hb_rune c);
+void hb_proc_write_view(hb_proc* proc, nh_view_str* view);
+size_t hb_proc_write_utf_8(hb_proc* proc, uint32_t c);

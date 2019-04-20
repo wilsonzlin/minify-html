@@ -1,147 +1,145 @@
-#pragma once
-
 #include <hb/rune.h>
 #include <hb/collection.h>
 #include <hb/rule.h>
 
-static nh_map_str_set_str* hb_rule_tag_parent_whitelist_map;
+static hb_map_tag_relations* hb_rule_tag_parent_whitelist_map;
 
-void hb_rule_tag_parent_whitelist_map_add_entries(nh_map_str_set_str* map) {
+void hb_rule_tag_parent_whitelist_map_add_entries(hb_map_tag_relations* map) {
     // <caption>
-    nh_set_str* caption = nh_set_str_create();
-    nh_set_str_add(caption, "table");
-    nh_map_str_set_str_set(map, "caption", caption);
+    hb_set_tag_names* caption = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(caption, "table");
+    hb_map_tag_relations_set_whole_literal(map, "caption", caption);
 
     // <col>
-    nh_set_str* col = nh_set_str_create();
-    nh_set_str_add(col, "table");
-    nh_set_str_add(col, "colgroup");
-    nh_map_str_set_str_set(map, "col", col);
+    hb_set_tag_names* col = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(col, "table");
+    hb_set_tag_names_add_whole_literal(col, "colgroup");
+    hb_map_tag_relations_set_whole_literal(map, "col", col);
 
     // <colgroup>
-    nh_set_str* colgroup = nh_set_str_create();
-    nh_set_str_add(colgroup, "table");
-    nh_map_str_set_str_set(map, "colgroup", colgroup);
+    hb_set_tag_names* colgroup = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(colgroup, "table");
+    hb_map_tag_relations_set_whole_literal(map, "colgroup", colgroup);
 
     // <dd>
-    nh_set_str* dd = nh_set_str_create();
-    nh_set_str_add(dd, "dl");
-    nh_map_str_set_str_set(map, "dd", dd);
+    hb_set_tag_names* dd = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(dd, "dl");
+    hb_map_tag_relations_set_whole_literal(map, "dd", dd);
 
     // <dt>
-    nh_set_str* dt = nh_set_str_create();
-    nh_set_str_add(dt, "dl");
-    nh_map_str_set_str_set(map, "dt", dt);
+    hb_set_tag_names* dt = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(dt, "dl");
+    hb_map_tag_relations_set_whole_literal(map, "dt", dt);
 
     // <figcaption>
-    nh_set_str* figcaption = nh_set_str_create();
-    nh_set_str_add(figcaption, "figure");
-    nh_map_str_set_str_set(map, "figcaption", figcaption);
+    hb_set_tag_names* figcaption = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(figcaption, "figure");
+    hb_map_tag_relations_set_whole_literal(map, "figcaption", figcaption);
 
     // <legend>
-    nh_set_str* legend = nh_set_str_create();
-    nh_set_str_add(legend, "fieldset");
-    nh_map_str_set_str_set(map, "legend", legend);
+    hb_set_tag_names* legend = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(legend, "fieldset");
+    hb_map_tag_relations_set_whole_literal(map, "legend", legend);
 
     // <li>
-    nh_set_str* li = nh_set_str_create();
-    nh_set_str_add(li, "ul");
-    nh_set_str_add(li, "ol");
-    nh_set_str_add(li, "menu");
-    nh_map_str_set_str_set(map, "li", li);
+    hb_set_tag_names* li = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(li, "ul");
+    hb_set_tag_names_add_whole_literal(li, "ol");
+    hb_set_tag_names_add_whole_literal(li, "menu");
+    hb_map_tag_relations_set_whole_literal(map, "li", li);
 
     // <optgroup>
-    nh_set_str* optgroup = nh_set_str_create();
-    nh_set_str_add(optgroup, "select");
-    nh_map_str_set_str_set(map, "optgroup", optgroup);
+    hb_set_tag_names* optgroup = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(optgroup, "select");
+    hb_map_tag_relations_set_whole_literal(map, "optgroup", optgroup);
 
     // <option>
-    nh_set_str* option = nh_set_str_create();
-    nh_set_str_add(option, "select");
-    nh_set_str_add(option, "optgroup");
-    nh_set_str_add(option, "datalist");
-    nh_map_str_set_str_set(map, "option", option);
+    hb_set_tag_names* option = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(option, "select");
+    hb_set_tag_names_add_whole_literal(option, "optgroup");
+    hb_set_tag_names_add_whole_literal(option, "datalist");
+    hb_map_tag_relations_set_whole_literal(map, "option", option);
 
     // <param>
-    nh_set_str* param = nh_set_str_create();
-    nh_set_str_add(param, "object");
-    nh_map_str_set_str_set(map, "param", param);
+    hb_set_tag_names* param = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(param, "object");
+    hb_map_tag_relations_set_whole_literal(map, "param", param);
 
     // <rp>
-    nh_set_str* rp = nh_set_str_create();
-    nh_set_str_add(rp, "ruby");
-    nh_map_str_set_str_set(map, "rp", rp);
+    hb_set_tag_names* rp = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(rp, "ruby");
+    hb_map_tag_relations_set_whole_literal(map, "rp", rp);
 
     // <rt>
-    nh_set_str* rt = nh_set_str_create();
-    nh_set_str_add(rt, "ruby");
-    nh_map_str_set_str_set(map, "rt", rt);
+    hb_set_tag_names* rt = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(rt, "ruby");
+    hb_map_tag_relations_set_whole_literal(map, "rt", rt);
 
     // <rtc>
-    nh_set_str* rtc = nh_set_str_create();
-    nh_set_str_add(rtc, "ruby");
-    nh_map_str_set_str_set(map, "rtc", rtc);
+    hb_set_tag_names* rtc = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(rtc, "ruby");
+    hb_map_tag_relations_set_whole_literal(map, "rtc", rtc);
 
     // <summary>
-    nh_set_str* summary = nh_set_str_create();
-    nh_set_str_add(summary, "details");
-    nh_map_str_set_str_set(map, "summary", summary);
+    hb_set_tag_names* summary = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(summary, "details");
+    hb_map_tag_relations_set_whole_literal(map, "summary", summary);
 
     // <source>
-    nh_set_str* source = nh_set_str_create();
+    hb_set_tag_names* source = hb_set_tag_names_create();
     hb_rule_tag_media_add_elems(source);
-    nh_set_str_add(source, "picture");
-    nh_map_str_set_str_set(map, "source", source);
+    hb_set_tag_names_add_whole_literal(source, "picture");
+    hb_map_tag_relations_set_whole_literal(map, "source", source);
 
     // <track>
-    nh_set_str* track = nh_set_str_create();
+    hb_set_tag_names* track = hb_set_tag_names_create();
     hb_rule_tag_media_add_elems(track);
-    nh_map_str_set_str_set(map, "track", track);
+    hb_map_tag_relations_set_whole_literal(map, "track", track);
 
     // <tbody>
-    nh_set_str* tbody = nh_set_str_create();
-    nh_set_str_add(tbody, "table");
-    nh_map_str_set_str_set(map, "tbody", tbody);
+    hb_set_tag_names* tbody = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(tbody, "table");
+    hb_map_tag_relations_set_whole_literal(map, "tbody", tbody);
 
     // <td>
-    nh_set_str* td = nh_set_str_create();
-    nh_set_str_add(td, "tr");
-    nh_map_str_set_str_set(map, "td", td);
+    hb_set_tag_names* td = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(td, "tr");
+    hb_map_tag_relations_set_whole_literal(map, "td", td);
 
     // <tfoot>
-    nh_set_str* tfoot = nh_set_str_create();
-    nh_set_str_add(tfoot, "table");
-    nh_map_str_set_str_set(map, "tfoot", tfoot);
+    hb_set_tag_names* tfoot = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(tfoot, "table");
+    hb_map_tag_relations_set_whole_literal(map, "tfoot", tfoot);
 
     // <th>
-    nh_set_str* th = nh_set_str_create();
-    nh_set_str_add(th, "tr");
-    nh_map_str_set_str_set(map, "th", th);
+    hb_set_tag_names* th = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(th, "tr");
+    hb_map_tag_relations_set_whole_literal(map, "th", th);
 
     // <thead>
-    nh_set_str* thead = nh_set_str_create();
-    nh_set_str_add(thead, "table");
-    nh_map_str_set_str_set(map, "thead", thead);
+    hb_set_tag_names* thead = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(thead, "table");
+    hb_map_tag_relations_set_whole_literal(map, "thead", thead);
 
     // <tr>
-    nh_set_str* tr = nh_set_str_create();
-    nh_set_str_add(tr, "table");
-    nh_set_str_add(tr, "thead");
-    nh_set_str_add(tr, "tbody");
-    nh_set_str_add(tr, "tfoot");
-    nh_map_str_set_str_set(map, "tr", tr);
+    hb_set_tag_names* tr = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(tr, "table");
+    hb_set_tag_names_add_whole_literal(tr, "thead");
+    hb_set_tag_names_add_whole_literal(tr, "tbody");
+    hb_set_tag_names_add_whole_literal(tr, "tfoot");
+    hb_map_tag_relations_set_whole_literal(map, "tr", tr);
 
     // <template>
-    // Should be <body>, <frameset>, <head>, <dl>, <colgroup>, but ignoring
+    // Should be <body>, <frameset>, <head>, <dl>, <colgroup>, but ignoring.
 }
 
 void hb_rule_tag_parent_whitelist_init(void) {
-    hb_rule_tag_parent_whitelist_map = nh_map_str_set_str_create();
+    hb_rule_tag_parent_whitelist_map = hb_map_tag_relations_create();
     hb_rule_tag_parent_whitelist_map_add_entries(hb_rule_tag_parent_whitelist_map);
 }
 
 // Check if a child is allowed to have a specific parent.
-bool hb_rule_tag_parent_whitelist_allowed(hb_rune* child, hb_rune* parent) {
-    nh_set_str* set = nh_map_str_set_str_get(hb_rule_tag_parent_whitelist_map, child);
-    return set == NULL || nh_set_str_has(set, parent);
+bool hb_rule_tag_parent_whitelist_allowed(nh_view_str* child, nh_view_str* parent) {
+    hb_set_tag_names* set = hb_map_tag_relations_get(hb_rule_tag_parent_whitelist_map, child);
+    return set == NULL || hb_set_tag_names_has(set, parent);
 }

@@ -1,87 +1,85 @@
-#pragma once
-
 #include <hb/rune.h>
 #include <hb/collection.h>
 #include <hb/rule.h>
 
-static nh_map_str_set_str* hb_rule_tag_child_blacklist_map;
+static hb_map_tag_relations* hb_rule_tag_child_blacklist_map;
 
-void hb_rule_tag_child_blacklist_map_add_entries(nh_map_str_set_str* map) {
+void hb_rule_tag_child_blacklist_map_add_entries(hb_map_tag_relations* map) {
     // <address>
-    nh_set_str* address = nh_set_str_create();
+    hb_set_tag_names* address = hb_set_tag_names_create();
     hb_rule_tag_heading_add_elems(address);
     hb_rule_tag_sectioning_add_elems(address);
-    nh_set_str_add(address, "address");
-    nh_set_str_add(address, "header");
-    nh_set_str_add(address, "footer");
-    nh_map_str_set_str_set(map, "address", address);
+    hb_set_tag_names_add_whole_literal(address, "address");
+    hb_set_tag_names_add_whole_literal(address, "header");
+    hb_set_tag_names_add_whole_literal(address, "footer");
+    hb_map_tag_relations_set_whole_literal(map, "address", address);
 
     // <audio>
-    nh_set_str* audio = nh_set_str_create();
+    hb_set_tag_names* audio = hb_set_tag_names_create();
     hb_rule_tag_media_add_elems(audio);
-    nh_map_str_set_str_set(map, "audio", audio);
+    hb_map_tag_relations_set_whole_literal(map, "audio", audio);
 
     // <dfn>
-    nh_set_str* dfn = nh_set_str_create();
-    nh_set_str_add(dfn, "dfn");
-    nh_map_str_set_str_set(map, "dfn", dfn);
+    hb_set_tag_names* dfn = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(dfn, "dfn");
+    hb_map_tag_relations_set_whole_literal(map, "dfn", dfn);
 
     // <dt>
-    nh_set_str* dt = nh_set_str_create();
+    hb_set_tag_names* dt = hb_set_tag_names_create();
     hb_rule_tag_heading_add_elems(dt);
     hb_rule_tag_sectioning_add_elems(dt);
-    nh_set_str_add(dt, "header");
-    nh_set_str_add(dt, "footer");
-    nh_map_str_set_str_set(map, "dt", dt);
+    hb_set_tag_names_add_whole_literal(dt, "header");
+    hb_set_tag_names_add_whole_literal(dt, "footer");
+    hb_map_tag_relations_set_whole_literal(map, "dt", dt);
 
     // <footer>
-    nh_set_str* footer = nh_set_str_create();
-    nh_set_str_add(footer, "header");
-    nh_set_str_add(footer, "footer");
-    nh_map_str_set_str_set(map, "footer", footer);
+    hb_set_tag_names* footer = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(footer, "header");
+    hb_set_tag_names_add_whole_literal(footer, "footer");
+    hb_map_tag_relations_set_whole_literal(map, "footer", footer);
 
     // <form>
-    nh_set_str* form = nh_set_str_create();
-    nh_set_str_add(form, "form");
-    nh_map_str_set_str_set(map, "form", form);
+    hb_set_tag_names* form = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(form, "form");
+    hb_map_tag_relations_set_whole_literal(map, "form", form);
 
     // <header>
-    nh_set_str* header = nh_set_str_create();
-    nh_set_str_add(header, "header");
-    nh_set_str_add(header, "footer");
-    nh_map_str_set_str_set(map, "header", header);
+    hb_set_tag_names* header = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(header, "header");
+    hb_set_tag_names_add_whole_literal(header, "footer");
+    hb_map_tag_relations_set_whole_literal(map, "header", header);
 
     // <label>
-    nh_set_str* label = nh_set_str_create();
-    nh_set_str_add(label, "label");
-    nh_map_str_set_str_set(map, "label", label);
+    hb_set_tag_names* label = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(label, "label");
+    hb_map_tag_relations_set_whole_literal(map, "label", label);
 
     // <progress>
-    nh_set_str* progress = nh_set_str_create();
-    nh_set_str_add(progress, "progress");
-    nh_map_str_set_str_set(map, "progress", progress);
+    hb_set_tag_names* progress = hb_set_tag_names_create();
+    hb_set_tag_names_add_whole_literal(progress, "progress");
+    hb_map_tag_relations_set_whole_literal(map, "progress", progress);
 
     // <th>
-    nh_set_str* th = nh_set_str_create();
+    hb_set_tag_names* th = hb_set_tag_names_create();
     hb_rule_tag_heading_add_elems(th);
     hb_rule_tag_sectioning_add_elems(th);
-    nh_set_str_add(th, "header");
-    nh_set_str_add(th, "footer");
-    nh_map_str_set_str_set(map, "th", th);
+    hb_set_tag_names_add_whole_literal(th, "header");
+    hb_set_tag_names_add_whole_literal(th, "footer");
+    hb_map_tag_relations_set_whole_literal(map, "th", th);
 
     // <video>
-    nh_set_str* video = nh_set_str_create();
+    hb_set_tag_names* video = hb_set_tag_names_create();
     hb_rule_tag_media_add_elems(video);
-    nh_map_str_set_str_set(map, "video", video);
+    hb_map_tag_relations_set_whole_literal(map, "video", video);
 }
 
 void hb_rule_tag_child_blacklist_init(void) {
-    hb_rule_tag_child_blacklist_map = nh_map_str_set_str_create();
+    hb_rule_tag_child_blacklist_map = hb_map_tag_relations_create();
     hb_rule_tag_child_blacklist_map_add_entries(hb_rule_tag_child_blacklist_map);
 }
 
 // Check if a parent is allowed to have a specific child, based on the blacklist.
-bool hb_rule_tag_child_blacklist_allowed(hb_rune* parent, hb_rune* child) {
-    nh_set_str* set = nh_map_str_set_str_get(hb_rule_tag_child_blacklist_map, parent);
-    return set == NULL || !nh_set_str_has(set, child);
+bool hb_rule_tag_child_blacklist_allowed(nh_view_str* parent, nh_view_str* child) {
+    hb_set_tag_names* set = hb_map_tag_relations_get(hb_rule_tag_child_blacklist_map, parent);
+    return set == NULL || !hb_set_tag_names_has(set, child);
 }

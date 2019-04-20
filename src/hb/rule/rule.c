@@ -1,5 +1,3 @@
-#pragma once
-
 #include <hb/rule.h>
 
 void hb_rule_init(void) {
@@ -31,7 +29,7 @@ void hb_rule_init(void) {
     hb_rule_tag_html_init();
     hb_rule_tag_svg_init();
 
-    // Hyperbuild tag categories
+    // hyperbuild tag categories
     hb_rule_tag_contentfirst_init();
     hb_rule_tag_content_init();
     hb_rule_tag_formatting_init();
