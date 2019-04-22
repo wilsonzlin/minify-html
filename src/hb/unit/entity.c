@@ -68,6 +68,9 @@ static int32_t _parse_hexadecimal(nh_view_str* view) {
  * @return Unicode code point of the entity, or HB_UNIT_ENTITY_NONE if the entity is malformed or invalid
  */
 int32_t hb_unit_entity(hb_proc* proc) {
+    // View of the entire entity, including leading ampersand and any trailing semicolon.
+    hb_proc_view_init_src(entity, proc);
+    hb_proc_view_start_with_src_next(&entity, proc);
     hb_proc_require_skip(proc, '&');
 
     // The input can end at any time after initial ampersand.
@@ -135,11 +138,12 @@ int32_t hb_unit_entity(hb_proc* proc) {
     if (nh_view_str_length(&data) < min_len) type = _TYPE_MALFORMED;
     // Don't try to consume semicolon if entity is not well formed already.
     if (type != _TYPE_MALFORMED && !hb_proc_skip_if(proc, ';')) type = _TYPE_MALFORMED;
+    hb_proc_view_end_with_src_prev(&entity, proc);
 
     if (type == _TYPE_MALFORMED) {
         hb_proc_error_if_not_suppressed(proc, HB_ERR_PARSE_MALFORMED_ENTITY, "Malformed entity");
         // Write longest subsequence of characters that could form a well formed entity.
-        hb_proc_write_view(proc, &data);
+        hb_proc_write_view(proc, &entity);
         return HB_UNIT_ENTITY_NONE;
     }
 
@@ -169,7 +173,7 @@ int32_t hb_unit_entity(hb_proc* proc) {
     if (proc->cfg->decode_entities) {
         hb_proc_write_utf_8(proc, uchar);
     } else {
-        hb_proc_write_view(proc, &data);
+        hb_proc_write_view(proc, &entity);
     }
 
     return uchar;
