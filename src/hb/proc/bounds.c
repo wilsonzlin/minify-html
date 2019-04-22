@@ -15,8 +15,8 @@ void hb_proc_bounds_assert_not_eof(hb_proc* proc) {
 }
 
 /**
- * Check that `offset` characters from current does not exceed the end of the source.
- * When `offset` is 1, it represents the next unconsumed character.
+ * Check that `offset` characters from next does not exceed the end of the source.
+ * When `offset` is 0, it represents the next unconsumed character.
  *
  * @param proc proc
  * @param offset
@@ -27,8 +27,8 @@ bool hb_proc_bounds_check_offset(hb_proc* proc, size_t offset) {
 }
 
 /**
- * Assert that `offset` characters from current does not exceed the end of the source.
- * When `offset` is 1, it represents the next unconsumed character.
+ * Assert that `offset` characters from next does not exceed the end of the source.
+ * When `offset` is 0, it represents the next unconsumed character.
  *
  * @param proc proc
  * @param offset

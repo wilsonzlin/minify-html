@@ -30,9 +30,9 @@ hb_rune hb_proc_peek(hb_proc* proc) {
 }
 
 /**
- * Get the *n*th character from current, where *n* is `offset`.
- * When `offset` is 1, the next character is returned (equivalent to {@link hb_proc_peek_eof}).
- * If `offset` is after the last character, {@link HB_EOF} is returned.
+ * Get the `offset` character from next.
+ * When `offset` is 0, the next character is returned (equivalent to {@link hb_proc_peek_eof}).
+ * If `offset` represents after the last character, {@link HB_EOF} is returned.
  *
  * @param proc proc
  * @param offset position of character to get
@@ -45,9 +45,9 @@ hb_eof_rune hb_proc_peek_eof_offset(hb_proc* proc, size_t offset) {
 }
 
 /**
- * Get the *n*th character from current, where *n* is `offset`.
- * When `offset` is 1, the next character is returned (equivalent to {@link hb_proc_peek_offset}).
- * An error will be caused if `offset` is after the last character.
+ * Get the `offset` character from next.
+ * When `offset` is 0, the next character is returned (equivalent to {@link hb_proc_peek_eof}).
+ * An error will be caused if `offset` represents after the last character.
  *
  * @param proc proc
  * @param offset position of character to get

@@ -71,7 +71,7 @@ size_t hb_proc_skip_while_predicate(hb_proc* proc, hb_proc_pred* pred) {
     size_t count = 0;
 
     while (true) {
-        hb_eof_rune c = hb_proc_peek_eof(proc);
+        hb_eof_rune c = hb_proc_peek_eof_offset(proc, count);
 
         if (c == HB_EOF || !(*pred)(c)) {
             break;
