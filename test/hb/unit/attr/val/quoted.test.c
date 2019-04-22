@@ -2,14 +2,19 @@
 #include <hb/rule.h>
 #include <hb/unit.h>
 
-#define INPUT "'abc&apos;&quot;&quot; a' 1"
+// An attribute value:
+//  - delimited by double quotes
+//  - containing one single quote literal
+//  - containing one single quote encoded
+//  - containing three double quotes encoded
+//  - with multiple whitespace sequences of length 2 and higher, including at the start and end
+#define INPUT "\"  abc&apos;'&quot; &quot;&quot;    a  \" 1"
 
 int main(void) {
     printf("Test started\n");
     hb_rule_init();
 
     hb_err_set* suppressed = hb_err_set_create();
-    hb_err_set_add(suppressed, HB_ERR_PARSE_MALFORMED_ENTITY);
 
     hb_rune* out = calloc(sizeof(INPUT) - 1, sizeof(hb_rune));
 
@@ -45,7 +50,7 @@ int main(void) {
         .out_next = 0,
     };
 
-    hb_unit_attr_type type = hb_unit_attr_val_quoted(&proc, false);
+    hb_unit_attr_type type = hb_unit_attr_val_quoted(&proc, true);
     printf("%s\n", out);
 
     hb_err_set_destroy(suppressed);

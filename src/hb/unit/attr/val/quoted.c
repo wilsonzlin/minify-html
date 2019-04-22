@@ -1,10 +1,17 @@
 #include <hb/proc.h>
 #include <hb/rule.h>
 #include <hb/unit.h>
-#include <stdio.h>
 
 #define _ENCODED_SINGLE_QUOTE "&#39;"
 #define _ENCODED_DOUBLE_QUOTE "&#34;"
+
+#define _COLLAPSE_WHITESPACE_IF_APPLICABLE() \
+            if (last_char_was_whitespace) { \
+                /* This is the first non-whitespace character after one or more whitespace character(s), so collapse whitespace by writing only one space. */ \
+                hb_proc_write(proc, ' '); \
+                has_whitespace_after_processing = true; \
+                last_char_was_whitespace = false; \
+            }
 
 hb_unit_attr_type hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_and_trim_ws) {
     // Processing a quoted attribute value is tricky, due to the fact that it's not possible to know whether or not to unquote the value until the value has been processed.
@@ -16,9 +23,10 @@ hb_unit_attr_type hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_an
     // 3. Choose a quote based on the amount of occurrences, to minimise the amount of encoded values.
     // 4. Post-process the output by adding delimiter quotes and encoding quotes in values. This does mean that the output is written to twice.
 
+    bool should_decode_entities = proc->cfg->decode_entities;
     bool should_remove_quotes = proc->cfg->remove_attr_quotes;
 
-    // Metrics for characters in the value, including the delimiter quotes.
+    // Metrics for characters in the value.
     // Used to decide what quotes to use, if any.
     size_t count_double_quotation = 0;
     size_t count_single_quotation = 0;
@@ -47,10 +55,17 @@ hb_unit_attr_type hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_an
 
         bool processed_entity = c == '&';
         if (processed_entity) {
+            // If not decoding entities, then this is first non-whitespace if last_char_was_whitespace, so space needs to be written before hb_unit_entity writes entity.
+            if (!should_decode_entities) {
+                _COLLAPSE_WHITESPACE_IF_APPLICABLE()
+            }
+
             // Characters will be consumed by hb_unit_entity, but they will never be '\'', '"', or whitespace,
             // as the function only consumes characters that could form a well formed entity.
             // See the function for more details.
-            c = hb_unit_entity(proc);
+            int32_t decoded = hb_unit_entity(proc);
+            // If not decoding entities, don't interpret using decoded character.
+            if (should_decode_entities) c = decoded;
         }
         bool is_whitespace = hb_rule_ascii_whitespace_check(c);
 
@@ -63,12 +78,7 @@ hb_unit_attr_type hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_an
 
         } else {
             // Character, after any entity decoding, is not whitespace.
-            if (last_char_was_whitespace) {
-                // This is the first non-whitespace character after one or more whitespace character(s), so collapse whitespace by writing only one space.
-                hb_proc_write(proc, ' ');
-                has_whitespace_after_processing = true;
-                last_char_was_whitespace = false;
-            }
+            _COLLAPSE_WHITESPACE_IF_APPLICABLE()
 
             if (c == '"') {
                 if (is_first_char) starts_with_quote = true;
@@ -109,6 +119,14 @@ hb_unit_attr_type hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_an
         // No need to do any further processing; processed value is already in unquoted form.
         return HB_UNIT_ATTR_UNQUOTED;
 
+    } else if (!should_decode_entities) {
+        // If entities are not being decoded, we are not allowed to encode and decode quotes to minimise the total count of encoded quotes.
+        // Therefore, there is no use to swapping delimiter quotes as at best it's not an improvement and at worst it could break the value.
+        quote_to_encode = quote;
+        quote_encoded = NULL;
+        quote_encoded_length = 0;
+        amount_of_quotes_to_encode = 0;
+
     } else if (count_single_quotation < count_double_quotation) {
         quote_to_encode = '\'';
         quote_encoded = _ENCODED_SINGLE_QUOTE;
@@ -122,13 +140,11 @@ hb_unit_attr_type hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_an
         amount_of_quotes_to_encode = count_double_quotation;
     }
 
-    printf("quote_to_encode=%c count_double=%ld count_single=%ld\n", quote_to_encode, count_double_quotation, count_single_quotation);
     size_t post_length = 2 + proc_length - amount_of_quotes_to_encode + (amount_of_quotes_to_encode * quote_encoded_length);
     // Where the post-processed output should start in the output array.
     size_t out_start = nh_view_str_start(&proc_value);
     size_t proc_end = out_start + proc_length - 1;
     size_t post_end = out_start + post_length - 1;
-    printf("out_start=%ld proc_end=%ld proc_length=%ld post_end=%ld post_length=%ld\n", out_start, proc_end, proc_length, post_end, post_length);
 
     size_t reader = proc_end;
     size_t writer = post_end;
@@ -138,12 +154,12 @@ hb_unit_attr_type hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_an
     // WARNING: This code directly uses and manipulates struct members of `proc`, which in general should be avoided.
     while (true) {
         hb_rune c = proc->out[reader];
-        if (c == quote_to_encode) {
+        if (should_decode_entities && c == quote_to_encode) {
             writer -= quote_encoded_length;
             // WARNING: This only works because hb_rune == char.
             memcpy(&proc->out[writer + 1], quote_encoded, quote_encoded_length * sizeof(hb_rune));
         } else {
-            proc->out[writer--] = proc->out[reader];
+            proc->out[writer--] = c;
         }
 
         // Break before decrementing to prevent underflow.
