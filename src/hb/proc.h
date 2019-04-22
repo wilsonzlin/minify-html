@@ -59,6 +59,7 @@ typedef bool hb_proc_pred(hb_rune);
 hb_rune hb_proc_accept(hb_proc* proc);
 void hb_proc_accept_count(hb_proc* proc, size_t count);
 bool hb_proc_accept_if(hb_proc* proc, hb_rune c);
+bool hb_proc_accept_if_not(hb_proc* proc, hb_rune c);
 size_t hb_proc_accept_if_matches(hb_proc* proc, char const* match);
 size_t hb_proc_accept_if_matches_line_terminator(hb_proc* proc);
 bool hb_proc_accept_if_predicate(hb_proc* proc, hb_proc_pred* pred);

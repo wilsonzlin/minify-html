@@ -64,6 +64,28 @@ bool hb_proc_accept_if(hb_proc* proc, hb_rune c) {
 }
 
 /**
+ * Accept the following character if it is not `c`.
+ * Won't match or cause an error if there are no characters remaining.
+ * Undefined behaviour if `c == HB_EOF`.
+ *
+ * @param proc proc
+ * @param c character to not match
+ * @return false if nothing was accepted, true otherwise
+ */
+bool hb_proc_accept_if_not(hb_proc* proc, hb_rune c) {
+    hb_eof_rune n = hb_proc_peek_eof(proc);
+
+    // n == c takes care of n != HB_EOF
+    if (n == c) {
+        return false;
+    }
+
+    hb_proc_accept(proc);
+
+    return true;
+}
+
+/**
  * Accept the following characters if they match `match`.
  * Won't match or cause an error if there are not enough characters remaining.
  * If `match` has a length of zero, behaviour is undefined.
