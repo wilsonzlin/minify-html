@@ -5,13 +5,17 @@
 #define HB_UNIT_ENTITY_NONE -1
 
 typedef enum {
-    HB_UNIT_ATTR_QUOTED,
-    HB_UNIT_ATTR_UNQUOTED,
-    HB_UNIT_ATTR_NOVAL,
+	// Special value for hb_unit_tag.
+	HB_UNIT_ATTR_NONE,
+
+	HB_UNIT_ATTR_QUOTED,
+	HB_UNIT_ATTR_UNQUOTED,
+	HB_UNIT_ATTR_NOVAL,
 } hb_unit_attr_type;
 
 hb_unit_attr_type hb_unit_attr(hb_proc* proc);
-hb_unit_attr_type hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_and_trim_value_ws);
+hb_unit_attr_type
+hb_unit_attr_val_quoted(hb_proc* proc, bool should_collapse_and_trim_value_ws);
 void hb_unit_attr_val_unquoted(hb_proc* proc);
 
 void hb_unit_bang(hb_proc* proc);
@@ -19,7 +23,10 @@ void hb_unit_bang(hb_proc* proc);
 void hb_unit_comment(hb_proc* proc);
 
 void hb_unit_content_html(hb_proc* proc, nh_view_str* parent);
+void hb_unit_content_script(hb_proc* proc);
+void hb_unit_content_style(hb_proc* proc);
 
 int32_t hb_unit_entity(hb_proc* proc);
 
+void hb_unit_tag(hb_proc* proc, nh_view_str* parent);
 nh_view_str hb_unit_tag_name(hb_proc* proc);

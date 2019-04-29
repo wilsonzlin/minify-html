@@ -5,10 +5,22 @@ set(CMAKE_C_STANDARD 11)
 
 include_directories(src lib)
 
-add_executable(hyperbuild
+add_library(nicehash
+        lib/nicehash/bitfield-ascii.c
+        lib/nicehash/list-char.c
+        lib/nicehash/list-list-char.c
+        lib/nicehash/list-uchar.c
+        lib/nicehash/set-int32.c
+        lib/nicehash/set-int64.c
+        lib/nicehash/set-str.c
+        lib/nicehash/set-view-str.c
+        lib/nicehash/view-str.c)
+
+add_library(hyperbuild
         src/hb/cfg.c
         src/hb/collection.c
         src/hb/err.c
+        src/hb/hyperbuild.c
         src/hb/proc/accept.c
         src/hb/proc/bounds.c
         src/hb/proc/error.c
@@ -59,3 +71,9 @@ add_executable(hyperbuild
         src/hb/unit/entity.c
         src/hb/unit/tag.c
         src/hb/unit/tag/name.c)
+target_link_libraries(hyperbuild nicehash)
+
+add_executable(hyperbuild-test
+        test/hb/unit/attr/val/quoted.test.c)
+target_link_libraries(hyperbuild-test hyperbuild)
+target_include_directories(hyperbuild-test PRIVATE test)

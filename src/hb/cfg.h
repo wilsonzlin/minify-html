@@ -1,19 +1,19 @@
 #pragma once
 
-#include <stdbool.h>
 #include <hb/collection.h>
 #include <hb/err.h>
+#include <stdbool.h>
 
 typedef enum {
-  HB_CFG_SET_MODE_NONE, // i.e. don't minify ever
-  HB_CFG_SET_MODE_ALLOW,
-  HB_CFG_SET_MODE_DENY,
-  HB_CFG_SET_MODE_ALL, // i.e. minify all without exception
+	HB_CFG_SET_MODE_NONE, // i.e. don't minify ever
+	HB_CFG_SET_MODE_ALLOW,
+	HB_CFG_SET_MODE_DENY,
+	HB_CFG_SET_MODE_ALL, // i.e. minify all without exception
 } hb_cfg_tags_set_mode;
 
 typedef struct {
-  hb_cfg_tags_set_mode mode;
-  hb_set_tag_names* set;
+	hb_cfg_tags_set_mode mode;
+	hb_set_tag_names* set;
 } hb_cfg_tags_set;
 
 typedef struct {

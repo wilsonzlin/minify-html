@@ -1,6 +1,6 @@
-#include <stddef.h>
-#include <hb/rune.h>
 #include <hb/proc.h>
+#include <hb/rune.h>
+#include <stddef.h>
 
 /**
  * Get the next character.
@@ -9,8 +9,9 @@
  * @param proc proc
  * @return character or {@link HB_EOF}
  */
-hb_eof_rune hb_proc_peek_eof(hb_proc* proc) {
-    return proc->src[proc->src_next];
+hb_eof_rune hb_proc_peek_eof(hb_proc* proc)
+{
+	return proc->src[proc->src_next];
 }
 
 /**
@@ -21,45 +22,52 @@ hb_eof_rune hb_proc_peek_eof(hb_proc* proc) {
  * @return character
  * @throws on HB_ERR_PARSE_UNEXPECTED_END
  */
-hb_rune hb_proc_peek(hb_proc* proc) {
-    hb_proc_bounds_assert_not_eof(proc);
+hb_rune hb_proc_peek(hb_proc* proc)
+{
+	hb_proc_bounds_assert_not_eof(proc);
 
-    hb_eof_rune c = hb_proc_peek_eof(proc);
+	hb_eof_rune c = hb_proc_peek_eof(proc);
 
-    return c;
+	return c;
 }
 
 /**
  * Get the `offset` character from next.
- * When `offset` is 0, the next character is returned (equivalent to {@link hb_proc_peek_eof}).
- * If `offset` represents after the last character, {@link HB_EOF} is returned.
+ * When `offset` is 0, the next character is returned (equivalent to {@link
+ * hb_proc_peek_eof}). If `offset` represents after the last character, {@link
+ * HB_EOF} is returned.
  *
  * @param proc proc
  * @param offset position of character to get
  * @return character or {@link HB_EOF}
  */
-hb_eof_rune hb_proc_peek_eof_offset(hb_proc* proc, size_t offset) {
-    if (!hb_proc_bounds_check_offset(proc, offset)) return HB_EOF;
+hb_eof_rune hb_proc_peek_eof_offset(hb_proc* proc, size_t offset)
+{
+	if (!hb_proc_bounds_check_offset(proc, offset))
+		return HB_EOF;
 
-    return proc->src[proc->src_next + offset];
+	return proc->src[proc->src_next + offset];
 }
 
 /**
  * Get the `offset` character from next.
- * When `offset` is 0, the next character is returned (equivalent to {@link hb_proc_peek_eof}).
- * An error will be caused if `offset` represents after the last character.
+ * When `offset` is 0, the next character is returned (equivalent to {@link
+ * hb_proc_peek_eof}). An error will be caused if `offset` represents after the
+ * last character.
  *
  * @param proc proc
  * @param offset position of character to get
  * @return character
  * @throws on HB_ERR_PARSE_UNEXPECTED_END
  */
-hb_rune hb_proc_peek_offset(hb_proc* proc, size_t offset) {
-    hb_eof_rune c = hb_proc_peek_eof_offset(proc, offset);
+hb_rune hb_proc_peek_offset(hb_proc* proc, size_t offset)
+{
+	hb_eof_rune c = hb_proc_peek_eof_offset(proc, offset);
 
-    if (c == HB_EOF) {
-        hb_proc_error(proc, HB_ERR_PARSE_UNEXPECTED_END, "Unexpected end of input");
-    }
+	if (c == HB_EOF) {
+		hb_proc_error(proc, HB_ERR_PARSE_UNEXPECTED_END,
+			      "Unexpected end of input");
+	}
 
-    return c;
+	return c;
 }

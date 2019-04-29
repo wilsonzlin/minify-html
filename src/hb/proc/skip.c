@@ -1,5 +1,5 @@
-#include <hb/rune.h>
 #include <hb/proc.h>
+#include <hb/rune.h>
 
 /**
  * Skip over the next character.
@@ -9,14 +9,15 @@
  * @return skipped character
  * @throws on HB_ERR_PARSE_UNEXPECTED_END
  */
-hb_rune hb_proc_skip(hb_proc* proc) {
-    hb_proc_bounds_assert_not_eof(proc);
+hb_rune hb_proc_skip(hb_proc* proc)
+{
+	hb_proc_bounds_assert_not_eof(proc);
 
-    hb_rune c = proc->src[proc->src_next];
+	hb_rune c = proc->src[proc->src_next];
 
-    proc->src_next++;
+	proc->src_next++;
 
-    return c;
+	return c;
 }
 
 /**
@@ -28,12 +29,13 @@ hb_rune hb_proc_skip(hb_proc* proc) {
  * @return amount of characters skipped
  * @throws on HB_ERR_PARSE_UNEXPECTED_END
  */
-size_t hb_proc_skip_amount(hb_proc* proc, size_t amount) {
-    hb_proc_bounds_assert_offset(proc, amount);
+size_t hb_proc_skip_amount(hb_proc* proc, size_t amount)
+{
+	hb_proc_bounds_assert_offset(proc, amount);
 
-    proc->src_next += amount;
+	proc->src_next += amount;
 
-    return amount;
+	return amount;
 }
 
 /**
@@ -46,41 +48,43 @@ size_t hb_proc_skip_amount(hb_proc* proc, size_t amount) {
  * @param c character to skip if next
  * @return 1 if skipped, 0 otherwise
  */
-size_t hb_proc_skip_if(hb_proc* proc, hb_rune c) {
-    hb_eof_rune n = hb_proc_peek_eof(proc);
+size_t hb_proc_skip_if(hb_proc* proc, hb_rune c)
+{
+	hb_eof_rune n = hb_proc_peek_eof(proc);
 
-    // n != c takes care of n == HB_EOF
-    if (n != c) {
-        return 0;
-    }
+	// n != c takes care of n == HB_EOF
+	if (n != c) {
+		return 0;
+	}
 
-    proc->src_next++;
+	proc->src_next++;
 
-    return 1;
+	return 1;
 }
 
 /**
- * Skip over every following character until one dissatisfies the predicate `pred`,
- * or the end is reached.
+ * Skip over every following character until one dissatisfies the predicate
+ * `pred`, or the end is reached.
  *
  * @param proc proc
  * @param pred predicate
  * @return amount of characters skipped
  */
-size_t hb_proc_skip_while_predicate(hb_proc* proc, hb_proc_pred* pred) {
-    size_t count = 0;
+size_t hb_proc_skip_while_predicate(hb_proc* proc, hb_proc_pred* pred)
+{
+	size_t count = 0;
 
-    while (true) {
-        hb_eof_rune c = hb_proc_peek_eof_offset(proc, count);
+	while (true) {
+		hb_eof_rune c = hb_proc_peek_eof_offset(proc, count);
 
-        if (c == HB_EOF || !(*pred)(c)) {
-            break;
-        }
+		if (c == HB_EOF || !(*pred)(c)) {
+			break;
+		}
 
-        count++;
-    }
+		count++;
+	}
 
-    proc->src_next += count;
+	proc->src_next += count;
 
-    return count;
+	return count;
 }

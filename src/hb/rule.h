@@ -1,7 +1,7 @@
 #pragma once
 
-#include <hb/rune.h>
 #include <hb/collection.h>
+#include <hb/rune.h>
 
 void hb_rule_init(void);
 
@@ -103,15 +103,19 @@ bool hb_rule_tag_wss_check(nh_view_str* tag);
 
 void hb_rule_tag_child_blacklist_map_add_entries(hb_map_tag_relations* map);
 void hb_rule_tag_child_blacklist_init(void);
-bool hb_rule_tag_child_blacklist_allowed(nh_view_str* parent, nh_view_str* child);
+bool hb_rule_tag_child_blacklist_allowed(nh_view_str* parent,
+					 nh_view_str* child);
 
 void hb_rule_tag_child_whitelist_map_add_entries(hb_map_tag_relations* map);
 void hb_rule_tag_child_whitelist_init(void);
-bool hb_rule_tag_child_whitelist_allowed(nh_view_str* parent, nh_view_str* child);
+bool hb_rule_tag_child_whitelist_allowed(nh_view_str* parent,
+					 nh_view_str* child);
 
 void hb_rule_tag_parent_blacklist_init(void);
-bool hb_rule_tag_parent_blacklist_allowed(nh_view_str* child, nh_view_str* parent);
+bool hb_rule_tag_parent_blacklist_allowed(nh_view_str* child,
+					  nh_view_str* parent);
 
 void hb_rule_tag_parent_whitelist_map_add_entries(hb_map_tag_relations* map);
 void hb_rule_tag_parent_whitelist_init(void);
-bool hb_rule_tag_parent_whitelist_allowed(nh_view_str* child, nh_view_str* parent);
+bool hb_rule_tag_parent_whitelist_allowed(nh_view_str* child,
+					  nh_view_str* parent);

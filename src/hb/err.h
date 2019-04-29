@@ -3,22 +3,14 @@
 #include <hb/collection.h>
 
 typedef enum {
-	// WARNING: The __HB_ERR_COUNT value only works if the first value of this enum is set to zero.
+	// WARNING: The __HB_ERR_COUNT value only works if the first value of
+	// this enum is set to zero.
 	HB_ERR_OK = 0,
 
 	HB_ERR_INTERR_UNKNOWN_ENTITY_TYPE,
-	HB_ERR_INTERR_UNKNOWN_ATTR_QUOTE,
 	HB_ERR_INTERR_UNKNOWN_CONTENT_NEXT_STATE,
 
-	HB_ERR_CLI_TOO_MANY_OPTIONS,
-	HB_ERR_CLI_INVALID_TAG_SET,
-	HB_ERR_CLI_INVALID_TAG,
-	HB_ERR_CLI_INVALID_SUPPRESSABLE_ERROR,
-
-	HB_ERR_IO_FOPEN_FAIL,
-	HB_ERR_IO_FCLOSE_FAIL,
 	HB_ERR_IO_FREAD_FAIL,
-	HB_ERR_IO_FWRITE_FAIL,
 
 	HB_ERR_PARSE_MALFORMED_ENTITY,
 	HB_ERR_PARSE_INVALID_ENTITY,
