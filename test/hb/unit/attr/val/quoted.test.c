@@ -25,17 +25,17 @@ int main(void)
 	hb_cfg cfg = {
 		.collapse_whitespace =
 			{
-				.mode = HB_CFG_SET_MODE_ALL,
+				.mode = HB_CFG_TAGS_SET_MODE_ALL,
 				.set = NULL,
 			},
 		.destroy_whole_whitespace =
 			{
-				.mode = HB_CFG_SET_MODE_ALL,
+				.mode = HB_CFG_TAGS_SET_MODE_ALL,
 				.set = NULL,
 			},
 		.trim_whitespace =
 			{
-				.mode = HB_CFG_SET_MODE_ALL,
+				.mode = HB_CFG_TAGS_SET_MODE_ALL,
 				.set = NULL,
 			},
 		.suppressed_errors = *suppressed,
@@ -43,7 +43,6 @@ int main(void)
 		.decode_entities = true,
 		.remove_attr_quotes = true,
 		.remove_comments = true,
-		.remove_optional_tags = true,
 		.remove_tag_whitespace = true,
 	};
 

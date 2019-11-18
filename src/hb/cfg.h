@@ -5,10 +5,10 @@
 #include <stdbool.h>
 
 typedef enum {
-	HB_CFG_SET_MODE_NONE, // i.e. don't minify ever
-	HB_CFG_SET_MODE_ALLOW,
-	HB_CFG_SET_MODE_DENY,
-	HB_CFG_SET_MODE_ALL, // i.e. minify all without exception
+	HB_CFG_TAGS_SET_MODE_NONE, // i.e. don't minify ever
+	HB_CFG_TAGS_SET_MODE_ALLOW,
+	HB_CFG_TAGS_SET_MODE_DENY,
+	HB_CFG_TAGS_SET_MODE_ALL, // i.e. minify all without exception
 } hb_cfg_tags_set_mode;
 
 typedef struct {
@@ -25,7 +25,6 @@ typedef struct {
 	bool decode_entities;
 	bool remove_attr_quotes;
 	bool remove_comments;
-	bool remove_optional_tags;
 	bool remove_tag_whitespace;
 } hb_cfg;
 

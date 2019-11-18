@@ -27,8 +27,8 @@ void hb_proc_error_custom_pos(hb_proc* proc, hb_err code, size_t pos,
 	va_list args;
 	va_start(args, format);
 
-	char* msg = calloc(HB_PROC_ERROR_CUSTOM_SIZE, sizeof(char));
-	vsnprintf(msg, HB_PROC_ERROR_CUSTOM_SIZE - 1, format, args);
+	char* msg = malloc(HB_PROC_ERROR_CUSTOM_SIZE * sizeof(char));
+	vsnprintf(msg, HB_PROC_ERROR_CUSTOM_SIZE, format, args);
 
 	va_end(args);
 
