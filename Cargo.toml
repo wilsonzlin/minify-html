@@ -1,0 +1,8 @@
+[package]
+name = "hyperbuild"
+version = "0.0.1"
+authors = ["Wilson Lin <code@wilsonl.in>"]
+edition = "2018"
+
+[dependencies]
+phf = "0.8.0"
