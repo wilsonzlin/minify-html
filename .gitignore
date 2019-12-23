@@ -1,4 +1,2 @@
-/out/
-/docs/
-/cmake-build-*
 /Cargo.lock
+/target

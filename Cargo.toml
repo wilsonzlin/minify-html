@@ -5,4 +5,4 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-phf = "0.8.0"
+phf = { version = "0.8.0", features = ["macros"] }

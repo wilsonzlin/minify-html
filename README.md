@@ -1,6 +1,6 @@
 # hyperbuild
 
-A fast one-pass in-place HTML minifier written in C with advanced whitespace handling.
+A fast one-pass in-place HTML minifier written in Rust with advanced whitespace handling.
 
 Currently in beta, working on documentation and tests. Issues and pull requests welcome!
 
@@ -12,15 +12,7 @@ Currently in beta, working on documentation and tests. Issues and pull requests 
 
 ## Usage
 
-This is the library. To use hyperbuild, you'll probably need one of these:
-
-- [hyperbuild CLI](https://github.com/wilsonzlin/hyperbuild-cli)
-
-Documentation for the library itself is currently WIP.
-
-hyperbuild uses the following dependencies, which are included as submodules:
-
-- [nicehash](https://github.com/wilsonzlin/nicehash)
+TODO
 
 ## Minification
 
