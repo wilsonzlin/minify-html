@@ -17,7 +17,8 @@ pub fn is_whitespace(c: u8) -> bool {
 }
 
 pub fn is_c0_control(c: u8) -> bool {
-    c >= 0 && c <= 0x1f
+    // c >= 0 is always true.
+    c <= 0x1f
 }
 
 pub fn is_control(c: u8) -> bool {

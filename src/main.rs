@@ -1,7 +1,9 @@
 use std::fs::File;
-use std::io::{Read, stdin, stdout, Write};
+use std::io::{Read, Write};
+
 use structopt::StructOpt;
 
+use hyperbuild::err::ErrorType;
 use hyperbuild::hyperbuild;
 
 #[derive(StructOpt)]
@@ -14,14 +16,20 @@ struct Cli {
 
 fn main() {
     let args = Cli::from_args();
-    let mut vec = Vec::<u8>::new();
-    let mut src_file = File::open(args.src).expect("could not read source file");
-    src_file.read_to_end(&mut vec);
-    let mut code = vec.as_mut_slice();
-    // TODO
-    let result = hyperbuild(code).unwrap();
-    println!("{}", result);
-    let mut out_file = File::create(args.out).expect("could not open output file");
-    out_file.write_all(&code[..result]).expect("could not write to output file");
-    println!("Done!")
+    let mut code = Vec::<u8>::new();
+    let mut src_file = File::open(args.src).expect("could not open source file");
+    src_file.read_to_end(&mut code).expect("could not read source file");
+    match hyperbuild(&mut code) {
+        Ok(out_len) => {
+            let mut out_file = File::create(args.out).expect("could not open output file");
+            out_file.write_all(&code[..out_len]).expect("could not write to output file");
+        }
+        Err((err, pos)) => {
+            eprintln!("Failed at character {}:", pos);
+            match err {
+                // TODO
+                _ => unimplemented!(),
+            };
+        }
+    };
 }

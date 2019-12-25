@@ -1,6 +1,6 @@
 use phf::{Map, phf_map};
 
-use crate::err::HbRes;
+use crate::err::InternalResult;
 use crate::proc::Processor;
 use crate::spec::codepoint::is_whitespace;
 use crate::unit::attr::AttrType;
@@ -165,10 +165,10 @@ macro_rules! consume_attr_value_chars {
         let mut currently_first_char = true;
 
         loop {
-            let char_type = if cascade_return!($proc.match_pred($delimiter_pred).matched()) {
+            let char_type = if chain!($proc.match_pred($delimiter_pred).matched()) {
                 // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
                 CharType::End
-            } else if cascade_return!($proc.match_char(b'&').matched()) {
+            } else if chain!($proc.match_char(b'&').matched()) {
                 match $entity_processor($proc)? {
                     Some(e) => if e <= 0x7f { CharType::from_char(e as u8) } else { CharType::DecodedNonAscii },
                     None => CharType::MalformedEntity,
@@ -207,7 +207,7 @@ macro_rules! consume_attr_value_chars {
     };
 }
 
-pub fn process_attr_value<'d, 'p>(proc: &'p mut Processor<'d>, should_collapse_and_trim_ws: bool) -> HbRes<AttrType> {
+pub fn process_attr_value<'d, 'p>(proc: &'p mut Processor<'d>, should_collapse_and_trim_ws: bool) -> InternalResult<AttrType> {
     // Processing a quoted attribute value is tricky, due to the fact that
     // it's not possible to know whether or not to unquote the value until
     // the value has been processed. For example, decoding an entity could
@@ -224,7 +224,7 @@ pub fn process_attr_value<'d, 'p>(proc: &'p mut Processor<'d>, should_collapse_a
     // 4. Post-process the output by adding delimiter quotes and encoding
     // quotes in values. This does mean that the output is written to twice.
 
-    let src_delimiter = cascade_return!(proc.match_pred(is_attr_quote).discard().maybe_char());
+    let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());
     let src_delimiter_pred = match src_delimiter {
         Some(b'"') => is_double_quote,
         Some(b'\'') => is_single_quote,
@@ -300,7 +300,7 @@ pub fn process_attr_value<'d, 'p>(proc: &'p mut Processor<'d>, should_collapse_a
     });
     // Ensure closing delimiter in src has been matched and discarded, if any.
     if let Some(c) = src_delimiter {
-        cascade_return!(proc.match_char(c).expect().discard());
+        chain!(proc.match_char(c).expect().discard());
     }
     // Write closing delimiter, if any.
     if let Some(c) = optimal_delimiter_char {

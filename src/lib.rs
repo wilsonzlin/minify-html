@@ -1,8 +1,7 @@
-use crate::err::HbRes;
+use crate::err::{ErrorType};
 use crate::proc::Processor;
 use crate::unit::content::process_content;
 
-mod code;
 pub mod err;
 #[macro_use]
 mod proc;
@@ -21,8 +20,10 @@ mod unit;
  * @param cfg configuration to use
  * @return result where to write any resulting error information
  */
-pub fn hyperbuild<'d>(code: &'d mut [u8]) -> HbRes<usize> {
+pub fn hyperbuild(code: &mut [u8]) -> Result<usize, (ErrorType, usize)> {
     let mut p = Processor::new(code);
-    process_content(&mut p, None)?;
-    Ok(p.written_len())
+    match process_content(&mut p, None) {
+        Ok(()) => Ok(p.written_len()),
+        Err(e) => Err((e, p.read_len())),
+    }
 }

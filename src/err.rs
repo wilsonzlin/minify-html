@@ -1,12 +1,11 @@
 #[derive(Debug)]
-pub enum HbErr {
-    ExpectedCharNotFound { expected: u8, got: u8 },
-    ExpectedMatchNotFound(&'static [u8]),
-    ExpectedNotFound(&'static str),
+pub enum ErrorType {
+    CharNotFound { need: u8, got: u8 },
+    MatchNotFound(&'static [u8]),
+    NotFound(&'static str),
     NoSpaceBeforeAttr,
-    UnclosedTag,
-    UnexpectedCharFound(u8),
+    UnexpectedChar(u8),
     UnexpectedEnd,
 }
 
-pub type HbRes<T> = Result<T, HbErr>;
+pub type InternalResult<T> = Result<T, ErrorType>;

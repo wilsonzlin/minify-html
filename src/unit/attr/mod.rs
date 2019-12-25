@@ -1,5 +1,5 @@
 use crate::proc::Processor;
-use crate::err::HbRes;
+use crate::err::InternalResult;
 use crate::spec::codepoint::is_control;
 use phf::{Set, phf_set};
 use crate::unit::attr::value::process_attr_value;
@@ -30,13 +30,13 @@ fn is_name_char(c: u8) -> bool {
     }
 }
 
-pub fn process_attr<'d, 'p>(proc: &'p mut Processor<'d>) -> HbRes<AttrType> {
+pub fn process_attr<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<AttrType> {
     // Expect `process_attr` to be called at an attribute.
-    let name = cascade_return!(proc.match_while_pred(is_name_char).expect().keep().slice());
+    let name = chain!(proc.match_while_pred(is_name_char).expect().keep().slice());
 
     // TODO DOC Attr must be case sensitive
     let should_collapse_and_trim_value_ws = COLLAPSIBLE_AND_TRIMMABLE_ATTRS.contains(name);
-    let has_value = cascade_return!(proc.match_char(b'=').keep().matched());
+    let has_value = chain!(proc.match_char(b'=').keep().matched());
 
     if !has_value {
         Ok(AttrType::NoValue)
