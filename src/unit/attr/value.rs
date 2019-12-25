@@ -1,11 +1,10 @@
-use crate::proc::{Processor, Match};
-use crate::proc::attr::AttrType;
-use crate::code::Code;
-use crate::spec::codepoint::is_whitespace;
-use crate::proc::entity::{process_entity, parse_entity};
+use phf::{Map, phf_map};
+
 use crate::err::HbRes;
-use phf::Map;
-use std::thread::current;
+use crate::proc::Processor;
+use crate::spec::codepoint::is_whitespace;
+use crate::unit::attr::AttrType;
+use crate::unit::entity::{parse_entity, process_entity};
 
 pub fn is_double_quote(c: u8) -> bool {
     c == b'"'
@@ -31,14 +30,14 @@ static ENCODED: Map<u8, &'static [u8]> = phf_map! {
     b'"' => b"&#34;",
     b'>' => b"&gt;",
     // Whitespace characters as defined by spec in crate::spec::codepoint::is_whitespace.
-    0x09 => b"&#9;",
-    0x0a => b"&#10;",
-    0x0c => b"&#12;",
-    0x0d => b"&#13;",
-    0x20 => b"&#32;",
+    b'\x09' => b"&#9;",
+    b'\x0a' => b"&#10;",
+    b'\x0c' => b"&#12;",
+    b'\x0d' => b"&#13;",
+    b'\x20' => b"&#32;",
 };
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 enum CharType {
     End,
     MalformedEntity,
@@ -58,12 +57,12 @@ impl CharType {
             b'"' => CharType::DoubleQuote,
             b'\'' => CharType::SingleQuote,
             b'>' => CharType::RightChevron,
-            c => if is_whitespace(c) { CharType::Whitespace(c) } else { CharType::Normal },
+            c => if is_whitespace(c) { CharType::Whitespace(c) } else { CharType::Normal(c) },
         }
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Eq, PartialEq)]
 enum DelimiterType {
     Double,
     Single,
@@ -91,14 +90,14 @@ impl Metrics {
         match char_type {
             CharType::Whitespace(c) => {
                 self.count_whitespace += 1;
-                self.total_whitespace_encoded_length += ENCODED[c].len();
+                self.total_whitespace_encoded_length += ENCODED[&c].len();
             }
             CharType::SingleQuote => self.count_single_quotation += 1,
             CharType::DoubleQuote => self.count_double_quotation += 1,
             _ => (),
         };
 
-        if self.first_char_type == None {
+        if let None = self.first_char_type {
             self.first_char_type = Some(char_type);
         };
         self.last_char_type = Some(char_type);
@@ -110,13 +109,13 @@ impl Metrics {
         // NOTE: Don't need to consider whitespace for either as all whitespace will be encoded and counts as part of `total_whitespace_encoded_length`.
         let first_char_encoding_cost = match self.first_char_type {
             // WARNING: Change `first_char_is_quote_encoded` if changing here.
-            Some(CharType::DoubleQuote) => ENCODED[b'"'].len(),
-            Some(CharType::SingleQuote) => ENCODED[b'\''].len(),
+            Some(CharType::DoubleQuote) => ENCODED[&b'"'].len(),
+            Some(CharType::SingleQuote) => ENCODED[&b'\''].len(),
             _ => 0,
         };
         let first_char_is_quote_encoded = first_char_encoding_cost > 0;
-        let last_char_encoding_cost = match last_char_type {
-            Some(CharType::RightChevron) => ENCODED[b'>'].len(),
+        let last_char_encoding_cost = match self.last_char_type {
+            Some(CharType::RightChevron) => ENCODED[&b'>'].len(),
             _ => 0,
         };
 
@@ -131,11 +130,11 @@ impl Metrics {
     }
 
     fn single_quoted_cost(&self) -> usize {
-        self.count_single_quotation * ENCODED[b'\''].len() + self.count_double_quotation + self.count_whitespace
+        self.count_single_quotation * ENCODED[&b'\''].len() + self.count_double_quotation + self.count_whitespace
     }
 
     fn double_quoted_cost(&self) -> usize {
-        self.count_double_quotation * ENCODED[b'"'].len() + self.count_single_quotation + self.count_whitespace
+        self.count_double_quotation * ENCODED[&b'"'].len() + self.count_single_quotation + self.count_whitespace
     }
 
     fn get_optimal_delimiter_type(&self) -> DelimiterType {
@@ -156,61 +155,59 @@ impl Metrics {
     }
 }
 
-fn consume_attr_value<D: Code>(
-    proc: &Processor<D>,
-    should_collapse_and_trim_ws: bool,
-    delimiter_pred: fn(u8) -> bool,
-    on_entity: fn(&Processor<D>) -> HbRes<Option<u32>>,
-    on_char: fn(char_type: CharType, char_no: usize) -> (),
-) -> HbRes<()> {
-    // Set to true when one or more immediately previous characters were whitespace and deferred for processing after the contiguous whitespace.
-    // NOTE: Only used if `should_collapse_and_trim_ws`.
-    let mut currently_in_whitespace = false;
-    let mut char_no = 0;
-    loop {
-        let char_type = if proc.match_pred(delimiter_pred).matched() {
-            // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
-            CharType::End
-        } else if proc.match_char(b'&').matched() {
-            match on_entity(proc)? {
-                Some(e) => if e <= 0x7f { CharType::from_char(e as u8) } else { CharType::DecodedNonAscii },
-                None => CharType::MalformedEntity,
-            }
-        } else {
-            CharType::from_char(proc.skip()?)
-        };
+macro_rules! consume_attr_value_chars {
+    ($proc:ident, $should_collapse_and_trim_ws:ident, $delimiter_pred:ident, $entity_processor:ident, $out_char_type:ident, $on_char:block) => {
+        // Set to true when one or more immediately previous characters were whitespace and deferred for processing after the contiguous whitespace.
+        // NOTE: Only used if `should_collapse_and_trim_ws`.
+        let mut currently_in_whitespace = false;
+        // Needed to check if at beginning of value so that leading whitespace can be trimmed instead of collapsed.
+        // NOTE: Only used if `should_collapse_and_trim_ws`.
+        let mut currently_first_char = true;
 
-        if should_collapse_and_trim_ws {
-            if let CharType::Whitespace(_) = char_type {
-                // Ignore this whitespace character, but mark the fact that we are currently in contiguous whitespace.
-                currently_in_whitespace = true;
-                continue;
+        loop {
+            let char_type = if cascade_return!($proc.match_pred($delimiter_pred).matched()) {
+                // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
+                CharType::End
+            } else if cascade_return!($proc.match_char(b'&').matched()) {
+                match $entity_processor($proc)? {
+                    Some(e) => if e <= 0x7f { CharType::from_char(e as u8) } else { CharType::DecodedNonAscii },
+                    None => CharType::MalformedEntity,
+                }
             } else {
-                // Now past whitespace (e.g. moved to non-whitespace char or end of attribute value). Either:
-                // - ignore contiguous whitespace (i.e. do nothing) if we are currently at beginning or end of value; or
-                // - collapse contiguous whitespace (i.e. count as one whitespace char) otherwise.
-                if currently_in_whitespace && first_char_type != None && char_type != CharType::End {
-                    // Collect current collapsed contiguous whitespace that was ignored previously.
-                    on_char(CharType::Whitespace(b' '), char_no);
-                    char_no += 1;
+                CharType::from_char($proc.skip()?)
+            };
+
+            if $should_collapse_and_trim_ws {
+                if let CharType::Whitespace(_) = char_type {
+                    // Ignore this whitespace character, but mark the fact that we are currently in contiguous whitespace.
+                    currently_in_whitespace = true;
+                    continue;
+                } else {
+                    // Now past whitespace (e.g. moved to non-whitespace char or end of attribute value). Either:
+                    // - ignore contiguous whitespace (i.e. do nothing) if we are currently at beginning or end of value; or
+                    // - collapse contiguous whitespace (i.e. count as one whitespace char) otherwise.
+                    if currently_in_whitespace && !currently_first_char && char_type != CharType::End {
+                        // Collect current collapsed contiguous whitespace that was ignored previously.
+                        $out_char_type = CharType::Whitespace(b' ');
+                        $on_char;
+                    };
+                    currently_in_whitespace = false;
                 };
-                currently_in_whitespace = false;
+            };
+
+            match char_type {
+                CharType::End => break,
+                char_type => {
+                    $out_char_type = char_type;
+                    $on_char;
+                    currently_first_char = false;
+                }
             };
         };
-
-        if char_type == CharType::End {
-            break;
-        } else {
-            on_char(char_type, char_no);
-            char_no += 1;
-        };
     };
-
-    Ok(())
 }
 
-// TODO Might encounter danger if Unicode whitespace is considered as whitespace.
-pub fn process_quoted_val<D: Code>(proc: &Processor<D>, should_collapse_and_trim_ws: bool) -> HbRes<AttrType> {
+pub fn process_attr_value<'d, 'p>(proc: &'p mut Processor<'d>, should_collapse_and_trim_ws: bool) -> HbRes<AttrType> {
     // Processing a quoted attribute value is tricky, due to the fact that
     // it's not possible to know whether or not to unquote the value until
     // the value has been processed. For example, decoding an entity could
@@ -227,7 +224,7 @@ pub fn process_quoted_val<D: Code>(proc: &Processor<D>, should_collapse_and_trim
     // 4. Post-process the output by adding delimiter quotes and encoding
     // quotes in values. This does mean that the output is written to twice.
 
-    let src_delimiter = proc.match_pred(is_attr_quote).discard().maybe_char();
+    let src_delimiter = cascade_return!(proc.match_pred(is_attr_quote).discard().maybe_char());
     let src_delimiter_pred = match src_delimiter {
         Some(b'"') => is_double_quote,
         Some(b'\'') => is_single_quote,
@@ -246,16 +243,13 @@ pub fn process_quoted_val<D: Code>(proc: &Processor<D>, should_collapse_and_trim
         last_char_type: None,
         collected_count: 0,
     };
-    consume_attr_value(
-        proc,
-        should_collapse_and_trim_ws,
-        src_delimiter_pred,
-        parse_entity,
-        |char_type, _| metrics.collect_char_type(char_type),
-    )?;
+    let mut char_type;
+    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, parse_entity, char_type, {
+        metrics.collect_char_type(char_type);
+    });
 
     // Stage 2: optimally minify attribute value using metrics.
-    value_start_checkpoint.restore();
+    proc.restore(value_start_checkpoint);
     let optimal_delimiter = metrics.get_optimal_delimiter_type();
     let optimal_delimiter_char = match optimal_delimiter {
         DelimiterType::Double => Some(b'"'),
@@ -266,48 +260,47 @@ pub fn process_quoted_val<D: Code>(proc: &Processor<D>, should_collapse_and_trim
     if let Some(c) = optimal_delimiter_char {
         proc.write(c);
     }
-    consume_attr_value(
-        proc,
-        should_collapse_and_trim_ws,
-        src_delimiter_pred,
-        process_entity,
-        |char_type, char_no| match char_type {
+    let mut char_type;
+    let mut char_no = 0;
+    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, process_entity, char_type, {
+        match char_type {
             // This should never happen.
             CharType::End => unreachable!(),
 
-            // Ignore these; already written by process_entity.
+            // Ignore these; already written by `process_entity`.
             CharType::MalformedEntity => {}
             CharType::DecodedNonAscii => {}
 
             CharType::Normal(c) => proc.write(c),
             // If unquoted, encode any whitespace anywhere.
             CharType::Whitespace(c) => match optimal_delimiter {
-                DelimiterType::Unquoted => proc.write(ENCODED[c]),
+                DelimiterType::Unquoted => proc.write_slice(ENCODED[&c]),
                 _ => proc.write(c),
             },
             // If single quoted, encode any single quote anywhere.
             // If unquoted, encode single quote if first character.
             CharType::SingleQuote => match (optimal_delimiter, char_no) {
-                (DelimiterType::Single, _) | (DelimiterType::Unquoted, 0) => proc.write(ENCODED[b'\'']),
-                _ => proc.write(c),
+                (DelimiterType::Single, _) | (DelimiterType::Unquoted, 0) => proc.write_slice(ENCODED[&b'\'']),
+                _ => proc.write(b'\''),
             },
             // If double quoted, encode any double quote anywhere.
             // If unquoted, encode double quote if first character.
             CharType::DoubleQuote => match (optimal_delimiter, char_no) {
-                (DelimiterType::Double, _) | (DelimiterType::Unquoted, 0) => proc.write(ENCODED[b'"']),
-                _ => proc.write(c),
+                (DelimiterType::Double, _) | (DelimiterType::Unquoted, 0) => proc.write_slice(ENCODED[&b'"']),
+                _ => proc.write(b'"'),
             },
             // If unquoted, encode right chevron if last character.
             CharType::RightChevron => if optimal_delimiter == DelimiterType::Unquoted && char_no == metrics.collected_count - 1 {
-                proc.write(ENCODED[b'>']);
+                proc.write_slice(ENCODED[&b'>']);
             } else {
                 proc.write(b'>');
             },
-        },
-    );
+        };
+        char_no += 1;
+    });
     // Ensure closing delimiter in src has been matched and discarded, if any.
     if let Some(c) = src_delimiter {
-        proc.match_char(c).expect().discard();
+        cascade_return!(proc.match_char(c).expect().discard());
     }
     // Write closing delimiter, if any.
     if let Some(c) = optimal_delimiter_char {

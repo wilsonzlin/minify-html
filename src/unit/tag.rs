@@ -1,12 +1,11 @@
-use crate::proc::attr::{AttrType, process_attr};
-use crate::err::{HbRes, HbErr};
+use crate::err::{HbErr, HbRes};
 use crate::proc::Processor;
 use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
-use crate::proc::content::process_content;
-use crate::proc::script::process_script;
-use crate::proc::style::process_style;
 use crate::spec::tag::void::VOID_TAGS;
-use crate::code::Code;
+use crate::unit::attr::{AttrType, process_attr};
+use crate::unit::content::process_content;
+use crate::unit::script::process_script;
+use crate::unit::style::process_style;
 
 // Tag names may only use ASCII alphanumerics. However, some people also use `:` and `-`.
 // See https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name for spec.
@@ -14,13 +13,12 @@ fn is_valid_tag_name_char(c: u8) -> bool {
     is_alphanumeric(c) || c == b':' || c == b'-'
 }
 
-fn process_tag_name<'d, D: Code>(proc: &Processor<'d, D>) -> HbRes<&'d [u8]> {
-    Ok(proc.while_pred(is_valid_tag_name_char).require_reason("tag name")?.accept().slice())
-}
-
-pub fn process_tag<D: Code>(proc: &Processor<D>, parent: Option<&[u8]>) -> HbRes<()> {
-    proc.is('<').require().accept();
-    let name = process_tag_name(proc)?;
+pub fn process_tag<'d, 'p>(proc: &'p mut Processor<'d>) -> HbRes<()> {
+    // Expect to be currently at an opening tag.
+    cascade_return!(proc.match_char(b'<').expect().keep())
+    ;
+    // May not be valid tag name at current position, so require instead of expect.
+    let name_token = cascade_return!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.keep().range());
 
     let mut last_attr_type = AttrType::None;
     let mut self_closing = false;
@@ -29,14 +27,15 @@ pub fn process_tag<D: Code>(proc: &Processor<D>, parent: Option<&[u8]>) -> HbRes
         // At the beginning of this loop, the last parsed unit was
         // either the tag name or an attribute (including its value, if
         // it had one).
-        let ws_accepted = proc.match_while_pred(is_whitespace).discard().count();
+        let ws_accepted = cascade_return!(proc.match_while_pred(is_whitespace).discard().matched());
 
-        if proc.match_char(b'>').keep().matched() {
+        if cascade_return!(proc.match_char(b'>').keep().matched()) {
             // End of tag.
             break;
         }
 
-        if self_closing = proc.match_seq(b"/>").keep().matched() {
+        self_closing = cascade_return!(proc.match_seq(b"/>").keep().matched());
+        if self_closing {
             break;
         }
 
@@ -52,28 +51,29 @@ pub fn process_tag<D: Code>(proc: &Processor<D>, parent: Option<&[u8]>) -> HbRes
         }
 
         last_attr_type = process_attr(proc)?;
-    }
+    };
 
-    if self_closing || VOID_TAGS.contains(&name) {
+    if self_closing || VOID_TAGS.contains(&proc[name_token]) {
         return Ok(());
-    }
+    };
 
     // TODO WARNING: Tags must be case sensitive.
-    match name {
+    match &proc[name_token] {
         b"script" => process_script(proc)?,
         b"style" => process_style(proc)?,
-        _ => process_content(proc, Some(name))?,
-    }
+        _ => process_content(proc, Some(name_token))?,
+        _ => unreachable!(),
+    };
 
     // Require closing tag for non-void.
-    proc.match_seq(b"</").require_with_reason("closing tag")?.keep();
-    let closing_name = process_tag_name(proc)?;
-    if name != closing_name {
+    cascade_return!(proc.match_seq(b"</").require_with_reason("closing tag")?.keep());
+    let closing_name = cascade_return!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.keep().slice());
+    if &proc[name_token] != closing_name {
         // TODO Find a way to cleanly provide opening and closing tag
         // names (which are views) into error message without leaking
         // memory.
         return Err(HbErr::UnclosedTag);
-    }
-    proc.match_char(b'>').require_with_reason("closing tag")?.keep();
+    };
+    cascade_return!(proc.match_char(b'>').require_with_reason("closing tag")?.keep());
     Ok(())
 }

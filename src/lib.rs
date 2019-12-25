@@ -1,12 +1,13 @@
+use crate::err::HbRes;
+use crate::proc::Processor;
+use crate::unit::content::process_content;
+
 mod code;
-mod err;
+pub mod err;
+#[macro_use]
 mod proc;
 mod spec;
-
-use err::HbRes;
-use crate::code::Code;
-use crate::proc::content::process_content;
-use crate::proc::Processor;
+mod unit;
 
 /**
  * Run hyperbuild on an input array and write to {@param output}. Output will be
@@ -20,6 +21,8 @@ use crate::proc::Processor;
  * @param cfg configuration to use
  * @return result where to write any resulting error information
  */
-fn hyperbuild<T: Code>(code: &mut T) -> HbRes<()> {
-    process_content(&Processor { data: code }, None)
+pub fn hyperbuild<'d>(code: &'d mut [u8]) -> HbRes<usize> {
+    let mut p = Processor::new(code);
+    process_content(&mut p, None)?;
+    Ok(p.written_len())
 }

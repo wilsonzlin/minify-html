@@ -43,10 +43,10 @@ use crate::proc::Processor;
 use crate::spec::codepoint::{is_digit, is_upper_hex_digit, is_lower_hex_digit, is_hex_digit};
 use crate::spec::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
 use crate::err::HbRes;
-use crate::code::Code;
 
 const MAX_UNICODE_CODE_POINT: u32 = 0x10FFFF;
 
+#[derive(Clone, Copy, Eq, PartialEq)]
 enum Type {
     Malformed,
     Name,
@@ -57,39 +57,39 @@ enum Type {
 fn parse_decimal(slice: &[u8]) -> Option<u32> {
     let mut val = 0u32;
     for c in slice {
-        val = val * 10 + (c - b'0');
+        val = val * 10 + (c - b'0') as u32;
     }
     if val > MAX_UNICODE_CODE_POINT {
         None
     } else {
-        val
+        Some(val)
     }
 }
 
 fn parse_hexadecimal(slice: &[u8]) -> Option<u32> {
     let mut val = 0u32;
     for c in slice {
-        let digit: u32 = if is_digit(c) {
+        let digit = if is_digit(*c) {
             c - b'0'
-        } else if is_upper_hex_digit(c) {
+        } else if is_upper_hex_digit(*c) {
             c - b'A' + 10
-        } else if is_lower_hex_digit(c) {
+        } else if is_lower_hex_digit(*c) {
             c - b'a' + 10
         } else {
             unreachable!();
         };
-        val = val * 16 + digit;
-    }
+        val = val * 16 + digit as u32;
+    };
     if val > MAX_UNICODE_CODE_POINT {
         None
     } else {
-        val
+        Some(val)
     }
 }
 
 // This will parse and skip characters. Set a checkpoint to later write skipped, or to ignore results and reset to previous position.
-pub fn parse_entity<D: Code>(proc: &Processor<D>) -> HbRes<Option<u32>> {
-    proc.match_char(b'&').expect().discard();
+pub fn parse_entity<'d, 'p>(proc: &'p mut Processor<'d>) -> HbRes<Option<u32>> {
+    cascade_return!(proc.match_char(b'&').expect().discard());
 
     // The input can end at any time after initial ampersand.
     // Examples of valid complete source code: "&", "&a", "&#", "&#09",
@@ -113,21 +113,21 @@ pub fn parse_entity<D: Code>(proc: &Processor<D>) -> HbRes<Option<u32>> {
 
     // First stage: determine the type of entity.
     let predicate: fn(u8) -> bool;
-    let entity_type: Type;
+    let mut entity_type: Type;
     let min_len: usize;
     let max_len: usize;
 
-    if proc.match_seq(b"#x").discard().matched() {
+    if cascade_return!(proc.match_seq(b"#x").discard().matched()) {
         predicate = is_hex_digit;
         entity_type = Type::Hexadecimal;
         min_len = 1;
         max_len = 6;
-    } else if proc.match_char(b'#').discard().matched() {
+    } else if cascade_return!(proc.match_char(b'#').discard().matched()) {
         predicate = is_digit;
         entity_type = Type::Decimal;
         min_len = 1;
         max_len = 7;
-    } else if proc.match_pred(is_valid_entity_reference_name_char).matched() {
+    } else if cascade_return!(proc.match_pred(is_valid_entity_reference_name_char).matched()) {
         predicate = is_valid_entity_reference_name_char;
         entity_type = Type::Name;
         min_len = 2;
@@ -136,14 +136,15 @@ pub fn parse_entity<D: Code>(proc: &Processor<D>) -> HbRes<Option<u32>> {
         return Ok(None);
     }
 
-    // Second stage: try to parse a well formed entity.
-    // Malformed entity could be last few characters in code, so allow EOF during entity.
-    let data = proc.match_while_pred(predicate).discard().slice();
-    if data.len() < min_len || data.len() > max_len {
+    // Try consuming semicolon before getting data as slice to prevent issues with borrowing.
+    if !cascade_return!(proc.match_char(b';').discard().matched()) {
         entity_type = Type::Malformed;
     };
-    // Don't try to consume semicolon if entity is not well formed already.
-    if entity_type != Type::Malformed && !proc.match_char(b';').discard().matched() {
+
+    // Second stage: try to parse a well formed entity.
+    // Malformed entity could be last few characters in code, so allow EOF during entity.
+    let data = cascade_return!(proc.match_while_pred(predicate).discard().slice());
+    if data.len() < min_len || data.len() > max_len {
         entity_type = Type::Malformed;
     };
 
@@ -162,7 +163,7 @@ pub fn parse_entity<D: Code>(proc: &Processor<D>) -> HbRes<Option<u32>> {
  * @return Unicode code point of the entity, or HB_UNIT_ENTITY_NONE if the
  * entity is malformed or invalid
  */
-pub fn process_entity<D: Code>(proc: &Processor<D>) -> HbRes<Option<u32>> {
+pub fn process_entity<'d, 'p>(proc: &'p mut Processor<'d>) -> HbRes<Option<u32>> {
     let checkpoint = proc.checkpoint();
     let parsed = parse_entity(proc)?;
 
@@ -170,7 +171,7 @@ pub fn process_entity<D: Code>(proc: &Processor<D>) -> HbRes<Option<u32>> {
         proc.write_utf8(cp);
     } else {
         // Write discarded characters that could not form a well formed entity.
-        checkpoint.write_skipped();
+        proc.write_skipped(checkpoint);
     };
 
     Ok(parsed)

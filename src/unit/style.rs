@@ -1,6 +1,5 @@
 use crate::proc::Processor;
 use crate::err::{HbRes, HbErr};
-use crate::code::Code;
 
 fn is_string_delimiter(c: u8) -> bool {
     match c {
@@ -9,19 +8,19 @@ fn is_string_delimiter(c: u8) -> bool {
     }
 }
 
-fn parse_comment<D: Code>(proc: &Processor<D>) -> HbRes<()> {
-    proc.match_seq(b"/*").expect().keep();
+fn parse_comment<'d, 'p>(proc: &'p mut Processor<'d>) -> HbRes<()> {
+    cascade_return!(proc.match_seq(b"/*").expect().keep());
 
     // Unlike script tags, style comments do NOT end at closing tag.
-    while !proc.match_seq(b"*/").keep().matched() {
+    while !cascade_return!(proc.match_seq(b"*/").keep().matched()) {
         proc.accept();
     };
 
     Ok(())
 }
 
-fn parse_string<D: Code>(proc: &Processor<D>) -> HbRes<()> {
-    let delim = proc.match_pred(is_string_delimiter).expect().keep().char();
+fn parse_string<'d, 'p>(proc: &'p mut Processor<'d>) -> HbRes<()> {
+    let delim = cascade_return!(proc.match_pred(is_string_delimiter).expect().keep().char());
 
     let mut escaping = false;
 
@@ -37,7 +36,7 @@ fn parse_string<D: Code>(proc: &Processor<D>) -> HbRes<()> {
             break;
         }
 
-        if proc.match_line_terminator().keep().matched() {
+        if cascade_return!(proc.match_line_terminator().keep().matched()) {
             if !escaping {
                 // TODO Use better error type.
                 return Err(HbErr::ExpectedNotFound("Unterminated CSS string"));
@@ -50,11 +49,11 @@ fn parse_string<D: Code>(proc: &Processor<D>) -> HbRes<()> {
     Ok(())
 }
 
-pub fn process_style<D: Code>(proc: &Processor<D>) -> HbRes<()> {
-    while !proc.match_seq(b"</").matched() {
-        if proc.match_seq(b"/*").matched() {
+pub fn process_style<'d, 'p>(proc: &'p mut Processor<'d>) -> HbRes<()> {
+    while !cascade_return!(proc.match_seq(b"</").matched()) {
+        if cascade_return!(proc.match_seq(b"/*").matched()) {
             parse_comment(proc)?;
-        } else if proc.match_pred(is_string_delimiter).matched() {
+        } else if cascade_return!(proc.match_pred(is_string_delimiter).matched()) {
             parse_string(proc)?;
         } else {
             proc.accept()?;

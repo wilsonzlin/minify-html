@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum HbErr {
     ExpectedCharNotFound { expected: u8, got: u8 },
     ExpectedMatchNotFound(&'static [u8]),
