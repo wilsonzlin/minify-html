@@ -1,8 +1,9 @@
-use crate::err::{ErrorType};
+use crate::err::ErrorType;
 use crate::proc::Processor;
 use crate::unit::content::process_content;
 
 pub mod err;
+pub mod pattern;
 #[macro_use]
 mod proc;
 mod spec;
@@ -21,9 +22,9 @@ mod unit;
  * @return result where to write any resulting error information
  */
 pub fn hyperbuild(code: &mut [u8]) -> Result<usize, (ErrorType, usize)> {
-    let mut p = Processor::new(code);
-    match process_content(&mut p, None) {
-        Ok(()) => Ok(p.written_len()),
-        Err(e) => Err((e, p.read_len())),
+    let mut proc = Processor::new(code);
+    match process_content(&mut proc, None) {
+        Ok(()) => Ok(proc.written_len()),
+        Err(e) => Err((e, proc.read_len())),
     }
 }

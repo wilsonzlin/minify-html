@@ -119,10 +119,10 @@ impl Metrics {
             _ => 0,
         };
 
-        first_char_encoding_cost
+        self.count_single_quotation
             + self.count_double_quotation
-            + self.count_single_quotation
             + self.total_whitespace_encoded_length
+            + first_char_encoding_cost
             + last_char_encoding_cost
             // If first char is quote and is encoded, it will be counted twice as it'll also be part of `metrics.count_*_quotation`.
             // Subtract last to prevent underflow.
@@ -130,11 +130,17 @@ impl Metrics {
     }
 
     fn single_quoted_cost(&self) -> usize {
-        self.count_single_quotation * ENCODED[&b'\''].len() + self.count_double_quotation + self.count_whitespace
+        self.count_single_quotation * ENCODED[&b'\''].len()
+            + self.count_double_quotation
+            + self.count_whitespace
+            + 2 // Delimiter quotes.
     }
 
     fn double_quoted_cost(&self) -> usize {
-        self.count_double_quotation * ENCODED[&b'"'].len() + self.count_single_quotation + self.count_whitespace
+        self.count_single_quotation
+            + self.count_double_quotation * ENCODED[&b'"'].len()
+            + self.count_whitespace
+            + 2 // Delimiter quotes.
     }
 
     fn get_optimal_delimiter_type(&self) -> DelimiterType {
@@ -207,23 +213,7 @@ macro_rules! consume_attr_value_chars {
     };
 }
 
-pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<AttrType> {
-    // Processing a quoted attribute value is tricky, due to the fact that
-    // it's not possible to know whether or not to unquote the value until
-    // the value has been processed. For example, decoding an entity could
-    // create whitespace in a value which might otherwise be unquotable. How
-    // this function works is:
-    //
-    // 1. Assume that the value is unquotable, and don't output any quotes.
-    // Decode any entities as necessary. Collect metrics on the types of
-    // characters in the value while processing.
-    // 2. Based on the metrics, if it's possible to not use quotes, nothing
-    // needs to be done and the function ends.
-    // 3. Choose a quote based on the amount of occurrences, to minimise the
-    // amount of encoded values.
-    // 4. Post-process the output by adding delimiter quotes and encoding
-    // quotes in values. This does mean that the output is written to twice.
-
+pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<(AttrType, usize)> {
     let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());
     let src_delimiter_pred = match src_delimiter {
         Some(b'"') => is_double_quote,
@@ -261,7 +251,8 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         proc.write(c);
     }
     let mut char_type;
-    let mut char_no = 0;
+    // Used to determine first and last characters.
+    let mut char_no = 0usize;
     consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, process_entity, char_type, {
         match char_type {
             // This should never happen.
@@ -307,9 +298,10 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         proc.write(c);
     }
 
-    if optimal_delimiter != DelimiterType::Unquoted {
-        Ok(AttrType::Unquoted)
+    let attr_type = if optimal_delimiter != DelimiterType::Unquoted {
+        AttrType::Quoted
     } else {
-        Ok(AttrType::Quoted)
-    }
+        AttrType::Unquoted
+    };
+    Ok((attr_type, metrics.collected_count))
 }

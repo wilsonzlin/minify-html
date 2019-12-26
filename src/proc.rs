@@ -3,6 +3,7 @@ use std::ops::Index;
 use phf::Set;
 
 use crate::err::{ErrorType, ProcessingResult};
+use crate::pattern::SinglePattern;
 
 macro_rules! chain {
     ($proc:ident $($tail:tt)+) => ({
@@ -74,17 +75,6 @@ fn index_of(s: &'static [u8], c: u8, from: usize) -> Option<usize> {
         };
     };
     None
-}
-
-// For fast not-matching, ensure that it's possible to continue directly to next character in string
-// when searching for first substring matching pattern in string and only partially matching pattern.
-// For example, given string "abcdabc" and pattern "abcde", normal substring searching would match
-// "abcd", fail, and then start searching from 'b' at index 1. We want to be able to continue searching
-// from 'a' at index 4.
-macro_rules! debug_assert_fast_pattern {
-    ($x:expr) => {
-        debug_assert!($x.len() > 0 && index_of($x, $x[0], 1) == None);
-    }
 }
 
 impl<'d> Index<ProcessorRange> for Processor<'d> {
@@ -249,7 +239,6 @@ impl<'d> Processor<'d> {
 
     // Sequence matching APIs.
     pub fn match_seq(&mut self, pat: &'static [u8]) -> () {
-        debug_assert_fast_pattern!(pat);
         // For faster short-circuiting matching, compare char-by-char instead of slices.
         let len = pat.len();
         let mut count = 0;
@@ -288,33 +277,12 @@ impl<'d> Processor<'d> {
     pub fn match_while_pred(&mut self, pred: fn(u8) -> bool) -> () {
         self._match_greedy(pred)
     }
-    pub fn match_while_not_seq(&mut self, s: &'static [u8]) -> () {
-        debug_assert_fast_pattern!(s);
+    pub fn match_while_not_seq(&mut self, s: &SinglePattern) -> () {
         // TODO Test
         // TODO Document
-        let mut count = 0usize;
-        let mut srcpos = 0usize;
-        // Next character in pattern to match.
-        // For example, if `patpos` is 2, we've matched 2 characters so far and need to match character at index 2 in pattern with character `srcpos` in code.
-        let mut patpos = 0usize;
-        while self._in_bounds(srcpos) {
-            if self._read_offset(srcpos) == s[patpos] {
-                if patpos == s.len() - 1 {
-                    // Matched last character in pattern i.e. whole pattern.
-                    break;
-                } else {
-                    srcpos += 1;
-                    patpos += 1;
-                }
-            } else {
-                count += patpos;
-                if patpos == 0 {
-                    count += 1;
-                    srcpos += 1;
-                } else {
-                    patpos = 0;
-                };
-            };
+        let count = match s.match_against(&self.code[self.read_next..]) {
+            Some(idx) => idx,
+            None => self.code.len() - self.read_next,
         };
         self._new_match(count, None, RequireReason::Custom)
     }

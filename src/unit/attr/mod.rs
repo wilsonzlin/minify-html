@@ -1,7 +1,8 @@
-use crate::proc::Processor;
+use phf::{phf_set, Set};
+
 use crate::err::ProcessingResult;
+use crate::proc::Processor;
 use crate::spec::codepoint::is_control;
-use phf::{Set, phf_set};
 use crate::unit::attr::value::process_attr_value;
 
 mod value;
@@ -12,9 +13,6 @@ static COLLAPSIBLE_AND_TRIMMABLE_ATTRS: Set<&'static [u8]> = phf_set! {
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum AttrType {
-    // Special value for `process_tag`.
-    None,
-
     Quoted,
     Unquoted,
     NoValue,
@@ -33,6 +31,7 @@ fn is_name_char(c: u8) -> bool {
 pub fn process_attr(proc: &mut Processor) -> ProcessingResult<AttrType> {
     // Expect `process_attr` to be called at an attribute.
     let name = chain!(proc.match_while_pred(is_name_char).expect().keep().slice());
+    let after_name = proc.checkpoint();
 
     // TODO DOC Attr must be case sensitive
     let should_collapse_and_trim_value_ws = COLLAPSIBLE_AND_TRIMMABLE_ATTRS.contains(name);
@@ -41,6 +40,13 @@ pub fn process_attr(proc: &mut Processor) -> ProcessingResult<AttrType> {
     if !has_value {
         Ok(AttrType::NoValue)
     } else {
-        process_attr_value(proc, should_collapse_and_trim_value_ws)
+        match process_attr_value(proc, should_collapse_and_trim_value_ws)? {
+            (_, 0) => {
+                // Value is empty, which is equivalent to no value, so discard `=` and any quotes.
+                proc.erase_written(after_name);
+                Ok(AttrType::NoValue)
+            }
+            (attr_type, _) => Ok(attr_type),
+        }
     }
 }

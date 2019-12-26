@@ -6,7 +6,6 @@ use crate::unit::attr::{AttrType, process_attr};
 use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
-use std::io::{stdout, Write};
 
 // Tag names may only use ASCII alphanumerics. However, some people also use `:` and `-`.
 // See https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name for spec.
@@ -22,7 +21,7 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
     // May not be valid tag name at current position, so require instead of expect.
     let opening_name_range = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.keep().range());
 
-    let mut last_attr_type = AttrType::None;
+    let mut last_attr_type: Option<AttrType> = None;
     let mut self_closing = false;
 
     loop {
@@ -41,18 +40,18 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
             break;
         }
 
-        // HB_ERR_PARSE_NO_SPACE_BEFORE_ATTR is not suppressible as
-        // otherwise there would be difficulty in determining what is
-        // the end of a tag/attribute name/attribute value.
+        // This needs to be enforced as otherwise there would be difficulty in determining what is the end of a tag/attribute name/attribute value.
         if !ws_accepted {
             return Err(ErrorType::NoSpaceBeforeAttr);
         }
 
-        if last_attr_type != AttrType::Quoted {
-            proc.write(b' ');
-        }
+        // Write space after tag name or unquoted/valueless attribute.
+        match last_attr_type {
+            Some(AttrType::Quoted) => {},
+            _ => proc.write(b' '),
+        };
 
-        last_attr_type = process_attr(proc)?;
+        last_attr_type = Some(process_attr(proc)?);
     };
 
     if self_closing || VOID_TAGS.contains(&proc[opening_name_range]) {
