@@ -38,9 +38,7 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
     let mut self_closing = false;
 
     loop {
-        // At the beginning of this loop, the last parsed unit was
-        // either the tag name or an attribute (including its value, if
-        // it had one).
+        // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).
         let ws_accepted = chain!(proc.match_while_pred(is_whitespace).discard().matched());
 
         if chain!(proc.match_char(b'>').keep().matched()) {
@@ -60,8 +58,8 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
 
         // Write space after tag name or unquoted/valueless attribute.
         match last_attr_type {
-            Some(AttrType::Quoted) => {}
-            _ => proc.write(b' '),
+            Some(AttrType::Unquoted) | Some(AttrType::NoValue) | None => proc.write(b' '),
+            _ => {}
         };
 
         last_attr_type = Some(process_attr(proc)?);

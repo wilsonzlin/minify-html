@@ -48,7 +48,7 @@ They are considered as a single character representing their decoded value. This
 
 If a named entity is an invalid reference as per the [spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references), it is considered malformed and will be interpreted literally.
 
-Numeric character references that reference to numbers below 0x00 or above 0x10FFFF are considered malformed. It will be decoded if it falls within this range, even if it does not refer to a valid Unicode code point.
+Numeric character references that do not reference a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are considered malformed.
 
 ### Attributes
 

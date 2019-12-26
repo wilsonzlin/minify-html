@@ -3,7 +3,7 @@ use phf::{phf_set, Set};
 use crate::err::ProcessingResult;
 use crate::proc::Processor;
 use crate::spec::codepoint::is_control;
-use crate::unit::attr::value::process_attr_value;
+use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue};
 
 mod value;
 
@@ -41,12 +41,13 @@ pub fn process_attr(proc: &mut Processor) -> ProcessingResult<AttrType> {
         Ok(AttrType::NoValue)
     } else {
         match process_attr_value(proc, should_collapse_and_trim_value_ws)? {
-            (_, 0) => {
+            ProcessedAttrValue { empty: true, .. } => {
                 // Value is empty, which is equivalent to no value, so discard `=` and any quotes.
                 proc.erase_written(after_name);
                 Ok(AttrType::NoValue)
             }
-            (attr_type, _) => Ok(attr_type),
+            ProcessedAttrValue { delimiter: DelimiterType::Unquoted, .. } => Ok(AttrType::Unquoted),
+            ProcessedAttrValue { delimiter: DelimiterType::Double, .. } | ProcessedAttrValue { delimiter: DelimiterType::Single, .. } => Ok(AttrType::Quoted),
         }
     }
 }

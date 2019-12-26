@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::{Read, Write, stderr};
 
 use structopt::StructOpt;
 
@@ -27,9 +27,34 @@ fn main() {
         Err((err, pos)) => {
             eprintln!("Failed at character {}:", pos);
             match err {
-                // TODO
-                _ => unimplemented!(),
+                ErrorType::NoSpaceBeforeAttr => {
+                    eprintln!("Space required before attribute.");
+                }
+                ErrorType::UnterminatedCssString => {
+                    eprintln!("Unterminated CSS string.");
+                }
+                ErrorType::UnterminatedJsString => {
+                    eprintln!("Unterminated JavaScript string.");
+                }
+                ErrorType::CharNotFound { need, got } => {
+                    eprintln!("Expected {} (U+{:X}), got {} (U+{:X}).", need as char, need, got as char, got);
+                }
+                ErrorType::MatchNotFound(seq) => {
+                    eprint!("Expected `");
+                    stderr().write_all(seq).expect("failed to write to stderr");
+                    eprintln!("`.");
+                }
+                ErrorType::NotFound(exp) => {
+                    eprintln!("Expected {}.", exp);
+                }
+                ErrorType::UnexpectedChar(unexp) => {
+                    eprintln!("Unexpected {} (U+{:X}).", unexp as char, unexp);
+                }
+                ErrorType::UnexpectedEnd => {
+                    eprintln!("Unexpected end of source code.");
+                }
             };
+            eprintln!("The output file has not been touched.")
         }
     };
 }

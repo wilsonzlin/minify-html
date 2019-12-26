@@ -35,7 +35,7 @@ pub enum RequireReason {
     ExpectedChar(u8),
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq)]
 pub struct Checkpoint {
     read_next: usize,
     write_next: usize,
@@ -68,15 +68,6 @@ pub struct Processor<'d> {
     read_next: usize,
     // Index of the next unwritten space.
     write_next: usize,
-}
-
-fn index_of(s: &'static [u8], c: u8, from: usize) -> Option<usize> {
-    for i in from..s.len() {
-        if s[i] == c {
-            return Some(i);
-        };
-    };
-    None
 }
 
 impl<'d> Index<ProcessorRange> for Processor<'d> {
@@ -383,32 +374,10 @@ impl<'d> Processor<'d> {
         self.code[self.write_next..self.write_next + s.len()].copy_from_slice(s);
         self.write_next += s.len();
     }
-    /// Does not check if `c` is a valid Unicode code point.
-    pub fn write_utf8(&mut self, c: u32) -> () {
-        // TODO Test.
-        // Don't use char::encode_utf8 as it requires a valid code point,
-        // and requires passing a [u8, 4] which might be heap-allocated.
-        if c <= 0x7F {
-            // Plain ASCII.
-            self.write(c as u8);
-        } else if c <= 0x07FF {
-            // 2-byte UTF-8.
-            self.write((((c >> 6) & 0x1F) | 0xC0) as u8);
-            self.write((((c >> 0) & 0x3F) | 0x80) as u8);
-        } else if c <= 0xFFFF {
-            // 3-byte UTF-8.
-            self.write((((c >> 12) & 0x0F) | 0xE0) as u8);
-            self.write((((c >> 6) & 0x3F) | 0x80) as u8);
-            self.write((((c >> 0) & 0x3F) | 0x80) as u8);
-        } else if c <= 0x10FFFF {
-            // 4-byte UTF-8.
-            self.write((((c >> 18) & 0x07) | 0xF0) as u8);
-            self.write((((c >> 12) & 0x3F) | 0x80) as u8);
-            self.write((((c >> 6) & 0x3F) | 0x80) as u8);
-            self.write((((c >> 0) & 0x3F) | 0x80) as u8);
-        } else {
-            unreachable!();
-        }
+    pub fn write_utf8(&mut self, c: char) -> () {
+        let mut encoded = [0u8, 4];
+        c.encode_utf8(&mut encoded);
+        self.write_slice(&encoded);
     }
 
     // Shifting characters.

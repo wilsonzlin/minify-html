@@ -6,7 +6,7 @@ use crate::spec::tag::formatting::FORMATTING_TAGS;
 use crate::spec::tag::wss::WSS_TAGS;
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
-use crate::unit::entity::{process_entity, maybe_process_entity};
+use crate::unit::entity::{EntityType, maybe_process_entity};
 use crate::unit::tag::process_tag;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
@@ -92,26 +92,23 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
     loop {
         let next_content_type = match ContentType::peek(proc) {
             ContentType::Entity => {
-                let e = maybe_process_entity(proc)?;
                 // Entity could decode to whitespace.
-                if e.code_point()
-                    .filter(|c| *c < 0x7f)
-                    .filter(|c| is_whitespace(*c as u8))
-                    .is_some() {
+                let entity = maybe_process_entity(proc)?;
+                if let EntityType::Ascii(c) = entity.entity() {
                     // Skip whitespace char, and mark as whitespace.
                     ContentType::Whitespace
                 } else {
                     // Not whitespace, so decode and write.
-                    e.keep(proc);
+                    entity.keep(proc);
                     ContentType::Entity
                 }
-            },
+            }
             ContentType::Whitespace => {
                 // This is here to prevent skipping twice from decoded whitespace entity.
                 // Whitespace is always ignored and then processed afterwards, even if not minifying.
                 proc.skip().expect("skipping known character");
                 ContentType::Whitespace
-            },
+            }
             other_type => other_type,
         };
 

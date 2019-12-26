@@ -3,8 +3,7 @@ use phf::{Map, phf_map};
 use crate::err::ProcessingResult;
 use crate::proc::Processor;
 use crate::spec::codepoint::is_whitespace;
-use crate::unit::attr::AttrType;
-use crate::unit::entity::{parse_entity, process_entity};
+use crate::unit::entity::{EntityType, maybe_process_entity, ParsedEntity};
 
 pub fn is_double_quote(c: u8) -> bool {
     c == b'"'
@@ -40,8 +39,7 @@ static ENCODED: Map<u8, &'static [u8]> = phf_map! {
 #[derive(Clone, Copy, Eq, PartialEq)]
 enum CharType {
     End,
-    MalformedEntity,
-    DecodedNonAscii,
+    NonAsciiEntity(ParsedEntity),
     // Normal needs associated character to be able to write it.
     Normal(u8),
     // Whitespace needs associated character to determine cost of encoding it.
@@ -63,7 +61,7 @@ impl CharType {
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-enum DelimiterType {
+pub enum DelimiterType {
     Double,
     Single,
     Unquoted,
@@ -81,6 +79,7 @@ struct Metrics {
     first_char_type: Option<CharType>,
     last_char_type: Option<CharType>,
     // How many times `collect_char_type` is called. Used to determine first and last characters when writing.
+    // NOTE: This may not be the same as amount of final characters, as malformed entities are usually multiple chars.
     collected_count: usize,
 }
 
@@ -162,7 +161,7 @@ impl Metrics {
 }
 
 macro_rules! consume_attr_value_chars {
-    ($proc:ident, $should_collapse_and_trim_ws:ident, $delimiter_pred:ident, $entity_processor:ident, $out_char_type:ident, $on_char:block) => {
+    ($proc:ident, $should_collapse_and_trim_ws:ident, $delimiter_pred:ident, $out_char_type:ident, $on_char:block) => {
         // Set to true when one or more immediately previous characters were whitespace and deferred for processing after the contiguous whitespace.
         // NOTE: Only used if `should_collapse_and_trim_ws`.
         let mut currently_in_whitespace = false;
@@ -175,9 +174,11 @@ macro_rules! consume_attr_value_chars {
                 // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
                 CharType::End
             } else if chain!($proc.match_char(b'&').matched()) {
-                match $entity_processor($proc)? {
-                    Some(e) => if e <= 0x7f { CharType::from_char(e as u8) } else { CharType::DecodedNonAscii },
-                    None => CharType::MalformedEntity,
+                let entity = maybe_process_entity($proc)?;
+                if let EntityType::Ascii(c) = entity.entity() {
+                    CharType::from_char(c)
+                } else {
+                    CharType::NonAsciiEntity(entity)
                 }
             } else {
                 CharType::from_char($proc.skip()?)
@@ -213,7 +214,12 @@ macro_rules! consume_attr_value_chars {
     };
 }
 
-pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<(AttrType, usize)> {
+pub struct ProcessedAttrValue {
+    pub delimiter: DelimiterType,
+    pub empty: bool,
+}
+
+pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
     let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());
     let src_delimiter_pred = match src_delimiter {
         Some(b'"') => is_double_quote,
@@ -234,7 +240,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         collected_count: 0,
     };
     let mut char_type;
-    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, parse_entity, char_type, {
+    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, char_type, {
         metrics.collect_char_type(char_type);
     });
 
@@ -253,14 +259,12 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     let mut char_type;
     // Used to determine first and last characters.
     let mut char_no = 0usize;
-    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, process_entity, char_type, {
+    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, char_type, {
         match char_type {
             // This should never happen.
             CharType::End => unreachable!(),
 
-            // Ignore these; already written by `process_entity`.
-            CharType::MalformedEntity => {}
-            CharType::DecodedNonAscii => {}
+            CharType::NonAsciiEntity(e) => e.keep(proc),
 
             CharType::Normal(c) => proc.write(c),
             // If unquoted, encode any whitespace anywhere.
@@ -298,10 +302,8 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         proc.write(c);
     }
 
-    let attr_type = if optimal_delimiter != DelimiterType::Unquoted {
-        AttrType::Quoted
-    } else {
-        AttrType::Unquoted
-    };
-    Ok((attr_type, metrics.collected_count))
+    Ok(ProcessedAttrValue {
+        delimiter: optimal_delimiter,
+        empty: metrics.collected_count == 0,
+    })
 }
