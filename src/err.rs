@@ -1,11 +1,13 @@
 #[derive(Debug)]
 pub enum ErrorType {
+    NoSpaceBeforeAttr,
+    UnterminatedCssString,
+    UnterminatedJsString,
     CharNotFound { need: u8, got: u8 },
     MatchNotFound(&'static [u8]),
     NotFound(&'static str),
-    NoSpaceBeforeAttr,
     UnexpectedChar(u8),
     UnexpectedEnd,
 }
 
-pub type InternalResult<T> = Result<T, ErrorType>;
+pub type ProcessingResult<T> = Result<T, ErrorType>;

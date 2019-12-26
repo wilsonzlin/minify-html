@@ -39,10 +39,10 @@
 // - An entity is considered invalid if it is well formed but represents a
 // non-existent Unicode code point or reference name.
 
-use crate::proc::Processor;
-use crate::spec::codepoint::{is_digit, is_upper_hex_digit, is_lower_hex_digit, is_hex_digit};
+use crate::err::ProcessingResult;
+use crate::proc::{Checkpoint, Processor};
+use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
 use crate::spec::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
-use crate::err::InternalResult;
 
 const MAX_UNICODE_CODE_POINT: u32 = 0x10FFFF;
 
@@ -88,7 +88,7 @@ fn parse_hexadecimal(slice: &[u8]) -> Option<u32> {
 }
 
 // This will parse and skip characters. Set a checkpoint to later write skipped, or to ignore results and reset to previous position.
-pub fn parse_entity<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<Option<u32>> {
+pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<Option<u32>> {
     chain!(proc.match_char(b'&').expect().discard());
 
     // The input can end at any time after initial ampersand.
@@ -152,12 +152,38 @@ pub fn parse_entity<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<Optio
         Type::Malformed => None,
     });
 
-    // Try consuming semicolon before getting data as slice to prevent issues with borrowing.
+    // Consume semicolon after using borrowed data slice.
     if entity_type != Type::Malformed && !chain!(proc.match_char(b';').discard().matched()) {
         Ok(None)
     } else {
         res
     }
+}
+
+pub struct ParsedEntity {
+    code_point: Option<u32>,
+    checkpoint: Checkpoint,
+}
+
+impl ParsedEntity {
+    pub fn code_point(&self) -> Option<u32> {
+        self.code_point
+    }
+    pub fn keep(&self, proc: &mut Processor) -> () {
+        if let Some(cp) = self.code_point {
+            proc.write_utf8(cp);
+        } else {
+            // Write discarded characters that could not form a well formed entity.
+            proc.write_skipped(self.checkpoint);
+        };
+    }
+}
+
+pub fn maybe_process_entity(proc: &mut Processor) -> ProcessingResult<ParsedEntity> {
+    let checkpoint = proc.checkpoint();
+    let code_point = parse_entity(proc)?;
+
+    Ok(ParsedEntity { code_point, checkpoint })
 }
 
 /**
@@ -166,16 +192,8 @@ pub fn parse_entity<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<Optio
  * @return Unicode code point of the entity, or HB_UNIT_ENTITY_NONE if the
  * entity is malformed or invalid
  */
-pub fn process_entity<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<Option<u32>> {
-    let checkpoint = proc.checkpoint();
-    let parsed = parse_entity(proc)?;
-
-    if let Some(cp) = parsed {
-        proc.write_utf8(cp);
-    } else {
-        // Write discarded characters that could not form a well formed entity.
-        proc.write_skipped(checkpoint);
-    };
-
-    Ok(parsed)
+pub fn process_entity(proc: &mut Processor) -> ProcessingResult<Option<u32>> {
+    let e = maybe_process_entity(proc)?;
+    e.keep(proc);
+    Ok(e.code_point())
 }

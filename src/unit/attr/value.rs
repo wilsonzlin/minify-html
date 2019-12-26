@@ -1,6 +1,6 @@
 use phf::{Map, phf_map};
 
-use crate::err::InternalResult;
+use crate::err::ProcessingResult;
 use crate::proc::Processor;
 use crate::spec::codepoint::is_whitespace;
 use crate::unit::attr::AttrType;
@@ -207,7 +207,7 @@ macro_rules! consume_attr_value_chars {
     };
 }
 
-pub fn process_attr_value<'d, 'p>(proc: &'p mut Processor<'d>, should_collapse_and_trim_ws: bool) -> InternalResult<AttrType> {
+pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<AttrType> {
     // Processing a quoted attribute value is tricky, due to the fact that
     // it's not possible to know whether or not to unquote the value until
     // the value has been processed. For example, decoding an entity could

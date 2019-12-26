@@ -1,7 +1,7 @@
 use crate::proc::Processor;
-use crate::err::InternalResult;
+use crate::err::ProcessingResult;
 
-pub fn process_comment<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<()> {
+pub fn process_comment(proc: &mut Processor) -> ProcessingResult<()> {
     chain!(proc.match_seq(b"<!--").expect().discard());
 
     // TODO Cannot use this pattern

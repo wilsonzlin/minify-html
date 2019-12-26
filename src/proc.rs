@@ -2,7 +2,7 @@ use std::ops::Index;
 
 use phf::Set;
 
-use crate::err::{ErrorType, InternalResult};
+use crate::err::{ErrorType, ProcessingResult};
 
 macro_rules! chain {
     ($proc:ident $($tail:tt)+) => ({
@@ -158,7 +158,7 @@ impl<'d> Processor<'d> {
         self._new_match(count, None, RequireReason::Custom)
     }
     // Ensure that match is nonempty or return error.
-    fn _match_require(&self, custom_reason: Option<&'static str>) -> InternalResult<()> {
+    fn _match_require(&self, custom_reason: Option<&'static str>) -> ProcessingResult<()> {
         if self.match_len > 0 {
             Ok(())
         } else {
@@ -207,10 +207,10 @@ impl<'d> Processor<'d> {
     }
 
     // Assert match.
-    pub fn require(&self) -> InternalResult<()> {
+    pub fn require(&self) -> ProcessingResult<()> {
         self._match_require(None)
     }
-    pub fn require_with_reason(&self, reason: &'static str) -> InternalResult<()> {
+    pub fn require_with_reason(&self, reason: &'static str) -> ProcessingResult<()> {
         self._match_require(Some(reason))
     }
     // TODO Document
@@ -361,20 +361,20 @@ impl<'d> Processor<'d> {
     pub fn peek_offset_eof(&self, offset: usize) -> Option<u8> {
         self._maybe_read_offset(offset)
     }
-    pub fn peek_offset(&self, offset: usize) -> InternalResult<u8> {
+    pub fn peek_offset(&self, offset: usize) -> ProcessingResult<u8> {
         self._maybe_read_offset(offset).ok_or(ErrorType::UnexpectedEnd)
     }
     pub fn peek_eof(&self) -> Option<u8> {
         self._maybe_read_offset(0)
     }
-    pub fn peek(&self) -> InternalResult<u8> {
+    pub fn peek(&self) -> ProcessingResult<u8> {
         self._maybe_read_offset(0).ok_or(ErrorType::UnexpectedEnd)
     }
 
     // Consuming source characters.
     /// Skip the next `count` characters (can be zero).
     /// Will result in an error if exceeds bounds.
-    pub fn skip_amount(&mut self, count: usize) -> InternalResult<()> {
+    pub fn skip_amount(&mut self, count: usize) -> ProcessingResult<()> {
         // Check for zero to prevent underflow as type is usize.
         if count == 0 || self._in_bounds(count - 1) {
             self.read_next += count;
@@ -385,7 +385,7 @@ impl<'d> Processor<'d> {
     }
     /// Skip and return the next character.
     /// Will result in an error if exceeds bounds.
-    pub fn skip(&mut self) -> InternalResult<u8> {
+    pub fn skip(&mut self) -> ProcessingResult<u8> {
         if !self.at_end() {
             let c = self._read_offset(0);
             self.read_next += 1;
@@ -435,7 +435,7 @@ impl<'d> Processor<'d> {
     }
 
     // Shifting characters.
-    pub fn accept(&mut self) -> InternalResult<u8> {
+    pub fn accept(&mut self) -> ProcessingResult<u8> {
         if !self.at_end() {
             let c = self._read_offset(0);
             self._shift(1);
@@ -444,7 +444,7 @@ impl<'d> Processor<'d> {
             Err(ErrorType::UnexpectedEnd)
         }
     }
-    pub fn accept_amount(&mut self, count: usize) -> InternalResult<()> {
+    pub fn accept_amount(&mut self, count: usize) -> ProcessingResult<()> {
         // Check for zero to prevent underflow as type is usize.
         if count == 0 || self._in_bounds(count - 1) {
             self._shift(count);

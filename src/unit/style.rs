@@ -1,5 +1,5 @@
 use crate::proc::Processor;
-use crate::err::{InternalResult, ErrorType};
+use crate::err::{ProcessingResult, ErrorType};
 
 fn is_string_delimiter(c: u8) -> bool {
     match c {
@@ -8,7 +8,7 @@ fn is_string_delimiter(c: u8) -> bool {
     }
 }
 
-fn parse_comment<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<()> {
+fn parse_comment(proc: &mut Processor) -> ProcessingResult<()> {
     chain!(proc.match_seq(b"/*").expect().keep());
 
     // Unlike script tags, style comments do NOT end at closing tag.
@@ -19,7 +19,7 @@ fn parse_comment<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<()> {
     Ok(())
 }
 
-fn parse_string<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<()> {
+fn parse_string(proc: &mut Processor) -> ProcessingResult<()> {
     let delim = chain!(proc.match_pred(is_string_delimiter).expect().keep().char());
 
     let mut escaping = false;
@@ -38,8 +38,7 @@ fn parse_string<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<()> {
 
         if chain!(proc.match_line_terminator().keep().matched()) {
             if !escaping {
-                // TODO Use better error type.
-                return Err(ErrorType::NotFound("Unterminated CSS string"));
+                return Err(ErrorType::UnterminatedCssString);
             }
         }
 
@@ -49,7 +48,7 @@ fn parse_string<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<()> {
     Ok(())
 }
 
-pub fn process_style<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<()> {
+pub fn process_style(proc: &mut Processor) -> ProcessingResult<()> {
     while !chain!(proc.match_seq(b"</").matched()) {
         if chain!(proc.match_seq(b"/*").matched()) {
             parse_comment(proc)?;

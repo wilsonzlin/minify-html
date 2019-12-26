@@ -1,5 +1,5 @@
 use crate::proc::Processor;
-use crate::err::InternalResult;
+use crate::err::ProcessingResult;
 use crate::spec::codepoint::is_control;
 use phf::{Set, phf_set};
 use crate::unit::attr::value::process_attr_value;
@@ -30,7 +30,7 @@ fn is_name_char(c: u8) -> bool {
     }
 }
 
-pub fn process_attr<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<AttrType> {
+pub fn process_attr(proc: &mut Processor) -> ProcessingResult<AttrType> {
     // Expect `process_attr` to be called at an attribute.
     let name = chain!(proc.match_while_pred(is_name_char).expect().keep().slice());
 

@@ -1,4 +1,4 @@
-use crate::err::{ErrorType, InternalResult};
+use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::Processor;
 use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
 use crate::spec::tag::void::VOID_TAGS;
@@ -14,7 +14,7 @@ fn is_valid_tag_name_char(c: u8) -> bool {
     is_alphanumeric(c) || c == b':' || c == b'-'
 }
 
-pub fn process_tag<'d, 'p>(proc: &'p mut Processor<'d>) -> InternalResult<()> {
+pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
     // TODO Minify opening and closing tag whitespace before name and after name/last attr.
     // TODO DOC No checking if opening and closing names match.
     // Expect to be currently at an opening tag.
