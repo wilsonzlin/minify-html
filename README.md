@@ -12,7 +12,9 @@ Currently in beta, working on documentation and tests. Issues and pull requests 
 
 ## Usage
 
-TODO
+```bash
+hyperbuild --src /path/to/src.html --out /path/to/output.min.html
+```
 
 ## Minification
 
@@ -26,94 +28,58 @@ hyperbuild has advanced whitespace minification that can allow strategies such a
 - trim and collapse whitespace in content tags, as whitespace is collapsed anyway when rendered
 - remove whitespace in layout tags, which allows the use of inline layouts while keeping formatted code
 
-#### Beginning and end
+## Parsing
+
+hyperbuild is an HTML minifier and simply does HTML minification. In addition to keeping to one role, hyperbuild almost does no syntax checking or standards enforcement for performance and code complexity reasons.
+
+For example, this means that it's not an error to have self-closing tags, having multiple `<body>` elements, using incorrect attribute names and values, or using `<br>` like `<br>alert('');</br>`
+
+However, there are some syntax requirements for speed and sanity reasons.
+
+### Tags
+
+Tag names are case sensitive.
+
+### Entities  
+
+Well-formed entities are decoded, including in attribute values. 
+ 
+They are considered as a single character representing their decoded value. This means that `&#9;` is considered a whitespace character and could be minified.
+
+If a named entity is an invalid reference as per the [spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references), it is considered malformed and will be interpreted literally.
+
+Numeric character references that reference to numbers below 0x00 or above 0x10FFFF are considered malformed. It will be decoded if it falls within this range, even if it does not refer to a valid Unicode code point.
+
+### Attributes
+
+Backticks (`` ` ``) are not valid quote marks and are not interpreted as such.
+However, backticks are valid attribute value quotes in Internet Explorer.
+
+It's an error to place whitespace between `=` and attribute names/values.
+
+Special handling of some attributes require case-sensitive names and values. For example, `class` and `type="text/javascript"`.
+
+It's an error if there is no whitespace before an attribute.
+
+Most likely, the cause of this error is either invalid syntax or something like:
 
 ```html
-<p>↵
-··The·quick·brown·fox↵
-</p>
+<div class="a"name="1"></div>
 ```
 
-#### Between text and tags
+(Note the lack of space between the end of the `class` attribute and the beginning of the `name` attribute.)
 
-```html
-<p>The·quick·brown·fox·<strong>jumps</strong>·over·the·lazy·dog.</p>
-```
+### Script and style
 
-#### Contiguous
+`script` and `style` tags must be closed with `</script>` and `</style>` respectively (case-sensitive).
 
-```html
-<select>↵
-··<option>Jan:·········1</option>↵
-··<option>Feb:········10</option>↵
-··<option>Mar:·······100</option>↵
-··<option>Apr:······1000</option>↵
-··<option>May:·····10000</option>↵
-··<option>Jun:····100000</option>↵
-</select>
-```
+Note that the closing tag must not contain any whitespace (e.g. `</script  >`).
 
-#### Whole text
-
-```html
-<p>↵
-···↵
-</p>
-```
-
-### Tag classification
-
-|Type|Content|
-|---|---|
-|Formatting tags|Text nodes|
-|Content tags|Formatting tags, text nodes|
-|Layout tags|Layout tags, content tags|
-|Content-first tags|Content of content tags or layout tags (but not both)|
-
-#### Specific tags
-
-Tags not in one of the categories below are **specific tags**.
-
-#### Formatting tags
-
-```html
-<strong> moat </strong>
-```
-
-#### Content tags
-
-```html
-<p>Some <strong>content</strong></p>
-```
-
-#### Content-first tags
-
-```html
-<li>Anthony</li>
-```
-
-```html
-<li>
-  <div>
-  </div>
-</li>
-```
-
-#### Layout tags
-
-```html
-<div>
-  <div></div>
-</div>
-```
-  
 ## Development
 
 Currently, hyperbuild has a few limitations:
 
-- Only UTF-8 is supported.
+- Only UTF-8/ASCII is supported.
 - Not aware of exotic Unicode whitespace characters.
-- Follows HTML5 only.
-- Only works on Linux.
 
 Patches to change any of these welcome!

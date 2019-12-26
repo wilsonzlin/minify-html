@@ -13,13 +13,26 @@ fn is_valid_tag_name_char(c: u8) -> bool {
     is_alphanumeric(c) || c == b':' || c == b'-'
 }
 
+enum TagType {
+    Script,
+    Style,
+    Other,
+}
+
 pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
     // TODO Minify opening and closing tag whitespace before name and after name/last attr.
     // TODO DOC No checking if opening and closing names match.
     // Expect to be currently at an opening tag.
     chain!(proc.match_char(b'<').expect().keep());
     // May not be valid tag name at current position, so require instead of expect.
-    let opening_name_range = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.keep().range());
+    let opening_name_range = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.keep().out_range());
+
+    // TODO DOC: Tags must be case sensitive.
+    let tag_type = match &proc[opening_name_range] {
+        b"script" => TagType::Script,
+        b"style" => TagType::Style,
+        _ => TagType::Other,
+    };
 
     let mut last_attr_type: Option<AttrType> = None;
     let mut self_closing = false;
@@ -47,7 +60,7 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
 
         // Write space after tag name or unquoted/valueless attribute.
         match last_attr_type {
-            Some(AttrType::Quoted) => {},
+            Some(AttrType::Quoted) => {}
             _ => proc.write(b' '),
         };
 
@@ -58,10 +71,9 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
         return Ok(());
     };
 
-    // TODO DOC: Tags must be case sensitive.
-    match &proc[opening_name_range] {
-        b"script" => process_script(proc)?,
-        b"style" => process_style(proc)?,
+    match tag_type {
+        TagType::Script => process_script(proc)?,
+        TagType::Style => process_style(proc)?,
         _ => process_content(proc, Some(opening_name_range))?,
     };
 

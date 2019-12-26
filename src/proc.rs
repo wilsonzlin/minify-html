@@ -56,6 +56,8 @@ pub struct Processor<'d> {
     // Match.
     // Need to record start as we might get slice after keeping or skipping.
     match_start: usize,
+    // Position in output match has been written to. Useful for long term slices where source would already be overwritten.
+    match_dest: usize,
     // Guaranteed amount of characters that exist from `start` at time of creation of this struct.
     match_len: usize,
     // Character matched, if any. Only exists for single-character matches and if matched.
@@ -88,7 +90,7 @@ impl<'d> Index<ProcessorRange> for Processor<'d> {
 impl<'d> Processor<'d> {
     // Constructor.
     pub fn new(code: &mut [u8]) -> Processor {
-        Processor { write_next: 0, read_next: 0, code, match_start: 0, match_len: 0, match_char: None, match_reason: RequireReason::Custom }
+        Processor { write_next: 0, read_next: 0, code, match_start: 0, match_dest: 0, match_len: 0, match_char: None, match_reason: RequireReason::Custom }
     }
 
     // INTERNAL APIs.
@@ -192,8 +194,14 @@ impl<'d> Processor<'d> {
     pub fn range(&self) -> ProcessorRange {
         ProcessorRange { start: self.match_start, end: self.match_start + self.match_len }
     }
+    pub fn out_range(&self) -> ProcessorRange {
+        ProcessorRange { start: self.match_dest, end: self.match_dest + self.match_len }
+    }
     pub fn slice(&self) -> &[u8] {
         &self.code[self.match_start..self.match_start + self.match_len]
+    }
+    pub fn out_slice(&self) -> &[u8] {
+        &self.code[self.match_dest..self.match_dest + self.match_len]
     }
 
     // Assert match.
@@ -211,6 +219,7 @@ impl<'d> Processor<'d> {
     // Take action on match.
     // Note that match_len has already been verified to be valid, so don't need to bounds check again.
     pub fn keep(&mut self) -> () {
+        self.match_dest = self.write_next;
         self._shift(self.match_len);
     }
     pub fn discard(&mut self) -> () {

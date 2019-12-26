@@ -1,150 +1,85 @@
-
-
-## Parsing
-
-Current limitations:
-
-### Errors
-
-Errors marked with a `⌫` can be suppressed using the [`--suppress`](#--suppress) option.
-
-#### `MALFORMED_ENTITY` ⌫
-
-It's an error if the sequence of characters following an ampersand (`&`) does not form a valid entity.
-
-Entities must be of one of the following forms:
-
-- `&name;`, where *name* is a reference to a valid HTML entity
-- `&#nnnn;`, where *nnnn* is a Unicode code point in base 10
-- `&#xhhhh;`, where *hhhh* is a Unicode code point in base 16
-
-A malformed entity is an ampersand not followed by a sequence of characters that matches one of the above forms. This includes when the semicolon is missing.
-
-Note that this is different from `INVALID_ENTITY`, which is when a well-formed entity references a non-existent entity name or Unicode code point.
-
-While an ampersand by itself (i.e. followed by whitespace or as the last character) is a malformed entity, it is covered by `BARE_AMPERSAND`.
-
-#### `BARE_AMPERSAND` ⌫
-
-It's an error to have an ampersand followed by whitespace or as the last character.
-
-This is intentionally a different error to `MALFORMED_ENTITY` due to the ubiquity of bare ampersands.
-
-An ampersand by itself is not *necessarily* an invalid entity. However, HTML parsers and browsers may have different interpretations of bare ampersands, so it's a good idea to always use the encoded form (`&amp;`).
-
-When this error is suppressed, bare ampersands are outputted untouched.
-
-#### `INVALID_ENTITY` ⌫
-
-It's an error if an invalid HTML entity is detected.
-
-If suppressed, invalid entities are outputted untouched.
-
-See [entityrefs.c](src/main/c/rule/entity/entityrefs.c) for the list of entity references considered valid by hyperbuild.
-
-Valid entities that reference a Unicode code point must be between 0x0 and 0x10FFFF (inclusive).
-
-#### `NONSTANDARD_TAG` ⌫
-
-It's an error if an unknown (non-standard) tag is reached.
-See [tags.c](src/main/c/rule/tag/tags.c) for the list of tags considered valid by hyperbuild.
-
-#### `UCASE_TAG` ⌫
-
-It's an error if an opening or closing tag's name has any uppercase characters.
-
-#### `UCASE_ATTR` ⌫
-
-It's an error if an attribute's name has any uppercase characters.
-
-#### `UNQUOTED_ATTR` ⌫
-
-It's an error if an attribute's value is not quoted with `"` (U+0022) or `'` (U+0027).
-This means that `` ` `` is not a valid quote mark regardless of whether this error is suppressed or not. Backticks are valid attribute value quotes in Internet Explorer.
-
-#### `ILLEGAL_CHILD`
-
-It's an error if a tag is declared where it can't be a child of.
-This is a very simple check, and does not cover the comprehensive HTML rules, which involve backtracking, tree traversal, and lots of conditionals.
-
-This rule is enforced in four parts:
-[whitelistparents.c](src/main/c/rule/relation/whitelistparents.c),
-[blacklistparents.c](src/main/c/rule/relation/blacklistparents.c),
-[whitelistchildren.c](src/main/c/rule/relation/whitelistchildren.c), and
-[blacklistchildren.c](src/main/c/rule/relation/blacklistchildren.c).
-
-#### `UNCLOSED_TAG`
-
-It's an error if a non-void tag is not closed.
-See [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
-
-This includes tags that close automatically because of siblings (e.g. `<li><li>`), as it greatly simplifies the complexity of the minifier due to guarantees about the structure.
-
-#### `SELF_CLOSING_TAG` ⌫
-
-It's an error if a tag is self-closed. Valid in XML, not in HTML.
-
-#### `NO_SPACE_BEFORE_ATTR`
-
-It's an error if there is no whitespace before an attribute.
-
-Most likely, the cause of this error is either invalid syntax or something like:
+#### Beginning and end
 
 ```html
-<div class="a"name="1"></div>
+<p>↵
+··The·quick·brown·fox↵
+</p>
 ```
 
-(Note the lack of space between the end of the `class` attribute and the beginning of the `name` attribute.)
+#### Between text and tags
 
-#### `UNEXPECTED_END` and `EXPECTED_NOT_FOUND`
+```html
+<p>The·quick·brown·fox·<strong>jumps</strong>·over·the·lazy·dog.</p>
+```
 
-General syntax errors.
+#### Contiguous
 
-#### Additional errors
+```html
+<select>↵
+··<option>Jan:·········1</option>↵
+··<option>Feb:········10</option>↵
+··<option>Mar:·······100</option>↵
+··<option>Apr:······1000</option>↵
+··<option>May:·····10000</option>↵
+··<option>Jun:····100000</option>↵
+</select>
+```
 
-There are additional implicit errors that are considered as general syntax errors due to the way the parser works:
+#### Whole text
 
-- Closing void tags; see [voidtags.c](src/main/c/rule/tag/voidtags.c) for the list of tags considered void by hyperbuild.
-- Placing whitespace between `=` and attribute names/values.
-- Placing whitespace before the tag name in an opening tag.
-- Placing whitespace around the tag name in a closing tag.
-- Not closing a tag before the end of the file/input.
+```html
+<p>↵
+···↵
+</p>
+```
 
-#### Notes
+### Tag classification
 
-- Closing `</script>` tags end single-line and multi-line JavaScript comments in `script` tags.
-  For this to be detected by hyperbuild, the closing tag must not contain any whitespace (e.g. `</script  >`).
+|Type|Content|
+|---|---|
+|Formatting tags|Text nodes|
+|Content tags|Formatting tags, text nodes|
+|Layout tags|Layout tags, content tags|
+|Content-first tags|Content of content tags or layout tags (but not both)|
+
+#### Specific tags
+
+Tags not in one of the categories below are **specific tags**.
+
+#### Formatting tags
+
+```html
+<strong> moat </strong>
+```
+
+#### Content tags
+
+```html
+<p>Some <strong>content</strong></p>
+```
+
+#### Content-first tags
+
+```html
+<li>Anthony</li>
+```
+
+```html
+<li>
+  <div>
+  </div>
+</li>
+```
+
+#### Layout tags
+
+```html
+<div>
+  <div></div>
+</div>
+```
 
 ### Options
-
-#### `--in`
-
-Path to a file to process. If omitted, hyperbuild will read from `stdin`.
-
-#### `--out`
-
-Path to a file to write to; it will be created if it doesn't exist already. If omitted, the output will be streamed to `stdout`.
-
-#### `--keep`
-
-Don't automatically delete the output file if an error occurred. If the output is `stdout`, or the output is a file but `--buffer` is provided, this option does nothing.
-
-#### `--buffer`
-
-Buffer all output until the process is complete and successful. This won't truncate or write anything to the output until the build process is done, but will use a non-constant amount of memory.
-This applies even when the output is `stdout`.
-
-#### `--suppress`
-
-Suppress errors specified by this option. hyperbuild will quitely ignore and continue processing when otherwise one of the provided errors would occur.
-
-Suppressible errors are marked with a `⌫` in the [Errors](#errors) section. Omit the `` prefix. Separate the error names with commas.
-
-
-
-### Options
-
-Note that only existing whitespace will be up for removal via minification. Entities that represent whitespace will not be decoded and then removed.
 
 For options that have a list of tags as their value, the tags should be separated by a comma.
 
@@ -302,8 +237,6 @@ Don't remove optional starting or ending tags.
 #### `--MXtagWS`
 
 Don't remove spaces between attributes when possible.
-
-
 
 ### Non-options
 
