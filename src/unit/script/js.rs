@@ -9,7 +9,7 @@ fn parse_comment_single(proc: &mut Processor) -> ProcessingResult<()> {
     chain!(proc.match_seq(b"//").expect().keep());
 
     // Comment can end at closing </script>.
-    // WARNING: Closing tag must not contain whitespace.
+    // TODO WARNING: Closing tag must not contain whitespace.
     // TODO Optimise
     while !chain!(proc.match_line_terminator().keep().matched()) {
         if chain!(proc.match_seq(b"</script>").matched()) {
@@ -26,7 +26,7 @@ fn parse_comment_multi(proc: &mut Processor) -> ProcessingResult<()> {
     chain!(proc.match_seq(b"/*").expect().keep());
 
     // Comment can end at closing </script>.
-    // WARNING: Closing tag must not contain whitespace.
+    // TODO WARNING: Closing tag must not contain whitespace.
     // TODO Optimise
     while !chain!(proc.match_seq(b"*/").keep().matched()) {
         if chain!(proc.match_seq(b"</script>").matched()) {
@@ -91,7 +91,7 @@ fn parse_template(proc: &mut Processor) -> ProcessingResult<()> {
     Ok(())
 }
 
-pub fn process_script(proc: &mut Processor) -> ProcessingResult<()> {
+pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
     while !chain!(proc.match_seq(b"</").matched()) {
         if chain!(proc.match_seq(b"//").matched()) {
             parse_comment_single(proc)?;

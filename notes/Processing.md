@@ -2,16 +2,18 @@
 
 ## Redundant requires
 
-Sometimes the code will look like it duplicates matching logic. For example:
+Sometimes the code will look like it does redundant matching logic. For example:
 
 ```rust
-fn process_comment(proc: &mut Proc) -> () {
-	proc.matches("<!--").require_reason("comment").skip();
+pub fn process_comment(proc: &mut Processor) -> ProcessingResult<()> {
+    chain!(proc.match_seq(b"<!--").expect().discard());
 
-	proc.while_not_matches("-->").skip();
+    chain!(proc.match_while_not_seq(&SinglePattern::new(b"-->")).discard());
 
-	proc.matches("-->").require_reason("comment end").skip();
+    chain!(proc.match_seq(b"-->").require_with_reason("comment end")?.discard());
+
+    Ok(())
 }
 ```
 
-At first glance, it might appear that the second call `while_not_matches` makes it redundant to require it again immediately afterwards. However, it's possible that the `while_not_matches` actually stops for some other reason, such as reaching EOF. Even if it's guaranteed, it's still nice to have a declared invariant, like an assertion statement.
+At first glance, it might appear that the second call `match_while_not_seq` makes it redundant to require it again immediately afterwards. However, it's possible that the `match_while_not_seq` actually stops for some other reason, such as reaching EOF. Even if it's guaranteed, it's still nice to have a declared invariant, like an assertion statement.

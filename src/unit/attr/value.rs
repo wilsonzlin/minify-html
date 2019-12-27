@@ -1,7 +1,7 @@
 use phf::{Map, phf_map};
 
 use crate::err::ProcessingResult;
-use crate::proc::Processor;
+use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::is_whitespace;
 use crate::unit::entity::{EntityType, maybe_process_entity, ParsedEntity};
 
@@ -216,7 +216,7 @@ macro_rules! consume_attr_value_chars {
 
 pub struct ProcessedAttrValue {
     pub delimiter: DelimiterType,
-    pub empty: bool,
+    pub value: Option<ProcessorRange>,
 }
 
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
@@ -229,7 +229,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     };
 
     // Stage 1: read and collect metrics on attribute value characters.
-    let value_start_checkpoint = proc.checkpoint();
+    let src_value_checkpoint = proc.checkpoint();
     let mut metrics = Metrics {
         count_double_quotation: 0,
         count_single_quotation: 0,
@@ -245,7 +245,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     });
 
     // Stage 2: optimally minify attribute value using metrics.
-    proc.restore(value_start_checkpoint);
+    proc.restore(src_value_checkpoint);
     let optimal_delimiter = metrics.get_optimal_delimiter_type();
     let optimal_delimiter_char = match optimal_delimiter {
         DelimiterType::Double => Some(b'"'),
@@ -259,6 +259,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     let mut char_type;
     // Used to determine first and last characters.
     let mut char_no = 0usize;
+    let processed_value_checkpoint = proc.checkpoint();
     consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, char_type, {
         match char_type {
             // This should never happen.
@@ -293,6 +294,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         };
         char_no += 1;
     });
+    let processed_value_range = proc.written_range(processed_value_checkpoint);
     // Ensure closing delimiter in src has been matched and discarded, if any.
     if let Some(c) = src_delimiter {
         chain!(proc.match_char(c).expect().discard());
@@ -304,6 +306,6 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
 
     Ok(ProcessedAttrValue {
         delimiter: optimal_delimiter,
-        empty: metrics.collected_count == 0,
+        value: Some(processed_value_range).filter(|r| !r.empty()),
     })
 }

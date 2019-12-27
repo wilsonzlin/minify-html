@@ -48,10 +48,24 @@ pub struct ProcessorRange {
     end: usize,
 }
 
+impl ProcessorRange {
+    pub fn len(&self) -> usize {
+        self.end - self.start
+    }
+    pub fn empty(&self) -> bool {
+        self.start >= self.end
+    }
+}
+
 // Processing state of a file. Most fields are used internally and set during
 // processing. Single use only; create one per processing.
 pub struct Processor<'d> {
     code: &'d mut [u8],
+
+    // Index of the next character to read.
+    read_next: usize,
+    // Index of the next unwritten space.
+    write_next: usize,
 
     // Match.
     // Need to record start as we might get slice after keeping or skipping.
@@ -63,11 +77,6 @@ pub struct Processor<'d> {
     // Character matched, if any. Only exists for single-character matches and if matched.
     match_char: Option<u8>,
     match_reason: RequireReason,
-
-    // Index of the next character to read.
-    read_next: usize,
-    // Index of the next unwritten space.
-    write_next: usize,
 }
 
 impl<'d> Index<ProcessorRange> for Processor<'d> {
@@ -313,6 +322,10 @@ impl<'d> Processor<'d> {
     /// Discard characters written since checkpoint but keep source position.
     pub fn erase_written(&mut self, checkpoint: Checkpoint) -> () {
         self.write_next = checkpoint.write_next;
+    }
+    /// Get written characters since checkpoint as range.
+    pub fn written_range(&self, checkpoint: Checkpoint) -> ProcessorRange {
+        ProcessorRange { start: checkpoint.write_next, end: self.write_next }
     }
     /// Get amount of source characters consumed since checkpoint.
     pub fn consumed_count(&self, checkpoint: Checkpoint) -> usize {
