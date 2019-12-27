@@ -58,6 +58,8 @@ Empty elements and bangs are not removed as it is assumed there is a special rea
 
 ## Parsing
 
+Only UTF-8/ASCII is supported.
+
 hyperbuild is an HTML minifier and simply does HTML minification. In addition to keeping to one role, hyperbuild almost does no syntax checking or standards enforcement for performance and code complexity reasons.
 
 For example, this means that it's not an error to have self-closing tags, declare multiple `<body>` elements, use incorrect attribute names and values, or write something like `<br>alert('');</br>`
@@ -68,10 +70,10 @@ However, there are some syntax requirements for speed and sanity reasons.
 
 Tag names are case sensitive.
 
-### Entities  
+### Entities
 
-Well-formed entities are decoded, including in attribute values. 
- 
+Well-formed entities are decoded, including in attribute values.
+
 They are considered as a single character representing their decoded value. This means that `&#9;` is considered a whitespace character and could be minified.
 
 If a named entity is an invalid reference as per the [spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references), it is considered malformed and will be interpreted literally.
@@ -104,12 +106,3 @@ Most likely, the cause of this error is either invalid syntax or something like:
 Note that the closing tag must not contain any whitespace (e.g. `</script  >`).
 
 [hyperbuild can handle text script content.](./notes/Text%20script%20content.md)
-
-## Development
-
-Currently, hyperbuild has a few limitations:
-
-- Only UTF-8/ASCII is supported.
-- Not aware of exotic Unicode whitespace characters.
-
-Patches to change any of these welcome!
