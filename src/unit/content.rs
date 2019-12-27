@@ -93,7 +93,11 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
             ContentType::Entity => {
                 // Entity could decode to whitespace.
                 let entity = maybe_process_entity(proc)?;
-                if let EntityType::Ascii(c) = entity.entity() {
+                let ws = match entity.entity() {
+                    EntityType::Ascii(c) => is_whitespace(c),
+                    _ => false,
+                };
+                if ws {
                     // Skip whitespace char, and mark as whitespace.
                     ContentType::Whitespace
                 } else {

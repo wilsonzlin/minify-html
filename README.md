@@ -7,8 +7,8 @@ Currently in beta, working on documentation and tests. Issues and pull requests 
 ## Features
 
 - Minification is done in one pass with no backtracking or DOM/AST building.
-- No dynamic memory is allocated during processing, which increases safety and performance.
-- Advanced whitespace handling options allow maximum minification while retaining valid spaces.
+- No extra heap memory is allocated during processing, which increases performance.
+- Context-aware whitespace handling allows maximum minification while retaining wanted spaces.
 
 ## Usage
 
