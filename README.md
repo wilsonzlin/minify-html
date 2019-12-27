@@ -103,7 +103,7 @@ Most likely, the cause of this error is either invalid syntax or something like:
 
 Note that the closing tag must not contain any whitespace (e.g. `</script  >`).
 
-hyperbuild can [handle text script content](./notes/Text script content.md).
+[hyperbuild can handle text script content.](./notes/Text%20script%20content.md)
 
 ## Development
 
