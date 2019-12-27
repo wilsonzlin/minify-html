@@ -183,12 +183,6 @@ pub fn maybe_process_entity(proc: &mut Processor) -> ProcessingResult<ParsedEnti
     Ok(ParsedEntity { entity, checkpoint })
 }
 
-/**
- * Process an HTML entity.
- *
- * @return Unicode code point of the entity, or HB_UNIT_ENTITY_NONE if the
- * entity is malformed or invalid
- */
 pub fn process_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
     let entity = maybe_process_entity(proc)?;
     entity.keep(proc);

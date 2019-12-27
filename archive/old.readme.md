@@ -213,39 +213,3 @@ Don't trim and collapse whitespace in `class` attribute values.
 ```
 
 </table>
-
-#### `--MXdecEnt`
-
-Don't decode any valid entities into their UTF-8 values.
-
-#### `--MXcondComments`
-
-Don't minify the contents of conditional comments, including downlevel-revealed conditional comments.
-
-#### `--MXattrQuotes`
-
-Don't remove quotes around attribute values when possible.
-
-#### `--MXcomments`
-
-Don't remove any comments. Conditional comments are never removed regardless of this setting.
-
-#### `--MXoptTags`
-
-Don't remove optional starting or ending tags.
-
-#### `--MXtagWS`
-
-Don't remove spaces between attributes when possible.
-
-### Non-options
-
-#### Explicitly important
-
-The following removal of attributes and tags as minification strategies are not available in hyperbuild, as it is assumed there is a special reason for their declaration:
-
-- empty attributes (including ones that would be empty after minification e.g. `class="   "`)
-- empty elements
-- redundant attributes
-- `type` attribute on `<script>` tags
-- `type` attribute on `<style>` and `<link>` tags
