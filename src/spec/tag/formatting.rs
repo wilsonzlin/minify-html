@@ -1,6 +1,7 @@
 use ::phf::{phf_set, Set};
 
-// Difference to MDN's inline text semantics list: -br, +del, +ins.
+// Sourced from https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics.
+// Differences to tags listed in table at above URL: -br, +del, +ins.
 pub static FORMATTING_TAGS: Set<&'static [u8]> = phf_set! {
 	b"a",
 	b"abbr",

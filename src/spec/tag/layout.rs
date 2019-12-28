@@ -1,12 +1,8 @@
 use ::phf::{phf_set, Set};
 
 pub static LAYOUT_TAGS: Set<&'static [u8]> = phf_set! {
-    // Sectioning tags.
 	b"article",
 	b"aside",
-	b"nav",
-	b"section",
-	// Other tags.
 	b"blockquote",
 	b"body",
 	b"colgroup",
@@ -25,9 +21,11 @@ pub static LAYOUT_TAGS: Set<&'static [u8]> = phf_set! {
 	b"main",
 	b"map",
 	b"menu",
+	b"nav",
 	b"ol",
 	b"optgroup",
 	b"picture",
+	b"section",
 	b"select",
 	b"table",
 	b"tbody",

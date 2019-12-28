@@ -2,8 +2,6 @@
 
 A fast one-pass in-place HTML minifier written in Rust with advanced whitespace handling.
 
-Currently in beta, working on documentation and tests. Issues and pull requests welcome! Guide below is currently WIP.
-
 ## Features
 
 - Minification is done in one pass with no backtracking or DOM/AST building.
@@ -25,6 +23,82 @@ hyperbuild has advanced whitespace minification that can allow strategies such a
 - Leave whitespace untouched in `pre` and `code`, which are whitespace sensitive.
 - Trim and collapse whitespace in content tags, as whitespace is collapsed anyway when rendered.
 - Remove whitespace in layout tags, which allows the use of inline layouts while keeping formatted code.
+
+#### Collapsing whitespace
+
+Reduce a sequence of whitespace characters in text nodes to a single space (U+0020).
+
+<table><thead><tr><th>Before<th>After<tbody><tr><td>
+
+```html
+<p>↵
+··The·quick·brown·fox↵
+··jumps·over·the·lazy↵
+··dog.↵
+</p>
+```
+
+<td>
+
+```html
+<p>·The·quick·brown·fox·jumps·over·the·lazy·dog.·</p>
+```
+
+</table>
+
+#### Destroying whole whitespace
+
+Remove any text nodes that only consist of whitespace characters.
+
+Especially useful when using `display: inline-block` so that whitespace between elements (e.g. indentation) does not alter layout and styling.
+
+<table><thead><tr><th>Before<th>After<tbody><tr><td>
+
+```html
+<ul>↵
+··<li>A</li>↵
+··<li>B</li>↵
+··<li>C</li>↵
+</ul>
+```
+
+<td>
+
+```html
+<ul><li>A</li><li>B</li><li>C</li></ul>
+```
+
+</table>
+
+#### Trimming whitespace
+
+Remove any whitespace from the start and end of a tag, if the first and/or last node is a text node.
+
+Useful when combined with whitespace collapsing.
+
+Other whitespace between text nodes and tags are not removed, as it is not recommended to mix non-formatting tags with raw text.
+
+Basically, a tag should only either contain text and [formatting tags](#formatting-tags), or only non-formatting tags.
+
+<table><thead><tr><th>Before<th>After<tbody><tr><td>
+
+```html
+<p>↵
+··Hey,·I·<em>just</em>·found↵
+··out·about·this·<strong>cool</strong>·website!↵
+··<div></div>↵
+</p>
+```
+
+<td>
+
+```html
+<p>Hey,·I·<em>just</em>·found↵
+··out·about·this·<strong>cool</strong>·website!↵
+··<div></div></p>
+```
+
+</table>
 
 ### Attributes
 
