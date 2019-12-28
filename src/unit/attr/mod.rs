@@ -35,8 +35,9 @@ fn is_name_char(c: u8) -> bool {
 }
 
 pub fn process_attr(proc: &mut Processor) -> ProcessingResult<ProcessedAttr> {
-    // Expect `process_attr` to be called at an attribute.
-    let name = chain!(proc.match_while_pred(is_name_char).expect().keep().range());
+    // It's possible to expect attribute name but not be called at an attribute, e.g. due to whitespace between name and
+    // value, which causes name to be considered boolean attribute and `=` to be start of new (invalid) attribute name.
+    let name = chain!(proc.match_while_pred(is_name_char).require_with_reason("attribute name")?.keep().range());
     let after_name = proc.checkpoint();
 
     // TODO DOC Attr must be case sensitive
