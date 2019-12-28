@@ -29,11 +29,7 @@ hyperbuild has advanced context-aware whitespace minification that does things s
 There are three whitespace minification methods. When processing text content, hyperbuild chooses which ones to use depending on the containing element.
 
 <details>
-<summary>
-
-##### Collapse whitespace
-
-</summary>
+<summary><h5>Collapse whitespace</h5></summary>
 
 > **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs) elements.
 
@@ -59,11 +55,7 @@ Reduce a sequence of whitespace characters in text nodes to a single space (U+00
 </details>
 
 <details>
-<summary>
-
-##### Destroy whole whitespace
-
-</summary>
+<summary><h5>Destroy whole whitespace</h5></summary>
 
 > **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs), [content](./src/spec/tag/content.rs), [content-first](./src/spec/tag/contentfirst.rs), and [formatting](./src/spec/tag/formatting.rs) elements.
 
@@ -91,11 +83,7 @@ Remove any text nodes that only consist of whitespace characters.
 </details>
 
 <details>
-<summary>
-
-##### Trim whitespace
-
-</summary>
+<summary><h5>Trim whitespace</h5></summary>
 
 > **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs) and [formatting](./src/spec/tag/formatting.rs) elements.
 
@@ -133,13 +121,17 @@ hyperbuild groups elements based on how it assumes they are used. By making thes
 |[Layout](#layout-elements)|`div`, `ul`, [and others](./src/spec/tag/layout.rs)|Layout elements, content elements.|
 |[Content-first](#content-first-elements)|`label`, `li`, [and others](./src/spec/tag/contentfirst.rs)|Like content element but could have exactly one of an layout element's expected content elements.|
 
-##### Formatting elements
+<details>
+<summary><h5>Formatting elements</h5></summary>
 
 > Whitespace is collapsed.
 
 Formatting elements are usually inline elements that wrap around part of some text in a content element, so its whitespace isn't trimmed as they're probably part of the content.
 
-##### Content elements
+</details>
+
+<details>
+<summary><h5>Content elements</h5></summary>
 
 > Whitespace is trimmed and collapsed.
 
@@ -161,7 +153,10 @@ Content elements usually represent a contiguous and complete unit of content suc
 <p>Hey,·I·<em>just</em>·found·out·about·this·<strong>cool</strong>·website!·<sup>[1]</sup></p>
 ```
 
-##### Layout elements
+</details>
+
+<details>
+<summary><h5>Layout elements</h5></summary>
 
 > Whitespace is trimmed and collapsed. [Whole whitespace](#destroy-whole-whitespace) is removed.
 
@@ -183,7 +178,10 @@ These elements should only contain other elements and no text. This makes it pos
 <ul><li>A</li><li>B</li><li>C</li></ul>
 ```
 
-##### Content-first elements
+</details>
+
+<details>
+<summary><h5>Content-first elements</h5></summary>
 
 > Whitespace is trimmed and collapsed.
 
@@ -205,6 +203,8 @@ These elements are usually like [content elements](#content-elements) but are oc
 ```html
 <li><article><section></section><section></section></article></li>
 ```
+
+</details>
 
 ### Attributes
 
