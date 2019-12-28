@@ -31,7 +31,7 @@ There are three whitespace minification methods. When processing text content, h
 <details>
 <summary><strong>Collapse whitespace</strong></summary>
 
-> **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/wss.rs) elements.
 
 Reduce a sequence of whitespace characters in text nodes to a single space (U+0020).
 
@@ -57,7 +57,7 @@ Reduce a sequence of whitespace characters in text nodes to a single space (U+00
 <details>
 <summary><strong>Destroy whole whitespace</strong></summary>
 
-> **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs), [content](./src/spec/tag/content.rs), [content-first](./src/spec/tag/contentfirst.rs), and [formatting](./src/spec/tag/formatting.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/wss.rs), [content](./src/spec/tag/content.rs), [content-first](./src/spec/tag/contentfirst.rs), and [formatting](./src/spec/tag/formatting.rs) elements.
 
 Remove any text nodes that only consist of whitespace characters.
 
@@ -85,7 +85,7 @@ Remove any text nodes that only consist of whitespace characters.
 <details>
 <summary><strong>Trim whitespace</strong></summary>
 
-> **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs) and [formatting](./src/spec/tag/formatting.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/wss.rs) and [formatting](./src/spec/tag/formatting.rs) elements.
 
 Remove any leading/trailing whitespace from any leading/trailing text nodes of a tag.
 
@@ -112,14 +112,14 @@ Remove any leading/trailing whitespace from any leading/trailing text nodes of a
 
 #### Element types
 
-hyperbuild groups elements based on how it assumes they are used. By making these assumptions, it can apply optimal whitespace minification strategies.
+hyperbuild recognises elements based on one of a few ways it assumes they are used. By making these assumptions, it can apply optimal whitespace minification strategies.
 
 |Group|Elements|Expected children|
 |---|---|---|
 |Formatting|`a`, `strong`, [and others](./src/spec/tag/formatting.rs)|Formatting elements, text.|
 |Content|`h1`, `p`, [and others](./src/spec/tag/content.rs)|Formatting elements, text.|
 |Layout|`div`, `ul`, [and others](./src/spec/tag/layout.rs)|Layout elements, content elements.|
-|Content-first|`label`, `li`, [and others](./src/spec/tag/contentfirst.rs)|Like content element but could have exactly one of an layout element's expected content elements.|
+|Content-first|`label`, `li`, [and others](./src/spec/tag/contentfirst.rs)|Like content but could be layout with only one child.|
 
 <details>
 <summary><strong>Formatting elements</strong></summary>
@@ -231,9 +231,9 @@ Empty elements and bangs are not removed as it is assumed there is a special rea
 
 ## Parsing
 
-Only UTF-8/ASCII is supported.
+Only UTF-8/ASCII-encoded HTML code is supported.
 
-hyperbuild is an HTML minifier and simply does HTML minification. hyperbuild almost does no syntax checking or standards enforcement for performance and code complexity reasons.
+hyperbuild simply does HTML minification, and almost does no syntax checking or standards enforcement for performance and code complexity reasons.
 
 For example, this means that it's not an error to have self-closing tags, declare multiple `<body>` elements, use incorrect attribute names and values, or write something like `<br>alert('');</br>`
 
@@ -241,7 +241,7 @@ However, there are some syntax requirements for speed and sanity reasons.
 
 ### Tags
 
-Tag names are case sensitive.
+Tag names are case sensitive. For example, this means that `P` won't be recognised as a content element
 
 ### Entities
 
@@ -251,7 +251,7 @@ They are interpreted as characters representing their decoded value. This means 
 
 Malformed entities are interpreted literally as a sequence of characters.
 
-If a named entity is an invalid reference as per the [spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references), it is considered malformed.
+If a named entity is an invalid reference as per the [specification](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references), it is considered malformed.
 
 Numeric character references that do not reference a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are considered malformed.
 
