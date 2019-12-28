@@ -388,7 +388,7 @@ impl<'d> Processor<'d> {
         self.write_next += s.len();
     }
     pub fn write_utf8(&mut self, c: char) -> () {
-        let mut encoded = [0u8, 4];
+        let mut encoded = [0u8; 4];
         c.encode_utf8(&mut encoded);
         self.write_slice(&encoded);
     }

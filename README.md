@@ -45,14 +45,7 @@ Spaces are removed between attributes if possible.
 - Comments are removed.
 - Entities are decoded if valid (see relevant parsing section).
 
-### WIP
-
-- Removal of [optional tags](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission).
-- Removal of boolean attribute values.
-- Removal of redundant attributes (empty or default value).
-- Handling of conditional or special comments.
-
-### Explicitly important
+### Ignored
 
 Empty elements and bangs are not removed as it is assumed there is a special reason for their declaration.
 
@@ -60,7 +53,7 @@ Empty elements and bangs are not removed as it is assumed there is a special rea
 
 Only UTF-8/ASCII is supported.
 
-hyperbuild is an HTML minifier and simply does HTML minification. In addition to keeping to one role, hyperbuild almost does no syntax checking or standards enforcement for performance and code complexity reasons.
+hyperbuild is an HTML minifier and simply does HTML minification. hyperbuild almost does no syntax checking or standards enforcement for performance and code complexity reasons.
 
 For example, this means that it's not an error to have self-closing tags, declare multiple `<body>` elements, use incorrect attribute names and values, or write something like `<br>alert('');</br>`
 
@@ -74,9 +67,11 @@ Tag names are case sensitive.
 
 Well-formed entities are decoded, including in attribute values.
 
-They are considered as a single character representing their decoded value. This means that `&#9;` is considered a whitespace character and could be minified.
+They are interpreted as characters representing their decoded value. This means that `&#9;` is considered a whitespace character and could be minified.
 
-If a named entity is an invalid reference as per the [spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references), it is considered malformed and will be interpreted literally.
+Malformed entities are interpreted literally as a sequence of characters.
+
+If a named entity is an invalid reference as per the [spec](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references), it is considered malformed.
 
 Numeric character references that do not reference a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are considered malformed.
 
@@ -85,19 +80,13 @@ Numeric character references that do not reference a valid [Unicode Scalar Value
 Backticks (`` ` ``) are not valid quote marks and are not interpreted as such.
 However, backticks are valid attribute value quotes in Internet Explorer.
 
-It's an error to place whitespace between `=` and attribute names/values.
-
-Special handling of some attributes require case-sensitive names and values. For example, `class` and `type="text/javascript"`.
-
-It's an error if there is no whitespace before an attribute.
-
-Most likely, the cause of this error is either invalid syntax or something like:
+It is an error to place whitespace between `=` and attribute names/values. It is also an error if there is no whitespace before an attribute. For example:
 
 ```html
-<div class="a"name="1"></div>
+<div class="a"name="1" id = "a"></div>
 ```
 
-(Note the lack of space between the end of the `class` attribute and the beginning of the `name` attribute.)
+Special handling of some attributes require case sensitive names and values. For example, `class` and `type="text/javascript"`.
 
 ### Script and style
 
@@ -106,3 +95,12 @@ Most likely, the cause of this error is either invalid syntax or something like:
 Note that the closing tag must not contain any whitespace (e.g. `</script  >`).
 
 [hyperbuild can handle text script content.](./notes/Text%20script%20content.md)
+
+## Development
+
+### More minification options
+
+- Removal of [optional tags](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission).
+- Removal of boolean attribute values.
+- Removal of redundant attributes (empty or default value).
+- Handling of conditional or special comments.
