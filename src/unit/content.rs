@@ -8,6 +8,7 @@ use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, maybe_process_entity};
 use crate::unit::tag::process_tag;
+use crate::spec::tag::contentfirst::CONTENT_FIRST_TAGS;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 enum ContentType {
@@ -63,25 +64,20 @@ impl ContentType {
 }
 
 pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
-    let should_collapse_whitespace = match parent {
+    let collapse_whitespace = match parent {
         Some(tag_name) => !WSS_TAGS.contains(&proc[tag_name]),
         // Should collapse whitespace for root content.
         None => true,
     };
-    let should_destroy_whole_whitespace = match parent {
-        Some(tag_name) => !WSS_TAGS.contains(&proc[tag_name]) && !CONTENT_TAGS.contains(&proc[tag_name]) && !FORMATTING_TAGS.contains(&proc[tag_name]),
+    let destroy_whole_whitespace = match parent {
+        Some(tag_name) => !WSS_TAGS.contains(&proc[tag_name]) && !CONTENT_TAGS.contains(&proc[tag_name]) && !CONTENT_FIRST_TAGS.contains(&proc[tag_name]) && !FORMATTING_TAGS.contains(&proc[tag_name]),
         // Should destroy whole whitespace for root content.
         None => true,
     };
-    let should_trim_whitespace = match parent {
+    let trim_whitespace = match parent {
         Some(tag_name) => !WSS_TAGS.contains(&proc[tag_name]) && !FORMATTING_TAGS.contains(&proc[tag_name]),
         // Should trim whitespace for root content.
         None => true,
-    };
-
-    // Trim leading whitespace if configured to do so.
-    if should_trim_whitespace {
-        chain!(proc.match_while_pred(is_whitespace).discard());
     };
 
     let mut last_non_whitespace_content_type = ContentType::Start;
@@ -128,13 +124,13 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
 
         // Next character is not whitespace, so handle any previously ignored whitespace.
         if let Some(ws) = whitespace_checkpoint_opt {
-            if should_destroy_whole_whitespace && last_non_whitespace_content_type.is_comment_bang_opening_tag() && next_content_type.is_comment_bang_opening_tag() {
+            if destroy_whole_whitespace && last_non_whitespace_content_type.is_comment_bang_opening_tag() && next_content_type.is_comment_bang_opening_tag() {
                 // Whitespace is between two tags, comments, or bangs.
                 // destroy_whole_whitespace is on, so don't write it.
-            } else if should_trim_whitespace && (next_content_type == ContentType::End || last_non_whitespace_content_type == ContentType::Start) {
+            } else if trim_whitespace && (next_content_type == ContentType::End || last_non_whitespace_content_type == ContentType::Start) {
                 // Whitespace is leading or trailing.
                 // should_trim_whitespace is on, so don't write it.
-            } else if should_collapse_whitespace {
+            } else if collapse_whitespace {
                 // Current contiguous whitespace needs to be reduced to a single space character.
                 proc.write(b' ');
             } else {

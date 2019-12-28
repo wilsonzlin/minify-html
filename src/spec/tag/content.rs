@@ -18,7 +18,7 @@ pub static CONTENT_TAGS: Set<&'static [u8]> = phf_set! {
 	b"object",
 	b"option",
 	b"p",
-	b"summary", // Can also contain a heading.
+	b"summary",
 	b"textarea",
 	b"video",
 };

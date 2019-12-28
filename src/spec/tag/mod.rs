@@ -1,12 +1,6 @@
 pub mod content;
 pub mod contentfirst;
 pub mod formatting;
-pub mod heading;
-pub mod html;
 pub mod layout;
-pub mod media;
-pub mod sectioning;
-pub mod specific;
-pub mod svg;
 pub mod void;
 pub mod wss;
