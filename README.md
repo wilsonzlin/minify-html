@@ -29,7 +29,7 @@ hyperbuild has advanced context-aware whitespace minification that does things s
 There are three whitespace minification methods. When processing text content, hyperbuild chooses which ones to use depending on the containing element.
 
 <details>
-<summary><h5>Collapse whitespace</h5></summary>
+<summary>Collapse whitespace</summary>
 
 > **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs) elements.
 
@@ -55,7 +55,7 @@ Reduce a sequence of whitespace characters in text nodes to a single space (U+00
 </details>
 
 <details>
-<summary><h5>Destroy whole whitespace</h5></summary>
+<summary>Destroy whole whitespace</summary>
 
 > **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs), [content](./src/spec/tag/content.rs), [content-first](./src/spec/tag/contentfirst.rs), and [formatting](./src/spec/tag/formatting.rs) elements.
 
@@ -83,7 +83,7 @@ Remove any text nodes that only consist of whitespace characters.
 </details>
 
 <details>
-<summary><h5>Trim whitespace</h5></summary>
+<summary>Trim whitespace</summary>
 
 > **Applies to:** text in root and any element except [whitespace sensitive](./src/spec/tag/wss.rs) and [formatting](./src/spec/tag/formatting.rs) elements.
 
@@ -116,13 +116,13 @@ hyperbuild groups elements based on how it assumes they are used. By making thes
 
 |Group|Elements|Expected children|
 |---|---|---|
-|[Formatting](#formatting-elements)|`a`, `strong`, [and others](./src/spec/tag/formatting.rs)|Formatting elements, text.|
-|[Content](#content-elements)|`h1`, `p`, [and others](./src/spec/tag/content.rs)|Formatting elements, text.|
-|[Layout](#layout-elements)|`div`, `ul`, [and others](./src/spec/tag/layout.rs)|Layout elements, content elements.|
-|[Content-first](#content-first-elements)|`label`, `li`, [and others](./src/spec/tag/contentfirst.rs)|Like content element but could have exactly one of an layout element's expected content elements.|
+|Formatting|`a`, `strong`, [and others](./src/spec/tag/formatting.rs)|Formatting elements, text.|
+|Content|`h1`, `p`, [and others](./src/spec/tag/content.rs)|Formatting elements, text.|
+|Layout|`div`, `ul`, [and others](./src/spec/tag/layout.rs)|Layout elements, content elements.|
+|Content-first|`label`, `li`, [and others](./src/spec/tag/contentfirst.rs)|Like content element but could have exactly one of an layout element's expected content elements.|
 
 <details>
-<summary><h5>Formatting elements</h5></summary>
+<summary>Formatting elements</summary>
 
 > Whitespace is collapsed.
 
@@ -131,7 +131,7 @@ Formatting elements are usually inline elements that wrap around part of some te
 </details>
 
 <details>
-<summary><h5>Content elements</h5></summary>
+<summary>Content elements</summary>
 
 > Whitespace is trimmed and collapsed.
 
@@ -156,11 +156,11 @@ Content elements usually represent a contiguous and complete unit of content suc
 </details>
 
 <details>
-<summary><h5>Layout elements</h5></summary>
+<summary>Layout elements</summary>
 
-> Whitespace is trimmed and collapsed. [Whole whitespace](#destroy-whole-whitespace) is removed.
+> Whitespace is trimmed and collapsed. Whole whitespace is removed.
 
-These elements should only contain other elements and no text. This makes it possible to [remove whole whitespace](#destroy-whole-whitespace), which is useful when using `display: inline-block` so that whitespace between elements (e.g. indentation) does not alter layout and styling.
+These elements should only contain other elements and no text. This makes it possible to remove whole whitespace, which is useful when using `display: inline-block` so that whitespace between elements (e.g. indentation) does not alter layout and styling.
 
 ###### Before
 
@@ -181,11 +181,11 @@ These elements should only contain other elements and no text. This makes it pos
 </details>
 
 <details>
-<summary><h5>Content-first elements</h5></summary>
+<summary>Content-first elements</summary>
 
 > Whitespace is trimmed and collapsed.
 
-These elements are usually like [content elements](#content-elements) but are occasionally used like a layout element with one child. Whole whitespace is not removed as it might contain content, but this is OK for using as layout as there is only one child and whitespace is trimmed.
+These elements are usually like content elements but are occasionally used like a layout element with one child. Whole whitespace is not removed as it might contain content, but this is OK for using as layout as there is only one child and whitespace is trimmed.
 
 ###### Before
 
