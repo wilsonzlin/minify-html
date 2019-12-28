@@ -212,11 +212,11 @@ Any entities in attribute values are decoded, and then the most optimal represen
 
 - Double quoted, with any `"` encoded.
 - Single quoted, with any `'` encoded.
-- Unquoted, with `"`/`'` first char (if applicable) and `>` last char (if applicable), and any whitespace, encoded.
+- Unquoted, with `"`/`'` first character (if applicable), `>` last character (if applicable), and any whitespace encoded.
 
 Some attributes have their whitespace (after decoding) trimmed and collapsed, such as `class`.
 
-If the attribute value is empty after any processing, it is completely removed (i.e. no `=`).
+If an attribute value is empty after any processing, it is completely removed (i.e. no `=`).
 
 Spaces are removed between attributes if possible.
 
@@ -227,7 +227,7 @@ Spaces are removed between attributes if possible.
 
 ### Ignored
 
-Empty elements and bangs are not removed as it is assumed there is a special reason for their declaration.
+Bangs and empty elements are not removed as it is assumed there is a special reason for their declaration.
 
 ## Parsing
 
