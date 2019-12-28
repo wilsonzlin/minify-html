@@ -6,7 +6,7 @@ use crate::spec::tag::formatting::FORMATTING_TAGS;
 use crate::spec::tag::wss::WSS_TAGS;
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
-use crate::unit::entity::{EntityType, maybe_process_entity};
+use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::tag::process_tag;
 use crate::spec::tag::contentfirst::CONTENT_FIRST_TAGS;
 
@@ -88,8 +88,8 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
         let next_content_type = match ContentType::peek(proc) {
             ContentType::Entity => {
                 // Entity could decode to whitespace.
-                let entity = maybe_process_entity(proc)?;
-                let ws = match entity.entity() {
+                let entity = parse_entity(proc)?;
+                let ws = match entity {
                     EntityType::Ascii(c) => is_whitespace(c),
                     _ => false,
                 };
@@ -97,7 +97,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
                     // Skip whitespace char, and mark as whitespace.
                     ContentType::Whitespace
                 } else {
-                    // Not whitespace, so decode and write.
+                    // Not whitespace, so write.
                     entity.keep(proc);
                     ContentType::Entity
                 }

@@ -3,7 +3,7 @@ use phf::{Map, phf_map};
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::is_whitespace;
-use crate::unit::entity::{EntityType, maybe_process_entity, ParsedEntity};
+use crate::unit::entity::{EntityType, parse_entity};
 
 pub fn is_double_quote(c: u8) -> bool {
     c == b'"'
@@ -36,10 +36,10 @@ static ENCODED: Map<u8, &'static [u8]> = phf_map! {
     b'\x20' => b"&#32;",
 };
 
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy)]
 enum CharType {
     End,
-    NonAsciiEntity(ParsedEntity),
+    NonAsciiEntity(EntityType),
     // Normal needs associated character to be able to write it.
     Normal(u8),
     // Whitespace needs associated character to determine cost of encoding it.
@@ -174,8 +174,8 @@ macro_rules! consume_attr_value_chars {
                 // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
                 CharType::End
             } else if chain!($proc.match_char(b'&').matched()) {
-                let entity = maybe_process_entity($proc)?;
-                if let EntityType::Ascii(c) = entity.entity() {
+                let entity = parse_entity($proc)?;
+                if let EntityType::Ascii(c) = entity {
                     CharType::from_char(c)
                 } else {
                     CharType::NonAsciiEntity(entity)
@@ -193,10 +193,14 @@ macro_rules! consume_attr_value_chars {
                     // Now past whitespace (e.g. moved to non-whitespace char or end of attribute value). Either:
                     // - ignore contiguous whitespace (i.e. do nothing) if we are currently at beginning or end of value; or
                     // - collapse contiguous whitespace (i.e. count as one whitespace char) otherwise.
-                    if currently_in_whitespace && !currently_first_char && char_type != CharType::End {
-                        // Collect current collapsed contiguous whitespace that was ignored previously.
-                        $out_char_type = CharType::Whitespace(b' ');
-                        $on_char;
+                    match (currently_in_whitespace, currently_first_char, char_type) {
+                        (_, _, CharType::End) => {}
+                        (true, false, _) => {
+                            // Collect current collapsed contiguous whitespace that was ignored previously.
+                            $out_char_type = CharType::Whitespace(b' ');
+                            $on_char;
+                        }
+                        _ => {}
                     };
                     currently_in_whitespace = false;
                 };
@@ -219,6 +223,11 @@ pub struct ProcessedAttrValue {
     pub value: Option<ProcessorRange>,
 }
 
+// TODO WARNING: Decoding entities:
+// `attr="&amp;nbsp;"` becomes `attr=&nbsp;` which is incorrect.
+// `attr="&&97;&109;&112;;"` becomes `attr=&amp;` which is incorrect.
+// `attr="&am&112;;"` becomes `attr=&amp;` which is incorrect.
+// TODO Above also applies to decoding in content.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
     let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());
     let src_delimiter_pred = match src_delimiter {

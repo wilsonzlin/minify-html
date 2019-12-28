@@ -1,0 +1,9 @@
+[package]
+name = "hyperbuild-fuzz-target"
+version = "0.0.1"
+authors = ["Wilson Lin <code@wilsonl.in>"]
+edition = "2018"
+
+[dependencies]
+afl = "0.5.2"
+hyperbuild = { path = ".." }

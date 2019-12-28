@@ -35,35 +35,44 @@
 // a well formed entity, they are treated literally.
 
 use crate::err::ProcessingResult;
-use crate::proc::{Checkpoint, Processor};
+use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
 use crate::spec::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
 
-#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+#[derive(Clone, Copy)]
 pub enum EntityType {
-    Malformed,
+    Malformed(ProcessorRange),
     Ascii(u8),
     // If named or numeric reference refers to ASCII char, Type::Ascii is used instead.
     Named(&'static [u8]),
     Numeric(char),
 }
 
+impl EntityType {
+    pub fn keep(self, proc: &mut Processor) -> () {
+        match self {
+            EntityType::Malformed(r) => proc.write_range(r),
+            EntityType::Ascii(c) => proc.write(c),
+            EntityType::Named(s) => proc.write_slice(s),
+            EntityType::Numeric(c) => proc.write_utf8(c),
+        };
+    }
+}
+
 macro_rules! handle_decoded_code_point {
     ($code_point:ident) => {
-        match std::char::from_u32($code_point) {
-            Some(c) => if c.is_ascii() {
-                EntityType::Ascii(c as u8)
-            } else {
-                EntityType::Numeric(c)
-            },
-            None => EntityType::Malformed,
-        }
+        std::char::from_u32($code_point).map(|c| if c.is_ascii() {
+            EntityType::Ascii(c as u8)
+        } else {
+            EntityType::Numeric(c)
+        })
     };
 }
 
-fn parse_decimal(proc: &mut Processor) -> EntityType {
+fn parse_decimal(proc: &mut Processor) -> Option<EntityType> {
     let mut val = 0u32;
-    // Parse at most seven characters to prevent parsing forever.
+    // Parse at most seven characters to prevent parsing forever and overflowing.
+    // TODO Require at least one digit.
     for _ in 0..7 {
         if let Some(c) = chain!(proc.match_pred(is_digit).discard().maybe_char()) {
             val = val * 10 + (c - b'0') as u32;
@@ -74,9 +83,10 @@ fn parse_decimal(proc: &mut Processor) -> EntityType {
     handle_decoded_code_point!(val)
 }
 
-fn parse_hexadecimal(proc: &mut Processor) -> EntityType {
+fn parse_hexadecimal(proc: &mut Processor) -> Option<EntityType> {
     let mut val = 0u32;
-    // Parse at most six characters to prevent parsing forever.
+    // Parse at most six characters to prevent parsing forever and overflowing.
+    // TODO Require at least one digit.
     for _ in 0..6 {
         if let Some(c) = chain!(proc.match_pred(is_hex_digit).discard().maybe_char()) {
             let digit = if is_digit(c) {
@@ -96,23 +106,20 @@ fn parse_hexadecimal(proc: &mut Processor) -> EntityType {
     handle_decoded_code_point!(val)
 }
 
-fn parse_name(proc: &mut Processor) -> EntityType {
+fn parse_name(proc: &mut Processor) -> Option<EntityType> {
+    // TODO Limit match length.
     let data = chain!(proc.match_while_pred(is_valid_entity_reference_name_char).discard().slice());
-    match ENTITY_REFERENCES.get(data) {
-        // In UTF-8, one-byte character encodings are always ASCII.
-        Some(s) => if s.len() == 1 {
-            EntityType::Ascii(s[0])
-        } else {
-            EntityType::Named(s)
-        },
-        None => {
-            EntityType::Malformed
-        },
-    }
+    // In UTF-8, one-byte character encodings are always ASCII.
+    ENTITY_REFERENCES.get(data).map(|s| if s.len() == 1 {
+        EntityType::Ascii(s[0])
+    } else {
+        EntityType::Named(s)
+    })
 }
 
 // This will parse and skip characters. Set a checkpoint to later write skipped, or to ignore results and reset to previous position.
 pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
+    let checkpoint = proc.checkpoint();
     chain!(proc.match_char(b'&').expect().discard());
 
     // The input can end at any time after initial ampersand.
@@ -136,6 +143,8 @@ pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
     //    entity reference name.
 
     // TODO Could optimise.
+    // These functions do not return EntityType::Malformed as it requires a checkpoint.
+    // Instead, they return None if entity is malformed.
     let entity_type = if chain!(proc.match_seq(b"#x").discard().matched()) {
         parse_hexadecimal(proc)
     } else if chain!(proc.match_char(b'#').discard().matched()) {
@@ -144,47 +153,18 @@ pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
         parse_name(proc)
     } else {
         // At this point, only consumed ampersand.
-        EntityType::Malformed
+        None
     };
 
-    Ok(if entity_type != EntityType::Malformed && chain!(proc.match_char(b';').discard().matched()) {
-        entity_type
+    Ok(if entity_type.is_some() && chain!(proc.match_char(b';').discard().matched()) {
+        entity_type.unwrap()
     } else {
-        println!("Malformed");
-        EntityType::Malformed
+        EntityType::Malformed(proc.consumed_range(checkpoint))
     })
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
-pub struct ParsedEntity {
-    entity: EntityType,
-    checkpoint: Checkpoint,
-}
-
-impl ParsedEntity {
-    pub fn entity(&self) -> EntityType {
-        self.entity
-    }
-
-    pub fn keep(&self, proc: &mut Processor) -> () {
-        match self.entity {
-            EntityType::Malformed => proc.write_skipped(self.checkpoint),
-            EntityType::Ascii(c) => proc.write(c),
-            EntityType::Named(s) => proc.write_slice(s),
-            EntityType::Numeric(c) => proc.write_utf8(c),
-        };
-    }
-}
-
-pub fn maybe_process_entity(proc: &mut Processor) -> ProcessingResult<ParsedEntity> {
-    let checkpoint = proc.checkpoint();
-    let entity = parse_entity(proc)?;
-
-    Ok(ParsedEntity { entity, checkpoint })
-}
-
 pub fn process_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
-    let entity = maybe_process_entity(proc)?;
+    let entity = parse_entity(proc)?;
     entity.keep(proc);
-    Ok(entity.entity())
+    Ok(entity)
 }

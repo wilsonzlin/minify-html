@@ -35,7 +35,7 @@ pub enum RequireReason {
     ExpectedChar(u8),
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
+#[derive(Copy, Clone)]
 pub struct Checkpoint {
     read_next: usize,
     write_next: usize,
@@ -323,6 +323,10 @@ impl<'d> Processor<'d> {
     pub fn erase_written(&mut self, checkpoint: Checkpoint) -> () {
         self.write_next = checkpoint.write_next;
     }
+    /// Get consumed characters since checkpoint as range.
+    pub fn consumed_range(&self, checkpoint: Checkpoint) -> ProcessorRange {
+        ProcessorRange { start: checkpoint.read_next, end: self.read_next }
+    }
     /// Get written characters since checkpoint as range.
     pub fn written_range(&self, checkpoint: Checkpoint) -> ProcessorRange {
         ProcessorRange { start: checkpoint.write_next, end: self.write_next }
@@ -381,6 +385,10 @@ impl<'d> Processor<'d> {
     pub fn write(&mut self, c: u8) -> () {
         self.code[self.write_next] = c;
         self.write_next += 1;
+    }
+    pub fn write_range(&mut self, s: ProcessorRange) -> () {
+        self.code.copy_within(s.start..s.end, self.write_next);
+        self.write_next += s.len();
     }
     /// Write `s` to output. Will panic if exceeds bounds.
     pub fn write_slice(&mut self, s: &[u8]) -> () {
