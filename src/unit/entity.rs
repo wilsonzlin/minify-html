@@ -4,8 +4,7 @@
 // a name of length 1, it's always better to decode entities for minification
 // purposes.
 
-// Based on the data sourced from https://html.spec.whatwg.org/entities.json as
-// of 2019-12-29T04:00:00.000Z:
+// Based on the data sourced from https://html.spec.whatwg.org/entities.json:
 // - Entity names can have [A-Za-z0-9] characters, and are case sensitive.
 // - Some character entity references do not end with a semicolon.
 //   - All of these entities also have a corresponding entity with semicolon.
