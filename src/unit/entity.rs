@@ -1,3 +1,9 @@
+use crate::err::ProcessingResult;
+use crate::proc::{Processor, ProcessorRange};
+use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
+use phf::phf_map;
+use crate::pattern::TrieNode;
+
 // The minimum length of any entity is 3, which is a character entity reference
 // with a single character name. The longest UTF-8 representation of a Unicode
 // code point is 4 bytes. Because there are no character entity references with
@@ -17,10 +23,11 @@
 // - Names must match case sensitively.
 // - Entities that don't have a semicolon do work e.g. `&amp2` => `&2`.
 
-use crate::err::ProcessingResult;
-use crate::proc::{Processor, ProcessorRange};
-use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
-use crate::spec::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
+include!(concat!(env!("OUT_DIR"), "/gen_entities.rs"));
+
+fn is_valid_entity_reference_name_char(c: u8) -> bool {
+    c >= b'0' && c <= b'9' || c >= b'A' && c <= b'Z' || c >= b'a' && c <= b'z'
+}
 
 #[derive(Clone, Copy)]
 pub enum EntityType {

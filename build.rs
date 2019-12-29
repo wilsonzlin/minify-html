@@ -17,6 +17,20 @@ fn create_byte_string_literal(bytes: &[u8]) -> String {
         .collect::<String>())
 }
 
+fn read_json<T>(name: &str) -> T
+    where for<'de> T: Deserialize<'de> {
+    let patterns_path = Path::new("gen").join(format!("{}.json", name));
+    let patterns_file = File::open(patterns_path).unwrap();
+    serde_json::from_reader(patterns_file).unwrap()
+}
+
+fn write_rs(name: &str, code: String) -> () {
+    let out_dir = env::var("OUT_DIR").unwrap();
+    let dest_path = Path::new(&out_dir).join(format!("gen_{}.rs", name));
+    let mut dest_file = File::create(&dest_path).unwrap();
+    dest_file.write_all(code.as_bytes()).unwrap();
+}
+
 struct AutoIncrement {
     next_val: usize,
 }
@@ -107,8 +121,8 @@ fn build_pattern(pattern: String) -> String {
     };
 
     format!("SinglePattern {{ seq: {}, table: &[{}] }}",
-            create_byte_string_literal(pattern.as_bytes()),
-            table.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "))
+        create_byte_string_literal(pattern.as_bytes()),
+        table.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "))
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -119,9 +133,7 @@ struct Entity {
 
 fn generate_entities() {
     // Read named entities map from JSON file.
-    let entities_path = Path::new("gen").join("entities.json");
-    let entities_file = File::open(entities_path).unwrap();
-    let entities: HashMap<String, Entity> = serde_json::from_reader(entities_file).unwrap();
+    let entities: HashMap<String, Entity> = read_json("entities");
 
     // Add entities to trie builder.
     let mut trie_builder = TrieBuilderNode::new();
@@ -133,20 +145,16 @@ fn generate_entities() {
     let trie_root_id = trie_builder.build(&mut AutoIncrement::new(), "&'static [u8]", &mut trie_code);
 
     // Write trie code to output Rust file.
-    let out_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = Path::new(&out_dir).join("gen_entities.rs");
-    let mut dest_file = File::create(&dest_path).unwrap();
-    dest_file.write_all(trie_code
-        // Make trie root public and use proper variable name.
-        .replace(format!("static N{}:", trie_root_id).as_str(), "pub static ENTITY_REFERENCES:")
-        .as_bytes()).unwrap();
+    // Make trie root public and use proper variable name.
+    write_rs("entities", trie_code.replace(
+        format!("static N{}:", trie_root_id).as_str(),
+        "pub static ENTITY_REFERENCES:",
+    ));
 }
 
 fn generate_patterns() {
     // Read named entities map from JSON file.
-    let patterns_path = Path::new("gen").join("patterns.json");
-    let patterns_file = File::open(patterns_path).unwrap();
-    let patterns: HashMap<String, String> = serde_json::from_reader(patterns_file).unwrap();
+    let patterns: HashMap<String, String> = read_json("patterns");
 
     // Add entities to trie builder.
     let mut code = String::new();
@@ -155,10 +163,7 @@ fn generate_patterns() {
     };
 
     // Write trie code to output Rust file.
-    let out_dir = env::var("OUT_DIR").unwrap();
-    let dest_path = Path::new(&out_dir).join("gen_patterns.rs");
-    let mut dest_file = File::create(&dest_path).unwrap();
-    dest_file.write_all(code.as_bytes()).unwrap();
+    write_rs("patterns", code);
 }
 
 fn main() {
