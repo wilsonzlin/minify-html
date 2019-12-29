@@ -4,35 +4,19 @@
 // a name of length 1, it's always better to decode entities for minification
 // purposes.
 
-// Based on the data sourced from https://www.w3.org/TR/html5/entities.json as
-// of 2019-04-20T04:00:00.000Z:
+// Based on the data sourced from https://html.spec.whatwg.org/entities.json as
+// of 2019-12-29T04:00:00.000Z:
 // - Entity names can have [A-Za-z0-9] characters, and are case sensitive.
-// - Some character entity references do not end with a semicolon, but
-// spec says all must (https://html.spec.whatwg.org/multipage/syntax.html#character-references).
+// - Some character entity references do not end with a semicolon.
 //   - All of these entities also have a corresponding entity with semicolon.
 // - The longest name is "CounterClockwiseContourIntegral", with length 31
 // (excluding leading ampersand and trailing semicolon).
 // - All entity names are at least 2 characters long.
 
 // Browser implementation behaviour to consider:
-// - It is unclear what happens if an entity name does not match case
-// sensitively but matches two or more case insensitively.
-//   - For example, given "AlphA" or "aLpha", does the browser choose "alpha" or
-//   "Alpha"?
-// - Do browsers render valid entities without trailing semicolons?
-//   - For example, how do browsers interpret "Chuck-&amp-Cheese", "1&amp1", and
-//   "&ampe;"?
-
-// hyperbuild implementation:
-// - Entities must start with an ampersand and end with a semicolon.
-// - Once an ampersand is encountered, it and the sequence of characters
-// following must match the following ECMAScript regular expression to be
-// considered a well formed entity:
-//
-//   /&(#(x[0-9a-f]{1-6}|[0-9]{1,7}))|[a-z0-9]{2,31};/i
-//
-// - If the sequence of characters following an ampersand do not combine to form
-// a well formed entity, they are treated literally.
+// - Browsers match longest sequence of characters that would form a valid entity.
+// - Names must match case sensitively.
+// - Entities that don't have a semicolon do work e.g. `&amp2` => `&2`.
 
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};

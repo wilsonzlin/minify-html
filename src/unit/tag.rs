@@ -109,8 +109,8 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
     };
 
     // Require closing tag for non-void.
-    chain!(proc.match_seq(b"</").require_with_reason("closing tag")?.keep());
+    chain!(proc.match_seq(b"</").require()?.keep());
     chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.keep());
-    chain!(proc.match_char(b'>').require_with_reason("closing tag")?.keep());
+    chain!(proc.match_char(b'>').require()?.keep());
     Ok(())
 }

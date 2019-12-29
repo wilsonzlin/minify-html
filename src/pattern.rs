@@ -3,36 +3,10 @@ use crate::proc::Processor;
 
 pub struct SinglePattern {
     seq: &'static [u8],
-    table: Vec<usize>,
+    table: &'static [usize],
 }
 
 impl SinglePattern {
-    pub fn new(seq: &'static [u8]) -> SinglePattern {
-        let mut max_prefix_len = 0usize;
-        let mut table = vec![0usize; seq.len()];
-
-        let mut i = 1;
-        while i < seq.len() {
-            if seq[i] == seq[max_prefix_len] {
-                max_prefix_len += 1;
-                table[i] = max_prefix_len;
-                i += 1;
-            } else {
-                if max_prefix_len != 0 {
-                    max_prefix_len = table[max_prefix_len - 1];
-                } else {
-                    table[i] = 0;
-                    i += 1;
-                };
-            };
-        };
-
-        SinglePattern {
-            seq,
-            table,
-        }
-    }
-
     pub fn match_against(&self, haystack: &[u8]) -> Option<usize> {
         let mut hay_idx = 0usize;
         let mut pat_idx = 0usize;
@@ -58,6 +32,8 @@ impl SinglePattern {
         None
     }
 }
+
+include!(concat!(env!("OUT_DIR"), "/gen_patterns.rs"));
 
 pub struct TrieNode<V: 'static + Copy> {
     pub children: Map<u8, &'static TrieNode<V>>,

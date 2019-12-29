@@ -1,13 +1,6 @@
 // Official spec defined code points.
 // See https://infra.spec.whatwg.org/#code-points for spec.
 
-pub fn is_tab_or_newline(c: u8) -> bool {
-    match c {
-        0x09 | 0x0a | 0x0d => true,
-        _ => false,
-    }
-}
-
 pub fn is_whitespace(c: u8) -> bool {
     // Also update crate::proc::attr::quoted::STATIC when changing here.
     match c {

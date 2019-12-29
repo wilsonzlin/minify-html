@@ -260,7 +260,7 @@ impl<'d> Processor<'d> {
                 count += 1;
             };
         };
-        self._new_match(count, None, RequireReason::Custom)
+        self._new_match(count, None, RequireReason::ExpectedMatch(pat))
     }
     pub fn match_line_terminator(&mut self) -> () {
         self._new_match(match self._maybe_read_offset(0) {

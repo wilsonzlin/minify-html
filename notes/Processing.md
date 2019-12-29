@@ -8,9 +8,9 @@ Sometimes the code will look like it does redundant matching logic. For example:
 pub fn process_comment(proc: &mut Processor) -> ProcessingResult<()> {
     chain!(proc.match_seq(b"<!--").expect().discard());
 
-    chain!(proc.match_while_not_seq(&SinglePattern::new(b"-->")).discard());
+    chain!(proc.match_while_not_seq(b"-->").discard());
 
-    chain!(proc.match_seq(b"-->").require_with_reason("comment end")?.discard());
+    chain!(proc.match_seq(b"-->").require()?.discard());
 
     Ok(())
 }
