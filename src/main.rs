@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{Read, Write, stderr};
+use std::io::{Read, stderr, Write};
 
 use structopt::StructOpt;
 

@@ -1,6 +1,6 @@
-use crate::proc::Processor;
 use crate::err::ProcessingResult;
 use crate::pattern;
+use crate::proc::Processor;
 
 pub fn process_comment(proc: &mut Processor) -> ProcessingResult<()> {
     chain!(proc.match_seq(b"<!--").expect().discard());

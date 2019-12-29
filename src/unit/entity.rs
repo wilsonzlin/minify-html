@@ -1,8 +1,9 @@
+use phf::phf_map;
+
 use crate::err::ProcessingResult;
+use crate::pattern::TrieNode;
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
-use phf::phf_map;
-use crate::pattern::TrieNode;
 
 // The minimum length of any entity is 3, which is a character entity reference
 // with a single character name. The longest UTF-8 representation of a Unicode

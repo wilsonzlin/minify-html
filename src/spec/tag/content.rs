@@ -1,4 +1,4 @@
-use ::phf::{phf_set, Set};
+use phf::{phf_set, Set};
 
 pub static CONTENT_TAGS: Set<&'static [u8]> = phf_set! {
 	b"address",

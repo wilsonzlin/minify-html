@@ -1,4 +1,4 @@
-use ::phf::{phf_set, Set};
+use phf::{phf_set, Set};
 
 pub static LAYOUT_TAGS: Set<&'static [u8]> = phf_set! {
 	b"article",

@@ -1,5 +1,5 @@
-use crate::proc::Processor;
 use crate::err::ProcessingResult;
+use crate::proc::Processor;
 
 pub fn process_bang(proc: &mut Processor) -> ProcessingResult<()> {
     chain!(proc.match_seq(b"<!").require()?.keep());

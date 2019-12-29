@@ -1,13 +1,14 @@
+use phf::{phf_set, Set};
+
 use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
 use crate::spec::tag::void::VOID_TAGS;
 use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
 use crate::unit::content::process_content;
-use crate::unit::style::process_style;
-use phf::{Set, phf_set};
-use crate::unit::script::text::process_text_script;
 use crate::unit::script::js::process_js_script;
+use crate::unit::script::text::process_text_script;
+use crate::unit::style::process_style;
 
 pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
     b"application/ecmascript",
@@ -89,7 +90,7 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
         let ProcessedAttr { name, typ, value } = process_attr(proc)?;
         match &proc[name] {
             b"type" => attr_type_value = value,
-            _ => {},
+            _ => {}
         };
         last_attr_type = Some(typ);
     };

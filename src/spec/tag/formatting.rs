@@ -1,4 +1,4 @@
-use ::phf::{phf_set, Set};
+use phf::{phf_set, Set};
 
 // Sourced from https://developer.mozilla.org/en-US/docs/Web/HTML/Element#Inline_text_semantics.
 // Differences to tags listed in table at above URL: -br, +del, +ins.

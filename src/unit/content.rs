@@ -2,13 +2,13 @@ use crate::err::ProcessingResult;
 use crate::proc::{Checkpoint, Processor, ProcessorRange};
 use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::content::CONTENT_TAGS;
+use crate::spec::tag::contentfirst::CONTENT_FIRST_TAGS;
 use crate::spec::tag::formatting::FORMATTING_TAGS;
 use crate::spec::tag::wss::WSS_TAGS;
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::tag::process_tag;
-use crate::spec::tag::contentfirst::CONTENT_FIRST_TAGS;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 enum ContentType {

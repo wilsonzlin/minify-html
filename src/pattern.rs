@@ -1,4 +1,5 @@
 use phf::Map;
+
 use crate::proc::Processor;
 
 pub struct SinglePattern {

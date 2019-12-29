@@ -1,5 +1,5 @@
-use crate::proc::Processor;
 use crate::err::ProcessingResult;
+use crate::proc::Processor;
 
 pub fn process_text_script(proc: &mut Processor) -> ProcessingResult<()> {
     // NOTE: See "notes/Text script content.md".

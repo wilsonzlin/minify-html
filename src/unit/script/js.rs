@@ -1,5 +1,5 @@
-use crate::err::{ProcessingResult, ErrorType};
-use crate::proc::{Processor};
+use crate::err::{ErrorType, ProcessingResult};
+use crate::proc::Processor;
 
 fn is_string_delimiter(c: u8) -> bool {
     c == b'"' || c == b'\''

@@ -1,5 +1,5 @@
+use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::Processor;
-use crate::err::{ProcessingResult, ErrorType};
 
 fn is_string_delimiter(c: u8) -> bool {
     match c {
