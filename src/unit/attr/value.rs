@@ -225,8 +225,9 @@ pub struct ProcessedAttrValue {
 
 // TODO WARNING: Decoding entities:
 // `attr="&amp;nbsp;"` becomes `attr=&nbsp;` which is incorrect.
-// `attr="&&97;&109;&112;;"` becomes `attr=&amp;` which is incorrect.
-// `attr="&am&112;;"` becomes `attr=&amp;` which is incorrect.
+// `attr="&&#97;&#109;&#112;;"` becomes `attr=&amp;` which is incorrect.
+// `attr="&am&#112;;"` becomes `attr=&amp;` which is incorrect.
+// `attr="&am&#112;"` becomes `attr=&amp` which is incorrect.
 // TODO Above also applies to decoding in content.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
     let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());

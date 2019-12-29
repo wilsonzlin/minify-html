@@ -59,36 +59,41 @@ impl EntityType {
     }
 }
 
-macro_rules! handle_decoded_code_point {
-    ($code_point:ident) => {
-        std::char::from_u32($code_point).map(|c| if c.is_ascii() {
+macro_rules! handle_decoded_numeric_code_point {
+    ($proc:ident, $at_least_one_digit:ident, $code_point:ident) => {
+        if !$at_least_one_digit || !chain!($proc.match_char(b';').discard().matched()) {
+            return None;
+        }
+        return std::char::from_u32($code_point).map(|c| if c.is_ascii() {
             EntityType::Ascii(c as u8)
         } else {
             EntityType::Numeric(c)
-        })
+        });
     };
 }
 
 fn parse_decimal(proc: &mut Processor) -> Option<EntityType> {
     let mut val = 0u32;
+    let mut at_least_one_digit = false;
     // Parse at most seven characters to prevent parsing forever and overflowing.
-    // TODO Require at least one digit.
     for _ in 0..7 {
         if let Some(c) = chain!(proc.match_pred(is_digit).discard().maybe_char()) {
+            at_least_one_digit = true;
             val = val * 10 + (c - b'0') as u32;
         } else {
             break;
         }
-    }
-    handle_decoded_code_point!(val)
+    };
+    handle_decoded_numeric_code_point!(proc, at_least_one_digit, val);
 }
 
 fn parse_hexadecimal(proc: &mut Processor) -> Option<EntityType> {
     let mut val = 0u32;
+    let mut at_least_one_digit = false;
     // Parse at most six characters to prevent parsing forever and overflowing.
-    // TODO Require at least one digit.
     for _ in 0..6 {
         if let Some(c) = chain!(proc.match_pred(is_hex_digit).discard().maybe_char()) {
+            at_least_one_digit = true;
             let digit = if is_digit(c) {
                 c - b'0'
             } else if is_upper_hex_digit(c) {
@@ -102,15 +107,13 @@ fn parse_hexadecimal(proc: &mut Processor) -> Option<EntityType> {
         } else {
             break;
         }
-    }
-    handle_decoded_code_point!(val)
+    };
+    handle_decoded_numeric_code_point!(proc, at_least_one_digit, val);
 }
 
 fn parse_name(proc: &mut Processor) -> Option<EntityType> {
-    // TODO Limit match length.
-    let data = chain!(proc.match_while_pred(is_valid_entity_reference_name_char).discard().slice());
     // In UTF-8, one-byte character encodings are always ASCII.
-    ENTITY_REFERENCES.get(data).map(|s| if s.len() == 1 {
+    ENTITY_REFERENCES.get(proc).map(|s| if s.len() == 1 {
         EntityType::Ascii(s[0])
     } else {
         EntityType::Named(s)
@@ -156,15 +159,5 @@ pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
         None
     };
 
-    Ok(if entity_type.is_some() && chain!(proc.match_char(b';').discard().matched()) {
-        entity_type.unwrap()
-    } else {
-        EntityType::Malformed(proc.consumed_range(checkpoint))
-    })
-}
-
-pub fn process_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
-    let entity = parse_entity(proc)?;
-    entity.keep(proc);
-    Ok(entity)
+    Ok(entity_type.unwrap_or_else(|| EntityType::Malformed(proc.consumed_range(checkpoint))))
 }

@@ -379,6 +379,10 @@ impl<'d> Processor<'d> {
             Err(ErrorType::UnexpectedEnd)
         }
     }
+    pub fn skip_expect(&mut self) -> () {
+        assert!(!self.at_end(), "skip known character");
+        self.read_next += 1;
+    }
 
     // Writing characters directly.
     /// Write `c` to output. Will panic if exceeds bounds.

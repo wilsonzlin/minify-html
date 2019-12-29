@@ -105,7 +105,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
             ContentType::Whitespace => {
                 // This is here to prevent skipping twice from decoded whitespace entity.
                 // Whitespace is always ignored and then processed afterwards, even if not minifying.
-                proc.skip().expect("skipping known character");
+                proc.skip_expect();
                 ContentType::Whitespace
             }
             other_type => other_type,
