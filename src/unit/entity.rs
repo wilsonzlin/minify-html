@@ -4,6 +4,7 @@ use crate::err::ProcessingResult;
 use crate::pattern::TrieNode;
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
+use crate::ErrorType;
 
 // The minimum length of any entity is 3, which is a character entity reference
 // with a single character name. The longest UTF-8 representation of a Unicode
@@ -32,6 +33,7 @@ fn is_valid_entity_reference_name_char(c: u8) -> bool {
 
 #[derive(Clone, Copy)]
 pub enum EntityType {
+    NonDecodable(ProcessorRange),
     Malformed(ProcessorRange),
     Ascii(u8),
     // If named or numeric reference refers to ASCII char, Type::Ascii is used instead.
@@ -40,8 +42,19 @@ pub enum EntityType {
 }
 
 impl EntityType {
+    pub fn is_malformed(&self) -> bool {
+        if let EntityType::Malformed(_) = self {
+            true
+        } else {
+            false
+        }
+    }
+}
+
+impl EntityType {
     pub fn keep(self, proc: &mut Processor) -> () {
         match self {
+            EntityType::NonDecodable(r) => proc.write_range(r),
             EntityType::Malformed(r) => proc.write_range(r),
             EntityType::Ascii(c) => proc.write(c),
             EntityType::Named(s) => proc.write_slice(s),
@@ -111,8 +124,16 @@ fn parse_name(proc: &mut Processor) -> Option<EntityType> {
     })
 }
 
-// This will parse and skip characters. Set a checkpoint to later write skipped, or to ignore results and reset to previous position.
-pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
+// TODO Decoding '<' in content.
+// This will parse and skip characters.
+// Issues:
+// - Malformed entities including bare ampersand could form valid entity if there are immediately following valid entities which are decoded.
+// Notes:
+// - To prevent an entity from being interpreted as one, one of its characters ([&#a-zA-Z0-9;]) needs to be encoded. Ampersand is the shortest, even with semicolon (`&amp` or `&amp;`).
+// Solution:
+// - Disallow following malformed entities with ampersand.
+// - Do not decode encoded ampersand (e.g. `&AMP` or `&#x26;`) to prevent accidentally writing entity.
+pub fn parse_entity(proc: &mut Processor, decode_left_chevron: bool) -> ProcessingResult<EntityType> {
     let checkpoint = proc.checkpoint();
     if cfg!(debug_assertions) {
         chain!(proc.match_char(b'&').expect().discard());
@@ -151,7 +172,16 @@ pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
     } else {
         // At this point, only consumed ampersand.
         None
-    };
+    }
+        .map(|e| match (decode_left_chevron, e) {
+            (_, EntityType::Ascii(b'&')) | (false, EntityType::Ascii(b'<')) => EntityType::NonDecodable(proc.consumed_range(checkpoint)),
+            (_, e) => e,
+        })
+        .unwrap_or_else(|| EntityType::Malformed(proc.consumed_range(checkpoint)));
 
-    Ok(entity_type.unwrap_or_else(|| EntityType::Malformed(proc.consumed_range(checkpoint))))
+    if entity_type.is_malformed() && chain!(proc.match_char(b'&').matched()) {
+        Err(ErrorType::EntityFollowingMalformedEntity)
+    } else {
+        Ok(entity_type)
+    }
 }

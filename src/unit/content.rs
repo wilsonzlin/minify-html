@@ -83,27 +83,26 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
     let mut last_non_whitespace_content_type = ContentType::Start;
     // Whether or not currently in whitespace.
     let mut whitespace_checkpoint_opt: Option<Checkpoint> = None;
+    let mut entity: Option<EntityType> = None;
 
     loop {
         let next_content_type = match ContentType::peek(proc) {
             ContentType::Entity => {
                 // Entity could decode to whitespace.
-                let entity = parse_entity(proc)?;
+                entity = Some(parse_entity(proc, false)?);
                 let ws = match entity {
-                    EntityType::Ascii(c) => is_whitespace(c),
+                    Some(EntityType::Ascii(c)) => is_whitespace(c),
                     _ => false,
                 };
                 if ws {
                     // Skip whitespace char, and mark as whitespace.
                     ContentType::Whitespace
                 } else {
-                    // Not whitespace, so write.
-                    entity.keep(proc);
+                    // Not whitespace, but don't write yet until any previously ignored whitespace has been processed later.
                     ContentType::Entity
                 }
             }
             ContentType::Whitespace => {
-                // This is here to prevent skipping twice from decoded whitespace entity.
                 // Whitespace is always ignored and then processed afterwards, even if not minifying.
                 proc.skip_expect();
                 ContentType::Whitespace
@@ -112,12 +111,15 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
         };
 
         if next_content_type == ContentType::Whitespace {
-            if let None = whitespace_checkpoint_opt {
-                // This is the start of one or more whitespace characters, so start a view of this contiguous whitespace
-                // and don't write any characters that are part of it yet.
-                whitespace_checkpoint_opt = Some(proc.checkpoint());
-            } else {
-                // This is part of a contiguous whitespace, but not the start of, so simply ignore.
+            match whitespace_checkpoint_opt {
+                None => {
+                    // This is the start of one or more whitespace characters, so start a view of this contiguous whitespace
+                    // and don't write any characters that are part of it yet.
+                    whitespace_checkpoint_opt = Some(proc.checkpoint());
+                }
+                _ => {
+                    // This is part of a contiguous whitespace, but not the start of, so simply ignore.
+                }
             }
             continue;
         }
@@ -148,8 +150,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
             ContentType::Bang => { process_bang(proc)?; }
             ContentType::OpeningTag => { process_tag(proc)?; }
             ContentType::End => { break; }
-            // Entity has already been processed.
-            ContentType::Entity => {}
+            ContentType::Entity => entity.unwrap().keep(proc),
             ContentType::Text => { proc.accept()?; }
             _ => unreachable!(),
         };

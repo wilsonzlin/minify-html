@@ -26,6 +26,9 @@ fn main() {
         Err((err, pos)) => {
             eprintln!("Failed at character {}:", pos);
             match err {
+                ErrorType::EntityFollowingMalformedEntity => {
+                    eprintln!("Entity cannot follow malformed entity.");
+                }
                 ErrorType::NoSpaceBeforeAttr => {
                     eprintln!("Space required before attribute.");
                 }

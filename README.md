@@ -271,6 +271,8 @@ If a named entity is an invalid reference as per the [specification](https://htm
 
 Numeric character references that do not reference a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are considered malformed.
 
+No ampersand can immediately follow a malformed entity e.g. `&am&` or `&&#97;&#109;&#112;;`.
+
 ### Attributes
 
 Backticks (`` ` ``) are not valid quote marks and are not interpreted as such.

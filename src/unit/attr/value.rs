@@ -174,7 +174,7 @@ macro_rules! consume_attr_value_chars {
                 // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
                 CharType::End
             } else if chain!($proc.match_char(b'&').matched()) {
-                let entity = parse_entity($proc)?;
+                let entity = parse_entity($proc, true)?;
                 if let EntityType::Ascii(c) = entity {
                     CharType::from_char(c)
                 } else {
@@ -223,12 +223,6 @@ pub struct ProcessedAttrValue {
     pub value: Option<ProcessorRange>,
 }
 
-// TODO WARNING: Decoding entities:
-// `attr="&amp;nbsp;"` becomes `attr=&nbsp;` which is incorrect.
-// `attr="&&#97;&#109;&#112;;"` becomes `attr=&amp;` which is incorrect.
-// `attr="&am&#112;;"` becomes `attr=&amp;` which is incorrect.
-// `attr="&am&#112;"` becomes `attr=&amp` which is incorrect.
-// TODO Above also applies to decoding in content.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
     let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());
     let src_delimiter_pred = match src_delimiter {

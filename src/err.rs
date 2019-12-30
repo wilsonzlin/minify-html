@@ -1,5 +1,6 @@
 #[derive(Debug)]
 pub enum ErrorType {
+    EntityFollowingMalformedEntity,
     NoSpaceBeforeAttr,
     UnterminatedCssString,
     UnterminatedJsString,
