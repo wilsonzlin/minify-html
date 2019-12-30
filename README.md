@@ -266,7 +266,7 @@ It is an error to place whitespace between `=` and attribute names/values. It is
 <div class="a"name="1" id = "a"></div>
 ```
 
-Special handling of some attributes require case sensitive names and values. For example, `CLASS` won't be recognised as an attribute to minify and `type="Text/JavaScript"` on a `<script>` will cause the element to be parsed as a [data block](https://html.spec.whatwg.org/dev/scripting.html#data-block).
+Special handling of some attributes require case sensitive names and values. For example, `CLASS` won't be recognised as an attribute to minify, and `type="Text/JavaScript"` on a `<script>` will cause the element to be parsed as a [data block](https://html.spec.whatwg.org/dev/scripting.html#data-block) instead of JavaScript code.
 
 ### Script and style
 
