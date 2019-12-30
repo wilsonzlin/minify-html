@@ -11,7 +11,7 @@ for (const f of ["Cargo.toml", "nodejs/native/Cargo.toml"]) {
     replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
 }
 
-for (const f of ["README.md"]) {
+for (const f of ["README.md", "nodejs/native/Cargo.toml"]) {
     replaceInFile(f, /^hyperbuild = "\d+\.\d+\.\d+"\s*$/m, `hyperbuild = "${NEW_VERSION}"`);
 }
 
