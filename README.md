@@ -241,7 +241,7 @@ However, there are some syntax requirements for speed and sanity reasons.
 
 ### Tags
 
-Tag names are case sensitive. For example, this means that `P` won't be recognised as a content element, `bR` won't be considered as a void tag, and `Script` won't be parsed as JavaScript.
+Tag names are case sensitive. For example, this means that `P` won't be recognised as a content element, `bR` won't be considered as a void tag, and the contents of `Script` won't be parsed as JavaScript.
 
 ### Entities
 
