@@ -124,7 +124,6 @@ fn parse_name(proc: &mut Processor) -> Option<EntityType> {
     })
 }
 
-// TODO Decoding '<' in content.
 // This will parse and skip characters.
 // Issues:
 // - Malformed entities including bare ampersand could form valid entity if there are immediately following valid entities which are decoded.
