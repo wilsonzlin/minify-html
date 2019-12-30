@@ -1,9 +1,9 @@
 use std::fs::File;
-use std::io::{Read, stderr, Write};
+use std::io::{Read, Write};
 
 use structopt::StructOpt;
 
-use hyperbuild::{hyperbuild, ErrorType};
+use hyperbuild::hyperbuild;
 
 #[derive(StructOpt)]
 struct Cli {
@@ -25,7 +25,7 @@ fn main() {
         }
         Err((err, pos)) => {
             eprintln!("Failed at character {}:", pos);
-            eprintln!(err.message());
+            eprintln!("{}", err.message());
             eprintln!("The output file has not been touched.")
         }
     };
