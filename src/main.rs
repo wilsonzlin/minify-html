@@ -25,37 +25,7 @@ fn main() {
         }
         Err((err, pos)) => {
             eprintln!("Failed at character {}:", pos);
-            match err {
-                ErrorType::EntityFollowingMalformedEntity => {
-                    eprintln!("Entity cannot follow malformed entity.");
-                }
-                ErrorType::NoSpaceBeforeAttr => {
-                    eprintln!("Space required before attribute.");
-                }
-                ErrorType::UnterminatedCssString => {
-                    eprintln!("Unterminated CSS string.");
-                }
-                ErrorType::UnterminatedJsString => {
-                    eprintln!("Unterminated JavaScript string.");
-                }
-                ErrorType::CharNotFound { need, got } => {
-                    eprintln!("Expected {} (U+{:X}), got {} (U+{:X}).", need as char, need, got as char, got);
-                }
-                ErrorType::MatchNotFound(seq) => {
-                    eprint!("Expected `");
-                    stderr().write_all(seq).expect("failed to write to stderr");
-                    eprintln!("`.");
-                }
-                ErrorType::NotFound(exp) => {
-                    eprintln!("Expected {}.", exp);
-                }
-                ErrorType::UnexpectedChar(unexp) => {
-                    eprintln!("Unexpected {} (U+{:X}).", unexp as char, unexp);
-                }
-                ErrorType::UnexpectedEnd => {
-                    eprintln!("Unexpected end of source code.");
-                }
-            };
+            eprintln!(err.message());
             eprintln!("The output file has not been touched.")
         }
     };

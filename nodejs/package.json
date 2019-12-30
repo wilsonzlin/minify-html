@@ -1,0 +1,37 @@
+{
+  "name": "hyperbuild",
+  "version": "0.0.4",
+  "description": "One-pass in-place HTML minifier written in Rust with advanced whitespace handling",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wilsonzlin/hyperbuild.git"
+  },
+  "author": {
+    "email": "npm@wilsonl.in",
+    "name": "Wilson Lin",
+    "url": "https://wilsonl.in/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wilsonzlin/hyperbuild/issues"
+  },
+  "homepage": "https://github.com/wilsonzlin/hyperbuild#readme",
+  "dependencies": {
+    "neon-cli": "^0.3.3"
+  },
+  "scripts": {
+    "install": "neon build"
+  },
+  "keywords": [
+    "html",
+    "c",
+    "fast",
+    "build",
+    "builder",
+    "preprocess",
+    "preprocessor",
+    "minify",
+    "minifier"
+  ]
+}

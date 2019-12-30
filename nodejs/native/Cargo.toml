@@ -1,0 +1,19 @@
+[package]
+name = "hyperbuild-nodejs"
+version = "0.0.4"
+authors = ["Wilson Lin <code@wilsonl.in>"]
+license = "MIT"
+build = "build.rs"
+exclude = ["artifacts.json", "index.node"]
+edition = "2018"
+
+[lib]
+name = "hyperbuild"
+crate-type = ["cdylib"]
+
+[build-dependencies]
+neon-build = "0.3.3"
+
+[dependencies]
+hyperbuild = { path = "../.." }
+neon = "0.3.3"
