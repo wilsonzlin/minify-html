@@ -3,8 +3,7 @@ use std::io::{Read, stderr, Write};
 
 use structopt::StructOpt;
 
-use hyperbuild::err::ErrorType;
-use hyperbuild::hyperbuild;
+use hyperbuild::{hyperbuild, ErrorType};
 
 #[derive(StructOpt)]
 struct Cli {

@@ -10,8 +10,24 @@ A fast one-pass in-place HTML minifier written in Rust with advanced whitespace 
 
 ## Usage
 
+### CLI
+
 ```bash
 hyperbuild --src /path/to/src.html --out /path/to/output.min.html
+```
+
+### API
+
+```rust
+use hyperbuild::hyperbuild;
+
+fn main() {
+    let mut code = b"<p>Hello world!</p>"; 
+    match hyperbuild(&mut code) {
+        Ok(minified_len) => {}
+        Err(error_type, error_at_char_no) => {}
+    };
+}
 ```
 
 ## Minification

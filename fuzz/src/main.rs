@@ -1,5 +1,5 @@
 use afl::fuzz;
-use hyperbuild::hyperbuild;
+use hyperbuild::{hyperbuild, ErrorType};
 
 fn main() {
     fuzz!(|data: &[u8]| {

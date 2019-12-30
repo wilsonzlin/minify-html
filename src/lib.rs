@@ -1,9 +1,9 @@
-use crate::err::ErrorType;
+pub use crate::err::ErrorType as ErrorType;
 use crate::proc::Processor;
 use crate::unit::content::process_content;
 
-pub mod err;
-pub mod pattern;
+mod err;
+mod pattern;
 #[macro_use]
 mod proc;
 mod spec;
