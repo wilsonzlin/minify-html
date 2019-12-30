@@ -40,7 +40,6 @@ pub fn process_attr(proc: &mut Processor) -> ProcessingResult<ProcessedAttr> {
     let name = chain!(proc.match_while_pred(is_name_char).require_with_reason("attribute name")?.keep().range());
     let after_name = proc.checkpoint();
 
-    // TODO DOC Attr must be case sensitive
     let should_collapse_and_trim_value_ws = COLLAPSIBLE_AND_TRIMMABLE_ATTRS.contains(&proc[name]);
     let has_value = chain!(proc.match_char(b'=').keep().matched());
 

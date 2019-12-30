@@ -114,7 +114,11 @@ fn parse_name(proc: &mut Processor) -> Option<EntityType> {
 // This will parse and skip characters. Set a checkpoint to later write skipped, or to ignore results and reset to previous position.
 pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
     let checkpoint = proc.checkpoint();
-    chain!(proc.match_char(b'&').expect().discard());
+    if cfg!(debug_assertions) {
+        chain!(proc.match_char(b'&').expect().discard());
+    } else {
+        proc.skip_expect();
+    };
 
     // The input can end at any time after initial ampersand.
     // Examples of valid complete source code: "&", "&a", "&#", "&#09",
@@ -128,7 +132,7 @@ pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
     //    characters after the initial ampersand, e.g. "&#", "&#x", "&a".
     // 2. Parse the entity data, i.e. the characters between the ampersand
     // and semicolon.
-    //    - TODO To avoid parsing forever on malformed entities without
+    //    - To avoid parsing forever on malformed entities without
     //    semicolons, there is an upper bound on the amount of possible
     //    characters, based on the type of entity detected from the first
     //    stage.
@@ -136,7 +140,6 @@ pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
     //    - This simply checks if it refers to a valid Unicode code point or
     //    entity reference name.
 
-    // TODO Could optimise.
     // These functions do not return EntityType::Malformed as it requires a checkpoint.
     // Instead, they return None if entity is malformed.
     let entity_type = if chain!(proc.match_seq(b"#x").discard().matched()) {

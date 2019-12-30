@@ -379,8 +379,12 @@ impl<'d> Processor<'d> {
             Err(ErrorType::UnexpectedEnd)
         }
     }
+    pub fn skip_amount_expect(&mut self, amount: usize) -> () {
+        debug_assert!(!self.at_end(), "skip known characters");
+        self.read_next += amount;
+    }
     pub fn skip_expect(&mut self) -> () {
-        assert!(!self.at_end(), "skip known character");
+        debug_assert!(!self.at_end(), "skip known character");
         self.read_next += 1;
     }
 
@@ -414,6 +418,12 @@ impl<'d> Processor<'d> {
         } else {
             Err(ErrorType::UnexpectedEnd)
         }
+    }
+    pub fn accept_expect(&mut self) -> u8 {
+        debug_assert!(!self.at_end());
+        let c = self._read_offset(0);
+        self._shift(1);
+        c
     }
     pub fn accept_amount(&mut self, count: usize) -> ProcessingResult<()> {
         // Check for zero to prevent underflow as type is usize.

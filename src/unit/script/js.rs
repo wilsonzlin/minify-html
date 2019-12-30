@@ -6,10 +6,13 @@ fn is_string_delimiter(c: u8) -> bool {
 }
 
 fn parse_comment_single(proc: &mut Processor) -> ProcessingResult<()> {
-    chain!(proc.match_seq(b"//").expect().keep());
+    if cfg!(debug_assertions) {
+        chain!(proc.match_seq(b"//").expect().keep());
+    } else {
+        proc.skip_amount_expect(2);
+    };
 
     // Comment can end at closing </script>.
-    // TODO WARNING: Closing tag must not contain whitespace.
     // TODO Optimise
     while !chain!(proc.match_line_terminator().keep().matched()) {
         if chain!(proc.match_seq(b"</script>").matched()) {
@@ -23,10 +26,13 @@ fn parse_comment_single(proc: &mut Processor) -> ProcessingResult<()> {
 }
 
 fn parse_comment_multi(proc: &mut Processor) -> ProcessingResult<()> {
-    chain!(proc.match_seq(b"/*").expect().keep());
+    if cfg!(debug_assertions) {
+        chain!(proc.match_seq(b"/*").expect().keep());
+    } else {
+        proc.skip_amount_expect(2);
+    };
 
     // Comment can end at closing </script>.
-    // TODO WARNING: Closing tag must not contain whitespace.
     // TODO Optimise
     while !chain!(proc.match_seq(b"*/").keep().matched()) {
         if chain!(proc.match_seq(b"</script>").matched()) {
@@ -40,7 +46,11 @@ fn parse_comment_multi(proc: &mut Processor) -> ProcessingResult<()> {
 }
 
 fn parse_string(proc: &mut Processor) -> ProcessingResult<()> {
-    let delim = chain!(proc.match_pred(is_string_delimiter).expect().keep().char());
+    let delim = if cfg!(debug_assertions) {
+        chain!(proc.match_pred(is_string_delimiter).expect().keep().char())
+    } else {
+        proc.accept_expect()
+    };
 
     let mut escaping = false;
 
@@ -69,7 +79,11 @@ fn parse_string(proc: &mut Processor) -> ProcessingResult<()> {
 }
 
 fn parse_template(proc: &mut Processor) -> ProcessingResult<()> {
-    chain!(proc.match_char(b'`').expect().keep());
+    if cfg!(debug_assertions) {
+        chain!(proc.match_char(b'`').expect().keep());
+    } else {
+        proc.skip_expect();
+    };
 
     let mut escaping = false;
 

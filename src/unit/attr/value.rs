@@ -307,7 +307,11 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     let processed_value_range = proc.written_range(processed_value_checkpoint);
     // Ensure closing delimiter in src has been matched and discarded, if any.
     if let Some(c) = src_delimiter {
-        chain!(proc.match_char(c).expect().discard());
+        if cfg!(debug_assertions) {
+            chain!(proc.match_char(c).expect().discard());
+        } else {
+            proc.skip_expect();
+        };
     }
     // Write closing delimiter, if any.
     if let Some(c) = optimal_delimiter_char {
