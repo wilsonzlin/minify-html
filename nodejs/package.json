@@ -3,6 +3,10 @@
   "version": "0.0.4",
   "description": "One-pass in-place HTML minifier written in Rust with advanced whitespace handling",
   "main": "lib/index.js",
+  "files": [
+    "lib/index.js",
+    "native/index.node"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wilsonzlin/hyperbuild.git"

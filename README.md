@@ -18,17 +18,62 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ### API
 
+<details>
+<summary><strong>Rust</strong></summary>
+
+##### Get
+
+```toml
+[dependencies]
+hyperbuild = "0.0.4"
+```
+
+##### Use
+
 ```rust
 use hyperbuild::hyperbuild;
 
 fn main() {
-    let mut code = b"<p>Hello world!</p>"; 
+    let mut code = b"<p>  Hello, world!  </p>"; 
     match hyperbuild(&mut code) {
         Ok(minified_len) => {}
         Err(error_type, error_at_char_no) => {}
     };
 }
 ```
+
+</details>
+
+<details>
+<summary><strong>Node.js</strong></summary>
+
+hyperbuild is available as a Node.js native module.
+
+##### Get
+
+Using npm:
+
+```bash
+npm i hyperbuild
+```
+
+Using Yarn:
+
+```bash
+yarn add hyperbuild
+```
+
+##### Use
+
+```js
+const hyperbuild = require("hyperbuild");
+
+const code = Buffer.from("<p>  Hello, world!  </p>");
+const len = hyperbuild.minify(code);
+const minified = code.slice(0, len).toString();
+```
+
+</details>
 
 ## Minification
 

@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+"use strict";
+
+const {readFileSync, writeFileSync} = require("fs");
+
+const NEW_VERSION = process.argv[2];
+
+const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFileSync(path, "utf8").replace(pattern, replacement));
+
+for (const f of ["Cargo.toml", "nodejs/native/Cargo.toml"]) {
+    replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
+}
+
+for (const f of ["README.md"]) {
+    replaceInFile(f, /^hyperbuild = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
+}
+
+for (const f of ["nodejs/package.json"]) {
+    replaceInFile(f, /^(\s*)"version": "\d+\.\d+\.\d+",\s*$/m, `$1"version": "${NEW_VERSION}"`);
+}
