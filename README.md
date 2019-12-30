@@ -2,6 +2,11 @@
 
 A fast one-pass in-place HTML minifier written in Rust with advanced whitespace handling.
 
+Available as:
+- CLI for Windows, macOS, and Linux.
+- Rust library.
+- Native module for Node.js.
+
 ## Features
 
 - Minification is done in one pass with no backtracking or DOM/AST building.
