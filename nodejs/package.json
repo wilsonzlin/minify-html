@@ -21,7 +21,7 @@
     "neon-cli": "^0.3.3"
   },
   "scripts": {
-    "install": "neon build",
+    "install": "neon build --release",
     "prepack": "cp ../README.md .",
     "postpack": "rm README.md"
   },
