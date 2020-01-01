@@ -67,11 +67,15 @@ const colours = [
     borderColor: '#4bc0c0',
   },
 ];
-const renderChart = async (file, cfg) => {
-  const chart = new chartjs(450, 300);
+const renderChart = async (file, title, cfg) => {
+  const chart = new chartjs(435, 320);
   await chart.drawChart({
     ...cfg,
     options: {
+      title: {
+        display: true,
+        text: title,
+      },
       scales: {
         xAxes: [{
           barPercentage: 0.5,
@@ -144,7 +148,7 @@ suite
       count: b.count,
       ops: b.hz,
     })).sort((a, b) => a.hz - b.hz);
-    await renderChart('speed', {
+    await renderChart('speed', 'Minification speed', {
       type: 'bar',
       data: {
         labels: speedResults.map(r => r.name),
@@ -158,7 +162,7 @@ suite
 
     const testNames = Object.keys(sizes);
     const programNames = Object.keys(programs);
-    await renderChart('minification', {
+    await renderChart('minification', 'Relative minified HTML file size', {
       type: 'bar',
       scaleFontColor: 'red',
       data: {
