@@ -1,6 +1,6 @@
 # hyperbuild
 
-A fast one-pass in-place HTML minifier written in Rust with advanced whitespace handling.
+A fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling.
 
 Available as:
 - CLI for Windows, macOS, and Linux.
@@ -12,6 +12,10 @@ Available as:
 - Minification is done in one pass with no backtracking or DOM/AST building.
 - No extra heap memory is allocated during processing, which increases performance.
 - Context-aware whitespace handling allows maximum minification while retaining wanted spaces.
+
+## Performance
+
+![Chart showing speed of HTML minifiers](./bench/speed.png) ![Chart showing effectiveness of HTML minifiers](./bench/minification.png)
 
 ## Usage
 

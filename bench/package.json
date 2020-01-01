@@ -2,9 +2,11 @@
   "private": true,
   "dependencies": {
     "benchmark": "2.1.4",
+    "chart.js": "^2.9.3",
+    "chartjs-node": "^1.7.1",
     "html-minifier": "3.5.19",
-    "minimize": "2.2.0",
-    "hyperbuild": "file:../nodejs"
+    "hyperbuild": "file:../nodejs",
+    "minimize": "2.2.0"
   },
   "scripts": {
     "start": "node bench.js"
