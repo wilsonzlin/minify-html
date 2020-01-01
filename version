@@ -2,23 +2,36 @@
 "use strict";
 
 const {readFileSync, writeFileSync} = require("fs");
+const {spawnSync} = require("child_process");
 
 const NEW_VERSION = process.argv[2];
+
+const cmd = (command, ...args) => {
+  const {status, signal, error} = spawnSync(command, args.map(String), {stdio: ['ignore', 'inherit', 'inherit']});
+  if (error) {
+    throw error;
+  }
+  if (status !== 0) {
+    throw new Error(`Command exited with ${status ? `status ${status}` : `signal ${signal}`}: ${command} ${args.join(' ')}`);
+  }
+};
 
 const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFileSync(path, "utf8").replace(pattern, replacement));
 
 for (const f of ["Cargo.toml", "nodejs/native/Cargo.toml"]) {
-    replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
+  replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
 }
 
 for (const f of ["README.md", "nodejs/native/Cargo.toml"]) {
-    replaceInFile(f, /^hyperbuild = "\d+\.\d+\.\d+"\s*$/m, `hyperbuild = "${NEW_VERSION}"`);
+  replaceInFile(f, /^hyperbuild = "\d+\.\d+\.\d+"\s*$/m, `hyperbuild = "${NEW_VERSION}"`);
 }
 
 for (const f of ["nodejs/package.json"]) {
-    replaceInFile(f, /^(\s*)"version": "\d+\.\d+\.\d+",\s*$/m, `$1"version": "${NEW_VERSION}",`);
+  replaceInFile(f, /^(\s*)"version": "\d+\.\d+\.\d+",\s*$/m, `$1"version": "${NEW_VERSION}",`);
 }
 
 for (const f of ["README.md"]) {
-    replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bin\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
+  replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bin\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
 }
+
+cmd('cargo', 'generate-lockfile');
