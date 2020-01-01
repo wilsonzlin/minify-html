@@ -4,7 +4,7 @@
     "benchmark": "2.1.4",
     "html-minifier": "3.5.19",
     "minimize": "2.2.0",
-    "hyperbuild": "0.0.4"
+    "hyperbuild": "file:../nodejs"
   },
   "scripts": {
     "start": "node bench.js"
