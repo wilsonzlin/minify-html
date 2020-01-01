@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git+https://github.com/wilsonzlin/hyperbuild.git"
   },
+  "engines": {
+    "node": ">=8 <=13"
+  },
   "author": {
     "email": "npm@wilsonl.in",
     "name": "Wilson Lin",
@@ -18,10 +21,11 @@
   },
   "homepage": "https://github.com/wilsonzlin/hyperbuild#readme",
   "dependencies": {
-    "neon-cli": "^0.3.3"
+    "neon-cli": "^0.3.3",
+    "request": "^2.88.0"
   },
   "scripts": {
-    "install": "neon build --release",
+    "install": "node install.js || neon build --release",
     "prepack": "cp ../README.md .",
     "postpack": "rm README.md"
   },

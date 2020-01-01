@@ -9,7 +9,7 @@ exclude = ["artifacts.json", "index.node"]
 edition = "2018"
 
 [lib]
-name = "hyperbuild"
+name = "hyperbuild_nodejs_lib"
 crate-type = ["cdylib"]
 
 [build-dependencies]

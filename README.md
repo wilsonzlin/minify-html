@@ -17,6 +17,14 @@ Available as:
 
 ### CLI
 
+##### Get
+
+[Windows](https://wilsonl.in/hyperbuild/bin/0.0.4-windows-x86_64.exe) |
+[macOS](https://wilsonl.in/hyperbuild/bin/0.0.4-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.0.4-linux-x86_64)
+
+##### Use
+
 ```bash
 hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 ```
