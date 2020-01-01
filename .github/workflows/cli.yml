@@ -28,9 +28,11 @@ jobs:
       - uses: actions/checkout@v1
       - name: Get version
         id: version
+        shell: bash
         run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
       - name: Get file name
         id: file
+        shell: bash
         run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}-${{ matrix.ARCH }}${{ matrix.EXT }}
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
