@@ -79,10 +79,11 @@ impl TrieBuilderNode {
             .collect();
         let id = ai.next();
 
-        out.push_str(format!("static N{}: TrieNode<{}> = TrieNode::<{}> {{\n", id, value_type, value_type).as_str());
-        out.push_str(format!("children: phf_map! {{\n").as_str());
+        out.push_str(format!("static N{}: &TrieNode<{}> = &TrieNode::<{}> {{\n", id, value_type, value_type).as_str());
+        out.push_str(format!("children: phf::phf_map! {{\n").as_str());
         for (c, n) in child_ids {
-            out.push_str(format!("b'{}' => &N{},\n", c, n).as_str());
+            debug_assert!(c as u32 <= 0x7f);
+            out.push_str(format!("{}u8 => N{},\n", c as u8, n).as_str());
         }
         out.push_str("},\n");
         out.push_str("value: ");
@@ -153,20 +154,35 @@ fn generate_entities() {
 }
 
 fn generate_patterns() {
-    // Read named entities map from JSON file.
     let patterns: HashMap<String, String> = read_json("patterns");
 
-    // Add entities to trie builder.
-    let mut code = String::new();
     for (name, pattern) in patterns {
-        code.push_str(format!("pub static {}: &SinglePattern = &{};", name, build_pattern(pattern)).as_str());
+        let mut code = String::new();
+        code.push_str(format!("static {}: &SinglePattern = &{};", name, build_pattern(pattern)).as_str());
+        write_rs(format!("pattern_{}", name).as_str(), code);
     };
+}
 
-    // Write trie code to output Rust file.
-    write_rs("patterns", code);
+fn generate_tries() {
+    let tries: HashMap<String, HashMap<String, String>> = read_json("tries");
+
+    for (name, values) in tries {
+        let mut trie_builder = TrieBuilderNode::new();
+        for (seq, value_code) in values {
+            trie_builder.add(seq.as_str(), value_code);
+        }
+        let mut trie_code = String::new();
+        let trie_root_id = trie_builder.build(&mut AutoIncrement::new(), "ContentType", &mut trie_code);
+
+        write_rs(format!("trie_{}", name).as_str(), trie_code.replace(
+            format!("static N{}:", trie_root_id).as_str(),
+            format!("static {}:", name).as_str(),
+        ));
+    }
 }
 
 fn main() {
     generate_entities();
     generate_patterns();
+    generate_tries();
 }

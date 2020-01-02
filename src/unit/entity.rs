@@ -1,10 +1,8 @@
-use phf::phf_map;
-
 use crate::err::ProcessingResult;
+use crate::ErrorType;
 use crate::pattern::TrieNode;
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
-use crate::ErrorType;
 
 // The minimum length of any entity is 3, which is a character entity reference
 // with a single character name. The longest UTF-8 representation of a Unicode
@@ -117,7 +115,9 @@ fn parse_hexadecimal(proc: &mut Processor) -> Option<EntityType> {
 
 fn parse_name(proc: &mut Processor) -> Option<EntityType> {
     // In UTF-8, one-byte character encodings are always ASCII.
-    ENTITY_REFERENCES.get(proc).map(|s| if s.len() == 1 {
+    let m = proc.match_trie(ENTITY_REFERENCES);
+    proc.discard();
+    m.map(|s| if s.len() == 1 {
         EntityType::Ascii(s[0])
     } else {
         EntityType::Named(s)

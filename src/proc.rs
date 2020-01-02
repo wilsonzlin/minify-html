@@ -3,7 +3,7 @@ use std::ops::Index;
 use phf::Set;
 
 use crate::err::{ErrorType, ProcessingResult};
-use crate::pattern::SinglePattern;
+use crate::pattern::{SinglePattern, TrieNode};
 
 macro_rules! chain {
     ($proc:ident $($tail:tt)+) => ({
@@ -261,6 +261,26 @@ impl<'d> Processor<'d> {
             };
         };
         self._new_match(count, None, RequireReason::ExpectedMatch(pat))
+    }
+    pub fn match_trie<V: 'static + Copy>(&mut self, trie: &TrieNode<V>) -> Option<V> {
+        let mut current = trie;
+        let mut found: Option<V> = None;
+        let mut found_at = 0;
+        let mut count = 0;
+        while self._in_bounds(count) {
+            let c = self._read_offset(count);
+            match current.children.get(&c) {
+                Some(n) => current = n,
+                None => break,
+            };
+            count += 1;
+            if current.value.is_some() {
+                found = current.value;
+                found_at = count;
+            };
+        };
+        self._new_match(found_at, None, RequireReason::Custom);
+        found
     }
     pub fn match_line_terminator(&mut self) -> () {
         self._new_match(match self._maybe_read_offset(0) {

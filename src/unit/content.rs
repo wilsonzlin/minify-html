@@ -1,4 +1,5 @@
 use crate::err::ProcessingResult;
+use crate::pattern::TrieNode;
 use crate::proc::{Checkpoint, Processor, ProcessorRange};
 use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::content::CONTENT_TAGS;
@@ -23,6 +24,8 @@ enum ContentType {
     Text,
 }
 
+include!(concat!(env!("OUT_DIR"), "/gen_trie_CONTENT_TYPE.rs"));
+
 impl ContentType {
     fn is_comment_bang_opening_tag(&self) -> bool {
         match self {
@@ -32,34 +35,10 @@ impl ContentType {
     }
 
     fn peek(proc: &mut Processor) -> ContentType {
-        // TODO Optimise.
-        if proc.at_end() || chain!(proc.match_seq(b"</").matched()) {
+        if proc.at_end() {
             return ContentType::End;
         };
-
-        if chain!(proc.match_pred(is_whitespace).matched()) {
-            return ContentType::Whitespace;
-        };
-
-        if chain!(proc.match_seq(b"<!--").matched()) {
-            return ContentType::Comment;
-        };
-
-        // Check after comment
-        if chain!(proc.match_seq(b"<!").matched()) {
-            return ContentType::Bang;
-        };
-
-        // Check after comment and bang
-        if chain!(proc.match_char(b'<').matched()) {
-            return ContentType::OpeningTag;
-        };
-
-        if chain!(proc.match_char(b'&').matched()) {
-            return ContentType::Entity;
-        };
-
-        ContentType::Text
+        proc.match_trie(CONTENT_TYPE).unwrap_or(ContentType::Text)
     }
 }
 

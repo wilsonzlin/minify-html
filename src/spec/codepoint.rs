@@ -2,7 +2,7 @@
 // See https://infra.spec.whatwg.org/#code-points for spec.
 
 pub fn is_whitespace(c: u8) -> bool {
-    // Also update crate::proc::attr::quoted::STATIC when changing here.
+    // Also update gen/tries.json when changing here.
     match c {
         0x09 | 0x0a | 0x0c | 0x0d | 0x20 => true,
         _ => false,

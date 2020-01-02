@@ -1,10 +1,8 @@
 use phf::Map;
 
-use crate::proc::Processor;
-
 pub struct SinglePattern {
-    seq: &'static [u8],
-    table: &'static [usize],
+    pub seq: &'static [u8],
+    pub table: &'static [usize],
 }
 
 impl SinglePattern {
@@ -34,27 +32,7 @@ impl SinglePattern {
     }
 }
 
-include!(concat!(env!("OUT_DIR"), "/gen_patterns.rs"));
-
 pub struct TrieNode<V: 'static + Copy> {
     pub children: Map<u8, &'static TrieNode<V>>,
     pub value: Option<V>,
-}
-
-impl<V: 'static + Copy> TrieNode<V> {
-    pub fn get(&self, proc: &mut Processor) -> Option<V> {
-        let mut current = self;
-        let mut found: Option<V> = None;
-        while let Some(c) = proc.peek_eof() {
-            match current.children.get(&c) {
-                Some(n) => current = n,
-                None => break,
-            };
-            proc.skip_expect();
-            if current.value.is_some() {
-                found = current.value;
-            };
-        };
-        found
-    }
 }
