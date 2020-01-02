@@ -1,6 +1,6 @@
 {
   "name": "hyperbuild",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "One-pass in-place HTML minifier written in Rust with advanced whitespace handling",
   "main": "lib/index.js",
   "repository": {
