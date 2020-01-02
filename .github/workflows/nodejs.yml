@@ -16,7 +16,7 @@ jobs:
         include:
           - os: ubuntu-latest
             ARCH: linux-x86_64
-          - os: windows-latest
+          - os: windows-2016
             ARCH: windows-x86_64
           - os: macos-latest
             ARCH: macos-x86_64
