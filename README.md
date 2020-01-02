@@ -64,7 +64,7 @@ fn main() {
 <details>
 <summary><strong>Node.js</strong></summary>
 
-hyperbuild is available as a [Node.js native module](https://www.npmjs.com/package/hyperbuild).
+hyperbuild is available as a [Node.js native module](https://www.npmjs.com/package/hyperbuild), and supports Node.js versions 8 and higher.
 
 ##### Get
 
