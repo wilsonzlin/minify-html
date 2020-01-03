@@ -4,7 +4,6 @@ use phf::Set;
 
 use crate::err::{ErrorType, ProcessingResult};
 use crate::pattern::{SinglePattern, TrieNode};
-use std::io::{stderr, Write};
 
 macro_rules! chain {
     ($proc:ident $($tail:tt)+) => ({
@@ -412,9 +411,6 @@ impl<'d> Processor<'d> {
     // Writing characters directly.
     /// Write `c` to output. Will panic if exceeds bounds.
     pub fn write(&mut self, c: u8) -> () {
-        if self.write_next >= self.code.len() {
-            stderr().write_all(self.code);
-        }
         self.code[self.write_next] = c;
         self.write_next += 1;
     }
