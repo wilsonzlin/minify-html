@@ -70,3 +70,4 @@ cmd('git', 'commit', '-m', NEW_VERSION);
 cmd('git', 'tag', '-a', `v${NEW_VERSION}`, '-m', '');
 cmd('cargo', 'publish');
 cmd('npm', 'publish', {workingDir: join(__dirname, 'nodejs')});
+cmd('git', 'push');
