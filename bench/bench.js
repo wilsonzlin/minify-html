@@ -126,7 +126,13 @@ const setSize = (program, test, result) => {
 // Run once to set sizes.
 for (const t of tests) {
   for (const p of Object.keys(programs)) {
-    setSize(p, t.name, programs[p](t.content));
+    try {
+      setSize(p, t.name, programs[p](t.content));
+    } catch (err) {
+      console.error(`Failed to run ${p} on test ${t.name}:`);
+      console.error(err);
+      process.exit(1);
+    }
   }
 }
 
