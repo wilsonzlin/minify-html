@@ -44,7 +44,7 @@ const cmd = (...cfg) => {
 
 const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFileSync(path, "utf8").replace(pattern, replacement));
 
-if (cmd('git', 'status', '--porcelain', {throwOnStderr: true})) {
+if (cmd('git', 'status', '--porcelain', {throwOnStderr: true, captureStdio: true}).stdout) {
   throw new Error(`Working directory not clean`);
 }
 
