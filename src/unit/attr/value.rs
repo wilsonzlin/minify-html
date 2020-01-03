@@ -220,10 +220,10 @@ pub struct ProcessedAttrValue {
 }
 
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
+    let attr_start = proc.checkpoint();
     let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value delimiter quote")?.discard().char());
 
     // Stage 1: read and collect metrics on attribute value characters.
-    let src_value_checkpoint = proc.checkpoint();
     let mut metrics = Metrics {
         count_double_quotation: 0,
         count_single_quotation: 0,
@@ -239,9 +239,13 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     });
 
     // Stage 2: optimally minify attribute value using metrics.
-    proc.restore(src_value_checkpoint);
+    proc.restore(attr_start);
     // Skip required opening delimiter quote.
-    proc.skip_expect();
+    if cfg!(debug_assertions) {
+        chain!(proc.match_char(src_delimiter).expect().discard());
+    } else {
+        proc.skip_expect();
+    };
     let optimal_delimiter = metrics.get_optimal_delimiter_type();
     let optimal_delimiter_char = match optimal_delimiter {
         DelimiterType::Double => Some(b'"'),
@@ -282,7 +286,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
                 _ => proc.write(b'"'),
             },
             // If unquoted, encode right chevron if last character.
-            CharType::RightChevron => if optimal_delimiter == DelimiterType::Unquoted && processing_char_no == metrics.collected_count - 1 {
+            CharType::RightChevron => if optimal_delimiter == DelimiterType::Unquoted && metrics.collected_count > 0 && processing_char_no == metrics.collected_count - 1 {
                 proc.write_slice(ENCODED[&b'>']);
             } else {
                 proc.write(b'>');
