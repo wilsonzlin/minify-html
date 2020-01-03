@@ -1,22 +1,52 @@
 #!/usr/bin/env node
 "use strict";
 
-const {readFileSync, writeFileSync} = require("fs");
-const {spawnSync} = require("child_process");
+const {readFileSync, writeFileSync} = require('fs');
+const {spawnSync} = require('child_process');
+const {join} = require('path');
 
 const NEW_VERSION = process.argv[2];
 
-const cmd = (command, ...args) => {
-  const {status, signal, error} = spawnSync(command, args.map(String), {stdio: ['ignore', 'inherit', 'inherit']});
+const cmd = (...cfg) => {
+  const command = cfg[0];
+  const args = cfg.slice(1);
+  const {
+    workingDir,
+    throwOnBadStatus = true,
+    throwOnSignal = true,
+    captureStdio = false,
+    throwOnStdErr = false,
+  } = typeof args[args.length - 1] == "object" ? args.pop() : {};
+
+  const throwErr = msg => {
+    throw new Error(`${msg}\n  ${command} ${args.join(' ')}`);
+  };
+
+  const {status, signal, error, stdout, stderr} = spawnSync(command, args.map(String), {
+    cwd: workingDir,
+    stdio: ['ignore', captureStdio ? 'pipe' : 'inherit', captureStdio || throwOnStdErr ? 'pipe' : 'inherit'],
+    encoding: 'utf8',
+  });
   if (error) {
-    throw error;
+    throwErr(error.message);
   }
-  if (status !== 0) {
-    throw new Error(`Command exited with ${status ? `status ${status}` : `signal ${signal}`}: ${command} ${args.join(' ')}`);
+  if (throwOnSignal && signal) {
+    throwErr(`Command exited with signal ${signal}`);
   }
+  if (throwOnBadStatus && status !== 0) {
+    throwErr(`Command exited with status ${status}`);
+  }
+  if (throwOnStdErr && stderr) {
+    throwErr(`stderr: ${stderr}`);
+  }
+  return {status, signal, stdout, stderr};
 };
 
 const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFileSync(path, "utf8").replace(pattern, replacement));
+
+if (cmd('git', 'status', '--porcelain', {throwOnStderr: true})) {
+  throw new Error(`Working directory not clean`);
+}
 
 for (const f of ["Cargo.toml", "nodejs/native/Cargo.toml"]) {
   replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
@@ -35,3 +65,8 @@ for (const f of ["README.md"]) {
 }
 
 cmd('cargo', 'generate-lockfile');
+cmd('git', 'add', '-A');
+cmd('git', 'commit', '-m', NEW_VERSION);
+cmd('git', 'tag', '-a', `v${NEW_VERSION}`, '-m', '');
+cmd('cargo', 'publish');
+cmd('npm', 'publish', {workingDir: join(__dirname, 'nodejs')});
