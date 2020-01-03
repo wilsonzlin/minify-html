@@ -126,7 +126,7 @@ fn build_pattern(pattern: String) -> String {
         table.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "))
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize)]
 struct Entity {
     codepoints: Vec<u32>,
     characters: String,

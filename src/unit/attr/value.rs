@@ -20,10 +20,6 @@ pub fn is_attr_quote(c: u8) -> bool {
     is_double_quote(c) || is_single_quote(c)
 }
 
-pub fn is_unquoted_delimiter(c: u8) -> bool {
-    is_whitespace(c) || c == b'>'
-}
-
 static ENCODED: Map<u8, &'static [u8]> = phf_map! {
     b'\'' => b"&#39;",
     b'"' => b"&#34;",
@@ -161,7 +157,7 @@ impl Metrics {
 }
 
 macro_rules! consume_attr_value_chars {
-    ($proc:ident, $should_collapse_and_trim_ws:ident, $delimiter_pred:ident, $out_char_type:ident, $on_char:block) => {
+    ($proc:ident, $should_collapse_and_trim_ws:ident, $delimiter:ident, $out_char_type:ident, $on_char:block) => {
         // Set to true when one or more immediately previous characters were whitespace and deferred for processing after the contiguous whitespace.
         // NOTE: Only used if `should_collapse_and_trim_ws`.
         let mut currently_in_whitespace = false;
@@ -170,7 +166,7 @@ macro_rules! consume_attr_value_chars {
         let mut currently_first_char = true;
 
         loop {
-            let char_type = if chain!($proc.match_pred($delimiter_pred).matched()) {
+            let char_type = if chain!($proc.match_char($delimiter).matched()) {
                 // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
                 CharType::End
             } else if chain!($proc.match_char(b'&').matched()) {
@@ -224,13 +220,7 @@ pub struct ProcessedAttrValue {
 }
 
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
-    let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());
-    let src_delimiter_pred = match src_delimiter {
-        Some(b'"') => is_double_quote,
-        Some(b'\'') => is_single_quote,
-        None => is_unquoted_delimiter,
-        _ => unreachable!(),
-    };
+    let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value delimiter quote")?.discard().char());
 
     // Stage 1: read and collect metrics on attribute value characters.
     let src_value_checkpoint = proc.checkpoint();
@@ -243,13 +233,15 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         last_char_type: None,
         collected_count: 0,
     };
-    let mut char_type;
-    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, char_type, {
-        metrics.collect_char_type(char_type);
+    let mut metrics_char_type;
+    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter, metrics_char_type, {
+        metrics.collect_char_type(metrics_char_type);
     });
 
     // Stage 2: optimally minify attribute value using metrics.
     proc.restore(src_value_checkpoint);
+    // Skip required opening delimiter quote.
+    proc.skip_expect();
     let optimal_delimiter = metrics.get_optimal_delimiter_type();
     let optimal_delimiter_char = match optimal_delimiter {
         DelimiterType::Double => Some(b'"'),
@@ -259,13 +251,13 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     // Write opening delimiter, if any.
     if let Some(c) = optimal_delimiter_char {
         proc.write(c);
-    }
-    let mut char_type;
+    };
+    let mut processing_char_type;
     // Used to determine first and last characters.
-    let mut char_no = 0usize;
+    let mut processing_char_no = 0usize;
     let processed_value_checkpoint = proc.checkpoint();
-    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter_pred, char_type, {
-        match char_type {
+    consume_attr_value_chars!(proc, should_collapse_and_trim_ws, src_delimiter, processing_char_type, {
+        match processing_char_type {
             // This should never happen.
             CharType::End => unreachable!(),
 
@@ -279,34 +271,33 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
             },
             // If single quoted, encode any single quote anywhere.
             // If unquoted, encode single quote if first character.
-            CharType::SingleQuote => match (optimal_delimiter, char_no) {
+            CharType::SingleQuote => match (optimal_delimiter, processing_char_no) {
                 (DelimiterType::Single, _) | (DelimiterType::Unquoted, 0) => proc.write_slice(ENCODED[&b'\'']),
                 _ => proc.write(b'\''),
             },
             // If double quoted, encode any double quote anywhere.
             // If unquoted, encode double quote if first character.
-            CharType::DoubleQuote => match (optimal_delimiter, char_no) {
+            CharType::DoubleQuote => match (optimal_delimiter, processing_char_no) {
                 (DelimiterType::Double, _) | (DelimiterType::Unquoted, 0) => proc.write_slice(ENCODED[&b'"']),
                 _ => proc.write(b'"'),
             },
             // If unquoted, encode right chevron if last character.
-            CharType::RightChevron => if optimal_delimiter == DelimiterType::Unquoted && char_no == metrics.collected_count - 1 {
+            CharType::RightChevron => if optimal_delimiter == DelimiterType::Unquoted && processing_char_no == metrics.collected_count - 1 {
                 proc.write_slice(ENCODED[&b'>']);
             } else {
                 proc.write(b'>');
             },
         };
-        char_no += 1;
+        processing_char_no += 1;
     });
     let processed_value_range = proc.written_range(processed_value_checkpoint);
-    // Ensure closing delimiter in src has been matched and discarded, if any.
-    if let Some(c) = src_delimiter {
-        if cfg!(debug_assertions) {
-            chain!(proc.match_char(c).expect().discard());
-        } else {
-            proc.skip_expect();
-        };
-    }
+    // Ensure closing delimiter in source has been matched and discarded, if any.
+    // NOTE: Should definitely exist as existence of closing delimiter ended metrics collection previously.
+    if cfg!(debug_assertions) {
+        chain!(proc.match_char(src_delimiter).expect().discard());
+    } else {
+        proc.skip_expect();
+    };
     // Write closing delimiter, if any.
     if let Some(c) = optimal_delimiter_char {
         proc.write(c);

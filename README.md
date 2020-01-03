@@ -340,10 +340,16 @@ No ampersand can immediately follow a malformed entity e.g. `&am&`, `&&`, or `&&
 Backticks (`` ` ``) are not valid quote marks and are not interpreted as such.
 However, backticks are valid attribute value quotes in Internet Explorer.
 
-It is an error to place whitespace between `=` and attribute names/values. It is also an error if there is no whitespace before an attribute. For example:
+It is an error if there is:
+
+- whitespace between `=` and attribute names/values;
+- no whitespace before an attribute; and/or
+- an unquoted attribute value.
+
+For example:
 
 ```html
-<div class="a"name="1" id = "a"></div>
+<div id = "a"unquoted=abc></div>
 ```
 
 Special handling of some attributes require case sensitive names and values. For example, `CLASS` won't be recognised as an attribute to minify, and `type="Text/JavaScript"` on a `<script>` will cause the element to be parsed as a [data block](https://html.spec.whatwg.org/dev/scripting.html#data-block) instead of JavaScript code.
