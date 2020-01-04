@@ -236,6 +236,14 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     };
     // Ending delimiter quote (if any) has already been discarded at this point.
     let minimum_value = proc.written_range(src_start);
+    // If minimum value is empty, return now before trying to read out of range later.
+    // (Reading starts at one character before end of minimum value.)
+    if minimum_value.empty() {
+        return Ok(ProcessedAttrValue {
+            delimiter: DelimiterType::Unquoted,
+            value: None,
+        });
+    };
 
     // Stage 2: optimally minify attribute value using metrics.
     let (optimal_delimiter, optimal_len) = metrics.get_optimal_delimiter_type(minimum_value.len());
