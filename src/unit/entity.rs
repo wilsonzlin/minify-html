@@ -65,7 +65,7 @@ macro_rules! handle_decoded_numeric_code_point {
     ($proc:ident, $at_least_one_digit:ident, $code_point:ident) => {
         if !$at_least_one_digit || !chain!($proc.match_char(b';').discard().matched()) {
             return None;
-        }
+        };
         return std::char::from_u32($code_point).map(|c| if c.is_ascii() {
             EntityType::Ascii(c as u8)
         } else {
@@ -84,7 +84,7 @@ fn parse_decimal(proc: &mut Processor) -> Option<EntityType> {
             val = val * 10 + (c - b'0') as u32;
         } else {
             break;
-        }
+        };
     };
     handle_decoded_numeric_code_point!(proc, at_least_one_digit, val);
 }
@@ -108,7 +108,7 @@ fn parse_hexadecimal(proc: &mut Processor) -> Option<EntityType> {
             val = val * 16 + digit as u32;
         } else {
             break;
-        }
+        };
     };
     handle_decoded_numeric_code_point!(proc, at_least_one_digit, val);
 }

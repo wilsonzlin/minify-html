@@ -37,15 +37,15 @@ pub enum RequireReason {
 
 #[derive(Copy, Clone)]
 pub struct Checkpoint {
-    read_next: usize,
-    write_next: usize,
+    pub(crate) read_next: usize,
+    pub(crate) write_next: usize,
 }
 
 // TODO DOC
 #[derive(Copy, Clone)]
 pub struct ProcessorRange {
-    start: usize,
-    end: usize,
+    pub(crate) start: usize,
+    pub(crate) end: usize,
 }
 
 impl ProcessorRange {
@@ -60,12 +60,12 @@ impl ProcessorRange {
 // Processing state of a file. Most fields are used internally and set during
 // processing. Single use only; create one per processing.
 pub struct Processor<'d> {
-    code: &'d mut [u8],
+    pub(crate) code: &'d mut [u8],
 
     // Index of the next character to read.
-    read_next: usize,
+    pub(crate) read_next: usize,
     // Index of the next unwritten space.
-    write_next: usize,
+    pub(crate) write_next: usize,
 
     // Match.
     // Need to record start as we might get slice after keeping or skipping.
@@ -336,7 +336,6 @@ impl<'d> Processor<'d> {
         let src_start = checkpoint.read_next;
         let src_end = self.read_next;
         self.code.copy_within(src_start..src_end, checkpoint.write_next);
-        self.read_next = src_end;
         self.write_next += src_end - src_start;
     }
     /// Discard characters written since checkpoint but keep source position.
