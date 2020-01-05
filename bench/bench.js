@@ -15,7 +15,7 @@ const tests = fs.readdirSync(testsDir).map(name => ({
 }));
 
 const programs = {
-  'hyperbuild-nodejs': content => hyperbuild.minify(Buffer.from(content)),
+  'hyperbuild-nodejs': content => hyperbuild.minify_in_place(Buffer.from(content)),
   'html-minifier': content => htmlMinifier.minify(content, {
     caseSensitive: false,
     collapseBooleanAttributes: true,
@@ -67,42 +67,44 @@ const colours = [
     borderColor: '#4bc0c0',
   },
 ];
-const renderChart = async (file, title, cfg) => {
-  const chart = new chartjs(435, 320);
-  await chart.drawChart({
-    ...cfg,
-    options: {
-      title: {
-        display: true,
-        text: title,
-      },
-      scales: {
-        xAxes: [{
-          barPercentage: 0.5,
-          gridLines: {
-            color: '#ccc',
-          },
-          ticks: {
-            fontColor: '#222',
-          },
-        }],
-        yAxes: [{
-          gridLines: {
-            color: '#666',
-          },
-          ticks: {
-            fontColor: '#222',
-          },
-        }],
-      },
-      legend: {
-        labels: {
-          fontFamily: 'Ubuntu, sans-serif',
-          fontColor: '#000',
+const chartOptions = (title, displayLegend, yTick = t => t) => ({
+  options: {
+    title: {
+      display: true,
+      text: title,
+    },
+    scales: {
+      xAxes: [{
+        barPercentage: 0.5,
+        gridLines: {
+          color: '#ccc',
         },
+        ticks: {
+          fontColor: '#222',
+        },
+      }],
+      yAxes: [{
+        gridLines: {
+          color: '#666',
+        },
+        ticks: {
+          callback: yTick,
+          fontColor: '#222',
+        },
+      }],
+    },
+    legend: {
+      display: displayLegend,
+      labels: {
+        fontFamily: 'Ubuntu, sans-serif',
+        fontColor: '#000',
       },
     },
-  });
+  },
+});
+const renderChart = async (file, cfg) => {
+  const chart = new chartjs(435, 320);
+  await chart.drawChart(cfg);
   await chart.writeImageToFile('image/png', path.join(__dirname, `${file}.png`));
 };
 
@@ -154,21 +156,21 @@ suite
       count: b.count,
       ops: b.hz,
     })).sort((a, b) => a.hz - b.hz);
-    await renderChart('speed', 'Minification speed', {
+    await renderChart('speed', {
       type: 'bar',
       data: {
         labels: speedResults.map(r => r.name),
         datasets: [{
-          label: 'Operations per second',
           ...colours[0],
           data: speedResults.map(r => r.ops),
         }],
       },
+      ...chartOptions('Operations per second (higher is better)', false),
     });
 
     const testNames = Object.keys(sizes);
     const programNames = Object.keys(programs);
-    await renderChart('minification', 'Relative minified HTML file size', {
+    await renderChart('minification', {
       type: 'bar',
       scaleFontColor: 'red',
       data: {
@@ -176,9 +178,10 @@ suite
         datasets: programNames.map((program, i) => ({
           label: program,
           ...colours[i],
-          data: testNames.map(test => sizes[test][program].relative),
+          data: testNames.map(test => sizes[test][program].relative * 100),
         })),
       },
+      ...chartOptions('Relative minified HTML file size (lower is better)', true, tick => `${tick}%`),
     });
   })
   .run({'async': true});

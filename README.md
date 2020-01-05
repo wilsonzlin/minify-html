@@ -15,6 +15,8 @@ Available as:
 
 ## Performance
 
+Speed and effectiveness of Node.js version compared to other JS minifiers.
+
 ![Chart showing speed of HTML minifiers](./bench/speed.png) ![Chart showing effectiveness of HTML minifiers](./bench/minification.png)
 
 ## Usage
