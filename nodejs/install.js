@@ -1,6 +1,24 @@
+const childProcess = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const request = require('request');
+
+const build = () => {
+  console.log(`Building from source...`);
+  const {status, signal, error} = childProcess.spawnSync(`neon`, [`build`, `--release`], {
+    stdio: ['ignore', 'inherit', 'inherit'],
+    encoding: 'utf8',
+  });
+  if (error) {
+    throw error;
+  }
+  if (signal) {
+    throw new Error(`Build exited with signal ${signal}`);
+  }
+  if (status !== 0) {
+    throw new Error(`Build exited with status ${status}`);
+  }
+};
 
 const binaryPath = path.join(__dirname, "native", "index.node");
 const binaryName = [
@@ -32,17 +50,22 @@ const binaryName = [
 ).join('');
 const binaryUrl = `https://wilsonl.in/hyperbuild/bin/${binaryName}`;
 
-console.log(`Fetching ${binaryUrl}...`);
-request(binaryUrl)
-  .on('response', res => {
-    if (res.statusCode !== 200) {
-      console.error(`Failed to download prebuilt native module with status ${res.statusCode}, will build from source`);
-      process.exit(1);
-    }
-  })
-  .on('error', err => {
-    console.error(err);
-    console.error(`Could not download prebuilt native module, building from source...`);
-    process.exit(1);
-  })
-  .pipe(fs.createWriteStream(binaryPath));
+if (process.env.HYPERBUILD_NODEJS_SKIP_BIN_DOWNLOAD) {
+  console.log(`Skipping download of prebuilt native module binary`);
+  build();
+} else {
+  console.log(`Fetching ${binaryUrl}...`);
+  request(binaryUrl)
+    .on('response', res => {
+      if (res.statusCode !== 200) {
+        console.error(`Failed to download prebuilt native module with status ${res.statusCode}`);
+        build();
+      }
+    })
+    .on('error', err => {
+      console.error(err);
+      console.error(`Could not download prebuilt native module`);
+      build();
+    })
+    .pipe(fs.createWriteStream(binaryPath));
+}

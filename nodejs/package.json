@@ -25,7 +25,7 @@
     "request": "^2.88.0"
   },
   "scripts": {
-    "install": "node install.js || neon build --release",
+    "install": "node install.js",
     "prepack": "cp ../README.md .",
     "postpack": "rm README.md"
   },

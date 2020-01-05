@@ -1,5 +1,4 @@
 use crate::err::ProcessingResult;
-use crate::pattern::TrieNode;
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::content::CONTENT_TAGS;
@@ -24,8 +23,6 @@ enum ContentType {
     Text,
 }
 
-include!(concat!(env!("OUT_DIR"), "/gen_trie_CONTENT_TYPE.rs"));
-
 impl ContentType {
     fn is_comment_bang_opening_tag(&self) -> bool {
         match self {
@@ -35,7 +32,7 @@ impl ContentType {
     }
 
     fn peek(proc: &mut Processor) -> ContentType {
-        // Manually write out matching for fast performance as this is hot spot.
+        // Manually write out matching for fast performance as this is hot spot; don't use generated trie.
         match proc.peek_eof() {
             None => ContentType::End,
             Some(b'<') => match proc.peek_offset_eof(1) {

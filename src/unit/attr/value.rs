@@ -279,12 +279,13 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         };
         if should_encode {
             let encoded = ENCODED[&c];
-            optimal_write_next -= encoded.len();
-            proc.code[optimal_write_next + 1..optimal_write_next + 1 + encoded.len()].copy_from_slice(encoded);
+            // Make extra room for entity (only have room for 1 char currently).
+            optimal_write_next -= encoded.len() - 1;
+            proc.code[optimal_write_next..optimal_write_next + encoded.len()].copy_from_slice(encoded);
         } else {
             proc.code[optimal_write_next] = c;
-            optimal_write_next -= 1;
         };
+        optimal_write_next -= 1;
 
         // Break before decrementing to prevent underflow.
         if is_first {
