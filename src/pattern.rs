@@ -1,5 +1,3 @@
-use phf::Map;
-
 pub struct SinglePattern {
     pub seq: &'static [u8],
     pub table: &'static [usize],
@@ -32,7 +30,7 @@ impl SinglePattern {
     }
 }
 
-pub struct TrieNode<V: 'static + Copy> {
-    pub children: Map<u8, &'static TrieNode<V>>,
-    pub value: Option<V>,
+pub trait ITrieNode<V: 'static + Copy> {
+    fn get_value(&self) -> Option<V>;
+    fn get_child(&self, c: u8) -> Option<&dyn ITrieNode<V>>;
 }

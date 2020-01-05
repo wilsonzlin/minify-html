@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::collections::HashMap;
 use std::env;
 use std::fs::File;
@@ -17,8 +18,7 @@ fn create_byte_string_literal(bytes: &[u8]) -> String {
         .collect::<String>())
 }
 
-fn read_json<T>(name: &str) -> T
-    where for<'de> T: Deserialize<'de> {
+fn read_json<T>(name: &str) -> T where for<'de> T: Deserialize<'de> {
     let patterns_path = Path::new("gen").join(format!("{}.json", name));
     let patterns_file = File::open(patterns_path).unwrap();
     serde_json::from_reader(patterns_file).unwrap()
@@ -52,6 +52,34 @@ struct TrieBuilderNode {
     value_as_code: Option<String>,
 }
 
+#[derive(Debug)]
+struct TrieStats {
+    total_clusters: usize,
+    maximum_clusters_single_node: usize,
+    maximum_cluster_length: usize,
+    total_nodes: usize,
+}
+
+fn snake_case(n: &Vec<String>) -> String {
+    n
+        .iter()
+        .map(|w| w.to_uppercase())
+        .collect::<Vec<String>>()
+        .join("_")
+}
+
+fn camel_case(n: &Vec<String>) -> String {
+    n
+        .iter()
+        .map(|w| format!(
+            "{}{}",
+            w.as_bytes()[0].to_ascii_uppercase() as char,
+            std::str::from_utf8(&w.as_bytes()[1..]).unwrap(),
+        ))
+        .collect::<Vec<String>>()
+        .join("")
+}
+
 impl TrieBuilderNode {
     fn new() -> TrieBuilderNode {
         TrieBuilderNode {
@@ -72,30 +100,120 @@ impl TrieBuilderNode {
         current.value_as_code = Some(val);
     }
 
-    fn build(&self, ai: &mut AutoIncrement, value_type: &'static str, out: &mut String) -> usize {
-        let child_ids: Vec<(char, usize)> = self.children
-            .iter()
-            .map(|(&c, n)| (c, n.build(ai, value_type, out)))
-            .collect();
-        let id = ai.next();
+    fn _node_var_name(trie_name: &Vec<String>, node_id: usize) -> String {
+        format!("{}_TRIE_NODE_{}", snake_case(trie_name), node_id)
+    }
 
-        out.push_str(format!("static N{}: &TrieNode<{}> = &TrieNode::<{}> {{\n", id, value_type, value_type).as_str());
-        out.push_str(format!("children: phf::phf_map! {{\n").as_str());
-        for (c, n) in child_ids {
+    fn _node_type_name(trie_name: &Vec<String>, node_id: usize) -> String {
+        format!("{}TrieNode{}", camel_case(trie_name), node_id)
+    }
+
+    fn _dummy_node_type_name(trie_name: &Vec<String>) -> String {
+        format!("{}DummyTrieNode", camel_case(trie_name))
+    }
+
+    fn _dummy_node_var_name(trie_name: &Vec<String>) -> String {
+        format!("{}_DUMMY_TRIE_NODE", snake_case(trie_name))
+    }
+
+    fn _build(&self, ai: &mut AutoIncrement, stats: &mut TrieStats, name: &Vec<String>, value_type: &str, out: &mut String) -> usize {
+        let id = ai.next();
+        let node_type_name = TrieBuilderNode::_node_type_name(name, id);
+        let node_var_name = TrieBuilderNode::_node_var_name(name, id);
+
+        let mut child_chars: Vec<char> = self.children.keys().map(|e| *e).collect();
+        child_chars.sort();
+        // Each cluster is a vector of pairs of child character and corresponding child node ID.
+        let mut child_char_clusters: Vec<Vec<Option<(u8, usize)>>> = vec![];
+        // Ensure first char always creates new vector.
+        let mut last_char = std::i16::MIN;
+        for c in child_chars {
             debug_assert!(c as u32 <= 0x7f);
-            out.push_str(format!("{}u8 => N{},\n", c as u8, n).as_str());
-        }
-        out.push_str("},\n");
-        out.push_str("value: ");
-        match &self.value_as_code {
-            Some(v) => {
-                out.push_str(format!("Some({})", v).as_str());
-            }
-            None => out.push_str("None"),
+            let p = c as i16;
+            // Allow a maximum gap length of 3 between any two children.
+            if last_char + 3 < p {
+                child_char_clusters.push(Vec::new());
+            } else {
+                for _ in last_char..p - 1 {
+                    child_char_clusters.last_mut().unwrap().push(None);
+                };
+            };
+            child_char_clusters.last_mut().unwrap().push(
+                Some((c as u8, self.children.get(&c).unwrap()._build(ai, stats, name, value_type, out)))
+            );
+            last_char = p;
         };
-        out.push_str(",\n};\n");
+        stats.total_clusters += child_char_clusters.len();
+        stats.maximum_clusters_single_node = max(stats.maximum_clusters_single_node, child_char_clusters.len());
+        stats.maximum_cluster_length = max(stats.maximum_cluster_length, child_char_clusters.iter().map(|c| c.len()).max().unwrap_or(0));
+        stats.total_nodes += 1;
+
+        out.push_str(format!("struct {} {{\n", node_type_name).as_str());
+        out.push_str(format!("\tvalue: Option<{}>,\n", value_type).as_str());
+        for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
+            out.push_str(format!("\tcluster_{}: [Option<&'static dyn ITrieNode<{}>>; {}],\n", cluster_no, value_type, cluster.len()).as_str());
+        };
+        out.push_str("}\n");
+
+        // TODO Investigate Send + Sync.
+        out.push_str(format!("unsafe impl Send for {} {{}}\n", node_type_name).as_str());
+        out.push_str(format!("unsafe impl Sync for {} {{}}\n", node_type_name).as_str());
+        out.push_str(format!("impl ITrieNode<{}> for {} {{\n", value_type, node_type_name).as_str());
+        out.push_str(format!("\tfn get_value(&self) -> Option<{}> {{ self.value }}\n", value_type).as_str());
+
+        let mut get_child_fn_branches: Vec<String> = Vec::new();
+        for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
+            let min = cluster.first().unwrap().unwrap();
+            let max = cluster.last().unwrap().unwrap();
+            get_child_fn_branches.push(format!("if c >= {} && c <= {} {{ self.cluster_{}[(c - {}) as usize] }}", min.0, max.0, cluster_no, min.0));
+        };
+        get_child_fn_branches.push("{ None }".to_string());
+        let get_child_fn_code = get_child_fn_branches.join("\n\t\telse ");
+        out.push_str(format!(
+            "\tfn get_child(&self, {}c: u8) -> Option<&dyn ITrieNode<{}>> {{\n\t\t{}\n\t}}\n",
+            if child_char_clusters.is_empty() { "_" } else { "" },
+            value_type,
+            get_child_fn_code,
+        ).as_str());
+        out.push_str("}\n");
+
+        out.push_str(format!("static {}: &(dyn ITrieNode<{}> + Send + Sync) = &{} {{\n", node_var_name, value_type, node_type_name).as_str());
+        out.push_str(format!("\tvalue: {},\n", match &self.value_as_code {
+            Some(v) => format!("Some({})", v),
+            None => "None".to_string(),
+        }.as_str()).as_str());
+        for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
+            out.push_str(format!(
+                "\tcluster_{}: [{}],\n", cluster_no, cluster
+                    .iter()
+                    .map(|child| match child {
+                        Some((_, child_id)) => format!("Some({})", TrieBuilderNode::_node_var_name(name, *child_id)),
+                        None => "None".to_string(),
+                    })
+                    .collect::<Vec<String>>().join(", "),
+            ).as_str());
+        };
+        out.push_str("};\n\n");
 
         id
+    }
+
+    fn build(&mut self, name: &str, value_type: &str) -> String {
+        let name_words = name.split(' ').map(|w| w.to_string()).collect::<Vec<String>>();
+        let mut code = String::new();
+        let mut stats = TrieStats {
+            total_clusters: 0,
+            maximum_clusters_single_node: 0,
+            maximum_cluster_length: 0,
+            total_nodes: 0,
+        };
+        let root_id = self._build(&mut AutoIncrement::new(), &mut stats, &name_words, value_type, &mut code);
+        println!("{} {:?}", name, stats);
+        // Make trie root public and use proper variable name.
+        code.replace(
+            format!("static {}:", TrieBuilderNode::_node_var_name(&name_words, root_id)).as_str(),
+            format!("pub static {}:", snake_case(&name_words)).as_str(),
+        )
     }
 }
 
@@ -142,15 +260,10 @@ fn generate_entities() {
         trie_builder.add(&rep[1..], create_byte_string_literal(entity.characters.as_bytes()));
     };
     // Generate trie code from builder.
-    let mut trie_code = String::new();
-    let trie_root_id = trie_builder.build(&mut AutoIncrement::new(), "&'static [u8]", &mut trie_code);
+    let trie_code = trie_builder.build("entity references", "&'static [u8]");
 
     // Write trie code to output Rust file.
-    // Make trie root public and use proper variable name.
-    write_rs("entities", trie_code.replace(
-        format!("static N{}:", trie_root_id).as_str(),
-        "pub static ENTITY_REFERENCES:",
-    ));
+    write_rs("entities", trie_code);
 }
 
 fn generate_patterns() {
@@ -163,21 +276,22 @@ fn generate_patterns() {
     };
 }
 
+#[derive(Serialize, Deserialize)]
+struct Trie {
+    value_type: String,
+    values: HashMap<String, String>,
+}
+
 fn generate_tries() {
-    let tries: HashMap<String, HashMap<String, String>> = read_json("tries");
+    let tries: HashMap<String, Trie> = read_json("tries");
 
-    for (name, values) in tries {
+    for (name, trie) in tries {
         let mut trie_builder = TrieBuilderNode::new();
-        for (seq, value_code) in values {
+        for (seq, value_code) in trie.values {
             trie_builder.add(seq.as_str(), value_code);
-        }
-        let mut trie_code = String::new();
-        let trie_root_id = trie_builder.build(&mut AutoIncrement::new(), "ContentType", &mut trie_code);
-
-        write_rs(format!("trie_{}", name).as_str(), trie_code.replace(
-            format!("static N{}:", trie_root_id).as_str(),
-            format!("static {}:", name).as_str(),
-        ));
+        };
+        let trie_code = trie_builder.build(name.as_str(), trie.value_type.as_str());
+        write_rs(format!("trie_{}", name).as_str(), trie_code);
     }
 }
 
