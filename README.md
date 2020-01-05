@@ -85,9 +85,7 @@ yarn add hyperbuild
 ```js
 const hyperbuild = require("hyperbuild");
 
-const code = Buffer.from("<p>  Hello, world!  </p>");
-const len = hyperbuild.minify(code);
-const minified = code.slice(0, len).toString();
+const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
 ```
 
 </details>
