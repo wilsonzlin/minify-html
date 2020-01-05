@@ -371,6 +371,13 @@ impl<'d> Processor<'d> {
     pub fn peek_eof(&self) -> Option<u8> {
         self._maybe_read_offset(0)
     }
+    pub fn peek_slice_offset_eof(&self, offset: usize, count: usize) -> Option<&[u8]> {
+        if self._in_bounds(offset + count - 1) {
+            Some(&self.code[self.read_next + offset..self.read_next + offset + count])
+        } else {
+            None
+        }
+    }
     pub fn peek(&self) -> ProcessingResult<u8> {
         self._maybe_read_offset(0).ok_or(ErrorType::UnexpectedEnd)
     }
@@ -443,6 +450,10 @@ impl<'d> Processor<'d> {
         let c = self._read_offset(0);
         self._shift(1);
         c
+    }
+    pub fn accept_amount_expect(&mut self, count: usize) -> () {
+        debug_assert!(self._in_bounds(count - 1));
+        self._shift(count);
     }
     pub fn accept_amount(&mut self, count: usize) -> ProcessingResult<()> {
         // Check for zero to prevent underflow as type is usize.

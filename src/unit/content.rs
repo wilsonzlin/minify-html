@@ -35,10 +35,20 @@ impl ContentType {
     }
 
     fn peek(proc: &mut Processor) -> ContentType {
-        if proc.at_end() {
-            return ContentType::End;
-        };
-        proc.match_trie(CONTENT_TYPE).unwrap_or(ContentType::Text)
+        // Manually write out matching for fast performance as this is hot spot.
+        match proc.peek_eof() {
+            None => ContentType::End,
+            Some(b'<') => match proc.peek_offset_eof(1) {
+                Some(b'/') => ContentType::End,
+                Some(b'!') => match proc.peek_slice_offset_eof(2, 2) {
+                    Some(b"--") => ContentType::Comment,
+                    _ => ContentType::Bang,
+                },
+                _ => ContentType::OpeningTag
+            },
+            Some(b'&') => ContentType::Entity,
+            Some(c) => if is_whitespace(c) { ContentType::Whitespace } else { ContentType::Text },
+        }
     }
 }
 

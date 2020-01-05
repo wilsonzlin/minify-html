@@ -1,14 +1,1 @@
-{
-  "CONTENT_TYPE": {
-    "</": "ContentType::End",
-    "\u0009": "ContentType::Whitespace",
-    "\u000a": "ContentType::Whitespace",
-    "\u000c": "ContentType::Whitespace",
-    "\u000d": "ContentType::Whitespace",
-    "\u0020": "ContentType::Whitespace",
-    "<!--": "ContentType::Comment",
-    "<!": "ContentType::Bang",
-    "<": "ContentType::OpeningTag",
-    "&": "ContentType::Entity"
-  }
-}
+{}

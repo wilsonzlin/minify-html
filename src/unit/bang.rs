@@ -2,7 +2,11 @@ use crate::err::ProcessingResult;
 use crate::proc::Processor;
 
 pub fn process_bang(proc: &mut Processor) -> ProcessingResult<()> {
-    chain!(proc.match_seq(b"<!").require()?.keep());
+    if cfg!(debug_assertions) {
+        chain!(proc.match_seq(b"<!").expect().keep());
+    } else {
+        proc.skip_amount_expect(2);
+    };
 
     chain!(proc.match_while_not_char(b'>').keep());
 
