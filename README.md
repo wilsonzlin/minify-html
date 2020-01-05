@@ -286,13 +286,15 @@ These elements are usually like content elements but are occasionally used like 
 
 ### Attributes
 
-Any entities in attribute values are decoded, and then the most optimal representation is calculated and used:
+Any entities in attribute values are decoded, and then the shortest representation of the value is calculated and used:
 
 - Double quoted, with any `"` encoded.
 - Single quoted, with any `'` encoded.
 - Unquoted, with `"`/`'` first character (if applicable), `>` last character (if applicable), and any whitespace encoded.
 
-Some attributes have their whitespace (after decoding) trimmed and collapsed, such as `class`.
+Some attributes have their whitespace (after any decoding) trimmed and collapsed:
+
+- `class`
 
 If an attribute value is empty after any processing, it is completely removed (i.e. no `=`).
 
@@ -337,12 +339,12 @@ No ampersand can immediately follow a malformed entity e.g. `&am&`, `&&`, or `&&
 
 ### Attributes
 
-Backticks (`` ` ``) are not valid quote marks and are not interpreted as such.
+Backticks (`` ` ``) are not valid quote marks and not interpreted as such.
 However, backticks are valid attribute value quotes in Internet Explorer.
 
 It is an error if there is:
 
-- whitespace between `=` and attribute names/values;
+- whitespace between `=` and an attribute name/value;
 - no whitespace before an attribute; and/or
 - an unquoted attribute value.
 

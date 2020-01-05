@@ -12,7 +12,7 @@
 ```
 These are true about the above snippet:
 - `document.querySelectorAll('script').length === 2`.
-- `!exec1 && exec2`.
+- `!window.exec1 && window.exec2`.
 - `document.querySelector('script[type="text/html"]')` has exactly one child node and it's a text node.
 
 ## Comments
@@ -107,19 +107,4 @@ Main closing tag works because it is not in a comment.
 <script type="text/plain">
   <!--<script>-->
 </script>
-```
-
-Figure this out:
-
-```html
-<script type="text/plain"><!--
-  <script>
-    alert();
-  </script>
-  </script
-  <script>
-    alert();
-  </script>
-</script>
-<h1>Test</h1>
 ```
