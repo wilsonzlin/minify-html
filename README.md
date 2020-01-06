@@ -284,6 +284,10 @@ These elements are usually like content elements but are occasionally used like 
 
 </details>
 
+### Tags
+
+[Optional closing tags](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission) are removed.
+
 ### Attributes
 
 Any entities in attribute values are decoded, and then the shortest representation of the value is calculated and used:
@@ -370,7 +374,6 @@ Note that the closing tag must not contain any whitespace (e.g. `</script  >`).
 
 ### More minification options
 
-- Removal of [optional tags](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission).
 - Removal of boolean attribute values.
 - Removal of redundant attributes (empty or default value).
 - Handling of conditional or special comments.

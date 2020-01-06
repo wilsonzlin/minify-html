@@ -4,11 +4,12 @@ use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::content::CONTENT_TAGS;
 use crate::spec::tag::contentfirst::CONTENT_FIRST_TAGS;
 use crate::spec::tag::formatting::FORMATTING_TAGS;
+use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::wss::WSS_TAGS;
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, parse_entity};
-use crate::unit::tag::process_tag;
+use crate::unit::tag::{process_tag, ProcessedTag};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -50,24 +51,44 @@ impl ContentType {
 }
 
 macro_rules! handle_content_type {
-    ($proc:ident, $content_type: expr, $on_entity: block, $on_whitespace: block) => {
+    ($proc:ident, $parent:ident, $next_content_type:expr, $prev_sibling_closing_tag:ident, $on_entity:block, $on_whitespace:block) => {
         // Process and consume next character(s).
-        match $content_type {
-            ContentType::Comment => { process_comment($proc)?; }
-            ContentType::Bang => { process_bang($proc)?; }
-            ContentType::OpeningTag => { process_tag($proc)?; }
-            ContentType::End => { break; }
-            ContentType::Entity => $on_entity,
-            ContentType::Text => { $proc.accept()?; }
-            ContentType::Whitespace => $on_whitespace,
-            _ => unreachable!(),
-        }
+        match $next_content_type {
+            ContentType::OpeningTag => {
+                $prev_sibling_closing_tag = Some(process_tag($proc, $prev_sibling_closing_tag)?);
+            }
+            ContentType::End => {
+                if let Some(prev_tag) = $prev_sibling_closing_tag {
+                    let can_omit = match ($parent, CLOSING_TAG_OMISSION_RULES.get(&$proc[prev_tag.name])) {
+                        (Some(parent_range), Some(rule)) => rule.can_omit_as_last_node(&$proc[parent_range]),
+                        _ => false,
+                    };
+                    if !can_omit {
+                        prev_tag.write_closing_tag($proc);
+                    };
+                };
+                break;
+            }
+            content_type => {
+                // Immediate next sibling node is not an element, so write any immediate previous sibling element's closing tag.
+                $prev_sibling_closing_tag.take().map(|tag| tag.write_closing_tag($proc));
+                match content_type {
+                    ContentType::Comment => { process_comment($proc)?; }
+                    ContentType::Bang => { process_bang($proc)?; }
+                    ContentType::Entity => $on_entity,
+                    ContentType::Text => { $proc.accept()?; }
+                    ContentType::Whitespace => $on_whitespace,
+                    _ => unreachable!(),
+                };
+            }
+        };
     };
 }
 
-fn process_wss_content(proc: &mut Processor) -> ProcessingResult<()> {
+fn process_wss_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
+    let mut prev_sibling_closing_tag: Option<ProcessedTag> = None;
     loop {
-        handle_content_type!(proc, ContentType::peek(proc), { parse_entity(proc, false)?.keep(proc); }, { proc.accept()?; });
+        handle_content_type!(proc, parent, ContentType::peek(proc), prev_sibling_closing_tag, { parse_entity(proc, false)?.keep(proc); }, { proc.accept()?; });
     };
     Ok(())
 }
@@ -96,13 +117,16 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
         // we would have to simply write skipped whitespace. This would cause
         // issues when skipped whitespace includes encoded entities, so use
         // function that does no whitespace handling. It's probably faster too.
-        return process_wss_content(proc);
+        return process_wss_content(proc, parent);
     };
 
     let mut last_non_whitespace_content_type = ContentType::Start;
     // Whether or not currently in whitespace.
     let mut currently_in_whitespace = false;
+    // TODO Comment.
     let mut entity: Option<EntityType> = None;
+    // TODO Comment.
+    let mut prev_sibling_closing_tag: Option<ProcessedTag> = None;
 
     loop {
         let next_content_type = match ContentType::peek(proc) {
@@ -150,6 +174,8 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
             } else if collapse_whitespace {
                 // Current contiguous whitespace needs to be reduced to a single space character.
                 proc.write(b' ');
+                // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node.
+                prev_sibling_closing_tag.take().map(|tag| tag.write_closing_tag(proc));
             } else {
                 unreachable!();
             };
@@ -159,7 +185,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
         };
 
         // Process and consume next character(s).
-        handle_content_type!(proc, next_content_type, { entity.unwrap().keep(proc); }, { unreachable!(); });
+        handle_content_type!(proc, parent, next_content_type, prev_sibling_closing_tag, { entity.unwrap().keep(proc); }, { unreachable!(); });
         last_non_whitespace_content_type = next_content_type;
     };
 

@@ -9,6 +9,7 @@ use crate::unit::content::process_content;
 use crate::unit::script::js::process_js_script;
 use crate::unit::script::text::process_text_script;
 use crate::unit::style::process_style;
+use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 
 pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
     b"application/ecmascript",
@@ -41,17 +42,44 @@ enum TagType {
     Other,
 }
 
-pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
+pub struct ProcessedTag {
+    pub name: ProcessorRange,
+    pub closing_tag: Option<ProcessorRange>,
+}
+
+impl ProcessedTag {
+    pub fn write_closing_tag(&self, proc: &mut Processor) -> () {
+        if let Some(tag) = self.closing_tag {
+            proc.write_range(tag);
+        };
+    }
+}
+
+// TODO Comment param `prev_sibling_closing_tag`.
+pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<ProcessedTag>) -> ProcessingResult<ProcessedTag> {
     // TODO Minify opening and closing tag whitespace after name and last attr.
     // TODO DOC No checking if opening and closing names match.
     // Expect to be currently at an opening tag.
     if cfg!(debug_assertions) {
-        chain!(proc.match_char(b'<').expect().keep());
+        chain!(proc.match_char(b'<').expect().discard());
     } else {
-        proc.accept_expect();
+        proc.skip_expect();
     };
     // May not be valid tag name at current position, so require instead of expect.
-    let opening_name_range = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.keep().out_range());
+    let opening_name_range = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.discard().range());
+    if let Some(prev_tag) = prev_sibling_closing_tag {
+        let can_omit = match CLOSING_TAG_OMISSION_RULES.get(&proc[prev_tag.name]) {
+            Some(rule) => rule.can_omit_as_prev(&proc[opening_name_range]),
+            _ => false,
+        };
+        if !can_omit {
+            prev_tag.write_closing_tag(proc);
+        };
+    };
+    // Write initially skipped left chevron.
+    proc.write(b'<');
+    // Write previously skipped name and use written code as range (otherwise source code will eventually be overwritten).
+    let opening_name_range = proc.write_range(opening_name_range);
 
     let tag_type = match &proc[opening_name_range] {
         b"script" => TagType::Script,
@@ -99,7 +127,7 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
     };
 
     if self_closing || VOID_TAGS.contains(&proc[opening_name_range]) {
-        return Ok(());
+        return Ok(ProcessedTag { name: opening_name_range, closing_tag: None });
     };
 
     match tag_type {
@@ -113,8 +141,9 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
     };
 
     // Require closing tag for non-void.
-    chain!(proc.match_seq(b"</").require()?.keep());
-    chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.keep());
-    chain!(proc.match_char(b'>').require()?.keep());
-    Ok(())
+    let closing_tag = proc.checkpoint();
+    chain!(proc.match_seq(b"</").require()?.discard());
+    chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.discard());
+    chain!(proc.match_char(b'>').require()?.discard());
+    Ok(ProcessedTag { name: opening_name_range, closing_tag: Some(proc.consumed_range(closing_tag)) })
 }

@@ -52,11 +52,11 @@ impl EntityType {
 impl EntityType {
     pub fn keep(self, proc: &mut Processor) -> () {
         match self {
-            EntityType::NonDecodable(r) => proc.write_range(r),
-            EntityType::Malformed(r) => proc.write_range(r),
-            EntityType::Ascii(c) => proc.write(c),
-            EntityType::Named(s) => proc.write_slice(s),
-            EntityType::Numeric(c) => proc.write_utf8(c),
+            EntityType::NonDecodable(r) => { proc.write_range(r); }
+            EntityType::Malformed(r) => { proc.write_range(r); }
+            EntityType::Ascii(c) => { proc.write(c); }
+            EntityType::Named(s) => { proc.write_slice(s); }
+            EntityType::Numeric(c) => { proc.write_utf8(c); }
         };
     }
 }

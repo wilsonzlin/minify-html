@@ -267,8 +267,7 @@ impl<'d> Processor<'d> {
         let mut found: Option<V> = None;
         let mut found_at = 0;
         let mut count = 0;
-        while self._in_bounds(count) {
-            let c = self._read_offset(count);
+        while let Some(c) = self._maybe_read_offset(count) {
             match current.get_child(c) {
                 Some(n) => current = n,
                 None => break,
@@ -420,9 +419,12 @@ impl<'d> Processor<'d> {
         self.code[self.write_next] = c;
         self.write_next += 1;
     }
-    pub fn write_range(&mut self, s: ProcessorRange) -> () {
-        self.code.copy_within(s.start..s.end, self.write_next);
-        self.write_next += s.len();
+    pub fn write_range(&mut self, s: ProcessorRange) -> ProcessorRange {
+        let dest_start = self.write_next;
+        let dest_end = dest_start + s.len();
+        self.code.copy_within(s.start..s.end, dest_start);
+        self.write_next = dest_end;
+        ProcessorRange { start: dest_start, end: dest_end }
     }
     /// Write `s` to output. Will panic if exceeds bounds.
     pub fn write_slice(&mut self, s: &[u8]) -> () {
