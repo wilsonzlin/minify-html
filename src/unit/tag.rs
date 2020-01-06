@@ -36,6 +36,7 @@ fn is_valid_tag_name_char(c: u8) -> bool {
     is_alphanumeric(c) || c == b':' || c == b'-'
 }
 
+#[derive(Copy, Clone)]
 enum TagType {
     Script,
     Style,
@@ -89,8 +90,8 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
 
     let mut last_attr_type: Option<AttrType> = None;
     let mut self_closing = false;
-    // Value of any "type" attribute; if multiple, last kept.
-    let mut attr_type_value: Option<ProcessorRange> = None;
+    // Set to false if `tag_type` is Script and "type" attribute exists and has value that is not empty and not one of `JAVASCRIPT_MIME_TYPES`.
+    let mut script_tag_type_is_js: bool = true;
 
     loop {
         // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).
@@ -111,6 +112,10 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
             return Err(ErrorType::NoSpaceBeforeAttr);
         }
 
+        // Mark attribute start in case we want to erase it completely.
+        let attr_checkpoint = proc.checkpoint();
+        let mut erase_attr = false;
+
         // Write space after tag name or unquoted/valueless attribute.
         // Don't write after unquoted.
         match last_attr_type {
@@ -119,11 +124,21 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
         };
 
         let ProcessedAttr { name, typ, value } = process_attr(proc)?;
-        match &proc[name] {
-            b"type" => attr_type_value = value,
+        match (tag_type, &proc[name]) {
+            (TagType::Script, b"type") => {
+                // It's JS if the value is empty or one of `JAVASCRIPT_MIME_TYPES`.
+                script_tag_type_is_js = value.filter(|v| !JAVASCRIPT_MIME_TYPES.contains(&proc[*v])).is_none();
+                if script_tag_type_is_js {
+                    erase_attr = true;
+                };
+            },
             _ => {}
         };
-        last_attr_type = Some(typ);
+        if erase_attr {
+            proc.erase_written(attr_checkpoint);
+        } else {
+            last_attr_type = Some(typ);
+        };
     };
 
     if self_closing || VOID_TAGS.contains(&proc[opening_name_range]) {
@@ -131,7 +146,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     };
 
     match tag_type {
-        TagType::Script => if attr_type_value.is_none() || attr_type_value.filter(|n| JAVASCRIPT_MIME_TYPES.contains(&proc[*n])).is_some() {
+        TagType::Script => if script_tag_type_is_js {
             process_js_script(proc)?;
         } else {
             process_text_script(proc)?;

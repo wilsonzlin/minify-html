@@ -45,8 +45,8 @@ const programs = {
     removeScriptTypeAttributes: true,
     removeStyleLinkTypeAttributes: true,
     removeTagWhitespace: true,
-    sortAttributes: true,
-    sortClassName: true,
+    sortAttributes: false,
+    sortClassName: false,
     trimCustomFragments: false,
     useShortDoctype: true,
   }).length,
@@ -153,9 +153,9 @@ suite
   .on('complete', async function () {
     const speedResults = this.map(b => ({
       name: b.name,
-      count: b.count,
       ops: b.hz,
-    })).sort((a, b) => a.hz - b.hz);
+    }));
+    fs.writeFileSync(path.join(__dirname, "speed.json"), JSON.stringify(speedResults, null, 2));
     await renderChart('speed', {
       type: 'bar',
       data: {
@@ -170,6 +170,7 @@ suite
 
     const testNames = Object.keys(sizes);
     const programNames = Object.keys(programs);
+    fs.writeFileSync(path.join(__dirname, "minification.json"), JSON.stringify(sizes, null, 2));
     await renderChart('minification', {
       type: 'bar',
       scaleFontColor: 'red',
