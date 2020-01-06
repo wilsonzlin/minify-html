@@ -439,7 +439,9 @@ impl<'d> Processor<'d> {
     pub fn accept(&mut self) -> ProcessingResult<u8> {
         if !self.at_end() {
             let c = self._read_offset(0);
-            self._shift(1);
+            self.code[self.write_next] = c;
+            self.read_next += 1;
+            self.write_next += 1;
             Ok(c)
         } else {
             Err(ErrorType::UnexpectedEnd)
@@ -448,7 +450,9 @@ impl<'d> Processor<'d> {
     pub fn accept_expect(&mut self) -> u8 {
         debug_assert!(!self.at_end());
         let c = self._read_offset(0);
-        self._shift(1);
+        self.code[self.write_next] = c;
+        self.read_next += 1;
+        self.write_next += 1;
         c
     }
     pub fn accept_amount_expect(&mut self, count: usize) -> () {

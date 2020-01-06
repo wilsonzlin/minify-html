@@ -57,6 +57,7 @@ struct TrieStats {
     total_clusters: usize,
     maximum_clusters_single_node: usize,
     maximum_cluster_length: usize,
+    maximum_cluster_gaps: usize,
     total_nodes: usize,
 }
 
@@ -108,14 +109,6 @@ impl TrieBuilderNode {
         format!("{}TrieNode{}", camel_case(trie_name), node_id)
     }
 
-    fn _dummy_node_type_name(trie_name: &Vec<String>) -> String {
-        format!("{}DummyTrieNode", camel_case(trie_name))
-    }
-
-    fn _dummy_node_var_name(trie_name: &Vec<String>) -> String {
-        format!("{}_DUMMY_TRIE_NODE", snake_case(trie_name))
-    }
-
     fn _build(&self, ai: &mut AutoIncrement, stats: &mut TrieStats, name: &Vec<String>, value_type: &str, out: &mut String) -> usize {
         let id = ai.next();
         let node_type_name = TrieBuilderNode::_node_type_name(name, id);
@@ -146,6 +139,7 @@ impl TrieBuilderNode {
         stats.total_clusters += child_char_clusters.len();
         stats.maximum_clusters_single_node = max(stats.maximum_clusters_single_node, child_char_clusters.len());
         stats.maximum_cluster_length = max(stats.maximum_cluster_length, child_char_clusters.iter().map(|c| c.len()).max().unwrap_or(0));
+        stats.maximum_cluster_gaps = max(stats.maximum_cluster_gaps, child_char_clusters.iter().map(|c| c.iter().filter(|c| c.is_none()).count()).max().unwrap_or(0));
         stats.total_nodes += 1;
 
         out.push_str(format!("struct {} {{\n", node_type_name).as_str());
@@ -205,6 +199,7 @@ impl TrieBuilderNode {
             total_clusters: 0,
             maximum_clusters_single_node: 0,
             maximum_cluster_length: 0,
+            maximum_cluster_gaps: 0,
             total_nodes: 0,
         };
         let root_id = self._build(&mut AutoIncrement::new(), &mut stats, &name_words, value_type, &mut code);
@@ -257,7 +252,12 @@ fn generate_entities() {
     // Add entities to trie builder.
     let mut trie_builder = TrieBuilderNode::new();
     for (rep, entity) in entities {
-        trie_builder.add(&rep[1..], create_byte_string_literal(entity.characters.as_bytes()));
+        if rep.as_bytes().len() < entity.characters.as_bytes().len() {
+            // Since we're minifying in place, we need to guarantee we'll never write something longer than source.
+            println!("Entity {} is shorter than decoded UTF-8 bytes, skipping...", rep);
+        } else {
+            trie_builder.add(&rep[1..], create_byte_string_literal(entity.characters.as_bytes()));
+        };
     };
     // Generate trie code from builder.
     let trie_code = trie_builder.build("entity references", "&'static [u8]");

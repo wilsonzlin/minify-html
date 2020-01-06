@@ -33,7 +33,7 @@ impl ContentType {
 
     fn peek(proc: &mut Processor) -> ContentType {
         // Manually write out matching for fast performance as this is hot spot; don't use generated trie.
-        match proc.peek_eof() {
+        match proc.peek_offset_eof(0) {
             None => ContentType::End,
             Some(b'<') => match proc.peek_offset_eof(1) {
                 Some(b'/') => ContentType::End,
