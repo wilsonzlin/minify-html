@@ -44,7 +44,7 @@ impl<V: 'static + Copy> ITrieNode<V> for TrieLeafNode<V> {
         self.value
     }
 
-    fn get_child(&self, c: u8) -> Option<&dyn ITrieNode<V>> {
+    fn get_child(&self, _: u8) -> Option<&dyn ITrieNode<V>> {
         None
     }
 }

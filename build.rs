@@ -54,9 +54,9 @@ struct TrieBuilderNode {
 
 #[derive(Debug)]
 struct TrieStats {
-    maximum_cluster_gaps: usize,
-    maximum_cluster_length: usize,
-    maximum_clusters_single_node: usize,
+    max_cluster_holes: usize,
+    max_cluster_length: usize,
+    max_clusters_single_node: usize,
     total_clusters: usize,
     total_leaves: usize,
     total_nodes: usize,
@@ -123,27 +123,28 @@ impl TrieBuilderNode {
         child_chars.sort();
         // Each cluster is a vector of pairs of child character and corresponding child node ID.
         let mut child_char_clusters: Vec<Vec<Option<(u8, usize)>>> = vec![];
-        // Ensure first char always creates new vector.
-        let mut last_char = std::i16::MIN;
+        let mut last_char: Option<u32> = None;
         for c in child_chars {
-            debug_assert!(c as u32 <= 0x7f);
-            let p = c as i16;
+            let p = c as u32;
+            debug_assert!(p <= 0x7f);
             // Allow a maximum gap length of 3 between any two children.
-            if last_char + 3 < p {
+            // Create a new vector if first char or last char is more than 3 character positions away.
+            if last_char.filter(|last| last + 3 >= p).is_none() {
                 child_char_clusters.push(Vec::new());
             } else {
-                for _ in last_char..p - 1 {
+                // Fill any gap with None values.
+                for _ in last_char.unwrap()..p - 1 {
                     child_char_clusters.last_mut().unwrap().push(None);
                 };
             };
             child_char_clusters.last_mut().unwrap().push(
                 Some((c as u8, self.children.get(&c).unwrap()._build(ai, stats, name, value_type, out)))
             );
-            last_char = p;
+            last_char = Some(p);
         };
-        stats.maximum_cluster_gaps = max(stats.maximum_cluster_gaps, child_char_clusters.iter().map(|c| c.iter().filter(|c| c.is_none()).count()).max().unwrap_or(0));
-        stats.maximum_cluster_length = max(stats.maximum_cluster_length, child_char_clusters.iter().map(|c| c.len()).max().unwrap_or(0));
-        stats.maximum_clusters_single_node = max(stats.maximum_clusters_single_node, child_char_clusters.len());
+        stats.max_cluster_holes = max(stats.max_cluster_holes, child_char_clusters.iter().map(|c| c.iter().filter(|c| c.is_none()).count()).max().unwrap_or(0));
+        stats.max_cluster_length = max(stats.max_cluster_length, child_char_clusters.iter().map(|c| c.len()).max().unwrap_or(0));
+        stats.max_clusters_single_node = max(stats.max_clusters_single_node, child_char_clusters.len());
         stats.total_clusters += child_char_clusters.len();
         stats.total_leaves += self.children.is_empty() as usize;
         stats.total_nodes += 1;
@@ -152,7 +153,12 @@ impl TrieBuilderNode {
             out.push_str(format!("struct {} {{\n", node_type_name).as_str());
             out.push_str(format!("\tvalue: Option<{}>,\n", value_type).as_str());
             for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
-                out.push_str(format!("\tcluster_{}: [Option<&'static dyn ITrieNode<{}>>; {}],\n", cluster_no, value_type, cluster.len()).as_str());
+                if cluster.len() == 1 {
+                    // Even though child node always exists, wrap in Option as return value for get_child is Option.
+                    out.push_str(format!("\tcluster_{}: Option<&'static dyn ITrieNode<{}>>,\n", cluster_no, value_type).as_str());
+                } else {
+                    out.push_str(format!("\tcluster_{}: [Option<&'static dyn ITrieNode<{}>>; {}],\n", cluster_no, value_type, cluster.len()).as_str());
+                };
             };
             out.push_str("}\n");
 
@@ -164,14 +170,19 @@ impl TrieBuilderNode {
 
             let mut get_child_fn_branches: Vec<String> = Vec::new();
             for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
-                let min = cluster.first().unwrap().unwrap();
-                let max = cluster.last().unwrap().unwrap();
-                get_child_fn_branches.push(format!("if c >= {} && c <= {} {{ self.cluster_{}[(c - {}) as usize] }}", min.0, max.0, cluster_no, min.0));
+                if cluster.len() == 1 {
+                    get_child_fn_branches.push(format!("if c == {} {{ self.cluster_{} }}", cluster.first().unwrap().unwrap().0, cluster_no));
+                } else {
+                    let min = cluster.first().unwrap().unwrap();
+                    let max = cluster.last().unwrap().unwrap();
+                    get_child_fn_branches.push(format!("if c >= {} && c <= {} {{ self.cluster_{}[(c - {}) as usize] }}", min.0, max.0, cluster_no, min.0));
+                };
             };
             get_child_fn_branches.push("{ None }".to_string());
             let get_child_fn_code = get_child_fn_branches.join("\n\t\telse ");
             out.push_str(format!(
                 "\tfn get_child(&self, {}c: u8) -> Option<&dyn ITrieNode<{}>> {{\n\t\t{}\n\t}}\n",
+                // Prefix `c` parameter with underscore if unused to suppress compiler warnings.
                 if child_char_clusters.is_empty() { "_" } else { "" },
                 value_type,
                 get_child_fn_code,
@@ -185,15 +196,19 @@ impl TrieBuilderNode {
             None => "None".to_string(),
         }.as_str()).as_str());
         for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
-            out.push_str(format!(
-                "\tcluster_{}: [{}],\n", cluster_no, cluster
-                    .iter()
-                    .map(|child| match child {
-                        Some((_, child_id)) => format!("Some({})", TrieBuilderNode::_node_var_name(name, *child_id)),
-                        None => "None".to_string(),
-                    })
-                    .collect::<Vec<String>>().join(", "),
-            ).as_str());
+            if cluster.len() == 1 {
+                out.push_str(format!("\tcluster_{}: Some({}),\n", cluster_no, TrieBuilderNode::_node_var_name(name, cluster.first().unwrap().unwrap().1)).as_str());
+            } else {
+                out.push_str(format!(
+                    "\tcluster_{}: [{}],\n", cluster_no, cluster
+                        .iter()
+                        .map(|child| match child {
+                            Some((_, child_id)) => format!("Some({})", TrieBuilderNode::_node_var_name(name, *child_id)),
+                            None => "None".to_string(),
+                        })
+                        .collect::<Vec<String>>().join(", "),
+                ).as_str());
+            };
         };
         out.push_str("};\n\n");
 
@@ -204,9 +219,9 @@ impl TrieBuilderNode {
         let name_words = name.split(' ').map(|w| w.to_string()).collect::<Vec<String>>();
         let mut code = String::new();
         let mut stats = TrieStats {
-            maximum_cluster_gaps: 0,
-            maximum_cluster_length: 0,
-            maximum_clusters_single_node: 0,
+            max_cluster_holes: 0,
+            max_cluster_length: 0,
+            max_clusters_single_node: 0,
             total_clusters: 0,
             total_leaves: 0,
             total_nodes: 0,
