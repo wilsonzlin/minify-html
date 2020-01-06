@@ -1,7 +1,10 @@
 const childProcess = require('child_process');
 const fs = require('fs');
+const pack = require('./package');
 const path = require('path');
 const request = require('request');
+
+console.log(`Installing Node.js hyperbuild ${pack.version}...`);
 
 const build = () => {
   console.log(`Building from source...`);
@@ -22,7 +25,7 @@ const build = () => {
 
 const binaryPath = path.join(__dirname, "native", "index.node");
 const binaryName = [
-  require('./package').version,
+  pack.version,
   '-',
   [process.platform, {
     darwin: 'macos',
