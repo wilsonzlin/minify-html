@@ -142,6 +142,8 @@ impl TrieBuilderNode {
             );
             last_char = Some(p);
         };
+        child_char_clusters.sort_by(|a, b| b.len().cmp(&a.len()));
+
         stats.max_cluster_holes = max(stats.max_cluster_holes, child_char_clusters.iter().map(|c| c.iter().filter(|c| c.is_none()).count()).max().unwrap_or(0));
         stats.max_cluster_length = max(stats.max_cluster_length, child_char_clusters.iter().map(|c| c.len()).max().unwrap_or(0));
         stats.max_clusters_single_node = max(stats.max_clusters_single_node, child_char_clusters.len());
@@ -149,7 +151,7 @@ impl TrieBuilderNode {
         stats.total_leaves += self.children.is_empty() as usize;
         stats.total_nodes += 1;
 
-        if !(self.children.is_empty()) {
+        if !self.children.is_empty() {
             out.push_str(format!("struct {} {{\n", node_type_name).as_str());
             out.push_str(format!("\tvalue: Option<{}>,\n", value_type).as_str());
             for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
@@ -197,17 +199,15 @@ impl TrieBuilderNode {
         }.as_str()).as_str());
         for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
             if cluster.len() == 1 {
-                out.push_str(format!("\tcluster_{}: Some({}),\n", cluster_no, TrieBuilderNode::_node_var_name(name, cluster.first().unwrap().unwrap().1)).as_str());
-            } else {
-                out.push_str(format!(
-                    "\tcluster_{}: [{}],\n", cluster_no, cluster
-                        .iter()
-                        .map(|child| match child {
-                            Some((_, child_id)) => format!("Some({})", TrieBuilderNode::_node_var_name(name, *child_id)),
-                            None => "None".to_string(),
-                        })
-                        .collect::<Vec<String>>().join(", "),
+                out.push_str(format!("\tcluster_{}: Some({}),\n", cluster_no, TrieBuilderNode::_node_var_name(
+                    name,
+                    cluster.first().unwrap().unwrap().1),
                 ).as_str());
+            } else {
+                out.push_str(format!("\tcluster_{}: [{}],\n", cluster_no, cluster.iter().map(|child| match child {
+                    Some((_, child_id)) => format!("Some({})", TrieBuilderNode::_node_var_name(name, *child_id)),
+                    None => "None".to_string(),
+                }).collect::<Vec<String>>().join(", ")).as_str());
             };
         };
         out.push_str("};\n\n");
