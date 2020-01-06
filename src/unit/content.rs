@@ -65,7 +65,7 @@ macro_rules! handle_content_type {
     };
 }
 
-pub fn process_wss_content(proc: &mut Processor) -> ProcessingResult<()> {
+fn process_wss_content(proc: &mut Processor) -> ProcessingResult<()> {
     loop {
         handle_content_type!(proc, ContentType::peek(proc), { parse_entity(proc, false)?.keep(proc); }, { proc.accept()?; });
     };

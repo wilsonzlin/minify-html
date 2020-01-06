@@ -5,7 +5,7 @@ pub fn process_bang(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
         chain!(proc.match_seq(b"<!").expect().keep());
     } else {
-        proc.skip_amount_expect(2);
+        proc.accept_amount_expect(2);
     };
 
     chain!(proc.match_while_not_char(b'>').keep());

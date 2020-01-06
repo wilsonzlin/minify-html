@@ -323,6 +323,8 @@ However, there are some syntax requirements for speed and sanity reasons.
 
 Tag names are case sensitive. For example, this means that `P` won't be recognised as a content element, `bR` won't be considered as a void tag, and the contents of `Script` won't be parsed as JavaScript.
 
+[Tags must not be omitted.](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission)
+
 ### Entities
 
 Well-formed entities are decoded, including in attribute values.

@@ -48,12 +48,11 @@ pub fn process_tag(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
         chain!(proc.match_char(b'<').expect().keep());
     } else {
-        proc.skip_expect();
+        proc.accept_expect();
     };
     // May not be valid tag name at current position, so require instead of expect.
     let opening_name_range = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.keep().out_range());
 
-    // TODO DOC: Tags must be case sensitive.
     let tag_type = match &proc[opening_name_range] {
         b"script" => TagType::Script,
         b"style" => TagType::Style,

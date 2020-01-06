@@ -9,7 +9,7 @@ fn parse_comment_single(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
         chain!(proc.match_seq(b"//").expect().keep());
     } else {
-        proc.skip_amount_expect(2);
+        proc.accept_amount_expect(2);
     };
 
     // Comment can end at closing </script>.
@@ -29,7 +29,7 @@ fn parse_comment_multi(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
         chain!(proc.match_seq(b"/*").expect().keep());
     } else {
-        proc.skip_amount_expect(2);
+        proc.accept_amount_expect(2);
     };
 
     // Comment can end at closing </script>.
@@ -82,7 +82,7 @@ fn parse_template(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
         chain!(proc.match_char(b'`').expect().keep());
     } else {
-        proc.skip_expect();
+        proc.accept_expect();
     };
 
     let mut escaping = false;
