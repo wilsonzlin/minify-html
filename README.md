@@ -25,9 +25,9 @@ Speed and effectiveness of Node.js version compared to other JS minifiers.
 
 ##### Get
 
-[Windows](https://wilsonl.in/hyperbuild/bin/0.0.9-windows-x86_64.exe) |
-[macOS](https://wilsonl.in/hyperbuild/bin/0.0.9-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.0.9-linux-x86_64)
+[Windows](https://wilsonl.in/hyperbuild/bin/0.0.10-windows-x86_64.exe) |
+[macOS](https://wilsonl.in/hyperbuild/bin/0.0.10-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.0.10-linux-x86_64)
 
 ##### Use
 
@@ -44,7 +44,7 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = "0.0.9"
+hyperbuild = "0.0.10"
 ```
 
 ##### Use
