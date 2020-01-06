@@ -54,10 +54,11 @@ struct TrieBuilderNode {
 
 #[derive(Debug)]
 struct TrieStats {
-    total_clusters: usize,
-    maximum_clusters_single_node: usize,
-    maximum_cluster_length: usize,
     maximum_cluster_gaps: usize,
+    maximum_cluster_length: usize,
+    maximum_clusters_single_node: usize,
+    total_clusters: usize,
+    total_leaves: usize,
     total_nodes: usize,
 }
 
@@ -111,7 +112,11 @@ impl TrieBuilderNode {
 
     fn _build(&self, ai: &mut AutoIncrement, stats: &mut TrieStats, name: &Vec<String>, value_type: &str, out: &mut String) -> usize {
         let id = ai.next();
-        let node_type_name = TrieBuilderNode::_node_type_name(name, id);
+        let node_type_name = if self.children.is_empty() {
+            format!("TrieLeafNode::<{}>", value_type)
+        } else {
+            TrieBuilderNode::_node_type_name(name, id)
+        };
         let node_var_name = TrieBuilderNode::_node_var_name(name, id);
 
         let mut child_chars: Vec<char> = self.children.keys().map(|e| *e).collect();
@@ -136,40 +141,43 @@ impl TrieBuilderNode {
             );
             last_char = p;
         };
-        stats.total_clusters += child_char_clusters.len();
-        stats.maximum_clusters_single_node = max(stats.maximum_clusters_single_node, child_char_clusters.len());
-        stats.maximum_cluster_length = max(stats.maximum_cluster_length, child_char_clusters.iter().map(|c| c.len()).max().unwrap_or(0));
         stats.maximum_cluster_gaps = max(stats.maximum_cluster_gaps, child_char_clusters.iter().map(|c| c.iter().filter(|c| c.is_none()).count()).max().unwrap_or(0));
+        stats.maximum_cluster_length = max(stats.maximum_cluster_length, child_char_clusters.iter().map(|c| c.len()).max().unwrap_or(0));
+        stats.maximum_clusters_single_node = max(stats.maximum_clusters_single_node, child_char_clusters.len());
+        stats.total_clusters += child_char_clusters.len();
+        stats.total_leaves += self.children.is_empty() as usize;
         stats.total_nodes += 1;
 
-        out.push_str(format!("struct {} {{\n", node_type_name).as_str());
-        out.push_str(format!("\tvalue: Option<{}>,\n", value_type).as_str());
-        for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
-            out.push_str(format!("\tcluster_{}: [Option<&'static dyn ITrieNode<{}>>; {}],\n", cluster_no, value_type, cluster.len()).as_str());
-        };
-        out.push_str("}\n");
+        if !(self.children.is_empty()) {
+            out.push_str(format!("struct {} {{\n", node_type_name).as_str());
+            out.push_str(format!("\tvalue: Option<{}>,\n", value_type).as_str());
+            for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
+                out.push_str(format!("\tcluster_{}: [Option<&'static dyn ITrieNode<{}>>; {}],\n", cluster_no, value_type, cluster.len()).as_str());
+            };
+            out.push_str("}\n");
 
-        // TODO Investigate Send + Sync.
-        out.push_str(format!("unsafe impl Send for {} {{}}\n", node_type_name).as_str());
-        out.push_str(format!("unsafe impl Sync for {} {{}}\n", node_type_name).as_str());
-        out.push_str(format!("impl ITrieNode<{}> for {} {{\n", value_type, node_type_name).as_str());
-        out.push_str(format!("\tfn get_value(&self) -> Option<{}> {{ self.value }}\n", value_type).as_str());
+            // TODO Investigate Send + Sync.
+            out.push_str(format!("unsafe impl Send for {} {{}}\n", node_type_name).as_str());
+            out.push_str(format!("unsafe impl Sync for {} {{}}\n", node_type_name).as_str());
+            out.push_str(format!("impl ITrieNode<{}> for {} {{\n", value_type, node_type_name).as_str());
+            out.push_str(format!("\tfn get_value(&self) -> Option<{}> {{ self.value }}\n", value_type).as_str());
 
-        let mut get_child_fn_branches: Vec<String> = Vec::new();
-        for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
-            let min = cluster.first().unwrap().unwrap();
-            let max = cluster.last().unwrap().unwrap();
-            get_child_fn_branches.push(format!("if c >= {} && c <= {} {{ self.cluster_{}[(c - {}) as usize] }}", min.0, max.0, cluster_no, min.0));
+            let mut get_child_fn_branches: Vec<String> = Vec::new();
+            for (cluster_no, cluster) in child_char_clusters.iter().enumerate() {
+                let min = cluster.first().unwrap().unwrap();
+                let max = cluster.last().unwrap().unwrap();
+                get_child_fn_branches.push(format!("if c >= {} && c <= {} {{ self.cluster_{}[(c - {}) as usize] }}", min.0, max.0, cluster_no, min.0));
+            };
+            get_child_fn_branches.push("{ None }".to_string());
+            let get_child_fn_code = get_child_fn_branches.join("\n\t\telse ");
+            out.push_str(format!(
+                "\tfn get_child(&self, {}c: u8) -> Option<&dyn ITrieNode<{}>> {{\n\t\t{}\n\t}}\n",
+                if child_char_clusters.is_empty() { "_" } else { "" },
+                value_type,
+                get_child_fn_code,
+            ).as_str());
+            out.push_str("}\n");
         };
-        get_child_fn_branches.push("{ None }".to_string());
-        let get_child_fn_code = get_child_fn_branches.join("\n\t\telse ");
-        out.push_str(format!(
-            "\tfn get_child(&self, {}c: u8) -> Option<&dyn ITrieNode<{}>> {{\n\t\t{}\n\t}}\n",
-            if child_char_clusters.is_empty() { "_" } else { "" },
-            value_type,
-            get_child_fn_code,
-        ).as_str());
-        out.push_str("}\n");
 
         out.push_str(format!("static {}: &(dyn ITrieNode<{}> + Send + Sync) = &{} {{\n", node_var_name, value_type, node_type_name).as_str());
         out.push_str(format!("\tvalue: {},\n", match &self.value_as_code {
@@ -196,10 +204,11 @@ impl TrieBuilderNode {
         let name_words = name.split(' ').map(|w| w.to_string()).collect::<Vec<String>>();
         let mut code = String::new();
         let mut stats = TrieStats {
-            total_clusters: 0,
-            maximum_clusters_single_node: 0,
-            maximum_cluster_length: 0,
             maximum_cluster_gaps: 0,
+            maximum_cluster_length: 0,
+            maximum_clusters_single_node: 0,
+            total_clusters: 0,
+            total_leaves: 0,
             total_nodes: 0,
         };
         let root_id = self._build(&mut AutoIncrement::new(), &mut stats, &name_words, value_type, &mut code);

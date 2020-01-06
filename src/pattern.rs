@@ -34,3 +34,17 @@ pub trait ITrieNode<V: 'static + Copy> {
     fn get_value(&self) -> Option<V>;
     fn get_child(&self, c: u8) -> Option<&dyn ITrieNode<V>>;
 }
+
+pub struct TrieLeafNode<V: 'static + Copy> {
+    pub value: Option<V>,
+}
+
+impl<V: 'static + Copy> ITrieNode<V> for TrieLeafNode<V> {
+    fn get_value(&self) -> Option<V> {
+        self.value
+    }
+
+    fn get_child(&self, c: u8) -> Option<&dyn ITrieNode<V>> {
+        None
+    }
+}
