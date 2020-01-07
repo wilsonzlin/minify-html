@@ -7,6 +7,8 @@ use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrV
 
 mod value;
 
+include!(concat!(env!("OUT_DIR"), "/gen_boolean_attrs.rs"));
+
 static COLLAPSIBLE_AND_TRIMMABLE_ATTRS: Set<&'static [u8]> = phf_set! {
     b"class",
 };
@@ -34,10 +36,11 @@ fn is_name_char(c: u8) -> bool {
     }
 }
 
-pub fn process_attr(proc: &mut Processor) -> ProcessingResult<ProcessedAttr> {
+pub fn process_attr(proc: &mut Processor, element: ProcessorRange) -> ProcessingResult<ProcessedAttr> {
     // It's possible to expect attribute name but not be called at an attribute, e.g. due to whitespace between name and
     // value, which causes name to be considered boolean attribute and `=` to be start of new (invalid) attribute name.
     let name = chain!(proc.match_while_pred(is_name_char).require_with_reason("attribute name")?.keep().range());
+    let is_boolean = BOOLEAN_ATTRS.get(&proc[name]).filter(|elems| elems.contains(&proc[element])).is_some();
     let after_name = proc.checkpoint();
 
     let should_collapse_and_trim_value_ws = COLLAPSIBLE_AND_TRIMMABLE_ATTRS.contains(&proc[name]);
@@ -46,14 +49,21 @@ pub fn process_attr(proc: &mut Processor) -> ProcessingResult<ProcessedAttr> {
     let (typ, value) = if !has_value {
         (AttrType::NoValue, None)
     } else {
-        match process_attr_value(proc, should_collapse_and_trim_value_ws)? {
-            ProcessedAttrValue { value: None, .. } => {
-                // Value is empty, which is equivalent to no value, so discard `=` and any quotes.
-                proc.erase_written(after_name);
-                (AttrType::NoValue, None)
+        // TODO Don't process if going to erase anyway.
+        let val = process_attr_value(proc, should_collapse_and_trim_value_ws)?;
+        if is_boolean {
+            proc.erase_written(after_name);
+            (AttrType::NoValue, None)
+        } else {
+            match val {
+                ProcessedAttrValue { value: None, .. } => {
+                    // Value is empty, which is equivalent to no value, so discard `=` and any quotes.
+                    proc.erase_written(after_name);
+                    (AttrType::NoValue, None)
+                }
+                ProcessedAttrValue { delimiter: DelimiterType::Unquoted, value } => (AttrType::Unquoted, value),
+                ProcessedAttrValue { delimiter: DelimiterType::Double, value } | ProcessedAttrValue { delimiter: DelimiterType::Single, value } => (AttrType::Quoted, value),
             }
-            ProcessedAttrValue { delimiter: DelimiterType::Unquoted, value } => (AttrType::Unquoted, value),
-            ProcessedAttrValue { delimiter: DelimiterType::Double, value } | ProcessedAttrValue { delimiter: DelimiterType::Single, value } => (AttrType::Quoted, value),
         }
     };
 

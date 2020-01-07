@@ -125,7 +125,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
             _ => {}
         };
 
-        let ProcessedAttr { name, typ, value } = process_attr(proc)?;
+        let ProcessedAttr { name, typ, value } = process_attr(proc, tag_name)?;
         match (tag_type, &proc[name]) {
             (TagType::Script, b"type") => {
                 // It's JS if the value is empty or one of `JAVASCRIPT_MIME_TYPES`.

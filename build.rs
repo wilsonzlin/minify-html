@@ -263,6 +263,24 @@ fn build_pattern(pattern: String) -> String {
         table.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "))
 }
 
+fn generate_boolean_attrs() {
+    let attrs: HashMap<String, Vec<String>> = read_json("boolean_attrs");
+    let mut code = String::new();
+    for (name, elems) in attrs.iter() {
+        code.push_str(format!(
+            "static {}_BOOLEAN_ATTR: &phf::Set<&'static [u8]> = &phf::phf_set!({});\n\n",
+            name.to_uppercase(),
+            elems.iter().map(|e| format!("b\"{}\"", e)).collect::<Vec<String>>().join(", "),
+        ).as_str());
+    };
+    code.push_str("pub static BOOLEAN_ATTRS: phf::Map<&'static [u8], &'static phf::Set<&'static [u8]>> = phf::phf_map!{\n");
+    for name in attrs.keys() {
+        code.push_str(format!("\tb\"{}\" => {}_BOOLEAN_ATTR,\n", name, name.to_uppercase()).as_str());
+    };
+    code.push_str("};\n\n");
+    write_rs("boolean_attrs", code);
+}
+
 #[derive(Serialize, Deserialize)]
 struct Entity {
     codepoints: Vec<u32>,
@@ -320,6 +338,7 @@ fn generate_tries() {
 }
 
 fn main() {
+    generate_boolean_attrs();
     generate_entities();
     generate_patterns();
     generate_tries();

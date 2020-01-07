@@ -300,10 +300,12 @@ Some attributes have their whitespace (after any decoding) trimmed and collapsed
 
 - `class`
 
-`type` attributes on `script` tags with an empty value or value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.  
+[Boolean attributes](./gen/boolean_attrs.json) will have their values removed.
+
+`type` attributes on `script` tags with a value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.  
 `type` attributes on `style` tags are removed.  
 
-If an attribute value is empty after any processing, it is completely removed (i.e. no `=`).
+If an attribute value is empty after any processing, it is completely removed (i.e. no `=`), as an empty attribute is implicitly [the same](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2) as an attribute with an empty string value.
 
 Spaces are removed between attributes if possible.
 
