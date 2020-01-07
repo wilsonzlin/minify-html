@@ -1,0 +1,14 @@
+[
+  {
+    "name": "hyperbuild-nodejs",
+    "ops": 8.122124666747519
+  },
+  {
+    "name": "html-minifier",
+    "ops": 0.41505747761364203
+  },
+  {
+    "name": "minimize",
+    "ops": 1.1089213408611422
+  }
+]
