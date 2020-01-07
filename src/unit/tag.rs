@@ -3,13 +3,13 @@ use phf::{phf_set, Set};
 use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
+use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::void::VOID_TAGS;
 use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
 use crate::unit::content::process_content;
 use crate::unit::script::js::process_js_script;
 use crate::unit::script::text::process_text_script;
 use crate::unit::style::process_style;
-use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 
 pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
     b"application/ecmascript",
@@ -67,10 +67,10 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
         proc.skip_expect();
     };
     // May not be valid tag name at current position, so require instead of expect.
-    let opening_name_range = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.discard().range());
+    let source_tag_name = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.discard().range());
     if let Some(prev_tag) = prev_sibling_closing_tag {
         let can_omit = match CLOSING_TAG_OMISSION_RULES.get(&proc[prev_tag.name]) {
-            Some(rule) => rule.can_omit_as_prev(&proc[opening_name_range]),
+            Some(rule) => rule.can_omit_as_prev(&proc[source_tag_name]),
             _ => false,
         };
         if !can_omit {
@@ -80,9 +80,9 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     // Write initially skipped left chevron.
     proc.write(b'<');
     // Write previously skipped name and use written code as range (otherwise source code will eventually be overwritten).
-    let opening_name_range = proc.write_range(opening_name_range);
+    let tag_name = proc.write_range(source_tag_name);
 
-    let tag_type = match &proc[opening_name_range] {
+    let tag_type = match &proc[tag_name] {
         b"script" => TagType::Script,
         b"style" => TagType::Style,
         _ => TagType::Other,
@@ -90,6 +90,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
 
     let mut last_attr_type: Option<AttrType> = None;
     let mut self_closing = false;
+    let is_void_tag = VOID_TAGS.contains(&proc[tag_name]);
     // Set to false if `tag_type` is Script and "type" attribute exists and has value that is not empty and not one of `JAVASCRIPT_MIME_TYPES`.
     let mut script_tag_type_is_js: bool = true;
 
@@ -102,7 +103,8 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
             break;
         }
 
-        self_closing = chain!(proc.match_seq(b"/>").keep().matched());
+        // Don't write self closing "/>" as it could be shortened to ">" if void tag.
+        self_closing = chain!(proc.match_seq(b"/>").discard().matched());
         if self_closing {
             break;
         }
@@ -127,11 +129,16 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
         match (tag_type, &proc[name]) {
             (TagType::Script, b"type") => {
                 // It's JS if the value is empty or one of `JAVASCRIPT_MIME_TYPES`.
-                script_tag_type_is_js = value.filter(|v| !JAVASCRIPT_MIME_TYPES.contains(&proc[*v])).is_none();
+                script_tag_type_is_js = value
+                    .filter(|v| !JAVASCRIPT_MIME_TYPES.contains(&proc[*v]))
+                    .is_none();
                 if script_tag_type_is_js {
                     erase_attr = true;
                 };
-            },
+            }
+            (TagType::Style, b"type") => {
+                erase_attr = true;
+            }
             _ => {}
         };
         if erase_attr {
@@ -141,18 +148,18 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
         };
     };
 
-    if self_closing || VOID_TAGS.contains(&proc[opening_name_range]) {
-        return Ok(ProcessedTag { name: opening_name_range, closing_tag: None });
+    if self_closing || is_void_tag {
+        if self_closing {
+            // Write discarded tag closing characters.
+            if is_void_tag { proc.write_slice(b">"); } else { proc.write_slice(b"/>"); };
+        };
+        return Ok(ProcessedTag { name: tag_name, closing_tag: None });
     };
 
     match tag_type {
-        TagType::Script => if script_tag_type_is_js {
-            process_js_script(proc)?;
-        } else {
-            process_text_script(proc)?;
-        },
+        TagType::Script => if script_tag_type_is_js { process_js_script(proc)?; } else { process_text_script(proc)?; },
         TagType::Style => process_style(proc)?,
-        _ => process_content(proc, Some(opening_name_range))?,
+        _ => process_content(proc, Some(tag_name))?,
     };
 
     // Require closing tag for non-void.
@@ -160,5 +167,5 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     chain!(proc.match_seq(b"</").require()?.discard());
     chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.discard());
     chain!(proc.match_char(b'>').require()?.discard());
-    Ok(ProcessedTag { name: opening_name_range, closing_tag: Some(proc.consumed_range(closing_tag)) })
+    Ok(ProcessedTag { name: tag_name, closing_tag: Some(proc.consumed_range(closing_tag)) })
 }

@@ -300,6 +300,9 @@ Some attributes have their whitespace (after any decoding) trimmed and collapsed
 
 - `class`
 
+`type` attributes on `script` tags with an empty value or value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.  
+`type` attributes on `style` tags are removed.  
+
 If an attribute value is empty after any processing, it is completely removed (i.e. no `=`).
 
 Spaces are removed between attributes if possible.
@@ -308,6 +311,7 @@ Spaces are removed between attributes if possible.
 
 - Comments are removed.
 - Entities are decoded if valid (see relevant parsing section).
+- Whitespace is trimmed and collapsed inside `<script>` with JS code and `<style>`.
 
 ### Ignored
 
@@ -327,7 +331,7 @@ However, there are some syntax requirements for speed and sanity reasons.
 
 Tag names are case sensitive. For example, this means that `P` won't be recognised as a content element, `bR` won't be considered as a void tag, and the contents of `Script` won't be parsed as JavaScript.
 
-[Tags must not be omitted.](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission)
+Tags must not be [omitted](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission). Void tags must not have a separate closing tag e.g. `</input>`.
 
 ### Entities
 
