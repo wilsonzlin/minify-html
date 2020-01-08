@@ -9,7 +9,7 @@ const BOOLEAN_ATTRS_PATH = path.join(__dirname, '..', 'boolean_attrs.json');
 
 const REACT_TYPINGS_URL = 'https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master/types/react/index.d.ts';
 const REACT_TYPINGS_FILE = path.join(__dirname, 'react.d.ts');
-const get_react_typings_source = async () => {
+const fetchReactTypingsSource = async () => {
   try {
     return await fs.readFile(REACT_TYPINGS_FILE, "utf8");
   } catch (err) {
@@ -72,6 +72,6 @@ const processReactTypeDeclarations = async (source) => {
 };
 
 (async () => {
-  const source = ts.createSourceFile(`react.d.ts`, await get_react_typings_source(), ts.ScriptTarget.ES2019);
+  const source = ts.createSourceFile(`react.d.ts`, await fetchReactTypingsSource(), ts.ScriptTarget.ES2019);
   await processReactTypeDeclarations(source);
 })();

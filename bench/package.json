@@ -6,7 +6,10 @@
     "chartjs-node": "^1.7.1",
     "html-minifier": "3.5.19",
     "hyperbuild": "file:../nodejs",
-    "minimize": "2.2.0"
+    "minimize": "2.2.0",
+    "prettier": "^1.19.1",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.8"
   },
   "scripts": {
     "start": "node bench.js"

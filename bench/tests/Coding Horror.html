@@ -1,0 +1,2703 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Coding Horror</title>
+    <meta
+      name="description"
+      content="a blog by Jeff Atwood on programming and human factors"
+    />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="google-site-verification"
+      content="sl0m9SU_4V0JcvjWlOX4dUFBR6VS2P4tlxjJMo0gphU"
+    />
+
+    <link
+      rel="shortcut icon"
+      href="https://discourse-cdn.codinghorror.com/uploads/default/original/3X/3/c/3cffc4b347c3587f19fe222caaac69f63b9a5e73.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="/assets/images/codinghorror-app-icon.png?v=280e14b086"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/assets/css/screen.css?v=280e14b086"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700"
+    />
+
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Coding Horror"
+      href="http://feeds.feedburner.com/codinghorror"
+    />
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" async></script>
+    <script src="/assets/js/video-resize.js?v=280e14b086" async></script>
+  </head>
+
+  <body class="home-template">
+    <header class="site-head">
+      <div class="site-head-content">
+        <a class="blog-logo" href="https://blog.codinghorror.com"
+          ><img
+            src="/assets/images/codinghorror-app-icon.png?v=280e14b086"
+            alt="Coding Horror Logo"
+            width="158"
+            height="158"
+        /></a>
+        <h1 class="blog-title">
+          <a href="https://blog.codinghorror.com">Coding Horror</a>
+        </h1>
+        <h2 class="blog-description">programming and human factors</h2>
+        <div class="site-search">
+          <script>
+            (function() {
+              var gcse = document.createElement("script");
+              gcse.type = "text/javascript";
+              gcse.async = true;
+              gcse.src =
+                "https://www.google.com/cse/cse.js?cx=016956275695630057531:lqveu9tah7y";
+              var s = document.getElementsByTagName("script")[0];
+              s.parentNode.insertBefore(gcse, s);
+            })();
+          </script>
+          <gcse:search></gcse:search>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap clearfix">
+      <div class="clearfix"></div>
+
+      <main class="content" role="main">
+        <article class="post">
+          <header class="post-header">
+            <span class="post-meta"
+              ><time datetime="2019-09-12">12 Sep 2019</time>
+            </span>
+            <h2 class="post-title">
+              <a href="/the-rise-of-the-electric-scooter/"
+                >The Rise of the Electric Scooter</a
+              >
+            </h2>
+          </header>
+          <section class="post-content">
+            <div class="kg-card-markdown">
+              <p>
+                In an electric car, the (enormous) battery is
+                <a
+                  href="https://www.bloomberg.com/opinion/articles/2019-04-12/electric-vehicle-battery-shrinks-and-so-does-the-total-cost"
+                  >a major part of the price</a
+                >. If electric car prices are decreasing, battery costs
+                <em>must</em> be decreasing, because it's not like the cost of
+                fabricating rubber, aluminum, glass, and steel into car shapes
+                can decline that much, right?
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/09/ev-battery-costs.png"
+                  alt="ev-battery-costs"
+                />
+              </p>
+              <p>
+                On an <em>electric scooter</em>, though, the effect of battery
+                price has to be even more dramatic because scooters are such
+                <a
+                  href="https://blog.codinghorror.com/geek-transportation-systems/"
+                  >lightweight, compact, and simple machines</a
+                >. They aren't much more than a battery and an electric motor to
+                begin with. Remember the
+                <a
+                  href="https://www.sfgate.com/business/article/Sebastopol-s-Zap-Power-Systems-is-banking-on-3067718.php"
+                  >the Zappy electric scooter</a
+                >
+                from twenty years ago?
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/09/zappy-electric-scooter-year-2000.jpg"
+                  alt="zappy-electric-scooter-year-2000"
+                />
+              </p>
+              <p>
+                What killed the electric scooter back then is the same thing
+                that
+                <a
+                  href="https://blog.codinghorror.com/electric-geek-transportation-systems/"
+                  >killed the electric car</a
+                >
+                of year 2000: terrible lead-acid battery technology. It's too
+                heavy, it lacks power, it doesn't have enough range, it takes
+                too long to charge. These are all different ways of saying the
+                same thing: <em>the battery sucks</em>. It wasn't until Lithium
+                Ion batteries matured that both the electric car and the
+                electric scooter — and pretty much electric <em>everything</em>,
+                if you think about it — became viable.
+              </p>
+              <p>
+                Thus, one way to see if Lithium Ion battery prices are indeed
+                generally dropping independent of all other manufacturing
+                concerns is to examine the cost of electric scooters over the
+                last few years. Let's consider one of the most popular models,
+                the Xiaomi Mi M365:
+              </p>
+              <p>
+                <a
+                  href="https://camelcamelcamel.com/Xiaomi-Electric-Long-range-Fold-n-Carry-Ultra-Lightweight/product/B076KKX4BC"
+                  ><img
+                    src="/content/images/2019/09/xiaomi-mi-m365-price-history-2018-2019.png"
+                    alt="xiaomi-mi-m365-price-history-2018-2019"
+                /></a>
+              </p>
+              <p>
+                This graph only shows roughly two years, from January 2018 to
+                now; it looks like the original price for the Xiaomi M365 when
+                it hit the US market in early 2017 was around $800. So
+                <strong
+                  >the price of a popular, common electric scooter has
+                  <em>halved</em> in three years.</strong
+                >
+                Very good news indeed for electric vehicles of all types!
+              </p>
+              <p>
+                This dramatic drop in electric scooter price from 2016 to 2019
+                may not be surprising versus the parallel rise of the
+                quasi-legal electric scooter smartphone app rental industry over
+                roughly the same time period, in the form of Bird, Lime, Skip,
+                Spin, Scoot, etc.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/09/electric-scooter-rentals-bird-lime.jpg"
+                  alt="electric-scooter-rentals-bird-lime"
+                />
+              </p>
+              <p>
+                Early versions of Bird scooters were
+                <em>actual Xiaomi M365s</em>, slightly modified for rental. Only
+                by late 2018 had they
+                <a href="https://en.wikipedia.org/wiki/Bird_(company)#Vehicles"
+                  >migrated to</a
+                >
+                custom built, ruggedized scooters optimized for the rental
+                market. The rental industries
+                <a
+                  href="https://www.latimes.com/business/technology/la-fi-tn-bird-scooters-money-profit-strategy-20190505-story.html"
+                  >have their own challenges</a
+                >, and ironically have started to pivot to monthly rentals
+                rather than the classic 15 cents per minute.
+              </p>
+              <blockquote>
+                <p>
+                  Bird has experimented with its business model in recent
+                  months. In early March, the company altered its repair program
+                  in Los Angeles, which had relied on gig workers to fix broken
+                  scooters. It moved repairs in-house (though scooters are still
+                  charged each night by an army of gig workers). Later that
+                  month, the company introduced scooters with locks in some
+                  markets, in a bid to prevent theft and vandalism.
+                </p>
+                <p>
+                  In April, it announced the launch of a more traditional rental
+                  program in San Francisco and Barcelona, in which users could
+                  pay $25 per month to rent a Xiaomi m365 from the company
+                  rather than paying per ride.
+                </p>
+              </blockquote>
+              <p>
+                But this isn't meant to be a blog entry about the viability of
+                scooter rental company business models.
+              </p>
+              <p>
+                I want to tackle a more fundamental question:
+                <strong
+                  >are electric scooters the future of transportation?</strong
+                >
+              </p>
+              <p>
+                Even Uber, as screwed up of a company as they still are, knows
+                cars are overkill for a lot of basic transportation needs:
+              </p>
+              <blockquote class="twitter-tweet">
+                <p lang="en" dir="ltr">
+                  Uber believes their current micro fleet of ebikes and scooters
+                  can displace trips under 3 miles.<br /><br />46% of Uber&#39;s
+                  rides are under 3 miles 👀
+                  <a href="https://t.co/OFmb8arZ3j"
+                    >pic.twitter.com/OFmb8arZ3j</a
+                  >
+                </p>
+                &mdash; Micromobility Industries (@MicromobilityCo)
+                <a
+                  href="https://twitter.com/MicromobilityCo/status/1116703423108227072?ref_src=twsrc%5Etfw"
+                  >April 12, 2019</a
+                >
+              </blockquote>
+              <script
+                async
+                src="https://platform.twitter.com/widgets.js"
+                charset="utf-8"
+              ></script>
+              <p>
+                We have plenty of scooters here at my house, and the family and
+                I enjoy them greatly, but I have never actually ridden or owned
+                an electric scooter. So I bought one. It is of course the
+                popular, inexpensive, and well reviewed
+                <a href="https://www.amazon.com/dp/B076KKX4BC/?tag=codihorr-20"
+                  >Xiaomi Mi M365</a
+                >.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/08/m365-scooter.jpg"
+                  alt="m365-scooter"
+                />
+              </p>
+              <p>
+                Here's a picture of my electric scooter inside
+                <a
+                  href="https://blog.codinghorror.com/electric-geek-transportation-systems/"
+                  >my electric car</a
+                >. (I apologize that I didn't have an electric bicycle to park
+                next to it for maximum smugness, but you can
+                <em>bet your sweet electrons</em> I'll work on that next!)
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/09/electric-scooter-in-electric-car.jpg"
+                  alt="electric-scooter-in-electric-car"
+                />
+              </p>
+              <p>
+                The short version of my review is
+                <strong
+                  >this electric scooter is incredibly fun, works great, and if
+                  you can get it for a price around $300, practically a
+                  no-brainer.</strong
+                >
+                I love it, my kids love it, and as long as you're
+                <a
+                  href="https://www.vox.com/technology/2018/11/2/18053650/elon-musk-electric-scooters-dignity-recode-swisher"
+                  >conceptually OK with the look, unlike Elon Musk</a
+                >
+                🛴💨 then you'll probably love it too.
+              </p>
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/0JgCn8-aETA"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+              <p>
+                I found a neat video covering the &quot;one year later&quot;
+                experience of owning the scooter, and what you might eventually
+                run into or want to tweak.
+              </p>
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/LyzdSktRfVI"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+              <p>
+                (The main thing to take away from this video is that flats
+                <em>super suck</em> on tires this small, so be warned. I put
+                Slime in my Mi's tires out of an abundance of caution, but you
+                could also go with solid tubeless tires – at the cost of some
+                ride comfort – if you're really worried.)
+              </p>
+              <p>
+                That's not to say that the electric scooter experience is
+                perfect. There are some challenges with electric scooters,
+                starting with the biggest one:
+                <a
+                  href="https://www.techradar.com/news/are-electric-scooters-legal-know-the-law-where-you-live"
+                  >your local government has no idea how to regulate the darn
+                  things</a
+                >.
+              </p>
+              <ul>
+                <li>Is this regulated like a bicycle? If not, why not?</li>
+                <li>Are they allowed on the sidewalk?</li>
+                <li>
+                  Do you have to ride them in the road, with cars … uh,
+                  depending on the speed limit?
+                </li>
+                <li>Do you need a driver's license?</li>
+                <li>Do you need a helmet?</li>
+                <li>
+                  Are you even <em>allowed</em> to legally ride them in public
+                  at all outside of private property?
+                </li>
+              </ul>
+              <p>
+                The answers also vary wildly depending on where you live, and
+                with no consistency or apparent logic. Here are
+                <a href="https://bayareabicyclelaw.com/new-e-scooter-laws-2019/"
+                  >the current electric scooter laws in California</a
+                >, for what it's worth, which
+                <em>require the rider to have a valid driver's license</em>
+                (unlike electric bicycles) and also disallow them from
+                sidewalks, both of which I feel are onerous and unnecessary
+                restrictions.
+              </p>
+              <p>
+                One aspect of those laws I <em>definitely</em> agree with,
+                however, is the
+                <strong>15 mile per hour speed restriction</strong>. That's a
+                plenty brisk top speed for a standing adult with no special
+                safety equipment. Anything faster starts to get decidedly …
+                uncomfortable. Consider
+                <a
+                  href="https://www.ewheels.com/product/new-turbowheel-lightning-957wh-battery-2x-1000w-3600w-motors/"
+                  >this monster of a 1165KWh electric scooter</a
+                >, with dual motors and dual suspension that goes up to
+                <em>forty freakin' miles per hour</em>.
+              </p>
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/z6O7KmJQbJE"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+              <p>
+                That … is … terrifying. Even the reviewer, in full motorcycle
+                safety gear, wasn't willing to push it all the way to 40 MPH.
+                And I don't blame him! But now that I've shown you the
+                undisputed Honda Civic everyman budget model of electric scooter
+                in the M365, hopefully this gives you a taste of the wider
+                emerging diversity in these kinds of minimalistic electric
+                vehicles. If you want a
+                <a
+                  href="https://www.unagiscooters.com/products/the-scooter?variant=15012683448435"
+                  >luxury</a
+                >
+                electric scooter, an
+                <a
+                  href="https://fluidfreeride.com/products/mosquito-lightweight-foldable-electric-scooter"
+                  >ultralight</a
+                >
+                electric scooter, a
+                <a
+                  href="https://electrek.co/2019/06/10/widewheel-electric-scooter-off-road-test/"
+                  >rugged offroad</a
+                >
+                electric scooter … all things are possible, for a price.
+              </p>
+              <p>
+                Another reason the M365 is available for so cheap is that is
+                successor, the
+                <a href="https://www.mi.com/global/mi-electric-scooter-pro/"
+                  >Xiaomi M365 Pro</a
+                >, was recently released, although it is not quite possible to
+                obtain in the US at the moment.
+              </p>
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/1i6g-la23HE"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+              <p>
+                Having ridden my M365 a fair bit, I can confirm all the Pro
+                improvements are welcome, if incremental: bigger battery and
+                disc brake, more power, better display, improved latch
+                mechanism, etc.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/09/xiaomi-mi-m365-vs-pro.jpg"
+                  alt="xiaomi-mi-m365-vs-pro"
+                />
+              </p>
+              <p>
+                None of those Pro improvements, however, are worth a 2× increase
+                in price so I'd recommend sticking with the M365 for now because
+                its value proposition is off the charts. Did I mention there's a
+                bluetooth connection, and an app, and it is possible to
+                <a
+                  href="https://www.gearbest.com/blog/how-to/how-to-install-xiaomi-m365-electric-scooter-firmware-mod-6635"
+                  >hack the M365 firmware</a
+                >? Pretty cool how electric vehicles are inherently digital,
+                isn't it?
+              </p>
+              <p>
+                Here are a few other observations after riding my M365 around a
+                fair bit:
+              </p>
+              <ul>
+                <li>
+                  <p>
+                    <strong>Please be respectful around pedestrians.</strong>
+                    Most of the sidewalks around here are not busy at all, but
+                    the pedestrians I encountered on the electric scooter were
+                    definitely more freaked out than I’ve seen before when using
+                    regular kick scooters (or skateboards) on the sidewalk,
+                    which did surprise me. An electric scooter has more heft to
+                    it, both physically at 26 pounds, and in the 15 mile per
+                    hour speed it can reach – but also mentally in terms of how
+                    it looks and how people approach it. I recommend slowing
+                    down to just above walking speed when encountering
+                    pedestrians, and if there is a bike lane available, I'd
+                    definitely recommend using that.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <strong>Hills work great.</strong> The kryptonite of
+                    traditional kick scooters is hills, and I'm pleased to
+                    report that even with a <small>cough</small> sizable adult
+                    such as myself riding, I was able to sustain a respectable
+                    above-walking speed on most <em>reasonable</em> hills. Where
+                    I looked at a hill and thought &quot;this probably should
+                    work&quot;, it did. That's impressive, considering this
+                    <em>isn't</em> the upgraded Pro model with bigger battery
+                    and more powerful motor. On flats and downhills the
+                    performance is superb, as you'd expect. That said, if you
+                    are a really big or tall adult, or live in a particularly
+                    hilly area, wait for the Pro model or an equivalent.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <strong>Portability is good, but borderline.</strong> At ~26
+                    pounds, the electric scooter is reasonably portable, but
+                    it's not something you a) could really get away with taking
+                    inside a restaurant / store with you to prevent theft or b)
+                    want to be carrying around on your person for any
+                    significant length of time. It's not nearly as nimble or
+                    portable as a kick scooter, but that's a high bar. You'll
+                    need to carry a bike lock and think about how to lock your
+                    scooter on bike racks, which turned out to be … more
+                    geometrically challenging than I anticipated due to the
+                    small tires, disc brakes, and the engine in the front wheel.
+                    They need more obvious locking points on the chassis.
+                  </p>
+                </li>
+              </ul>
+              <p>
+                To be honest with you I'm still bitter about the whole
+                <a href="https://en.wikipedia.org/wiki/Segway_Inc.">Segway</a>
+                debacle. There was so much hype back in the day. That ridiculous
+                thing was
+                <a href="https://www.wired.com/2009/12/1203segway-unveiled/"
+                  >supposed to change the world</a
+                >. Instead, we got … <em>Paul Blart Mall Cop</em>.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/09/paul-blart-segway.jpeg"
+                  alt="paul-blart-segway"
+                />
+              </p>
+              <p>
+                A Segway was $5,000 at launch in 2001, which is a whopping
+                $7,248 in inflation adjusted dollars. Here in 2019, cheap $200
+                to $300 electric scooters are basically the transformational
+                technology the Segway was <em>supposed</em> to be, aren't they?
+                Are electric scooters the future of (most) transportation? I'm
+                not sure, but I do like where we're headed, even if it took us
+                twenty years to get there.
+              </p>
+            </div>
+            <b
+              ><a
+                href="//blog.codinghorror.com/the-rise-of-the-electric-scooter/#discourse-comments"
+                >Discussion</a
+              ></b
+            >
+          </section>
+        </article>
+
+        <article class="post">
+          <header class="post-header">
+            <span class="post-meta"
+              ><time datetime="2019-08-20">20 Aug 2019</time>
+            </span>
+            <h2 class="post-title">
+              <a href="/electric-geek-transportation-systems/"
+                >Electric Geek Transportation Systems</a
+              >
+            </h2>
+          </header>
+          <section class="post-content">
+            <div class="kg-card-markdown">
+              <p>
+                I've never thought of myself as a &quot;car person&quot;. The
+                last new car I bought (and in fact, now that I think about it,
+                the <em>first</em> new car I ever bought) was the
+                <a
+                  href="https://www.hagerty.com/articles-videos/articles/2018/04/12/cult-of-the-ford-svt-contour"
+                  >quirky 1998 Ford Contour SVT</a
+                >. Since then we bought a VW station wagon in 2011 and a Honda
+                minivan in 2012 for family transportation duties. That's it. Not
+                exactly the stuff
+                <a href="https://en.wikipedia.org/wiki/The_Stig">The Stig's</a>
+                dreams are made of.
+              </p>
+              <p>
+                The station wagon made sense for a family of three, but became
+                something of a disappointment because it was purchased before —
+                surprise! —
+                <a href="https://blog.codinghorror.com/on-parenthood/"
+                  >we had twins</a
+                >. As
+                <a href="http://www.online-literature.com/twain/3274/"
+                  >Mark Twain once said</a
+                >:
+              </p>
+              <blockquote>
+                <p>
+                  Sufficient unto the day is one baby. As long as you are in
+                  your right mind don't you ever pray for twins. Twins amount to
+                  a permanent riot. And there ain't any real difference between
+                  triplets and an insurrection.
+                </p>
+              </blockquote>
+              <p>
+                I'm here to tell you that a station wagon doesn't
+                <em>quite</em> cut it as a permanent riot abatement tool. For
+                that you need a full sized minivan.
+              </p>
+              <p>
+                I'm
+                <a href="https://philip.greenspun.com/materialism/cars/sienna"
+                  >with Philip Greenspun</a
+                >. Like black socks and sandals, minivans are actually …
+                <em>kind of awesome?</em> Don't believe all the SUV propaganda.
+                Minivans are flat out superior vehicle command centers.
+                <a href="https://www.youtube.com/watch?v=pUG3Z8Hxa5I"
+                  >Swagger wagons</a
+                >, really.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/08/a-team-van.jpg"
+                  alt="a-team-van"
+                />
+              </p>
+              <p>
+                The A-Team
+                <a href="https://starcars.fandom.com/wiki/The_A-Team_Van"
+                  >drove a <em>van</em></a
+                >, not a freakin' SUV. I rest my case.
+              </p>
+              <p>
+                After 7 years, the station wagon had to go. We initially looked
+                at hybrids because, well,
+                <a
+                  href="https://www.sfgate.com/opinion/article/Oh-so-pious-Prius-drivers-Smugness-drifts-2581016.php"
+                  >isn't that required in California at this point?</a
+                >
+                But if you know me at all, you know I'm a boil the sea kinda guy
+                at heart. I figure if you're going to flirt with partially
+                electric cars, why not put aside these half measures and go all
+                the way?
+              </p>
+              <p>
+                Do you remember that
+                <a href="https://theoatmeal.com/comics/tesla_model_s"
+                  >rapturous 2014 Oatmeal comic about the Tesla Model S</a
+                >? Even for a person who has basically zero interest in
+                automobiles, it did sound <em>really cool</em>.
+              </p>
+              <p>
+                <a href="https://theoatmeal.com/comics/tesla_model_s"
+                  ><img
+                    src="/content/images/2019/08/oatmeal-tesla-s-spaceboat.jpg"
+                    alt="oatmeal-tesla-s-spaceboat"
+                /></a>
+              </p>
+              <p>
+                It's been 5 years, but from time to time I'd see some electric
+                vehicle on the road and I'd think about that
+                <strong>Intergalactic SpaceBoat of Light and Wonder</strong>.
+                Maybe it's time for our family to jump on the electric car
+                trend, too, and just late enough that we can avoid the bleeding
+                edge and end up merely on the … <em>leading</em> edge?
+              </p>
+              <p>
+                That's why we're now the proud owners of a
+                <a
+                  href="https://www.caranddriver.com/reviews/a26144426/2019-kia-niro-ev-driven/"
+                  >fully electric 2019 Kia Niro</a
+                >.
+              </p>
+              <p>
+                <a
+                  href="https://www.caranddriver.com/reviews/a26144426/2019-kia-niro-ev-driven/"
+                  ><img
+                    src="/content/images/2019/08/kia-niro-2019.jpg"
+                    alt="kia-niro-2019"
+                /></a>
+              </p>
+              <p>
+                I've somehow gone from being a person who basically doesn't care
+                about cars at all … to being
+                <strong
+                  >one of those insufferable electric car people who won't shut
+                  up about them</strong
+                >. I apologize in advance. If you suddenly feel an overwhelming
+                urge to close this browser tab, I don't blame you.
+              </p>
+              <p>
+                I was expecting another car, like the three we bought before.
+                What I got, instead, was a transformation:
+              </p>
+              <ul>
+                <li>
+                  <p>
+                    Yes, yes, electric cars are clean, but it's a revelation how
+                    clean <em>everything</em> is in an electric. You take for
+                    granted how dirty and noisy gas based cars are in daily
+                    operation – the engine noise, the exhaust fumes, the brake
+                    dust on the rims, the oily residues and thin black film that
+                    descends on everything, the way you have to wash your hands
+                    every time you use the gas station pumps. You don't fully
+                    appreciate how oppressive those little dirty details were
+                    until they're gone.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    Electric cars are (almost) completely silent. I guess
+                    technically in 2019 electric cars require artificial
+                    soundmakers at low speed for safety, and this car has one.
+                    But The Oatmeal was right. Electric cars <em>feel</em> like
+                    spacecraft because they move so effortlessly. There's
+                    virtually no delay from action to reaction, near immediate
+                    acceleration and deceleration … with almost no sound or
+                    vibration at all, like you're in freakin' space! It's so
+                    immensely satisfying!
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    Electric cars aren't just <em>electric</em>, they're utterly
+                    digital to their very core. Gas cars always felt like the
+                    classic 1950s Pixar Cars world of grease monkeys and machine
+                    shop guys, maybe with a few digital bobbins added here and
+                    there as an afterthought. This electric car, on the other
+                    hand, is squarely in the post-iPhone world of everyday
+                    digital gadgets. It feels more like a giant smartphone than
+                    a car. I am a programmer, I'm a digital guy, I love digital
+                    stuff. And electric cars are part of <em>my</em> world,
+                    rather than the other way around. It feels good.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    Electric cars are mechanically much simpler than gasoline
+                    cars, which means they are inherently more reliable and
+                    cheaper to maintain. An internal combustion engine has
+                    hundreds of moving parts, many of which require regular
+                    maintenance, fluids, filters, and tune ups. It also has a
+                    complex transmission to translate the narrow power band of a
+                    gas powered engine. None of this is necessary on an electric
+                    vehicle, whose electric motor is basically one moving part
+                    with simple 100% direct drive from the motor to the wheels.
+                    This newfound simplicity is deeply appealing to a guy who
+                    always saw cars as incredibly complicated (but computers,
+                    not so much).
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    Being able to charge at home overnight is perhaps the most
+                    radical transformation of all. Your house is now a &quot;gas
+                    station&quot;. Our Kia Niro has a range of about
+                    <strong>250 miles</strong> on a full battery. With any
+                    modern electric car, provided you drive less than 200 miles
+                    a day round trip (who even drives this much?), it's very
+                    unlikely you'll ever need to &quot;fill the tank&quot;
+                    anywhere but at home. Ever. It's so strange to think that in
+                    50 years, gas stations
+                    <a
+                      href="https://www.houstonchronicle.com/business/energy/article/As-EVs-threaten-gas-stations-owners-turn-to-14291843.php"
+                      >may eventually be as odd to see in public as telephone
+                      booths now are</a
+                    >. Our charger is, conveniently enough, right next to the
+                    driveway since that's where the power breaker box was. With
+                    the level 2 charger installed, it literally
+                    <em>looks</em> like a gas pump on the side of the house,
+                    except this one &quot;pumps&quot; … electrons.
+                  </p>
+                </li>
+              </ul>
+              <p>
+                <img
+                  src="/content/images/2019/08/level-2-ev-charger.jpg"
+                  alt="level-2-ev-charger"
+                />
+              </p>
+              <p>
+                This electric car is such a great experience. It's so much
+                better than our gas powered station wagon that I swear, if there
+                was a fully electric minivan (there isn't) I would literally
+                sell our Honda minivan <em>tomorrow</em> and switch over.
+                Without question. And believe me, I had no plans to sell that
+                vehicle two months ago. The electric car is
+                <em>that much better</em>.
+              </p>
+              <p>
+                I was expecting &quot;yet another car&quot;, but what I got
+                instead was a new, radical worldview. Driving a car powered by
+                barely controlled liquid fuel detonations used to be normal. But
+                in an world of more and more viable electric vehicles this
+                status quo increasingly starts to feel … deeply unnatural.
+                Electric is so much better of an overall experience that you
+                begin to wonder: why did we <em>ever</em> do it that way?
+              </p>
+              <p>
+                Gas cars seem, for lack of a better word,
+                <a href="https://www.bloomberg.com/features/2016-ev-oil-crisis/"
+                  ><em>obsolete</em>.</a
+                >
+              </p>
+              <p>
+                <a href="https://www.bloomberg.com/features/2016-ev-oil-crisis/"
+                  ><img
+                    src="/content/images/2019/08/ev-sales.jpg"
+                    alt="ev-sales"
+                /></a>
+              </p>
+              <p>
+                How did this transformation happen, from my perspective, so
+                suddenly? When exactly did electric cars go from
+                &quot;expensive, experimental thing for crazy people&quot; to
+                &quot;By God, I'll never buy another old fashioned gasoline
+                based car if I can help it&quot;?
+              </p>
+              <p>
+                I was vaguely aware of the early electric cars. I even remember
+                one coworker circa 2001 who owned a bright neon green Honda
+                Insight. I ignored it all because, like I said,
+                <em>I'm not a car guy</em>. I needed to do the research to
+                understand the history, and I started with the often recommended
+                documentary
+                <a
+                  href="https://en.wikipedia.org/wiki/Who_Killed_the_Electric_Car%3F"
+                  >Who Killed the Electric Car?</a
+                >
+              </p>
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/-sc-NxP6mmI"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+              <p>
+                This is mostly about the original highly experimental
+                <a href="https://en.wikipedia.org/wiki/General_Motors_EV1"
+                  >General Motors EV1</a
+                >
+                from 1996 to 1999. It's so early the first models had lead-acid
+                batteries! 😱 There's a number of conspiracy theories floated in
+                the video, but I think the simple answer to the implied question
+                in the title is straight up <em>price</em>. The battery tech was
+                nowhere near ready, and per the Wikipedia article the estimated
+                actual cost of the car was somewhere between $100,000 and
+                $250,000 though I suspect it was much closer to the latter. It
+                is interesting to note how much the owners (well, leasers) loved
+                their EV1s. Having gone through that same conversion myself, I
+                empathize!
+              </p>
+              <p>
+                I then watched the sequel,
+                <a
+                  href="https://en.wikipedia.org/wiki/Revenge_of_the_Electric_Car"
+                  >Revenge of the Electric Car</a
+                >. This one is essential, because it covers the dawn of the
+                modern electric car we have today.
+              </p>
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/jkRIu5a6Sb0"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+              <p>
+                This chronicles the creation of three very influential early
+                electric cars — the
+                <a href="https://en.wikipedia.org/wiki/Nissan_Leaf"
+                  >Nissan Leaf</a
+                >, the
+                <a href="https://en.wikipedia.org/wiki/Chevrolet_Volt"
+                  >Chevy Volt</a
+                >, and of course the
+                <a href="https://en.wikipedia.org/wiki/Tesla_Roadster_(2008)"
+                  >Tesla Roadster</a
+                >
+                from 2005 - 2008. The precise moment that Lithium-Ion batteries
+                were in play – that's when electric cars started to become
+                viable. Every one of these three electric cars was well
+                conceived and made it to market in volume, though not without
+                significant challenges, both internal and external. None of them
+                were perfect electric vehicles by any means: the Roadster was
+                $100k, the Leaf had limited range, and the Volt was still
+                technically a hybrid, albeit only using the gasoline engine to
+                charge the battery.
+              </p>
+              <p>
+                Ten years later, Tesla has the model 3 at $38,000 and we bought
+                our Kia Niro for about the same price. After national and state
+                tax incentives and rebates, that puts the price at around
+                $30,000. It's not as cheap as it needs to be … yet. But it's
+                getting there. And it's
+                <a
+                  href="https://www.corporateknights.com/channels/clean-technology/faceoff-electric-vs-gas-cars-on-cost-15555966/"
+                  >already competitive with gasoline vehicles in 2019</a
+                >.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/08/2019-civic-vs-leaf-1.jpg"
+                  alt="2019-civic-vs-leaf-1"
+                />
+              </p>
+              <p>
+                It's still early, but the trend lines are clear. And I'm here to
+                tell you that right now, today, I'd buy <em>any</em> modern
+                electric car over a gasoline powered car.
+              </p>
+              <iframe
+                width="560"
+                height="315"
+                src="https://www.youtube.com/embed/kk7ZTn9g7bY"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+              <p>
+                If you too are intrigued by the idea of owning an electric car,
+                <em>you should be</em>. It's freaking awesome! Bring your
+                skepticism, as always; I highly recommend the above Matt Ferrell
+                explainer video on electric vehicle myths.
+              </p>
+              <p>
+                As for me, I have seen the future, and it is absolutely,
+                inexorably, and unavoidably … electric. ⚡
+              </p>
+            </div>
+            <b
+              ><a
+                href="//blog.codinghorror.com/electric-geek-transportation-systems/#discourse-comments"
+                >Discussion</a
+              ></b
+            >
+          </section>
+        </article>
+
+        <article class="post">
+          <header class="post-header">
+            <span class="post-meta"
+              ><time datetime="2019-05-30">30 May 2019</time>
+            </span>
+            <h2 class="post-title">
+              <a href="/an-exercise-program-for-the-fat-web/"
+                >An Exercise Program for the Fat Web</a
+              >
+            </h2>
+          </header>
+          <section class="post-content">
+            <div class="kg-card-markdown">
+              <p>
+                When I wrote about
+                <a href="https://blog.codinghorror.com/app-pocalypse-now/"
+                  >App-pocalypse Now</a
+                >
+                in 2014, I implied the future still belonged to the web. And it
+                does. But it's also true that the web has changed a lot in the
+                last 10 years, much less the last 20 or 30.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2017/05/fat-city-apple-ii.png"
+                  alt="fat city"
+                />
+              </p>
+              <p>Websites have gotten a lot … <em>fatter</em>.</p>
+              <p>
+                While I think it's irrational to pine for the bad old days of
+                <a href="http://info.cern.ch/">HTML 1.0 websites</a>, there are
+                some legitimate concerns here. The best summary is Maciej
+                Cegłowski's
+                <a href="http://idlewords.com/talks/website_obesity.htm"
+                  >The Website Obesity Crisis</a
+                >.
+              </p>
+              <blockquote>
+                <p>
+                  To channel a famous motivational speaker, I could go out there
+                  tonight, with the materials you’ve got, and rewrite the sites
+                  I showed you at the start of this talk to make them load in
+                  under a second. In two hours.
+                </p>
+                <p>Can you? Can you?</p>
+                <p>
+                  Of course you can! It’s not hard! We knew how to make small
+                  websites in 2002. It’s not like the secret has been lost to
+                  history, like Greek fire or Damascus steel.
+                </p>
+                <p>But we face pressure to make these sites bloated.</p>
+                <p>
+                  I bet if you went to a client and presented a 200 kilobyte
+                  site template, you’d be fired. Even if it looked great and
+                  somehow included all the tracking and ads and social media
+                  crap they insisted on putting in. It’s just so far out of the
+                  realm of the imaginable at this point.
+                </p>
+              </blockquote>
+              <p>
+                The
+                <a href="http://idlewords.com/talks/website_obesity.htm"
+                  >whole article is essential</a
+                >; you should stop what you're doing and read it now if you
+                haven't already. But if you don't have time, here's the key
+                point:
+              </p>
+              <blockquote>
+                <p>
+                  This is a screenshot from an NPR article discussing the rising
+                  use of ad blockers. The page is 12 megabytes in size in a
+                  stock web browser.
+                  <strong
+                    >The same article with basic ad blocking turned on is 1
+                    megabyte.</strong
+                  >
+                </p>
+              </blockquote>
+              <p>
+                That's right, through the simple act of running an ad blocker,
+                you've reduced that website's payload by twelve times. Twelve!
+                That's like the most effective exercise program <em>ever!</em>
+              </p>
+              <p>
+                Even the traditional advice to
+                <a
+                  href="https://hackernoon.com/10-things-i-learned-making-the-fastest-site-in-the-world-18a0e1cdf4a7"
+                  >keep websites lean and mean for mobile</a
+                >
+                no longer applies because new mobile devices, at least on the
+                Apple side, are
+                <em>faster than most existing desktops and laptops.</em>
+              </p>
+              <blockquote class="twitter-tweet" data-lang="en">
+                <p lang="en" dir="ltr">
+                  The iPhone XS is faster than an iMac Pro on the Speedometer
+                  2.0 JavaScript benchmark. It&#39;s the fastest device I&#39;ve
+                  ever tested. Insane 45% jump over the iPhone 8/X chip. How
+                  does Apple do it?! ✨
+                  <a href="https://t.co/5nCKZUCAYK"
+                    >pic.twitter.com/5nCKZUCAYK</a
+                  >
+                </p>
+                &mdash; DHH (@dhh)
+                <a
+                  href="https://twitter.com/dhh/status/1043277162676072449?ref_src=twsrc%5Etfw"
+                  >September 21, 2018</a
+                >
+              </blockquote>
+              <script
+                async
+                src="https://platform.twitter.com/widgets.js"
+                charset="utf-8"
+              ></script>
+              <p>
+                Despite
+                <a href="https://danluu.com/web-bloat/"
+                  >claims to the contrary</a
+                >, the bad guy isn't web bloat, per se.
+                <strong>The bad guy is <em>advertising</em></strong
+                >. Unlimited, unfettered ad &quot;tech&quot; has creeped into
+                everything and subsumed the web.
+              </p>
+              <p>
+                Personally I don't even want to run ad blockers, and I didn't
+                for a long time – but it's increasingly difficult to avoid
+                running an ad blocker unless you want a clunky, substandard web
+                experience. There's a <em>reason</em> the most popular browser
+                plugins are inevitably ad blockers, isn't there? Just ask
+                Google:
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/05/chrome-best-extensions-google-search.png"
+                  alt="chrome-best-extensions-google-search"
+                />
+              </p>
+              <p>
+                So it's all the more surprising to learn that Google is
+                <a
+                  href="https://9to5google.com/2019/05/29/chrome-ad-blocking-enterprise-manifest-v3/"
+                  >suddenly clamping down hard on adblockers in Chrome</a
+                >. Here's what the author of uBlock Origin, an ad blocking
+                plugin for Chrome,
+                <a
+                  href="https://github.com/uBlockOrigin/uBlock-issues/issues/338#issuecomment-496009417"
+                  >has to say</a
+                >
+                about today's announcement:
+              </p>
+              <blockquote>
+                <p>
+                  In order for Google Chrome to reach its current user base, it
+                  had to support content blockers — these are the top most
+                  popular extensions for any browser. Google strategy has been
+                  to find the optimal point between the two goals of growing the
+                  user base of Google Chrome and preventing content blockers
+                  from harming its business.
+                </p>
+                <p>
+                  The blocking ability of the webRequest API caused Google to
+                  yield control of content blocking to content blockers. Now
+                  that Google Chrome is the dominant browser, it is in a better
+                  position to shift the optimal point between the two goals
+                  which benefits Google's primary business.
+                </p>
+                <p>
+                  The deprecation of the blocking ability of the webRequest API
+                  is to gain back this control, and to further instrument and
+                  report how web pages are filtered, since the exact filters
+                  which are applied to web pages are useful information which
+                  will be collectable by Google Chrome.
+                </p>
+              </blockquote>
+              <p>
+                The ad blockers themselves are arguably just as complicit. Eye/o
+                GmbH owns <a href="https://adblockplus.org/">AdBlock</a> and
+                <a href="https://www.ublock.org/">uBlock</a>, employs 150
+                people, and in 2016 they had 50 million euros in revenue, of
+                which about 50% was profit. Google's
+                <a
+                  href="https://help.getadblock.com/support/solutions/articles/6000092027-why-does-adblock-allow-non-intrusive-ads-"
+                  >paid &quot;Acceptable Ads&quot; program</a
+                >
+                is a way to funnel money into adblockers to, uh,
+                <em>encourage</em> them to display certain ads. With money. Lots
+                … and lots … of money. 🤑
+              </p>
+              <p>
+                We simultaneously have a very real web obesity crisis, and a
+                looming crackdown on ad blockers, seemingly the only viable
+                weight loss program for websites. What's a poor web citizen to
+                do? Well, there is one thing you can do to escape the need for
+                browser-based adblockers, at least on your home network. Install
+                and configure <a href="https://pi-hole.net/">Pi-Hole</a>.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/05/pi-hole-screenshot.png"
+                  alt="pi-hole-screenshot"
+                />
+              </p>
+              <p>
+                I've talked about the amazing Raspberry Pi before
+                <a
+                  href="https://blog.codinghorror.com/the-raspberry-pi-has-revolutionized-emulation/"
+                  >in the context of classic game emulation</a
+                >, but this is another brilliant use for a Pi.
+              </p>
+              <p>
+                Here's why it's so cool. If you disable the DHCP server on your
+                router, and let the Pi-Hole become your primary DHCP server,
+                <strong
+                  >you get automatic DNS based blocking of ads for every single
+                  device on your network</strong
+                >. It's kind of scary how powerful DNS can be, isn't it?
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/05/pi-hole-action-shot.jpg"
+                  alt="pi-hole-action-shot"
+                />
+              </p>
+              <p>
+                My Pi-Hole took me about 1 hour to set up, start to finish. All
+                you need is
+              </p>
+              <ul>
+                <li>
+                  a
+                  <a
+                    href="https://www.amazon.com/dp/B07BC7BMHY/?tag=codihorr-20"
+                    >Raspberry Pi 3b+ kit</a
+                  >
+                  $59
+                </li>
+                <li>
+                  a quality
+                  <a
+                    href="https://www.amazon.com/dp/B00WR4IJBE/?tag=codihorr-20"
+                    >32GB SD card</a
+                  >
+                  $9
+                </li>
+                <li>an ethernet cable</li>
+              </ul>
+              <p>
+                I do recommend the 3b+ because it has
+                <a href="https://www.pidramble.com/wiki/benchmarks/networking"
+                  >native gigabit ethernet</a
+                >
+                and a bit more muscle. But
+                <a
+                  href="https://discourse.pi-hole.net/t/what-model-raspberry-pi-should-i-use-for-pi-hole/9635"
+                  >literally any Raspberry Pi</a
+                >
+                you can find laying around will work, though I'd
+                <em>strongly</em> advise you to pick one with a wired ethernet
+                port since it'll be your DNS server.
+              </p>
+              <p>
+                I'm not going to write a whole Pi-Hole installation guide,
+                because there are
+                <a
+                  href="https://www.smarthomebeginner.com/pi-hole-tutorial-whole-home-ad-blocking/"
+                  >lots of great ones</a
+                >
+                out there already. It's not difficult, and there's a slick web
+                GUI waiting for you once you complete initial setup. For your
+                initial testing, pick any IP address you like on your network
+                that won't conflict with anything active. Once you're happy with
+                the basic setup and web interface:
+              </p>
+              <ul>
+                <li>
+                  Turn OFF your router's DHCP server – existing leases will
+                  continue to work, so nothing will be immediately broken.
+                </li>
+                <li>Turn ON the pi-hole DHCP server, in the web GUI.</li>
+              </ul>
+              <p>
+                <img
+                  src="/content/images/2019/05/pi-hole-dhcp-server.png"
+                  alt="pi-hole-dhcp-server"
+                />
+              </p>
+              <p>
+                Once you do this, all your network devices will start to grab
+                their DHCP leases from your Pi-Hole, which will
+                <em>also</em> tell them to route all their DNS requests through
+                the Pi-Hole, and that's when the ✨ magic ✨ happens!
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/05/pi-hole-blacklists.png"
+                  alt="pi-hole-blacklists"
+                />
+              </p>
+              <p>
+                All those DNS requests from all the devices on your network will
+                be checked against the ad blacklists; anything matching is
+                quickly and silently discarded
+                <strong>before it ever reaches your browser.</strong>
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/05/pi-hole-dashboard-stats.png"
+                  alt="pi-hole-dashboard-stats"
+                />
+              </p>
+              <p>
+                (The Pi-Hole also acts as a
+                <a
+                  href="https://discourse.pi-hole.net/t/will-pi-hole-slow-down-my-network/2048"
+                  >caching DNS server</a
+                >, so repeated DNS requests will be serviced rapidly from your
+                local network, too.)
+              </p>
+              <p>
+                If you're worried about stability or reliability, you can easily
+                add a cheap battery backed USB plug, or even a second backup
+                Pi-Hole as your secondary DNS provider if you prefer belt and
+                suspenders protection. Switching back to plain boring old
+                vanilla DNS is as easy as unplugging the Pi and flicking the
+                DHCP server setting in your router back on.
+              </p>
+              <p>
+                At this point if you're interested (and you should be!), just
+                give it a try. If you're looking for more information, the
+                project has an
+                <a href="https://discourse.pi-hole.net">excellent forum</a> full
+                of FAQs and roadmaps.
+              </p>
+              <p>
+                <a href="https://discourse.pi-hole.net"
+                  ><img
+                    src="/content/images/2019/05/pi-hole-forums.png"
+                    alt="pi-hole-forums"
+                /></a>
+              </p>
+              <p>
+                You can even
+                <a
+                  href="https://discourse.pi-hole.net/c/feature-requests?order=votes"
+                  >vote for your favorite upcoming features!</a
+                >
+              </p>
+              <p>
+                I avoided the Pi-Hole project for a while because I didn't need
+                it, and I'd honestly rather jump in later when things are more
+                mature.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/05/pi-hole-pin.jpg"
+                  alt="pi-hole-pin"
+                />
+              </p>
+              <p>
+                With the latest Chrome crackdown on ad blockers, now is the
+                time, and I'm impressed how simple and easy
+                <a href="https://pi-hole.net/">Pi-Hole</a> is to run. Just find
+                a quiet place to plug it in, spend an hour configuring it, and
+                promptly proceed to forget about it forever as you enjoy a
+                lifetime subscription to
+                <em
+                  >a glorious web ad instant weight loss program across every
+                  single device on your network with (almost) zero effort!</em
+                >
+              </p>
+              <p>Finally, an exercise program I can believe in.</p>
+            </div>
+            <b
+              ><a
+                href="//blog.codinghorror.com/an-exercise-program-for-the-fat-web/#discourse-comments"
+                >Discussion</a
+              ></b
+            >
+          </section>
+        </article>
+
+        <article class="post">
+          <header class="post-header">
+            <span class="post-meta"
+              ><time datetime="2019-02-17">17 Feb 2019</time>
+            </span>
+            <h2 class="post-title">
+              <a href="/the-cloud-is-just-someone-elses-computer/"
+                >The Cloud Is Just Someone Else&#x27;s Computer</a
+              >
+            </h2>
+          </header>
+          <section class="post-content">
+            <div class="kg-card-markdown">
+              <p>
+                When we started <a href="https://discourse.org">Discourse</a> in
+                2013, our server requirements were high:
+              </p>
+              <ul>
+                <li>1GB RAM</li>
+                <li>modern, fast dual core CPU</li>
+                <li>speedy solid state drive with 20+ GB</li>
+              </ul>
+              <p>
+                I'm not talking about a cheapo shared cpanel server, either, I
+                mean a <em>dedicated</em> virtual private server with those
+                specifications.
+              </p>
+              <p>
+                We were OK with that, because we were
+                <a href="https://blog.codinghorror.com/why-ruby/"
+                  >building in Ruby</a
+                >
+                for the next decade of the Internet. I predicted early on that
+                the cost of renting a suitable VPS would drop to $5 per month,
+                and courtesy of Digital Ocean that indeed
+                <a
+                  href="https://meta.discourse.org/t/new-digital-ocean-pricing-spoiler-5-for-a-1gb-droplet/78230"
+                  >happened in January 2018</a
+                >.
+              </p>
+              <p>
+                The cloud got cheaper, and faster. Not really a surprise, since
+                <a
+                  href="https://blog.codinghorror.com/when-hardware-is-free-power-is-expensive/"
+                  >the price of hardware trends to zero over time</a
+                >. But it's still the cloud, and that means it isn't exactly
+                <em>cheap</em>. It is, after all, someone else's computer that
+                you pay for the privilege of renting.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/there-is-no-cloud.png"
+                  alt="there-is-no-cloud"
+                />
+              </p>
+              <p>
+                But wait …
+                <strong
+                  >what if you could put your <em>own</em> computer &quot;in the
+                  cloud&quot;?</strong
+                >
+              </p>
+              <p>
+                Wouldn't that be the best of both worlds? Reliable connectivity,
+                plus a nice low monthly price for extremely fast hardware? If
+                this sounds crazy, it shouldn't – Mac users have been doing this
+                <a href="https://www.macstadium.com/pricing/colo"
+                  >for years now</a
+                >.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/mac-colocation-2019-1.png"
+                  alt="mac-colocation-2019-1"
+                />
+              </p>
+              <p>
+                I suppose it's understandable that Mac users would be on the
+                cutting edge here since Apple
+                <a href="https://en.wikipedia.org/wiki/Xserve#Intel_Xserve"
+                  >barely makes server hardware</a
+                >, whereas the PC world has always been
+                <a
+                  href="https://blog.codinghorror.com/building-a-computer-the-google-way/"
+                  >the literal de-facto standard for server hardware</a
+                >.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/mac-stadium-colocation.jpg"
+                  alt="mac-stadium-colocation"
+                />
+              </p>
+              <p>
+                Given the prevalence and maturity of cloud providers, it's even
+                a <em>little</em> controversial these days to
+                <a
+                  href="https://blog.codinghorror.com/building-servers-for-fun-and-prof-ok-maybe-just-for-fun/"
+                  >colocate actual servers</a
+                >. We've also experimented with
+                <a href="https://blog.codinghorror.com/the-scooter-computer/"
+                  >colocating mini-pcs</a
+                >
+                in various hosting roles. I'm still curious why there isn't more
+                of a cottage industry for colocating mini PCs. Because …
+                <em>I think there should be</em>.
+              </p>
+              <p>
+                I originally wrote about
+                <a href="https://blog.codinghorror.com/the-scooter-computer/"
+                  >the scooter computers</a
+                >
+                we added to our Discourse infrastructure in 2016, plus my own
+                colocation experiment that ran concurrently.
+                <strong
+                  >Over the last three years of both experiments, I've concluded
+                  that these little boxes are plenty reliable</strong
+                >, with one role specific caveat that I'll explain in the
+                comments. I remain an unabashed fan of mini-PC colocation. I
+                like it so much I put together a new 2019 iteration:
+              </p>
+              <table style="border-spacing:8px">
+                <tr>
+                  <td><b>2017 &mdash; $670</b></td>
+                  <td><b>2019 &mdash; $820</b></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="https://ark.intel.com/products/95451/Intel-Core-i7-7500U-Processor-4M-Cache-up-to-3_50-GHz-"
+                      >i7-7500u</a
+                    ><br />2.7-3.5 Ghz, 2c / 4t
+                  </td>
+                  <td>
+                    <a
+                      href="https://ark.intel.com/products/134906/Intel-Core-i7-8750H-Processor-9M-Cache-up-to-4-10-GHz-"
+                      >i7-8750h</a
+                    ><br />2.2-4.1 Ghz, 6c / 12t
+                  </td>
+                </tr>
+                <tr>
+                  <td>16GB DDR3 RAM</td>
+                  <td>32GB DDR4 RAM</td>
+                </tr>
+                <tr>
+                  <td>500GB SATA SSD</td>
+                  <td>500GB NVMe SSD</td>
+                </tr>
+              </table>
+
+              <p>
+                This year's scooter computer offers
+                <strong>3× the cores, 2× the memory, and 3× faster drive</strong
+                >. It is, as the kids say … an <em>absolute unit</em>. 😱
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/2019-scooter-computer-top-interior-1.jpeg"
+                  alt="2019-scooter-computer-top-interior-1"
+                />
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/2019-scooter-computer-bottom-interior.jpeg"
+                  alt="2019-scooter-computer-bottom-interior"
+                />
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/2019-scooter-computer-front-and-back.jpg"
+                  alt="2019-scooter-computer-front-and-back"
+                />
+              </p>
+              <p>
+                It also has a rather elegant dual-sided internal layout. There
+                is a slot for an old-school 2.5&quot; drive, plus built in
+                wi-fi, but you won't see it in my pictures because I physically
+                removed both.
+              </p>
+              <p>
+                I vetted each box via my
+                <a href="https://blog.codinghorror.com/is-your-computer-stable/"
+                  >recommended burn in and stability testing</a
+                >
+                and they all passed with flying colors, though I did have to RMA
+                one set of bodgy RAM sticks in the process. The benchmarks tell
+                the story, as compared to the average Digital Ocean droplet:
+              </p>
+              <p>
+                <strong>Per-core performance</strong><br />
+                <code>sysbench cpu --cpu-max-prime=20000 run</code>
+              </p>
+              <table style="border-spacing:8px">
+                <tr>
+                  <td>DO Droplet</td>
+                  <td style="text-align:right">2,988</td>
+                </tr>
+                <tr>
+                  <td>2017 Mini-PC</td>
+                  <td style="text-align:right">4,800</td>
+                </tr>
+                <tr>
+                  <td>2019 Mini-PC</td>
+                  <td style="text-align:right">5,671</td>
+                </tr>
+              </table>
+
+              <p>
+                <strong>Multi-core performance</strong><br />
+                <code
+                  >sysbench cpu --cpu-max-prime=40000 --num-threads=8 run</code
+                >
+              </p>
+              <table style="border-spacing:8px">
+                <tr>
+                  <td>DO Droplet</td>
+                  <td style="text-align:right">2,200</td>
+                </tr>
+                <tr>
+                  <td>2017 Mini-PC</td>
+                  <td style="text-align:right">5,588</td>
+                </tr>
+                <tr>
+                  <td>2019 Mini-PC</td>
+                  <td style="text-align:right">14,604</td>
+                </tr>
+              </table>
+
+              <p>
+                <strong>Disk performance</strong><br />
+                <code
+                  >dd bs=1M count=512 if=/dev/zero of=test conv=fdatasync</code
+                ><br />
+                <code>hdparm -Tt /dev/sda</code>
+              </p>
+              <table style="border-spacing:8px">
+                <tr>
+                  <td>DO Droplet</td>
+                  <td style="text-align:right">701 / 8818 / 471 MB/sec</td>
+                </tr>
+                <tr>
+                  <td>2017 Mini-PC</td>
+                  <td style="text-align:right">444 / 12564 / 505 MB/sec</td>
+                </tr>
+                <tr>
+                  <td>2019 Mini-PC</td>
+                  <td style="text-align:right">1200 / 17919 / 3115 MB/sec</td>
+                </tr>
+              </table>
+
+              <p>
+                <strong>Discourse rebuild</strong><br />
+                <code>time ./launcher rebuild app</code>
+              </p>
+              <table style="border-spacing:8px">
+                <tr>
+                  <td>DO Droplet</td>
+                  <td style="text-align:right">6:59</td>
+                </tr>
+                <tr>
+                  <td>2017 Mini-PC</td>
+                  <td style="text-align:right">3:41</td>
+                </tr>
+                <tr>
+                  <td>2019 Mini-PC</td>
+                  <td style="text-align:right">3:24</td>
+                </tr>
+              </table>
+
+              <p>
+                Power consumption could be a concern, as the 2017 version had a
+                much lower 15 watt TDP, compared to the 45 watts of this
+                version. That 3× increase in core count ain't free! So I tested
+                that, too, with a combination of <code>i7z</code>,
+                <code>stress</code>, and my handy dandy
+                <a
+                  href="https://blog.codinghorror.com/why-estimate-when-you-can-measure/"
+                  >watt meter</a
+                >.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/2019-mini-pc-i7z-testing.png"
+                  alt="2019-mini-pc-i7z-testing"
+                />
+              </p>
+              <table style="border-spacing:4px">
+                <tr>
+                  <td>(idle login)</td>
+                  <td>800 Mhz</td>
+                  <td style="text-align:right">10w</td>
+                </tr>
+                <tr>
+                  <td><code>stress --cpu 1</code></td>
+                  <td>4.1 GHz</td>
+                  <td style="text-align:right">30w</td>
+                </tr>
+                <tr>
+                  <td><code>stress --cpu 2</code></td>
+                  <td>4.1 GHz</td>
+                  <td style="text-align:right">42w</td>
+                </tr>
+                <tr>
+                  <td><code>stress --cpu 3</code></td>
+                  <td>4.0 GHz</td>
+                  <td style="text-align:right">53w</td>
+                </tr>
+                <tr>
+                  <td><code>stress --cpu 4</code></td>
+                  <td>3.9 GHz</td>
+                  <td style="text-align:right">65w</td>
+                </tr>
+                <tr>
+                  <td><code>stress --cpu 5</code></td>
+                  <td>3.7 GHz</td>
+                  <td style="text-align:right">65w</td>
+                </tr>
+                <tr>
+                  <td><code>stress --cpu 6</code></td>
+                  <td>3.5 GHz</td>
+                  <td style="text-align:right">65w</td>
+                </tr>
+                <tr>
+                  <td><code>stress --cpu 12</code></td>
+                  <td>3.3 Ghz</td>
+                  <td style="text-align:right">65w</td>
+                </tr>
+              </table>
+
+              <p>
+                I'd expect around 10 - 20 watts doing typical low-load stuff
+                that isn't super CPU intensive. Note that running current-ish
+                versions of <code>mprime</code> jacks power consumption up to
+                75w 🔥 and the overall clock scales down to 3.1 Ghz … let me
+                tell you, I've learned to be
+                <a
+                  href="https://blog.cloudflare.com/on-the-dangers-of-intels-frequency-scaling/"
+                  >very, <em>very</em> afraid of AVX2 extensions</a
+                >.
+              </p>
+              <p>
+                (If you're worried about noise, don't be. This active cooling
+                solution is clearly overkill for a 65w load, because it barely
+                spun up at all even under full core load. It was
+                <em>extremely</em> quiet.)
+              </p>
+              <p>
+                So we're happy that this machine is a slammin' deal for $820,
+                it's super fast, and plenty reliable. But how about colocation
+                costs? My colocation provider is
+                <a href="https://endoffice.com/">EndOffice</a> out of Boston,
+                and they offer very competitive rates to colocate a Mini-PC:
+                $29/month.
+              </p>
+              <p>
+                <a href="https://endoffice.com/minicolo.html"
+                  ><img
+                    src="/content/images/2019/02/endoffice-mini-pc-colocation.png"
+                    alt="endoffice-mini-pc-colocation"
+                /></a>
+              </p>
+              <p>
+                I personally colocate three Mini-PCs for redundancy and
+                just-in-case; there are discounts for colocating more than one.
+                Here they are racked up and in action. Of course I labelled the
+                front and rear before shipping because that's how I roll.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/endoffice-colocated-2019-mini-pcs.jpg"
+                  alt="endoffice-colocated-2019-mini-pcs"
+                />
+              </p>
+              <p>
+                Let's break this down and see what the actual costs of
+                colocating a Mini-PC are versus the cloud. Given the plateauing
+                of CPU speeds, I think five years of useful life for these boxes
+                is realistic, but let's assume a conservative three year
+                lifespan to be safe.
+              </p>
+              <ul>
+                <li>$880 mini-pc 32GB RAM, 6 CPUs, 500GB SSD</li>
+                <li>$120 taxes / shipping / misc</li>
+                <li>$29 × 12 × 3 = $1,044</li>
+              </ul>
+              <p>
+                That's <strong>$2,044 for three years of hosting</strong>. How
+                can we do on Digital Ocean? Per
+                <a href="https://www.digitalocean.com/pricing/"
+                  >their current pricing page</a
+                >:
+              </p>
+              <ul>
+                <li>32GB RAM, 8 vCPUs, 640GB SSD</li>
+                <li>$160/month</li>
+                <li>$160 × 12 × 3 = <strong>$5,760</strong></li>
+              </ul>
+              <p>
+                This isn't <em>quite</em> apples to apples, as we are getting an
+                extra 140GB of disk and 2 bonus CPUs, but those CPUs are both
+                slower and partially consumed by multi-tenancy compared to our
+                brand new dedicated, isolated CPUs. (I was curious about this,
+                so I just spun up a new $160/month DO instance for a quick test.
+                The <code>sysbench</code> results are 4086 and 11760
+                respectively, considerably below the 2019 Mini-PC results,
+                above.) As you can see,
+                <strong
+                  >you pay almost three times as much for a cloud
+                  server.</strong
+                >
+                🤑
+              </p>
+              <p>
+                I'm not saying this is for everyone. If you just need to spin up
+                a quick server or two for testing and experimentation, there's
+                absolutely no way you need to go to the trouble and up-front
+                cost of building and then racking colocated mini-pcs. There's no
+                denying that spinning servers up in the cloud offers
+                unparalleled flexibility and redundancy. But if you do have need
+                for
+                <strong
+                  >dedicated computing resources over a period of years</strong
+                >, then building your own small personal cloud, with machines
+                <em>you actually own</em>, is not only one third the cost but
+                also … kinda cool?
+              </p>
+              <p>
+                <img
+                  src="/content/images/2019/02/your-own-personal-cloud.jpg"
+                  alt="your-own-personal-cloud"
+                />
+              </p>
+              <p>
+                If you'd also like to embark upon this project, you can get
+                <a
+                  href="https://www.amazon.com/Partaker-Coffee-Graphics-Barebone-System/dp/B07L4KJXWL?tag=codihorr-20"
+                  >the same Partaker B18 box I did for $490 from Amazon</a
+                >, or
+                <a
+                  href="https://www.aliexpress.com/item/Partaker-B18-DDR4-Coffee-Lake-8th-Gen-Mini-PC-Intel-Core-i7-8750H-32GB-RAM-Intel/32948461273.html"
+                  >$460 direct from China via AliExpress</a
+                >. Add memory and drive to taste, build it up, then check out
+                <a href="https://endoffice.com/">endoffice.com</a> who I can
+                enthusiastically recommend for colocation, or the colocation
+                provider of your choice.
+              </p>
+              <p>
+                Get something cool hosted out there; let's do our part to keep
+                the internet
+                <a href="https://jarredsumner.com/codeblog/">fun and weird!</a>
+              </p>
+            </div>
+            <b
+              ><a
+                href="//blog.codinghorror.com/the-cloud-is-just-someone-elses-computer/#discourse-comments"
+                >Discussion</a
+              ></b
+            >
+          </section>
+        </article>
+
+        <article class="post">
+          <header class="post-header">
+            <span class="post-meta"
+              ><time datetime="2018-10-22">22 Oct 2018</time>
+            </span>
+            <h2 class="post-title">
+              <a href="/what-does-stack-overflow-want-to-be-when-it-grows-up/"
+                >What does Stack Overflow want to be when it grows up?</a
+              >
+            </h2>
+          </header>
+          <section class="post-content">
+            <div class="kg-card-markdown">
+              <p>
+                I sometimes get asked by regular people in the actual real world
+                what it is that I do for a living, and here's my 15 second
+                answer:
+              </p>
+              <blockquote>
+                <p>
+                  We built a sort of Wikipedia website for computer programmers
+                  to post questions and answers. It's called
+                  <a href="https://stackoverflow.com">Stack Overflow</a>.
+                </p>
+              </blockquote>
+              <p>
+                As of last month, it's been 10 years since Joel Spolsky and I
+                <a
+                  href="https://blog.codinghorror.com/stack-overflow-none-of-us-is-as-dumb-as-all-of-us/"
+                  >started Stack Overflow</a
+                >. I currently do
+                <a
+                  href="https://blog.codinghorror.com/civilized-discourse-construction-kit/"
+                  >other stuff now</a
+                >, and I have since 2012, but if I will be known for anything
+                when I'm dead, clearly it is going to be good old Stack
+                Overflow.
+              </p>
+              <p>
+                Here's where I'd normally segue into a bunch of rah-rah stuff
+                about how great Stack Overflow is, and thus how implicitly great
+                I am by association for being a founder, and all.
+              </p>
+              <p>
+                <a href="http://www.poorlydrawnlines.com/comic/bragging/"
+                  ><img
+                    src="/content/images/2018/10/bragging.png"
+                    alt="bragging"
+                /></a>
+              </p>
+              <p>I do not care about any of that.</p>
+              <p>
+                What I do care about, though, is
+                <em>whether Stack Overflow is useful to working programmers</em
+                >. Let's check in with
+                <a
+                  href="https://blog.codinghorror.com/you-dont-need-millions-of-dollars/"
+                  >one of my idols</a
+                >, John Carmack. How useful is Stack Overflow, from the
+                perspective of what I consider to be one of the greatest living
+                programmers?
+              </p>
+              <blockquote
+                class="twitter-tweet"
+                data-conversation="none"
+                data-lang="en"
+              >
+                <p lang="en" dir="ltr">
+                  <a
+                    href="https://twitter.com/StackExchange?ref_src=twsrc%5Etfw"
+                    >@StackExchange</a
+                  >
+                  <a href="https://twitter.com/codinghorror?ref_src=twsrc%5Etfw"
+                    >@codinghorror</a
+                  >
+                  SO has probably added billions of dollars of value to the
+                  world in increased programmer productivity.
+                </p>
+                &mdash; John Carmack (@ID_AA_Carmack)
+                <a
+                  href="https://twitter.com/ID_AA_Carmack/status/380018564792455168?ref_src=twsrc%5Etfw"
+                  >September 17, 2013</a
+                >
+              </blockquote>
+              <script
+                async
+                src="https://platform.twitter.com/widgets.js"
+                charset="utf-8"
+              ></script>
+              <p>
+                I won't lie, September 17th, 2013 was a
+                <a href="https://www.youtube.com/watch?v=O_05qJTeNNI"
+                  >pretty good day</a
+                >. I literally got chills when I read that, and not just because
+                I always read the word &quot;billions&quot; in Carl Sagan's
+                voice. It was also pleasantly the opposite of pretty much every
+                <em>other</em> day I'm on Twitter, scrolling through an
+                oppressive, endless litany of shared human suffering and people
+                screaming at each other. Which reminds me, I should
+                <a href="https://twitter.com/codinghorror">check my Twitter</a>
+                and see who else is wrong on the Internet today.
+              </p>
+              <p>
+                I am honored and humbled by the public utility that Stack
+                Overflow has unlocked for a whole generation of programmers. But
+                <em>I didn't do that</em>.
+              </p>
+              <ul>
+                <li>
+                  <em>You</em> did, when you contributed a well researched
+                  question to Stack Overflow.
+                </li>
+                <li>
+                  <em>You</em> did, when you contributed a succinct and clear
+                  answer to Stack Overflow.
+                </li>
+                <li>
+                  <em>You</em> did, when you edited a question or answer on
+                  Stack Overflow to make it better.
+                </li>
+              </ul>
+              <p>
+                All those &quot;fun size&quot; units of Q&amp;A collectively
+                contributed by working programmers from all around the world
+                ended up building a
+                <a
+                  href="https://wiki.creativecommons.org/wiki/Case_Studies/StackOverflow.com"
+                  >Creative Commons resource</a
+                >
+                that truly rivals Wikipedia within our field. That's ...
+                incredible, actually.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2018/10/stack-overflow-homepage-oct-2018.png"
+                  alt="stack-overflow-homepage-oct-2018"
+                />
+              </p>
+              <p>
+                But success stories are boring. The world is filled with people
+                that
+                <a
+                  href="https://blogs.scientificamerican.com/beautiful-minds/the-role-of-luck-in-life-success-is-far-greater-than-we-realized/"
+                  >basically got lucky</a
+                >, and subsequently can't stop telling people how it was all of
+                their hard work and moxie that made it happen. I find failure
+                much more instructive, and when building a business and planning
+                for the future, I take on the role of Abyss Domain Expert™ and
+                begin a staring contest. It's just a little something I like to
+                do, you know ... <em>for me</em>.
+              </p>
+              <p>
+                <a
+                  href="https://www.reddit.com/r/comics/comments/8a4c2h/abyss_oc/"
+                  ><img
+                    src="/content/images/2018/10/abyss-oc.jpg"
+                    alt="abyss-oc"
+                /></a>
+              </p>
+              <p>
+                Thus, what I'd like to do right now is peer into that glorious
+                abyss for a bit and introspect about
+                <strong
+                  >the challenges I see facing Stack Overflow for the next 10
+                  years.</strong
+                >
+                Before I begin, I do want to be absolutely crystal clear about a
+                few things:
+              </p>
+              <ol>
+                <li>
+                  <p>
+                    I have not worked at Stack Overflow in any capacity
+                    whatsoever
+                    <a
+                      href="https://blog.codinghorror.com/farewell-stack-exchange/"
+                      >since February 2012</a
+                    >
+                    and I've had zero day to day operational input since that
+                    date, more or less by choice. Do I have opinions about how
+                    things should be done? Uh, have you <em>met me?</em> Do I
+                    email people every now and then about said opinions? I
+                    might, but I honestly do try to keep it to an absolute
+                    minimum, and I think my email archive track record here is
+                    reasonable.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    The people working at Stack are amazing and most of them
+                    (including much of the Stack Overflow community, while I'm
+                    at it) could articulate the mission better — and perhaps a
+                    tad less crankily — than I could by the time I left. Would I
+                    trust them with my life? No. But I'd trust them with Joel's
+                    life!
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    The whole point of the Stack Overflow exercise is that it's
+                    not beholden to me, or Joel, or
+                    <a href="https://en.wikipedia.org/wiki/Great_man_theory"
+                      >any other Great Person</a
+                    >. Stack Overflow works because it empowers regular everyday
+                    programmers all over the world, just like you, just like me.
+                    I guess in my mind it's akin to being a parent. The goal is
+                    for your children to eventually grow up to be sane,
+                    practicing adults who don't need (or, really, <em>want</em>)
+                    you to hang around any more.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    Understand that you're reading
+                    <s>the weak opinions strongly held</s>
+                    <a
+                      href="https://blog.codinghorror.com/strong-opinions-weakly-held/"
+                      >the strong opinions weakly held</a
+                    >
+                    of a co-founder who spent prodigious amounts of time working
+                    with the community in the first four years of Stack
+                    Overflow's life to shape the rules and norms of the site to
+                    fit their needs. These are merely my opinions. I like to
+                    think they are <em>informed</em> opinions, but that doesn't
+                    necessarily mean I can predict the future, or that I am even
+                    qualified to try. But I've never let being
+                    &quot;qualified&quot; stop me from doing anything, and I
+                    ain't about to start tonight.
+                  </p>
+                </li>
+              </ol>
+              <h3 id="stackoverflowisawikifirst">
+                Stack Overflow is a wiki first
+              </h3>
+              <p>
+                Stack Overflow ultimately has <em>much</em> more in common with
+                Wikipedia than a discussion forum. By this I mean questions and
+                answers on Stack Overflow are not primarily judged by their
+                usefulness to a specific individual, but by
+                <strong
+                  >how many <em>other</em> programmers that question or answer
+                  can potentially help over time</strong
+                >. I tried as hard as I could to emphasize this relationship
+                from
+                <a
+                  href="https://blog.codinghorror.com/stack-overflow-none-of-us-is-as-dumb-as-all-of-us/"
+                  >launch day in 2008</a
+                >. Note who has top billing in this venn diagram.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2018/10/stack-overflow-venn-diagram.png"
+                  alt="stack-overflow-venn-diagram"
+                />
+              </p>
+              <p>
+                Stack Overflow later added a super neat feature to highlight
+                this core value in user profiles, where it shows how many other
+                people you have potentially helped with your contributed
+                questions and answers so far.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2018/10/stackoverflow-people-reached-profile-stat-1.png"
+                  alt="stackoverflow-people-reached-profile-stat-1"
+                />
+              </p>
+              <p>
+                The most common complaints I see about Stack Overflow are
+                usually the result of this fundamental misunderstanding about
+                who the questions and answers on the site are ultimately
+                <em>for</em>, and why there's so much strictness involved in the
+                whole process.
+              </p>
+              <blockquote class="twitter-tweet" data-lang="en">
+                <p lang="en" dir="ltr">
+                  I wish more people understood that the goal of Stack Overflow
+                  is not &quot;answer my question&quot; but &quot;let&#39;s
+                  collaboratively build an artifact that will benefit future
+                  coders&quot;. Perhaps SO could be doing more to educate people
+                  about this.
+                </p>
+                &mdash; Jeff Atwood (@codinghorror)
+                <a
+                  href="https://twitter.com/codinghorror/status/991082088689381376?ref_src=twsrc%5Etfw"
+                  >April 30, 2018</a
+                >
+              </blockquote>
+              <script
+                async
+                src="https://platform.twitter.com/widgets.js"
+                charset="utf-8"
+              ></script>
+              <p>
+                I'm continually amazed at the number of people, even on Hacker
+                News today, who don't realize that every single question and
+                answer is editable on Stack Overflow, even as a completely
+                anonymous user who isn't logged in. Which makes sense, right,
+                <em>because Stack Overflow is a wiki</em>, and that's how wikis
+                work. Anyone can edit them. Go ahead, try it right now if you
+                don't believe me — press the &quot;improve this answer&quot; or
+                &quot;improve this question&quot; button on anything that can be
+                improved, and make it so.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2018/10/stack-overflow-edit-question.png"
+                  alt="stack-overflow-edit-question"
+                />
+              </p>
+              <p>
+                The responsibility for this misunderstanding is all on Stack
+                Overflow (and by that I also mean myself, at least up until
+                2012). I guess the logic is that &quot;every programmer has
+                surely seen, used, and understands Stack Overflow by now, 10
+                years in&quot; but ... I think that's a risky assumption. New
+                programmers are minted every second of every day. Complicating
+                matters further, there are three tiers of usage at Stack
+                Overflow, from biggest to smallest, in inverted pyramid style:
+              </p>
+              <ol>
+                <li>
+                  <p>
+                    <strong>I passively search for programming answers.</strong>
+                  </p>
+                  <p>
+                    Passively searching and reading highly ranked Stack Overflow
+                    answers as they appear in web search results is arguably the
+                    <em>primary goal of Stack Overflow</em>. If Stack Overflow
+                    is working like it's supposed to, 98% of programmers should
+                    get all the answers they need from reading search result
+                    pages and wouldn't need to ask or answer a single question
+                    in their entire careers. This is a good thing! Great, even!
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <strong
+                      >I participate on Stack Overflow when I get stuck on a
+                      really hairy problem and searching isn't helping.</strong
+                    >
+                  </p>
+                  <p>
+                    Participating only at those times when you are extra stuck
+                    is completely valid. However, I feel this level is where
+                    most people tend to run into difficulty on Stack Overflow,
+                    because it involves someone who may not be new to Stack
+                    Overflow per se, but is new to asking questions, and also at
+                    the precise time of stress and tension for them where they
+                    <em>must</em> get an answer due to a problem they're facing
+                    … and they don't have the time or inclination to deal with
+                    Stack Overflow's strict wiki type requirements for research
+                    effort, formatting, showing previous work, and referencing
+                    what they found in prior searches.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    <strong
+                      >I participate on Stack Overflow for professional
+                      development.</strong
+                    >
+                  </p>
+                  <p>
+                    At this level you're talking about experienced Stack
+                    Overflow users who have contributed many answers and thus
+                    have a pretty good idea of what makes a great question, the
+                    kind they'd want to answer themselves. As a result, they
+                    don't tend to ask many questions because they self-medicate
+                    through exhaustive searching and research, but when they do
+                    ask one, their questions are exemplary.
+                  </p>
+                </li>
+              </ol>
+              <p>
+                (There's technically a fourth tier here, for people who want to
+                selflessly contribute creative commons questions and answers to
+                move the entire field of software development forward for the
+                next generation of software developers. But who has time for
+                saints 😇, y'all make the rest of us look bad, so knock it off
+                already Skeet.)
+              </p>
+              <p>
+                It wouldn't shock me at all if people spent
+                <em>years</em> happily at tier 1 and then got a big unpleasant
+                surprise when reaching tier 2. The primary place to deal with
+                this, in my opinion, is a
+                <strong>massively revamped and improved ask page</strong>. It's
+                also fair to note that maybe people don't understand that
+                they're signing up for a sizable chunk of work by implicitly
+                committing to the wiki standard of &quot;try to make sure it's
+                useful to more people than just yourself&quot; when asking a
+                question on Stack Overflow, and are then put off by the negative
+                reaction to what others view as an insufficiently researched
+                question.
+              </p>
+              <p>
+                Stack Overflow absorbs so much tension from its adoption of wiki
+                standards for content. Even if you know about that requirement
+                up front, it is not always clear what &quot;useful&quot; means,
+                in the same way it's not always clear what topics, people, and
+                places are deserving of a Wikipedia page.
+                <a href="https://en.wikipedia.org/wiki/Henrietta_Lacks"
+                  >Henrietta Lacks</a
+                >, absolutely, but what about your cousin Dave in Omaha with his
+                weirdo PHP 5.6 issue?
+              </p>
+              <h3 id="overtimeduplicatesbecomevastlandminefields">
+                Over time, duplicates become vast landmine fields
+              </h3>
+              <p>
+                Here's one thing
+                <a
+                  href="https://stackoverflow.blog/2009/04/29/handling-duplicate-questions/"
+                  >I really, really saw coming</a
+                >
+                and to be honest with you I was kinda glad I left in 2012 before
+                I had to deal with it because of the incredible technical
+                difficulty involved: <strong>duplicates</strong>. Of all the
+                complaints I hear about Stack Overflow, this is the one I am
+                most sympathetic to by far.
+              </p>
+              <p>
+                If you accept that Stack Overflow is a wiki type system, then
+                for the same reasons that you obviously can't have five
+                different articles about Italy on Wikipedia,
+                <strong
+                  >Stack Overflow can't allow duplicate questions on the exact
+                  same programming problem</strong
+                >. While there is a fair amount of code to do pre-emptive
+                searches as people type in questions, plus
+                <em>many</em> exhortations to search before you ask, with an
+                inviting search field and button right there on the mandatory
+                page you see before asking your first question ...
+              </p>
+              <p>
+                <a href="https://stackoverflow.com/questions/ask/advice"
+                  ><img
+                    src="/content/images/2018/10/stack-overflow-how-to-ask.jpg"
+                    alt="stack-overflow-how-to-ask"
+                /></a>
+              </p>
+              <p>
+                ... locating and identifying duplicate content is an insanely
+                difficult problem even for a company like Google that's done
+                nothing but specialize in this exact problem for, what, 20 years
+                now, with a veritable army of the world's most talented
+                engineers.
+              </p>
+              <p>
+                When you're asking a question on a site that doesn't allow
+                duplicate questions, the problem space of a site with 1 million
+                existing questions is rather different from a site with 10
+                million existing questions ... or 100 million. Asking a single
+                unique question goes from mildly difficult to mission almost
+                impossible, because your question needs to thread a narrow path
+                through this vast, enormous field of prior art questions without
+                stepping on any of the vaguely similar looking landmines in the
+                process.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2018/10/stackoverflow-asking-duplicate-question.png"
+                  alt="stackoverflow-asking-duplicate-question"
+                />
+              </p>
+              <p>But wait! <em>It gets harder!</em></p>
+              <ul>
+                <li>
+                  <p>
+                    <a
+                      href="https://stackoverflow.blog/2010/11/16/dr-strangedupe-or-how-i-learned-to-stop-worrying-and-love-duplication/"
+                      >Some variance in similar-ish questions is OK</a
+                    >, because 10 different people will ask a nearly identical
+                    question using 10 different sets of completely unrelated
+                    words with no overlap. I know, it sounds crazy, but trust
+                    me: humans are amazing at this. We want all those duplicates
+                    to exist so they can <em>point to</em> the primary question
+                    they are a duplicate of, while still being valid search
+                    targets for people who ask questions with unusual or rare
+                    word choices.
+                  </p>
+                </li>
+                <li>
+                  <p>
+                    It can be legitimately difficult to determine if your
+                    question is a true duplicate. How much overlap is enough
+                    before one programming question is a duplicate of another?
+                    And by whose definition? Opinions vary. This is subject to
+                    human interpretation, and humans are.. unreliable. Nobody
+                    will ever be completely happy with this system, pretty much
+                    by design. That tension is baked in permanently and forever.
+                  </p>
+                </li>
+              </ul>
+              <p>
+                I don't have any real answers on the duplicate problem, which
+                only gets worse over time. But I will point out that there is
+                plenty of precedent
+                <a href="https://stackexchange.com/sites#traffic"
+                  >on the Stack Exchange network</a
+                >
+                for splitting sites into &quot;expert&quot; and
+                &quot;beginner&quot; areas with slightly different rulesets.
+                We've seen this for Math vs. MathOverflow, English vs. English
+                Learners, Unix vs. Ubuntu...
+                <strong
+                  >perhaps it's time for a more beginner focused Stack
+                  Overflow</strong
+                >
+                where duplicates are less frowned upon, and conversational rules
+                are a bit more lenient?
+              </p>
+              <h3 id="stackoverflowisacompetitivesystemofpeerreview">
+                Stack Overflow is a competitive system of peer review
+              </h3>
+              <p>
+                Stack Overflow was indeed built to be a fairly explicitly
+                competitive system, with the caveat that
+                <a href="http://wiki.c2.com/?ThereIsMoreThanOneWayToDoIt"
+                  >&quot;there's always more than one way to do it.&quot;</a
+                >
+                This design choice was based on my perennial observation that
+                the best way to motivate any programmer .. is to subtly
+                insinuate that <em>another</em> programmer could have maybe done
+                it better.
+              </p>
+              <p>
+                <a
+                  href="http://www.geekherocomic.com/2008/11/14/the-best-way-to-improve-code-performance/"
+                  ><img
+                    src="/content/images/2018/10/geek-hero-motivating-programmers.png"
+                    alt="geek-hero-motivating-programmers"
+                /></a>
+              </p>
+              <p>
+                This is manifested in the public reputation system on Stack
+                Overflow, the
+                <a
+                  href="https://blog.codinghorror.com/for-a-bit-of-colored-ribbon/"
+                  >incredible power of a number printed next to someone's
+                  name</a
+                >, writ large. All reputation in Stack Overflow comes from the
+                recognition of your peers, never the &quot;system&quot;.
+              </p>
+              <p>
+                <img
+                  src="/content/images/2018/10/stack-overflow-top-rep-by-year.png"
+                  alt="stack-overflow-top-rep-by-year"
+                />
+              </p>
+              <p>
+                Once your question is asked, or your answer is posted, it can
+                then be poked, prodded, edited, flagged, closed, opened,
+                upvoted, downvoted,
+                <a
+                  href="http://www.cs.mun.ca/~harold/Courses/Old/CS1400.W15/Diary/Lubar1992.pdf"
+                  >folded and spindled</a
+                >
+                by your peers. The <em>intent</em> is for Stack Overflow to be a
+                system of peer review and friendly competition, like a code
+                review from a coworker you've never met at a different division
+                of the company. It's also completely fair for a fellow
+                programmer to question the premise of your question, as long as
+                it's done in a nice way. For example,
+                <a
+                  href="https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags"
+                  >do you <em>really</em> want to use that regular expression to
+                  match HTML?</a
+                >
+              </p>
+              <p>
+                I fully acknowledge that
+                <strong
+                  >competitive peer review systems aren't for everyone</strong
+                >, and thus the overall process of having peers review your
+                question may not always feel great, depending on your
+                circumstances and background in the field —
+                <em>particularly</em> when combined with the substantial
+                tensions around utility and duplicates Stack Overflow already
+                absorbed from its wiki elements. Kind of a double whammy there.
+              </p>
+              <p>
+                I've heard people describe the process of asking a question on
+                Stack Overflow as anxiety inducing. To me, posting on Stack
+                Overflow is <em>supposed</em> to involve a healthy kind of minor
+                &quot;let me be sure to show off my best work&quot; anxiety:
+              </p>
+              <ul>
+                <li>
+                  the anxiety of giving a presentation to your fellow peers
+                </li>
+                <li>the anxiety of doing well on a test</li>
+                <li>
+                  the anxiety of showing up to a new job with talented coworkers
+                  you admire
+                </li>
+                <li>
+                  the anxiety of attending your first day at school with other
+                  students at your level
+                </li>
+              </ul>
+              <p>
+                I imagine systems where there is zero anxiety involved and I can
+                only think of jobs where I had long since stopped caring about
+                the work and thus had no anxiety about whether I even showed for
+                work on any given day. How can that be good? Let's just say I'm
+                not a fan of zero-anxiety systems.
+              </p>
+              <p>
+                Maybe competition just isn't your jam. Could there be a less
+                competitive Q&amp;A system, a system without downvotes, a system
+                without close votes, where there was never any anxiety about
+                posting anything, just a network of super supportive folks who
+                believe in you and want you to succeed no matter what?
+                Absolutely! I think many alternative sites <em>should</em> exist
+                on the internet so people can choose an experience that matches
+                their personal preferences and goals. Should Stack build that
+                alternative? Has it already been built? It's an open question;
+                feel free to point out examples in the comments.
+              </p>
+              <h3 id="stackoverflowisdesignedforpracticingprogrammers">
+                Stack Overflow is designed for practicing programmers
+              </h3>
+              <p>
+                Another point of confusion that comes up a fair bit is who the
+                intended audience for Stack Overflow actually is. That one is
+                straightforward, and it's been the same from day one:
+              </p>
+              <p>
+                <img
+                  src="/content/images/2018/10/stackoverflow-for-business-description.png"
+                  alt="stackoverflow-for-business-description"
+                />
+              </p>
+              <p>
+                Q&amp;A for
+                <strong>professional and enthusiast programmers</strong>. By
+                that we mean
+              </p>
+              <blockquote>
+                <p>
+                  People who either already have a job as a programmer, or could
+                  potentially be hired as a programmer today if they wanted to
+                  be.
+                </p>
+              </blockquote>
+              <p>
+                Yes, in case you're wondering, part of this was an overt
+                business decision. To make money you must have an audience of
+                people already on a programmer's salary, or in the job hunt to
+                be a programmer. The entire Stack Overflow network may be
+                Creative Commons licensed, but it was never a non-profit play.
+                It was planned as a sustainable business from the outset, and
+                that's why
+                <a
+                  href="https://blog.codinghorror.com/stack-overflow-careers-amplifying-your-awesome/"
+                  >we launched Stack Overflow Careers</a
+                >
+                only one year after Stack Overflow itself ... to be honest far
+                sooner than we should have, in retrospect. Careers has since
+                been smartly subsumed into Stack Overflow proper at
+                <a href="https://stackoverflow.com/jobs"
+                  >stackoverflow.com/jobs</a
+                >
+                for a more integrated and most assuredly way-better-than-2009
+                experience.
+              </p>
+              <p>
+                The choice of audience wasn't meant to be an exclusionary
+                decision in any way, but Stack Overflow was definitely designed
+                as a fairly strict system of peer review, which is great
+                (IMNSHO, obviously) for already practicing professionals, but
+                <strong
+                  >pretty much everything you would <em>not</em> want as a
+                  student or beginner</strong
+                >. This is why I cringe so hard I practically turn myself inside
+                out when people on Twitter mention that they have pointed their
+                students at Stack Overflow. What you'd want for a beginner or a
+                student in the field of programming is almost
+                <em>the exact opposite</em> of what Stack Overflow does at every
+                turn:
+              </p>
+              <ul>
+                <li>one on one mentoring</li>
+                <li>real time collaborative screen sharing</li>
+                <li>live chat</li>
+                <li>theory and background courses</li>
+                <li>starter tasks and exercises</li>
+                <li>playgrounds to experiment in</li>
+              </ul>
+              <p>
+                These are all very fine and good things, but Stack Overflow does
+                <em>NONE</em> of them, by design.
+              </p>
+              <p>
+                <em>Can</em> you use Stack Overflow to learn how to program from
+                first principles? Well, technically you can do anything with any
+                software. You could try to have actual conversations on Reddit,
+                if you're a masochist. But the answer is yes. You could learn
+                how to program on Stack Overflow, in theory, if you are a
+                prodigy who is comfortable with the light competitive aspects
+                (reputation, closing, downvoting) and also perfectly willing to
+                define all your contributions to the site in terms of utility to
+                others, not just yourself as a student attempting to learn
+                things. But I <em>suuuuuuper</em> would not recommend it. There
+                are
+                <a
+                  href="https://blog.codinghorror.com/heres-the-programming-game-you-never-asked-for/"
+                  >far better websites and systems out there for learning to be
+                  a programmer</a
+                >. <em>Could</em> Stack Overflow build beginner and student
+                friendly systems like this? I don't know, and it's certainly not
+                my call to make. 🤔
+              </p>
+              <p>
+                And that's it. We can now resume our normal non-abyss gazing. Or
+                whatever it is that passes for normal in these times.
+              </p>
+              <p>
+                I hope all of this doesn't come across as negative. Overall I'd
+                say the state of the Stack is strong. But does it even matter
+                what I think?
+                <a
+                  href="https://stackoverflow.blog/2008/11/25/stack-overflow-is-you/"
+                  >As it was in 2008</a
+                >, so it is in 2018.
+              </p>
+              <blockquote>
+                <p>
+                  <strong>Stack Overflow is <em>you</em>.</strong>
+                </p>
+                <p>
+                  This is the scary part, the great leap of faith that Stack
+                  Overflow is predicated on: trusting your fellow programmers.
+                  The programmers who choose to participate in Stack Overflow
+                  are the “secret sauce” that makes it work. You are the reason
+                  I continue to believe in developer community as the greatest
+                  source of learning and growth. You are the reason I continue
+                  to get so many positive emails and testimonials about Stack
+                  Overflow. I can’t take credit for that. But you can.
+                </p>
+                <p>
+                  I learned the collective power of my fellow programmers long
+                  ago writing on Coding Horror. The community is far, far
+                  smarter than I will ever be. All I can ask — all any of us can
+                  ask — is to help each other along the path.
+                </p>
+                <p>
+                  And if your fellow programmers decide to recognize you for
+                  that, then I say you’ve well and truly earned it.
+                </p>
+              </blockquote>
+              <p>
+                The strength of Stack Overflow begins, and ends, with the
+                <a href="https://meta.stackoverflow.com/"
+                  >community of programmers that power the site</a
+                >. What should Stack Overflow be when it grows up?
+                <strong>Whatever we make it, together.</strong>
+              </p>
+              <p>
+                <img
+                  src="/content/images/2018/10/stackoverflow-none-of-us-is-as-dumb-as-all-of-us.jpg"
+                  alt="stackoverflow-none-of-us-is-as-dumb-as-all-of-us"
+                />
+              </p>
+              <p>p.s. Happy 10th anniversary Stack Overflow!</p>
+              <hr />
+              <p>
+                <small
+                  >Also see Joel's take on 10 years of Stack Overflow with
+                  <a
+                    href="https://www.joelonsoftware.com/2018/04/06/the-stack-overflow-age/"
+                    >The Stack Overflow Age</a
+                  >,
+                  <a
+                    href="https://www.joelonsoftware.com/2018/04/13/gamification/"
+                    >A Dusting of Gamification</a
+                  >, and
+                  <a
+                    href="https://www.joelonsoftware.com/2018/04/23/strange-and-maddening-rules/"
+                    >Strange and Maddening Rules</a
+                  >.</small
+                >
+              </p>
+            </div>
+            <b
+              ><a
+                href="//blog.codinghorror.com/what-does-stack-overflow-want-to-be-when-it-grows-up/#discourse-comments"
+                >Discussion</a
+              ></b
+            >
+          </section>
+        </article>
+
+        <nav class="pagination" role="navigation">
+          <span class="page-number">Page 1 of 286</span>
+          <a class="older-posts" href="/page/2/"
+            >Older Posts <span aria-hidden="true">&rarr;</span></a
+          >
+        </nav>
+      </main>
+
+      <script type="text/javascript">
+        var discourseUrl = "https://discourse.codinghorror.com/";
+
+        (function() {
+          var d = document.createElement("script");
+          d.type = "text/javascript";
+          d.async = true;
+          d.src = discourseUrl + "javascripts/count.js";
+          (
+            document.getElementsByTagName("head")[0] ||
+            document.getElementsByTagName("body")[0]
+          ).appendChild(d);
+        })();
+      </script>
+
+      <aside class="sidebar">
+        <!-- 
+<div id="welovecodinghorror-block">
+    <span> 
+        <span class="block-wrap">
+            <a href="https://buddy.works/?utm_source=blog&utm_campaign=coding_hororr_bz" class="block-img" target="_blank"><img src="/content/images/2019/06/buddyworks-189x133px.png" width="189" height="133" alt="" border="0"></a> 
+            <a href="https://buddy.works/?utm_source=blog&utm_campaign=coding_hororr_bz" class="block-text" target="_blank">Get the fastest deployments in UI/UX that blows developers away</a>
+        </span>
+    </span>
+</div>
+-->
+
+        <script
+          async
+          type="text/javascript"
+          src="//cdn.carbonads.com/carbon.js?serve=CKYIK23L&placement=blogcodinghorrorcom"
+          id="_carbonads_js"
+        ></script>
+
+        <div
+          id="hireme"
+          class="hireme codinghorror"
+          style="min-height: 220px; margin-bottom: 15px;"
+        ></div>
+        <script>
+          setTimeout(function() {
+            var a = document.createElement("script");
+            var b = document.getElementsByTagName("script")[0];
+            a.src = "//clc.stackoverflow.com/j/p?d=hireme";
+            a.async = true;
+            a.type = "text/javascript";
+            b.parentNode.insertBefore(a, b);
+          }, 5);
+        </script>
+
+        <div class="welovecodinghorror" style="margin-bottom:15px">
+          [ad] Enjoy the blog? Read
+          <b
+            ><a href="https://www.amazon.com/dp/B008HUMTO0/?tag=codihorr-20"
+              >Effective Programming: More than Writing Code</a
+            ></b
+          >
+          and
+          <b
+            ><a href="https://www.amazon.com/dp/B00BU3KPQU/?tag=codihorr-20"
+              >How to Stop Sucking and Be Awesome Instead</a
+            ></b
+          >
+          on your Kindle, iPad, Nook, or as a PDF.
+        </div>
+
+        <h3>Resources</h3>
+
+        <ul>
+          <li><a href="/about-me/">About Me</a></li>
+          <li><a href="https://www.discourse.org/">discourse.org</a></li>
+          <li><a href="https://stackexchange.com/">stackexchange.com</a></li>
+          <li><a href="https://commonmark.org/help/">Learn Markdown</a></li>
+          <li>
+            <a href="/recommended-reading-for-developers/"
+              >Recommended Reading</a
+            >
+          </li>
+        </ul>
+
+        <ul>
+          <li>
+            <a
+              href="https://feeds.feedburner.com/codinghorror"
+              class="icon-feed"
+              >&nbsp;Subscribe in a reader</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://feedburner.google.com/fb/a/mailverify?uri=codinghorror&amp;loc=en_US"
+              class="icon-email"
+              >&nbsp;Subscribe via email</a
+            >
+          </li>
+        </ul>
+
+        <p>Coding Horror has been continuously published since 2004</p>
+
+        <footer class="site-footer">
+          <section class="copyright">
+            Copyright
+            <a rel="author" href="https://en.wikipedia.org/wiki/Jeff_Atwood"
+              >Jeff Atwood</a
+            >
+            &copy; 2020<br />
+            Logo image &copy; 1993 Steven C. McConnell <br />
+            Proudly published with
+            <a class="icon-ghost" href="https://ghost.org">Ghost</a>
+          </section>
+        </footer>
+      </aside>
+    </div>
+
+    <!-- Begin comScore Tag -->
+    <script>
+      document.write(
+        unescape(
+          "%3Cscript src='https://sb.scorecardresearch.com/beacon.js'%3E%3C/script%3E"
+        )
+      );
+    </script>
+    <script>
+      COMSCORE.beacon({
+        c1: 2,
+        c2: "6035669",
+        c3: "",
+        c4: "http://www.codinghorror.com/blog/",
+        c5: "",
+        c6: "",
+        c15: ""
+      });
+    </script>
+    <noscript>
+      <img
+        src="//b.scorecardresearch.com/b?c1=2&amp;c2=6035669&amp;c3=&amp;c4=http%3A%2F%2Fwww.codinghorror.com%2Fblog%2F&amp;c5=&amp;c6=&amp;c15=&amp;cv=1.3&amp;cj=1"
+        style="display:none"
+        width="0"
+        height="0"
+        alt=""
+      />
+    </noscript>
+    <!-- end comScore Tag -->
+  </body>
+</html>
