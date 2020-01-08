@@ -204,7 +204,6 @@ fn parse_template(proc: &mut Processor) -> ProcessingResult<()> {
 }
 
 pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
-    // TODO Refactor and optimise
     chain!(proc.match_while_pred(is_whitespace).discard());
     // This variable is used so that trailing whitespace is simply trimmed/removed instead of collapsed.
     let mut discarded_whitespace = false;
@@ -221,67 +220,81 @@ pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
             proc.write(b' ');
             discarded_whitespace = false;
         };
-
-        if chain!(proc.match_while_pred(is_whitespace).discard().matched()) {
-            discarded_whitespace = true;
-        } else if chain!(proc.match_char(b'.').matched()) {
-            if is_digit(proc.peek_offset(1)?) {
-                // Is numeric literal starting with decimal dot.
+        match proc.peek_offset(0)? {
+            c if is_whitespace(c) => {
+                chain!(proc.match_while_pred(is_whitespace).discard());
+                discarded_whitespace = true;
+            }
+            b'.' => {
+                if is_digit(proc.peek_offset(1)?) {
+                    // Is numeric literal starting with decimal dot.
+                    parse_literal_number(proc)?;
+                    last_syntax = Syntax::LiteralNumber;
+                } else {
+                    // Is dot operator.
+                    proc.accept_expect();
+                    last_syntax = Syntax::Punctuator;
+                };
+            }
+            b'(' => {
+                proc.accept_expect();
+                if parenthesis_depth > 0 || match last_syntax {
+                    Syntax::Name(r) => IF_WHILE_FOR_WITH.contains(&proc[r]),
+                    _ => false,
+                } {
+                    parenthesis_depth += 1;
+                };
+                last_syntax = Syntax::Punctuator;
+            }
+            b')' => {
+                proc.accept_expect();
+                last_syntax = Syntax::GroupingParentheses;
+                if parenthesis_depth > 0 {
+                    parenthesis_depth -= 1;
+                    if parenthesis_depth == 0 {
+                        last_syntax = Syntax::IfWhileForWithParentheses;
+                    };
+                };
+            }
+            c if is_digit(c) => {
                 parse_literal_number(proc)?;
                 last_syntax = Syntax::LiteralNumber;
-            } else {
-                // Is dot operator.
-                proc.accept_expect();
-                last_syntax = Syntax::Punctuator;
-            };
-        } else if chain!(proc.match_char(b'(').keep().matched()) {
-            if parenthesis_depth > 0 || match last_syntax {
-                Syntax::Name(r) => IF_WHILE_FOR_WITH.contains(&proc[r]),
-                _ => false,
-            } {
-                parenthesis_depth += 1;
-            };
-            last_syntax = Syntax::Punctuator;
-        } else if chain!(proc.match_char(b')').keep().matched()) {
-            last_syntax = Syntax::GroupingParentheses;
-            if parenthesis_depth > 0 {
-                parenthesis_depth -= 1;
-                if parenthesis_depth == 0 {
-                    last_syntax = Syntax::IfWhileForWithParentheses;
+            }
+            b'/' => match proc.peek_offset(1)? {
+                b'/' => parse_comment_single(proc)?,
+                b'*' => parse_comment_multi(proc)?,
+                _ => {
+                    let is_regex = match last_syntax {
+                        Syntax::IfWhileForWithParentheses => true,
+                        Syntax::Punctuator => true,
+                        Syntax::Name(val) => !proc[val].eq(b"this"),
+                        _ => false,
+                    };
+                    if is_regex {
+                        parse_regex(proc)?;
+                        last_syntax = Syntax::LiteralRegExp;
+                    } else {
+                        // Is divide operator.
+                        proc.accept_expect();
+                        last_syntax = Syntax::Punctuator;
+                    };
+                }
+            }
+            c if is_string_delimiter(c) => {
+                parse_string(proc)?;
+                last_syntax = Syntax::LiteralStringOrTemplate;
+            }
+            b'`' => {
+                parse_template(proc)?;
+                last_syntax = Syntax::LiteralStringOrTemplate;
+            }
+            _ => {
+                if chain!(proc.match_trie(JS_PUNCTUATORS).keep().matched()) {
+                    last_syntax = Syntax::Punctuator;
+                } else {
+                    last_syntax = Syntax::Name(chain!(proc.match_while_pred(is_name_continuation).require_with_reason("JavaScript")?.keep().out_range()));
                 };
-            };
-        } else if chain!(proc.match_pred(is_digit).matched()) {
-            parse_literal_number(proc)?;
-            last_syntax = Syntax::LiteralNumber;
-        } else if chain!(proc.match_seq(b"//").matched()) {
-            parse_comment_single(proc)?;
-        } else if chain!(proc.match_seq(b"/*").matched()) {
-            parse_comment_multi(proc)?;
-        } else if chain!(proc.match_char(b'/').matched()) {
-            let is_regex = match last_syntax {
-                Syntax::IfWhileForWithParentheses => true,
-                Syntax::Punctuator => true,
-                Syntax::Name(val) => !proc[val].eq(b"this"),
-                _ => false,
-            };
-            if is_regex {
-                parse_regex(proc)?;
-                last_syntax = Syntax::LiteralRegExp;
-            } else {
-                // Is divide operator.
-                proc.accept_expect();
-                last_syntax = Syntax::Punctuator;
-            };
-        } else if chain!(proc.match_pred(is_string_delimiter).matched()) {
-            parse_string(proc)?;
-            last_syntax = Syntax::LiteralStringOrTemplate;
-        } else if chain!(proc.match_char(b'`').matched()) {
-            parse_template(proc)?;
-            last_syntax = Syntax::LiteralStringOrTemplate;
-        } else if chain!(proc.match_trie(JS_PUNCTUATORS).keep().matched()) {
-            last_syntax = Syntax::Punctuator;
-        } else {
-            last_syntax = Syntax::Name(chain!(proc.match_while_pred(is_name_continuation).require_with_reason("JavaScript")?.keep().out_range()));
+            }
         };
     };
     Ok(())
