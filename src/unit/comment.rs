@@ -1,5 +1,4 @@
 use crate::err::ProcessingResult;
-use crate::pattern::SinglePattern;
 use crate::proc::Processor;
 
 include!(concat!(env!("OUT_DIR"), "/gen_pattern_COMMENT_END.rs"));

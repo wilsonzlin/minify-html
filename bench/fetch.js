@@ -5,6 +5,7 @@ const prettier = require('prettier');
 
 const tests = {
   "Amazon": "https://amazon.com/",
+  "BBC": "https://bbc.co.uk/",
   "Bootstrap": "https://getbootstrap.com/docs/3.4/css/",
   "Bing": "https://bing.com/",
   "Coding Horror": "https://blog.codinghorror.com/",
@@ -13,8 +14,10 @@ const tests = {
   "Hacker News": "https://news.ycombinator.com/",
   "NY Times": "https://nytimes.com/",
   "Reddit": "https://reddit.com/",
+  "Stack Overflow": "https://stackoverflow.com/",
   "Twitter": "https://twitter.com/",
-  "Wikipedia": "https://en.wikipedia.org/wiki/Soil",
+  "Wikipedia": "https://en.wikipedia.org/wiki/Soil/",
+  "Yahoo": "https://yahoo.com/",
 };
 
 const fetchTest = async (name, url) => {

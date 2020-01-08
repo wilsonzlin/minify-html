@@ -62,6 +62,10 @@ struct TrieStats {
     total_nodes: usize,
 }
 
+fn name_words(n: &str) -> Vec<String> {
+    n.split(' ').map(|w| w.to_string()).collect::<Vec<String>>()
+}
+
 fn snake_case(n: &Vec<String>) -> String {
     n
         .iter()
@@ -127,8 +131,9 @@ impl TrieBuilderNode {
         for c in child_chars {
             let p = c as u32;
             debug_assert!(p <= 0x7f);
-            // Allow a maximum gap length of 3 between any two children.
-            // Create a new vector if first char or last char is more than 3 character positions away.
+            debug_assert!(last_char.filter(|prev| *prev >= p).is_none());
+            // Allow a maximum gap length of 3 between any two children in a cluster.
+            // Create a new cluster if it's the first char, or previous char in the current cluster is more than 3 character positions away.
             if last_char.filter(|last| last + 3 >= p).is_none() {
                 child_char_clusters.push(Vec::new());
             } else {
@@ -216,7 +221,7 @@ impl TrieBuilderNode {
     }
 
     fn build(&mut self, name: &str, value_type: &str) -> String {
-        let name_words = name.split(' ').map(|w| w.to_string()).collect::<Vec<String>>();
+        let name_words = name_words(name);
         let mut code = String::new();
         let mut stats = TrieStats {
             max_cluster_holes: 0,
@@ -258,7 +263,7 @@ fn build_pattern(pattern: String) -> String {
         };
     };
 
-    format!("SinglePattern {{ seq: {}, table: &[{}] }}",
+    format!("crate::pattern::SinglePattern {{ seq: {}, table: &[{}] }}",
         create_byte_string_literal(pattern.as_bytes()),
         table.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "))
 }
@@ -313,7 +318,7 @@ fn generate_patterns() {
 
     for (name, pattern) in patterns {
         let mut code = String::new();
-        code.push_str(format!("static {}: &SinglePattern = &{};", name, build_pattern(pattern)).as_str());
+        code.push_str(format!("static {}: &crate::pattern::SinglePattern = &{};", name, build_pattern(pattern)).as_str());
         write_rs(format!("pattern_{}", name).as_str(), code);
     };
 }
@@ -325,7 +330,7 @@ struct Trie {
 }
 
 fn generate_tries() {
-    let tries: HashMap<String, Trie> = read_json("tries");
+    let tries: HashMap<String, Trie> = read_json("value_tries");
 
     for (name, trie) in tries {
         let mut trie_builder = TrieBuilderNode::new();
@@ -333,8 +338,8 @@ fn generate_tries() {
             trie_builder.add(seq.as_str(), value_code);
         };
         let trie_code = trie_builder.build(name.as_str(), trie.value_type.as_str());
-        write_rs(format!("trie_{}", name).as_str(), trie_code);
-    }
+        write_rs(format!("trie_{}", snake_case(&name_words(name.as_str()))).as_str(), trie_code);
+    };
 }
 
 fn main() {

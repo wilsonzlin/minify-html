@@ -10,7 +10,7 @@ repository = "https://github.com/wilsonzlin/hyperbuild.git"
 version = "0.0.11"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
-include = ["/gen/**/*", "/src/**/*", "/build.rs", "/Cargo.toml", "/LICENSE", "/README.md"]
+include = ["/gen/*.json", "/src/**/*", "/build.rs", "/Cargo.toml", "/LICENSE", "/README.md"]
 
 [badges]
 maintenance = { status = "actively-developed" }

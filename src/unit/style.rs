@@ -2,6 +2,8 @@ use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::Processor;
 use crate::spec::codepoint::is_whitespace;
 
+include!(concat!(env!("OUT_DIR"), "/gen_pattern_CSS_COMMENT_END.rs"));
+
 fn is_string_delimiter(c: u8) -> bool {
     match c {
         b'"' | b'\'' => true,
@@ -17,9 +19,8 @@ fn parse_comment(proc: &mut Processor) -> ProcessingResult<()> {
     };
 
     // Unlike script tags, style comments do NOT end at closing tag.
-    while !chain!(proc.match_seq(b"*/").discard().matched()) {
-        proc.skip()?;
-    };
+    chain!(proc.match_while_not_seq(CSS_COMMENT_END).discard());
+    chain!(proc.match_seq(b"*/").require_with_reason("CSS comment end")?.discard());
 
     Ok(())
 }
@@ -39,19 +40,19 @@ fn parse_string(proc: &mut Processor) -> ProcessingResult<()> {
         if c == b'\\' {
             escaping = !escaping;
             continue;
-        }
+        };
 
-        if c == delim && !escaping {
-            break;
-        }
-
-        if chain!(proc.match_line_terminator().keep().matched()) {
-            if !escaping {
+        if !escaping {
+            if c == delim {
+                break;
+            };
+            // We've already accepted char, so we can't use proc.match_line_terminator.
+            if c == b'\r' || c == b'\n' {
                 return Err(ErrorType::UnterminatedCssString);
-            }
-        }
-
-        escaping = false;
+            };
+        } else {
+            escaping = false;
+        };
     };
 
     Ok(())

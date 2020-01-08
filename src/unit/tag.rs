@@ -166,6 +166,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     let closing_tag = proc.checkpoint();
     chain!(proc.match_seq(b"</").require()?.discard());
     chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.discard());
+    chain!(proc.match_while_pred(is_whitespace).discard());
     chain!(proc.match_char(b'>').require()?.discard());
     Ok(ProcessedTag { name: tag_name, closing_tag: Some(proc.consumed_range(closing_tag)) })
 }
