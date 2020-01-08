@@ -307,7 +307,7 @@ If an attribute value is empty after any processing, it is completely removed (i
 
 Spaces are removed between attributes if possible.
 
-# Script and style
+### Script and style
 
 Insignificant whitespace is trimmed and collapsed inside `<script>` with JS code and `<style>`.
 
