@@ -8,6 +8,7 @@ use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::wss::WSS_TAGS;
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
+use crate::unit::instruction::process_instruction;
 use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::tag::{process_tag, ProcessedTag};
 
@@ -15,6 +16,7 @@ use crate::unit::tag::{process_tag, ProcessedTag};
 enum ContentType {
     Comment,
     Bang,
+    Instruction,
     OpeningTag,
 
     Start,
@@ -25,9 +27,9 @@ enum ContentType {
 }
 
 impl ContentType {
-    fn is_comment_bang_opening_tag(&self) -> bool {
+    fn is_comment_bang_instruction_opening_tag(&self) -> bool {
         match self {
-            ContentType::Comment | ContentType::Bang | ContentType::OpeningTag => true,
+            ContentType::Comment | ContentType::Bang | ContentType::Instruction | ContentType::OpeningTag => true,
             _ => false,
         }
     }
@@ -38,6 +40,7 @@ impl ContentType {
             None => ContentType::End,
             Some(b'<') => match proc.peek_offset_eof(1) {
                 Some(b'/') => ContentType::End,
+                Some(b'?') => ContentType::Instruction,
                 Some(b'!') => match proc.peek_slice_offset_eof(2, 2) {
                     Some(b"--") => ContentType::Comment,
                     _ => ContentType::Bang,
@@ -75,6 +78,7 @@ macro_rules! handle_content_type {
                 match content_type {
                     ContentType::Comment => { process_comment($proc)?; }
                     ContentType::Bang => { process_bang($proc)?; }
+                    ContentType::Instruction => { process_instruction($proc)?; }
                     ContentType::Entity => $on_entity,
                     ContentType::Text => { $proc.accept()?; }
                     ContentType::Whitespace => $on_whitespace,
@@ -165,7 +169,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
 
         // Next character is not whitespace, so handle any previously ignored whitespace.
         if currently_in_whitespace {
-            if destroy_whole_whitespace && last_non_whitespace_content_type.is_comment_bang_opening_tag() && next_content_type.is_comment_bang_opening_tag() {
+            if destroy_whole_whitespace && last_non_whitespace_content_type.is_comment_bang_instruction_opening_tag() && next_content_type.is_comment_bang_instruction_opening_tag() {
                 // Whitespace is between two tags, comments, or bangs.
                 // destroy_whole_whitespace is on, so don't write it.
             } else if trim_whitespace && (last_non_whitespace_content_type == ContentType::Start || next_content_type == ContentType::End) {

@@ -12,7 +12,7 @@ pub fn process_comment(proc: &mut Processor) -> ProcessingResult<()> {
 
     chain!(proc.match_while_not_seq(COMMENT_END).discard());
 
-    chain!(proc.match_seq(b"-->").require()?.discard());
+    chain!(proc.match_seq(b"-->").require_with_reason("end of comment")?.discard());
 
     Ok(())
 }

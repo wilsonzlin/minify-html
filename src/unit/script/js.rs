@@ -1,8 +1,9 @@
+use phf::{phf_set, Set};
+
 use crate::err::{ErrorType, ProcessingResult};
-use crate::proc::{Processor, ProcessorRange};
-use crate::spec::codepoint::{is_whitespace, is_digit, is_hex_digit, is_alphanumeric};
-use phf::{Set, phf_set};
 use crate::pattern::{ITrieNode, TrieLeafNode};
+use crate::proc::{Processor, ProcessorRange};
+use crate::spec::codepoint::{is_alphanumeric, is_digit, is_hex_digit, is_whitespace};
 
 include!(concat!(env!("OUT_DIR"), "/gen_trie_JS_PUNCTUATORS.rs"));
 
@@ -11,6 +12,52 @@ static IF_WHILE_FOR_WITH: Set<&'static [u8]> = phf_set! {
     b"if",
     b"while",
     b"with",
+};
+
+static KEYWORDS: Set<&'static [u8]> = phf_set! {
+    b"await",
+    b"break",
+    b"case",
+    b"catch",
+    b"class",
+    b"const",
+    b"continue",
+    b"debugger",
+    b"default",
+    b"delete",
+    b"do",
+    b"else",
+    b"export",
+    b"extends",
+    b"finally",
+    b"for",
+    b"function",
+    b"if",
+    b"import",
+    b"in",
+    b"instanceof",
+    b"new",
+    b"return",
+    b"super",
+    b"switch",
+    // For the purposes of regular expression literal identification, `this` is not considered a keyword.
+    // b"this",
+    b"throw",
+    b"try",
+    b"typeof",
+    b"var",
+    b"void",
+    b"while",
+    b"with",
+    b"yield",
+    // Reserved keywords.
+    b"enum",
+    b"implements",
+    b"interface",
+    b"package",
+    b"private",
+    b"protected",
+    b"public",
 };
 
 #[derive(Copy, Clone)]
@@ -67,7 +114,7 @@ fn parse_literal_number(proc: &mut Processor) -> ProcessingResult<()> {
     Ok(())
 }
 
-fn parse_regex(proc: &mut Processor) -> ProcessingResult<()> {
+fn parse_literal_regex(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
         chain!(proc.match_char(b'/').expect().keep());
     } else {
@@ -267,11 +314,11 @@ pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
                     let is_regex = match last_syntax {
                         Syntax::IfWhileForWithParentheses => true,
                         Syntax::Punctuator => true,
-                        Syntax::Name(val) => !proc[val].eq(b"this"),
+                        Syntax::Name(val) => KEYWORDS.contains(&proc[val]),
                         _ => false,
                     };
                     if is_regex {
-                        parse_regex(proc)?;
+                        parse_literal_regex(proc)?;
                         last_syntax = Syntax::LiteralRegExp;
                     } else {
                         // Is divide operator.

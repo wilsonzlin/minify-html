@@ -320,7 +320,7 @@ JS and CSS comments are removed inside `<script>` and `<style>`.
 
 ### Ignored
 
-Bangs and empty elements are not removed as it is assumed there is a special reason for their declaration.
+Bangs, [processing instructions](https://en.wikipedia.org/wiki/Processing_Instruction), and empty elements are not removed as it is assumed there is a special reason for their declaration.
 
 ## Parsing
 

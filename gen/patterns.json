@@ -1,4 +1,5 @@
 {
   "COMMENT_END": "-->",
-  "CSS_COMMENT_END": "*/"
+  "CSS_COMMENT_END": "*/",
+  "INSTRUCTION_END": "?>"
 }
