@@ -39,7 +39,7 @@ fn is_name_char(c: u8) -> bool {
 pub fn process_attr(proc: &mut Processor, element: ProcessorRange) -> ProcessingResult<ProcessedAttr> {
     // It's possible to expect attribute name but not be called at an attribute, e.g. due to whitespace between name and
     // value, which causes name to be considered boolean attribute and `=` to be start of new (invalid) attribute name.
-    let name = chain!(proc.match_while_pred(is_name_char).require_with_reason("attribute name")?.keep().range());
+    let name = chain!(proc.match_while_pred(is_name_char).require_with_reason("attribute name")?.keep().out_range());
     let is_boolean = BOOLEAN_ATTRS.get(&proc[name]).filter(|elems| elems.contains(&proc[element])).is_some();
     let after_name = proc.checkpoint();
 

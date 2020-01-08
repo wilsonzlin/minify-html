@@ -134,9 +134,9 @@ impl Metrics {
 }
 
 pub fn skip_attr_value(proc: &mut Processor) -> ProcessingResult<()> {
-    let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value delimiter quote")?.discard().char());
+    let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value opening delimiter quote")?.discard().char());
     chain!(proc.match_while_not_char(src_delimiter).discard());
-    chain!(proc.match_char(src_delimiter).require_with_reason("attribute value delimiter quote")?.discard());
+    chain!(proc.match_char(src_delimiter).require_with_reason("attribute value closing delimiter quote")?.discard());
     Ok(())
 }
 
@@ -163,7 +163,7 @@ pub struct ProcessedAttrValue {
 // Since the actual processed value would have a length equal or greater to it (e.g. it might be quoted, or some characters might get encoded), we can then read minimum value right to left and start writing from actual processed value length (which is calculated), quoting/encoding as necessary.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
     let src_start = proc.checkpoint();
-    let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value delimiter quote")?.discard().char());
+    let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value opening delimiter quote")?.discard().char());
 
     // Stage 1: read and collect metrics on attribute value characters.
     let mut metrics = Metrics {
@@ -182,7 +182,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     let mut currently_first_char = true;
 
     loop {
-        let metrics_char_type = if chain!(proc.match_char(src_delimiter).discard().matched()) {
+        let metrics_char_type = if chain!(proc.match_char(src_delimiter).matched()) {
             // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
             CharType::End
         } else if chain!(proc.match_char(b'&').matched()) {
@@ -241,7 +241,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         };
         metrics.last_char_type = Some(metrics_char_type);
     };
-    // Ending delimiter quote (if any) has already been discarded at this point.
+    chain!(proc.match_char(src_delimiter).require_with_reason("attribute value closing delimiter quote")?.discard());
     let minimum_value = proc.written_range(src_start);
     // If minimum value is empty, return now before trying to read out of range later.
     // (Reading starts at one character before end of minimum value.)
