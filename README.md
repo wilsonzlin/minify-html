@@ -296,11 +296,9 @@ Any entities in attribute values are decoded, and then the shortest representati
 - Single quoted, with any `'` encoded.
 - Unquoted, with `"`/`'` first character (if applicable), `>` last character (if applicable), and any whitespace encoded.
 
-Some attributes have their whitespace (after any decoding) trimmed and collapsed:
+`class` attributes have their whitespace (after any decoding) trimmed and collapsed.
 
-- `class`
-
-[Boolean attributes](./gen/boolean_attrs.json) will have their values removed.
+[Boolean attribute](./gen/boolean_attrs.json) values are removed.
 
 `type` attributes on `script` tags with a value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.  
 `type` attributes on `style` tags are removed.  
@@ -309,11 +307,16 @@ If an attribute value is empty after any processing, it is completely removed (i
 
 Spaces are removed between attributes if possible.
 
+# Script and style
+
+Insignificant whitespace is trimmed and collapsed inside `<script>` with JS code and `<style>`.
+
+JS and CSS comments are removed inside `<script>` and `<style>`.
+
 ### Other
 
 - Comments are removed.
 - Entities are decoded if valid (see relevant parsing section).
-- Whitespace is trimmed and collapsed inside `<script>` with JS code and `<style>`.
 
 ### Ignored
 

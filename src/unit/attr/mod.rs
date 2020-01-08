@@ -3,7 +3,7 @@ use phf::{phf_set, Set};
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::is_control;
-use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue};
+use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue, skip_attr_value};
 
 mod value;
 
@@ -49,15 +49,14 @@ pub fn process_attr(proc: &mut Processor, element: ProcessorRange) -> Processing
     let (typ, value) = if !has_value {
         (AttrType::NoValue, None)
     } else {
-        // TODO Don't process if going to erase anyway.
-        let val = process_attr_value(proc, should_collapse_and_trim_value_ws)?;
         if is_boolean {
-            proc.erase_written(after_name);
+            skip_attr_value(proc)?;
             (AttrType::NoValue, None)
         } else {
-            match val {
+            match process_attr_value(proc, should_collapse_and_trim_value_ws)? {
                 ProcessedAttrValue { value: None, .. } => {
-                    // Value is empty, which is equivalent to no value, so discard `=` and any quotes.
+                    // Value is empty, which is equivalent to no value, so discard `=`.
+                    debug_assert_eq!(proc.written_count(after_name), 1);
                     proc.erase_written(after_name);
                     (AttrType::NoValue, None)
                 }

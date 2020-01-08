@@ -63,8 +63,9 @@ const processReactTypeDeclarations = async (source) => {
     node.forEachChild(c => void unvisited.push(c));
   }
 
+  // Sort output JSON object by property so diffs are clearer.
   await fs.writeFile(BOOLEAN_ATTRS_PATH, JSON.stringify(
-    Object.fromEntries(booleanAttributes.entries()),
+    Object.fromEntries([...booleanAttributes.entries()].sort((a, b) => a[0].localeCompare(b[0]))),
     null,
     2,
   ));

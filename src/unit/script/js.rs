@@ -8,19 +8,19 @@ fn is_string_delimiter(c: u8) -> bool {
 
 fn parse_comment_single(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
-        chain!(proc.match_seq(b"//").expect().keep());
+        chain!(proc.match_seq(b"//").expect().discard());
     } else {
-        proc.accept_amount_expect(2);
+        proc.skip_amount_expect(2);
     };
 
     // Comment can end at closing </script>.
     // TODO Optimise
-    while !chain!(proc.match_line_terminator().keep().matched()) {
+    while !chain!(proc.match_line_terminator().discard().matched()) {
         if chain!(proc.match_seq(b"</script>").matched()) {
             break;
         }
 
-        proc.accept()?;
+        proc.skip()?;
     }
 
     Ok(())
@@ -28,19 +28,19 @@ fn parse_comment_single(proc: &mut Processor) -> ProcessingResult<()> {
 
 fn parse_comment_multi(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
-        chain!(proc.match_seq(b"/*").expect().keep());
+        chain!(proc.match_seq(b"/*").expect().discard());
     } else {
-        proc.accept_amount_expect(2);
+        proc.skip_amount_expect(2);
     };
 
     // Comment can end at closing </script>.
     // TODO Optimise
-    while !chain!(proc.match_seq(b"*/").keep().matched()) {
+    while !chain!(proc.match_seq(b"*/").discard().matched()) {
         if chain!(proc.match_seq(b"</script>").matched()) {
             break;
         }
 
-        proc.accept()?;
+        proc.skip()?;
     };
 
     Ok(())

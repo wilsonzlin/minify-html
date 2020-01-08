@@ -11,14 +11,14 @@ fn is_string_delimiter(c: u8) -> bool {
 
 fn parse_comment(proc: &mut Processor) -> ProcessingResult<()> {
     if cfg!(debug_assertions) {
-        chain!(proc.match_seq(b"/*").expect().keep());
+        chain!(proc.match_seq(b"/*").expect().discard());
     } else {
-        proc.accept_amount_expect(2);
+        proc.skip_amount_expect(2);
     };
 
     // Unlike script tags, style comments do NOT end at closing tag.
-    while !chain!(proc.match_seq(b"*/").keep().matched()) {
-        proc.accept()?;
+    while !chain!(proc.match_seq(b"*/").discard().matched()) {
+        proc.skip()?;
     };
 
     Ok(())

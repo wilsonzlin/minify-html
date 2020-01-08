@@ -133,6 +133,13 @@ impl Metrics {
     }
 }
 
+pub fn skip_attr_value(proc: &mut Processor) -> ProcessingResult<()> {
+    let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value delimiter quote")?.discard().char());
+    chain!(proc.match_while_not_char(src_delimiter).discard());
+    chain!(proc.match_char(src_delimiter).require_with_reason("attribute value delimiter quote")?.discard());
+    Ok(())
+}
+
 pub struct ProcessedAttrValue {
     pub delimiter: DelimiterType,
     pub value: Option<ProcessorRange>,
