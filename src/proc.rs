@@ -157,7 +157,7 @@ impl<'d> Processor<'d> {
             match self.match_reason {
                 RequireReason::Custom => Err(ErrorType::NotFound(custom_reason.unwrap())),
                 RequireReason::ExpectedNotChar(c) => Err(ErrorType::CharNotFound { need: c, got: self.match_char.unwrap() }),
-                RequireReason::ExpectedChar(c) => Err(ErrorType::UnexpectedChar(c)),
+                RequireReason::ExpectedChar(c) => Err(ErrorType::ExpectedChar(c)),
                 RequireReason::ExpectedMatch(m) => Err(ErrorType::MatchNotFound(m)),
             }
         }

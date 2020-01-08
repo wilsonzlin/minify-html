@@ -7,7 +7,7 @@ pub enum ErrorType {
     CharNotFound { need: u8, got: u8 },
     MatchNotFound(&'static [u8]),
     NotFound(&'static str),
-    UnexpectedChar(u8),
+    ExpectedChar(u8),
     UnexpectedEnd,
 }
 
@@ -38,8 +38,8 @@ impl ErrorType {
             ErrorType::NotFound(exp) => {
                 format!("Expected {}.", exp)
             }
-            ErrorType::UnexpectedChar(unexp) => {
-                format!("Unexpected {} (U+{:X}).", unexp as char, unexp)
+            ErrorType::ExpectedChar(unexp) => {
+                format!("Expected {} (U+{:X}).", unexp as char, unexp)
             }
             ErrorType::UnexpectedEnd => {
                 format!("Unexpected end of source code.")
