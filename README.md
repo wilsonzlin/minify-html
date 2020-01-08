@@ -378,11 +378,3 @@ Special handling of some attributes require case sensitive names and values. For
 Note that the closing tag must not contain any whitespace (e.g. `</script  >`).
 
 [hyperbuild can handle text script content.](./notes/Text%20script%20content.md)
-
-## Development
-
-### More minification options
-
-- Removal of boolean attribute values.
-- Removal of redundant attributes (empty or default value).
-- Handling of conditional or special comments.
