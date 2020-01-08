@@ -3,6 +3,7 @@ pub enum ErrorType {
     NoSpaceBeforeAttr,
     UnterminatedCssString,
     UnterminatedJsString,
+    UnterminatedJsRegExp,
     CharNotFound { need: u8, got: u8 },
     MatchNotFound(&'static [u8]),
     NotFound(&'static str),
@@ -24,6 +25,9 @@ impl ErrorType {
             }
             ErrorType::UnterminatedJsString => {
                 format!("Unterminated JavaScript string.")
+            }
+            ErrorType::UnterminatedJsRegExp => {
+                format!("Unterminated JavaScript regular expression.")
             }
             ErrorType::CharNotFound { need, got } => {
                 format!("Expected {} (U+{:X}), got {} (U+{:X}).", need as char, need, got as char, got)

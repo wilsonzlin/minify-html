@@ -126,6 +126,11 @@ fn parse_literal_regex(proc: &mut Processor) -> ProcessingResult<()> {
 
     loop {
         let c = proc.accept()?;
+        // We've already accepted char, so we can't use proc.match_line_terminator.
+        // Line terminator cannot be escaped and is always invalid in a RegExp literal.
+        if c == b'\r' || c == b'\n' {
+            return Err(ErrorType::UnterminatedJsRegExp);
+        };
 
         if c == b'\\' {
             // If already escaping, then ignore backslash (interpret literally) and continue.
