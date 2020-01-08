@@ -1,182 +1,218 @@
 {
-  "amazon.html": {
+  "Amazon.html": {
     "original": {
-      "absolute": 518794,
+      "absolute": 572775,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 341716,
-      "relative": 0.6586737703211679
+      "absolute": 367738,
+      "relative": 0.6420287198289032
     },
     "html-minifier": {
-      "absolute": 448709,
-      "relative": 0.8649078439611869
+      "absolute": 488839,
+      "relative": 0.8534572912574746
     },
     "minimize": {
-      "absolute": 457003,
-      "relative": 0.8808949216837512
+      "absolute": 495105,
+      "relative": 0.8643970145345031
     }
   },
-  "bbc.html": {
+  "BBC.html": {
     "original": {
-      "absolute": 439081,
+      "absolute": 400787,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 284895,
-      "relative": 0.64884383519214
+      "absolute": 233690,
+      "relative": 0.5830777944394404
     },
     "html-minifier": {
-      "absolute": 349028,
-      "relative": 0.794905723545314
+      "absolute": 298773,
+      "relative": 0.7454657960462789
     },
     "minimize": {
-      "absolute": 352538,
-      "relative": 0.8028996927673937
+      "absolute": 298840,
+      "relative": 0.7456329671371577
     }
   },
-  "bootstrap.html": {
+  "Bing.html": {
     "original": {
-      "absolute": 363784,
+      "absolute": 155661,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 267987,
-      "relative": 0.736665163943439
+      "absolute": 98036,
+      "relative": 0.6298045110849859
     },
     "html-minifier": {
-      "absolute": 267315,
-      "relative": 0.7348179139269456
+      "absolute": 137061,
+      "relative": 0.8805095688708154
     },
     "minimize": {
-      "absolute": 275561,
-      "relative": 0.7574852110043322
+      "absolute": 137358,
+      "relative": 0.882417561238846
     }
   },
-  "codinghorror.html": {
+  "Bootstrap.html": {
     "original": {
-      "absolute": 113678,
+      "absolute": 369435,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 81116,
-      "relative": 0.7135593518534808
+      "absolute": 272938,
+      "relative": 0.7387984354487258
     },
     "html-minifier": {
-      "absolute": 82705,
-      "relative": 0.7275374302855434
+      "absolute": 270621,
+      "relative": 0.7325266961711803
     },
     "minimize": {
-      "absolute": 84926,
-      "relative": 0.7470750716937314
+      "absolute": 279252,
+      "relative": 0.7558893986763572
     }
   },
-  "es2019-draft.html": {
+  "Coding Horror.html": {
     "original": {
-      "absolute": 6214000,
+      "absolute": 126036,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 5668237,
-      "relative": 0.9121720308979723
+      "absolute": 82104,
+      "relative": 0.6514329239264972
     },
     "html-minifier": {
-      "absolute": 5612287,
-      "relative": 0.9031681686514322
+      "absolute": 79394,
+      "relative": 0.6299311307880289
     },
     "minimize": {
-      "absolute": 5745961,
-      "relative": 0.9246799163179916
+      "absolute": 81975,
+      "relative": 0.650409406836142
     }
   },
-  "google.html": {
+  "Google.html": {
     "original": {
-      "absolute": 17600,
+      "absolute": 392903,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 13012,
-      "relative": 0.7393181818181818
+      "absolute": 232603,
+      "relative": 0.5920112597765861
     },
     "html-minifier": {
-      "absolute": 15384,
-      "relative": 0.8740909090909091
+      "absolute": 383586,
+      "relative": 0.9762867679809012
     },
     "minimize": {
-      "absolute": 15589,
-      "relative": 0.8857386363636364
+      "absolute": 384579,
+      "relative": 0.978814109334874
     }
   },
-  "nytimes.html": {
+  "Hacker News.html": {
     "original": {
-      "absolute": 331796,
+      "absolute": 55953,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 150940,
-      "relative": 0.45491808219508373
+      "absolute": 32033,
+      "relative": 0.5724983468268011
     },
     "html-minifier": {
-      "absolute": 199186,
-      "relative": 0.6003267067716308
+      "absolute": 28464,
+      "relative": 0.5087126695619538
     },
     "minimize": {
-      "absolute": 201000,
-      "relative": 0.6057939215662637
+      "absolute": 30643,
+      "relative": 0.5476560684860508
     }
   },
-  "stackoverflow.html": {
+  "NY Times.html": {
     "original": {
-      "absolute": 386541,
+      "absolute": 1982946,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 210845,
-      "relative": 0.5454660695760605
+      "absolute": 1391016,
+      "relative": 0.7014896018348458
     },
     "html-minifier": {
-      "absolute": 216118,
-      "relative": 0.5591075720298753
+      "absolute": 1888047,
+      "relative": 0.9521424184017114
     },
     "minimize": {
-      "absolute": 218775,
-      "relative": 0.5659813577343671
+      "absolute": 1888704,
+      "relative": 0.9524737436117776
     }
   },
-  "wiki.html": {
+  "Reddit.html": {
     "original": {
-      "absolute": 846785,
+      "absolute": 1542845,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 508287,
-      "relative": 0.6002550824589477
+      "absolute": 865816,
+      "relative": 0.5611814537429229
     },
     "html-minifier": {
-      "absolute": 500654,
-      "relative": 0.5912409879721535
+      "absolute": 1115700,
+      "relative": 0.7231445803045672
     },
     "minimize": {
-      "absolute": 519017,
-      "relative": 0.612926539794635
+      "absolute": 1117526,
+      "relative": 0.7243281081378882
     }
   },
-  "yahoo.html": {
+  "Stack Overflow.html": {
     "original": {
-      "absolute": 517537,
+      "absolute": 154899,
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 368590,
-      "relative": 0.7122002871292294
+      "absolute": 90282,
+      "relative": 0.5828443049987411
     },
     "html-minifier": {
-      "absolute": 471919,
-      "relative": 0.9118555774756201
+      "absolute": 89329,
+      "relative": 0.5766919089212971
     },
     "minimize": {
-      "absolute": 473430,
-      "relative": 0.9147751754946989
+      "absolute": 91363,
+      "relative": 0.589823045984803
+    }
+  },
+  "Twitter.html": {
+    "original": {
+      "absolute": 300803,
+      "relative": 1
+    },
+    "hyperbuild-nodejs": {
+      "absolute": 279810,
+      "relative": 0.930210137531873
+    },
+    "html-minifier": {
+      "absolute": 273191,
+      "relative": 0.9082057027356775
+    },
+    "minimize": {
+      "absolute": 273887,
+      "relative": 0.9105195094463818
+    }
+  },
+  "Wikipedia.html": {
+    "original": {
+      "absolute": 2439928,
+      "relative": 1
+    },
+    "hyperbuild-nodejs": {
+      "absolute": 1535741,
+      "relative": 0.6294206222478697
+    },
+    "html-minifier": {
+      "absolute": 1307604,
+      "relative": 0.5359190926945385
+    },
+    "minimize": {
+      "absolute": 1368203,
+      "relative": 0.5607554813092845
     }
   }
 }
