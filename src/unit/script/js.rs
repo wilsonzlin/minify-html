@@ -67,6 +67,10 @@ enum Syntax {
     IfWhileForWithParentheses,
     GroupingParentheses,
     ArrayLiteralOrComputedProperty,
+    // `++` or `--`. One of these directly before `/` usually means it's postfix and operating the value to its left.
+    // TODO However, this is not always the case.
+    // TODO Doc
+    DoubleOperator,
     LiteralStringOrTemplate,
     LiteralNumber,
     LiteralRegExp,
@@ -262,7 +266,7 @@ pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
     let mut discarded_whitespace = false;
     // Only updated when currently inside parentheses `()` directly after one of these keywords:
     // - if (...)
-    // - while (...) // Note that this includes `do {...} while (...)`.
+    // - while (...) // Note that this includes `do {...} while (...)` without trailing semicolon.
     // - for (...)
     // - with (...)
     let mut parenthesis_depth = 0usize;
@@ -313,6 +317,16 @@ pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
             b']' => {
                 proc.accept_expect();
                 last_syntax = Syntax::ArrayLiteralOrComputedProperty;
+            }
+            c if c == b'+' || c == b'-' => {
+                proc.accept_expect();
+                if proc.peek()? == c {
+                    proc.accept_expect();
+                    last_syntax = Syntax::DoubleOperator;
+                } else {
+                    chain!(proc.match_char(b'=').discard());
+                    last_syntax = Syntax::Punctuator;
+                };
             }
             c if is_digit(c) => {
                 parse_literal_number(proc)?;
