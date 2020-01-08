@@ -1,6 +1,7 @@
 {
   "js punctuators": {
     "value_type": "bool",
+    "//": "Some values are missing here because they are manually handled in `process_js_script` function.",
     "values": {
       "!": "true",
       "!=": "true",
@@ -10,8 +11,6 @@
       "&": "true",
       "&&": "true",
       "&=": "true",
-      "(": "true",
-      ")": "true",
       "*": "true",
       "**": "true",
       "**=": "true",
@@ -23,10 +22,7 @@
       "-": "true",
       "--": "true",
       "-=": "true",
-      ".": "true",
       "...": "true",
-      "/": "true",
-      "/=": "true",
       ":": "true",
       ";": "true",
       "<": "true",
@@ -45,7 +41,6 @@
       ">>>=": "true",
       "?": "true",
       "[": "true",
-      "]": "true",
       "^": "true",
       "^=": "true",
       "{": "true",

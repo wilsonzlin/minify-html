@@ -66,6 +66,7 @@ enum Syntax {
     Punctuator,
     IfWhileForWithParentheses,
     GroupingParentheses,
+    ArrayLiteralOrComputedProperty,
     LiteralStringOrTemplate,
     LiteralNumber,
     LiteralRegExp,
@@ -278,6 +279,7 @@ pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
                 discarded_whitespace = true;
             }
             b'.' => {
+                // TODO Handle `...`
                 if is_digit(proc.peek_offset(1)?) {
                     // Is numeric literal starting with decimal dot.
                     parse_literal_number(proc)?;
@@ -308,6 +310,10 @@ pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
                     };
                 };
             }
+            b']' => {
+                proc.accept_expect();
+                last_syntax = Syntax::ArrayLiteralOrComputedProperty;
+            }
             c if is_digit(c) => {
                 parse_literal_number(proc)?;
                 last_syntax = Syntax::LiteralNumber;
@@ -315,6 +321,11 @@ pub fn process_js_script(proc: &mut Processor) -> ProcessingResult<()> {
             b'/' => match proc.peek_offset(1)? {
                 b'/' => parse_comment_single(proc)?,
                 b'*' => parse_comment_multi(proc)?,
+                b'=' => {
+                    // Is `/=` operator.
+                    proc.accept_amount_expect(2);
+                    last_syntax = Syntax::Punctuator;
+                }
                 _ => {
                     let is_regex = match last_syntax {
                         Syntax::IfWhileForWithParentheses => true,
