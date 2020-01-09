@@ -1,5 +1,6 @@
 {
   "COMMENT_END": "-->",
-  "CSS_COMMENT_END": "*/",
+  "SCRIPT_END": "</script",
+  "STYLE_END": "</style",
   "INSTRUCTION_END": "?>"
 }

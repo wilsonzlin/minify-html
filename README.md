@@ -307,12 +307,6 @@ If an attribute value is empty after any processing, it is completely removed (i
 
 Spaces are removed between attributes if possible.
 
-### Script and style
-
-Insignificant whitespace is trimmed and collapsed inside `<script>` with JS code and `<style>`.
-
-JS and CSS comments are removed inside `<script>` and `<style>`.
-
 ### Other
 
 - Comments are removed.
@@ -374,7 +368,5 @@ Special handling of some attributes require case sensitive names and values. For
 ### Script and style
 
 `script` and `style` tags must be closed with `</script>` and `</style>` respectively (case sensitive).
-
-Note that the closing tag must not contain any whitespace (e.g. `</script  >`).
 
 [hyperbuild can handle text script content.](./notes/Text%20script%20content.md)

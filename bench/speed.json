@@ -1,74 +1,74 @@
 {
   "Amazon.html": {
-    "hyperbuild": 245.46705260338564,
-    "hyperbuild-nodejs": 145.21435374237635,
-    "html-minifier": 16.19830761009811,
-    "minimize": 95.71966364576267
+    "hyperbuild": 348.52605821546064,
+    "hyperbuild-nodejs": 165.07093690973286,
+    "html-minifier": 16.107592839431693,
+    "minimize": 99.24208700487603
   },
   "BBC.html": {
-    "hyperbuild": 429.2291873495222,
-    "hyperbuild-nodejs": 251.3721939160052,
-    "html-minifier": 18.333446052847226,
-    "minimize": 108.38902861455512
+    "hyperbuild": 498.2348139009136,
+    "hyperbuild-nodejs": 244.6322429720145,
+    "html-minifier": 18.585717845341243,
+    "minimize": 116.27828832819753
   },
   "Bootstrap.html": {
-    "hyperbuild": 235.08368235051825,
-    "hyperbuild-nodejs": 156.19542771462898,
-    "html-minifier": 8.557266916672539,
-    "minimize": 22.359774537863895
+    "hyperbuild": 238.21894278610927,
+    "hyperbuild-nodejs": 156.53315203999523,
+    "html-minifier": 8.3990089555115,
+    "minimize": 22.909077061595145
   },
   "Bing.html": {
-    "hyperbuild": 1008.1262435363229,
-    "hyperbuild-nodejs": 585.3489088472239,
-    "html-minifier": 79.35385186294975,
-    "minimize": 435.31581246812584
+    "hyperbuild": 1737.6334081200116,
+    "hyperbuild-nodejs": 688.4893822559816,
+    "html-minifier": 78.95988809648134,
+    "minimize": 437.5366586028663
   },
   "Coding Horror.html": {
-    "hyperbuild": 1146.867798530376,
-    "hyperbuild-nodejs": 680.2295027510518,
-    "html-minifier": 45.63362214760677,
-    "minimize": 164.51899348138494
+    "hyperbuild": 1197.4089706956722,
+    "hyperbuild-nodejs": 669.904737573913,
+    "html-minifier": 45.643674781314395,
+    "minimize": 173.0258048899911
   },
   "Google.html": {
-    "hyperbuild": 344.0346646025321,
-    "hyperbuild-nodejs": 317.3708534283478,
-    "html-minifier": 29.36827883130167,
-    "minimize": 365.1698468973524
+    "hyperbuild": 1123.9206824500823,
+    "hyperbuild-nodejs": 920.376725868044,
+    "html-minifier": 31.321054829311436,
+    "minimize": 369.0906454521445
   },
   "Hacker News.html": {
-    "hyperbuild": 1804.5683188361834,
-    "hyperbuild-nodejs": 1259.6432378637871,
-    "html-minifier": 66.43984413610241,
-    "minimize": 255.30928557346104
+    "hyperbuild": 1839.8486560618867,
+    "hyperbuild-nodejs": 1255.30693251337,
+    "html-minifier": 67.45295727773244,
+    "minimize": 265.7472608824104
   },
   "NY Times.html": {
-    "hyperbuild": 123.84742876588177,
-    "hyperbuild-nodejs": 51.83081525871115,
-    "html-minifier": 7.334756953956464,
-    "minimize": 59.400301132747934
+    "hyperbuild": 206.64831284965635,
+    "hyperbuild-nodejs": 54.49167941039783,
+    "html-minifier": 7.336661842305721,
+    "minimize": 61.264331562390105
   },
   "Reddit.html": {
-    "hyperbuild": 109.45057921629598,
-    "hyperbuild-nodejs": 66.80243904185947,
-    "html-minifier": 6.3323721760167695,
-    "minimize": 44.528247219895
+    "hyperbuild": 189.6454899629115,
+    "hyperbuild-nodejs": 84.58158579201455,
+    "html-minifier": 6.305846537661691,
+    "minimize": 45.602895635511416
   },
   "Stack Overflow.html": {
-    "hyperbuild": 763.6540095978328,
-    "hyperbuild-nodejs": 496.21357271825997,
-    "html-minifier": 39.39722290667494,
-    "minimize": 148.07292819104936
+    "hyperbuild": 795.551445372161,
+    "hyperbuild-nodejs": 496.1578048486152,
+    "html-minifier": 39.331066953478285,
+    "minimize": 154.24858433261213
   },
   "Twitter.html": {
-    "hyperbuild": 376.9341764747767,
-    "hyperbuild-nodejs": 208.2611701306221,
-    "html-minifier": 42.264558908660206,
-    "minimize": 136.3651156178245
+    "hyperbuild": 386.0676346339393,
+    "hyperbuild-nodejs": 207.95620261405426,
+    "html-minifier": 42.24757139208541,
+    "minimize": 129.4921832398901
   },
   "Wikipedia.html": {
-    "hyperbuild": 52.02792034641937,
-    "hyperbuild-nodejs": 32.045431164840046,
-    "html-minifier": 2.35238631274572,
-    "minimize": 7.878943786969402
+    "hyperbuild": 52.81648307515652,
+    "hyperbuild-nodejs": 32.050455493661815,
+    "html-minifier": 2.394314136599145,
+    "minimize": 8.106531334304298
   }
 }
