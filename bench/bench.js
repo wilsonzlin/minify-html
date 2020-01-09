@@ -88,7 +88,7 @@ const runTest = test => new Promise((resolve, reject) => {
   // Run Rust library.
   for (const [testName, testOps] of JSON.parse(cmd(
     path.join(__dirname, 'hyperbuild-bench', 'target', 'release', 'hyperbuild-bench'),
-    '--iterations', 100,
+    '--iterations', 2048,
     '--tests', path.join(__dirname, 'tests'),
   ))) {
     results[testName] = {hyperbuild: testOps};
