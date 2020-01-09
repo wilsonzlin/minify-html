@@ -9,6 +9,7 @@ const tests = {
   "Bootstrap": "https://getbootstrap.com/docs/3.4/css/",
   "Bing": "https://www.bing.com/",
   "Coding Horror": "https://blog.codinghorror.com/",
+  "ECMA-262": "https://www.ecma-international.org/ecma-262/10.0/index.html",
   "Google": "https://www.google.com/",
   "Hacker News": "https://news.ycombinator.com/",
   "NY Times": "https://www.nytimes.com/",

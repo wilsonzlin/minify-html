@@ -1,3 +1,5 @@
+// Implement debug to allow .unwrap().
+#[derive(Debug)]
 pub enum ErrorType {
     EntityFollowingMalformedEntity,
     NoSpaceBeforeAttr,

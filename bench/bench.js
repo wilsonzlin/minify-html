@@ -1,65 +1,39 @@
-"use strict";
-
 const benchmark = require('benchmark');
-const chartjs = require('chartjs-node');
+const childProcess = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const programs = require('./minifiers');
 const tests = require('./tests');
 
-const colours = [
-  {
-    backgroundColor: '#9ad0f5',
-    borderColor: '#47aaec',
-  },
-  {
-    backgroundColor: '#ffb0c1',
-    borderColor: '#ff87a1',
-  },
-  {
-    backgroundColor: '#a4dfdf',
-    borderColor: '#4bc0c0',
-  },
-];
-const chartOptions = (title, displayLegend, yTick = t => t) => ({
-  options: {
-    title: {
-      display: true,
-      text: title,
-    },
-    scales: {
-      xAxes: [{
-        barPercentage: 0.5,
-        gridLines: {
-          color: '#ccc',
-        },
-        ticks: {
-          fontColor: '#222',
-        },
-      }],
-      yAxes: [{
-        gridLines: {
-          color: '#666',
-        },
-        ticks: {
-          callback: yTick,
-          fontColor: '#222',
-        },
-      }],
-    },
-    legend: {
-      display: displayLegend,
-      labels: {
-        fontFamily: 'Ubuntu, sans-serif',
-        fontColor: '#000',
-      },
-    },
-  },
-});
-const renderChart = async (file, cfg) => {
-  const chart = new chartjs(435, 320);
-  await chart.drawChart(cfg);
-  await chart.writeImageToFile('image/png', path.join(__dirname, `${file}.png`));
+const cmd = (command, ...args) => {
+  const throwErr = msg => {
+    throw new Error(`${msg}\n  ${command} ${args.join(' ')}`);
+  };
+
+  const {status, signal, error, stdout, stderr} = childProcess.spawnSync(command, args.map(String), {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    encoding: 'utf8',
+  });
+  if (error) {
+    throwErr(error.message);
+  }
+  if (signal) {
+    throwErr(`Command exited with signal ${signal}`);
+  }
+  if (status !== 0) {
+    throwErr(`Command exited with status ${status}`);
+  }
+  if (stderr) {
+    throwErr(`stderr: ${stderr}`);
+  }
+  return stdout;
+};
+
+const fromEntries = entries => {
+  if (Object.fromEntries) return Object.fromEntries(entries);
+  const obj = {};
+  for (const [prop, val] of entries) obj[prop] = val;
+  return obj;
 };
 
 const sizes = {};
@@ -91,52 +65,37 @@ for (const t of tests) {
     }
   }
 }
+fs.writeFileSync(path.join(__dirname, 'minification.json'), JSON.stringify(sizes, null, 2));
 
-const suite = new benchmark.Suite();
-for (const p of Object.keys(programs)) {
-  suite.add(p, () => {
-    for (const t of tests) {
-      programs[p](t.content);
-    }
-  });
-}
-suite
-  .on('cycle', event => {
-    console.info(event.target.toString());
-  })
-  .on('complete', async function () {
-    const speedResults = this.map(b => ({
-      name: b.name,
-      ops: b.hz,
-    }));
-    fs.writeFileSync(path.join(__dirname, "speed.json"), JSON.stringify(speedResults, null, 2));
-    await renderChart('speed', {
-      type: 'bar',
-      data: {
-        labels: speedResults.map(r => r.name),
-        datasets: [{
-          ...colours[0],
-          data: speedResults.map(r => r.ops),
-        }],
-      },
-      ...chartOptions('Operations per second (higher is better)', false),
+const runTest = test => new Promise((resolve, reject) => {
+  // Run JS libraries.
+  const suite = new benchmark.Suite();
+  for (const p of Object.keys(programs)) {
+    suite.add(p, () => {
+      programs[p](test.content);
     });
+  }
+  suite
+    .on('cycle', event => console.info(test.name, event.target.toString()))
+    .on('complete', () => resolve(fromEntries(suite.map(b => [b.name, b.hz]))))
+    .on('error', reject)
+    .run({'async': true});
+});
 
-    const testNames = Object.keys(sizes);
-    const programNames = Object.keys(programs);
-    fs.writeFileSync(path.join(__dirname, "minification.json"), JSON.stringify(sizes, null, 2));
-    await renderChart('minification', {
-      type: 'bar',
-      scaleFontColor: 'red',
-      data: {
-        labels: testNames,
-        datasets: programNames.map((program, i) => ({
-          label: program,
-          ...colours[i],
-          data: testNames.map(test => sizes[test][program].relative * 100),
-        })),
-      },
-      ...chartOptions('Relative minified HTML file size (lower is better)', true, tick => `${tick}%`),
-    });
-  })
-  .run({'async': true});
+(async () => {
+  const results = {};
+
+  // Run Rust library.
+  for (const [testName, testOps] of JSON.parse(cmd(
+    path.join(__dirname, 'hyperbuild-bench', 'target', 'release', 'hyperbuild-bench'),
+    '--iterations', 100,
+    '--tests', path.join(__dirname, 'tests'),
+  ))) {
+    results[testName] = {hyperbuild: testOps};
+  }
+
+  for (const t of tests) {
+    Object.assign(results[t.name], await runTest(t));
+  }
+  fs.writeFileSync(path.join(__dirname, 'speed.json'), JSON.stringify(results, null, 2));
+})();
