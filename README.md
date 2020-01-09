@@ -15,7 +15,7 @@ Available as:
 
 ## Performance
 
-Speed and effectiveness of Node.js version compared to other JS minifiers.
+Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize).
 
 ![Chart showing speed of HTML minifiers](./bench/speed.png) ![Chart showing effectiveness of HTML minifiers](./bench/minification.png)
 

@@ -45,13 +45,15 @@ enum TagType {
 
 pub struct ProcessedTag {
     pub name: ProcessorRange,
-    pub closing_tag: Option<ProcessorRange>,
+    pub has_closing_tag: bool,
 }
 
 impl ProcessedTag {
     pub fn write_closing_tag(&self, proc: &mut Processor) -> () {
-        if let Some(tag) = self.closing_tag {
-            proc.write_range(tag);
+        if self.has_closing_tag {
+            proc.write_slice(b"</");
+            proc.write_range(self.name);
+            proc.write(b'>');
         };
     }
 }
@@ -153,7 +155,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
             // Write discarded tag closing characters.
             if is_void_tag { proc.write_slice(b">"); } else { proc.write_slice(b"/>"); };
         };
-        return Ok(ProcessedTag { name: tag_name, closing_tag: None });
+        return Ok(ProcessedTag { name: tag_name, has_closing_tag: false });
     };
 
     match tag_type {
@@ -163,10 +165,9 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     };
 
     // Require closing tag for non-void.
-    let closing_tag = proc.checkpoint();
-    chain!(proc.match_seq(b"</").require()?.discard());
+    chain!(proc.match_seq(b"</").require_with_reason("closing tag")?.discard());
     chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.discard());
     chain!(proc.match_while_pred(is_whitespace).discard());
     chain!(proc.match_char(b'>').require()?.discard());
-    Ok(ProcessedTag { name: tag_name, closing_tag: Some(proc.consumed_range(closing_tag)) })
+    Ok(ProcessedTag { name: tag_name, has_closing_tag: true })
 }
