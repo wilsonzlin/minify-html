@@ -57,7 +57,7 @@ const setSize = (program, test, result) => {
 for (const t of tests) {
   for (const p of Object.keys(programs)) {
     try {
-      setSize(p, t.name, programs[p](t.content).length);
+      setSize(p, t.name, programs[p](t.contentAsString, t.contentAsBuffer).length);
     } catch (err) {
       console.error(`Failed to run ${p} on test ${t.name}:`);
       console.error(err);
@@ -72,7 +72,7 @@ const runTest = test => new Promise((resolve, reject) => {
   const suite = new benchmark.Suite();
   for (const p of Object.keys(programs)) {
     suite.add(p, () => {
-      programs[p](test.content);
+      programs[p](test.contentAsString, test.contentAsBuffer);
     });
   }
   suite

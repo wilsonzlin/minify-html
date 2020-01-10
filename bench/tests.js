@@ -4,5 +4,6 @@ const path = require('path');
 const testsDir = path.join(__dirname, 'tests');
 module.exports = fs.readdirSync(testsDir).map(name => ({
   name,
-  content: fs.readFileSync(path.join(testsDir, name), 'utf8'),
+  contentAsString: fs.readFileSync(path.join(testsDir, name), 'utf8'),
+  contentAsBuffer: fs.readFileSync(path.join(testsDir, name)),
 })).sort((a, b) => a.name.localeCompare(b.name));

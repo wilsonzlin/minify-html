@@ -6,5 +6,9 @@ module.exports = {
     const len = hyperbuild.minify(buf);
     return buf.slice(0, len).toString();
   },
-  minify_in_place: hyperbuild.minify,
+  minify_in_place: buf => {
+    const len = hyperbuild.minify(buf);
+    // This does not do a copy.
+    return buf.slice(0, len);
+  },
 };

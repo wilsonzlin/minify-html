@@ -1,4 +1,6 @@
-# Text script content
+# Script data
+
+For legacy reasons, special handling is required for content inside a script tag; see https://www.w3.org/TR/html52/syntax.html#script-data-state for more details.
 
 ```html
 <script type="text/html">

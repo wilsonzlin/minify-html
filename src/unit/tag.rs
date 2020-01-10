@@ -8,6 +8,7 @@ use crate::spec::tag::void::VOID_TAGS;
 use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
 use crate::unit::content::process_content;
 use crate::unit::script::js::process_js_script;
+use crate::unit::script::process_script;
 use crate::unit::script::text::process_text_script;
 use crate::unit::style::process_style;
 
@@ -159,14 +160,17 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     };
 
     match tag_type {
-        TagType::Script => if script_tag_type_is_js { process_js_script(proc)?; } else { process_text_script(proc)?; },
+        TagType::Script => process_script(proc)?,
         TagType::Style => process_style(proc)?,
         _ => process_content(proc, Some(tag_name))?,
     };
 
     // Require closing tag for non-void.
     chain!(proc.match_seq(b"</").require_with_reason("closing tag")?.discard());
-    chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.discard());
+    let closing_tag = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.discard().range());
+    if !proc[closing_tag].eq(proc[tag_name]) {
+        return Err(ErrorType::ClosingTagMismatch);
+    };
     chain!(proc.match_while_pred(is_whitespace).discard());
     chain!(proc.match_char(b'>').require()?.discard());
     Ok(ProcessedTag { name: tag_name, has_closing_tag: true })

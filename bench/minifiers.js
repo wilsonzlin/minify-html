@@ -3,7 +3,7 @@ const hyperbuild = require("hyperbuild");
 const minimize = require("minimize");
 
 module.exports = {
-  'hyperbuild-nodejs': content => hyperbuild.minify(content),
+  'hyperbuild-nodejs': (_, buffer) => hyperbuild.minify_in_place(Buffer.from(buffer)),
   'html-minifier': content => htmlMinifier.minify(content, {
     collapseBooleanAttributes: true,
     collapseInlineTagWhitespace: true,

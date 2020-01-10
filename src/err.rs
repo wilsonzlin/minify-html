@@ -2,10 +2,8 @@
 #[derive(Debug)]
 pub enum ErrorType {
     EntityFollowingMalformedEntity,
+    ClosingTagMismatch,
     NoSpaceBeforeAttr,
-    UnterminatedCssString,
-    UnterminatedJsString,
-    UnterminatedJsRegExp,
     CharNotFound { need: u8, got: u8 },
     MatchNotFound(&'static [u8]),
     NotFound(&'static str),
@@ -19,17 +17,11 @@ impl ErrorType {
             ErrorType::EntityFollowingMalformedEntity => {
                 format!("Entity cannot follow malformed entity.")
             }
+            ErrorType::ClosingTagMismatch => {
+                format!("Opening tag name does not match closing tag.")
+            }
             ErrorType::NoSpaceBeforeAttr => {
                 format!("Space required before attribute.")
-            }
-            ErrorType::UnterminatedCssString => {
-                format!("Unterminated CSS string.")
-            }
-            ErrorType::UnterminatedJsString => {
-                format!("Unterminated JavaScript string.")
-            }
-            ErrorType::UnterminatedJsRegExp => {
-                format!("Unterminated JavaScript regular expression.")
             }
             ErrorType::CharNotFound { need, got } => {
                 format!("Expected {} (U+{:X}), got {} (U+{:X}).", need as char, need, got as char, got)
