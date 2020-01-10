@@ -41,7 +41,7 @@ const setSize = (program, test, result) => {
   if (!sizes[test]) {
     sizes[test] = {
       original: {
-        absolute: tests.find(t => t.name === test).content.length,
+        absolute: tests.find(t => t.name === test).contentAsString.length,
         relative: 1,
       },
     };

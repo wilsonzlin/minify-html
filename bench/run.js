@@ -9,7 +9,7 @@ for (const t of tests) {
     try {
       const minPath = path.join(__dirname, 'min', p, t.name);
       mkdirp.sync(path.dirname(minPath));
-      fs.writeFileSync(minPath, programs[p](t.content));
+      fs.writeFileSync(minPath, programs[p](t.contentAsString, t.contentAsBuffer));
     } catch (err) {
       console.error(`Failed to run ${p} on test ${t.name}:`);
       console.error(err);

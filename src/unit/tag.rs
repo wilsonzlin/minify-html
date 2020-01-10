@@ -7,9 +7,7 @@ use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::void::VOID_TAGS;
 use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
 use crate::unit::content::process_content;
-use crate::unit::script::js::process_js_script;
 use crate::unit::script::process_script;
-use crate::unit::script::text::process_text_script;
 use crate::unit::style::process_style;
 
 pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
@@ -94,8 +92,6 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     let mut last_attr_type: Option<AttrType> = None;
     let mut self_closing = false;
     let is_void_tag = VOID_TAGS.contains(&proc[tag_name]);
-    // Set to false if `tag_type` is Script and "type" attribute exists and has value that is not empty and not one of `JAVASCRIPT_MIME_TYPES`.
-    let mut script_tag_type_is_js: bool = true;
 
     loop {
         // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).
@@ -132,7 +128,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
         match (tag_type, &proc[name]) {
             (TagType::Script, b"type") => {
                 // It's JS if the value is empty or one of `JAVASCRIPT_MIME_TYPES`.
-                script_tag_type_is_js = value
+                let script_tag_type_is_js = value
                     .filter(|v| !JAVASCRIPT_MIME_TYPES.contains(&proc[*v]))
                     .is_none();
                 if script_tag_type_is_js {
@@ -168,7 +164,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     // Require closing tag for non-void.
     chain!(proc.match_seq(b"</").require_with_reason("closing tag")?.discard());
     let closing_tag = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.discard().range());
-    if !proc[closing_tag].eq(proc[tag_name]) {
+    if !proc[closing_tag].eq(&proc[tag_name]) {
         return Err(ErrorType::ClosingTagMismatch);
     };
     chain!(proc.match_while_pred(is_whitespace).discard());
