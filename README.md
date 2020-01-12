@@ -369,4 +369,4 @@ Special handling of some attributes require case sensitive names and values. For
 
 `script` and `style` tags must be closed with `</script>` and `</style>` respectively (case sensitive).
 
-[hyperbuild can handle escaped and double-escaped script content.](./notes/Script%20data.md)
+hyperbuild does not handle [escaped and double-escaped](./notes/Script%20data.md) script content.
