@@ -1,6 +1,5 @@
 use crate::err::ProcessingResult;
 use crate::ErrorType;
-use crate::pattern::{ITrieNode, TrieLeafNode};
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
 

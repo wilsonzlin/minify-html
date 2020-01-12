@@ -1,9 +1,10 @@
 use std::ops::Index;
 
+use fastrie::{Fastrie, FastrieMatch};
 use phf::Set;
 
 use crate::err::{ErrorType, ProcessingResult};
-use crate::pattern::{SinglePattern, ITrieNode};
+use crate::pattern::SinglePattern;
 
 macro_rules! chain {
     ($proc:ident $($tail:tt)+) => ({
@@ -262,24 +263,17 @@ impl<'d> Processor<'d> {
         };
         self._new_match(count, None, RequireReason::ExpectedMatch(pat))
     }
-    pub fn match_trie<V: 'static + Copy>(&mut self, trie: &dyn ITrieNode<V>) -> Option<V> {
-        let mut current = trie;
-        let mut found: Option<V> = None;
-        let mut found_at = 0;
-        let mut count = 0;
-        while let Some(c) = self._maybe_read_offset(count) {
-            match current.get_child(c) {
-                Some(n) => current = n,
-                None => break,
-            };
-            count += 1;
-            if let Some(v) = current.get_value() {
-                found = Some(v);
-                found_at = count;
-            };
-        };
-        self._new_match(found_at, None, RequireReason::Custom);
-        found
+    pub fn match_trie<V: 'static + Copy>(&mut self, trie: &Fastrie<V>) -> Option<V> {
+        match trie.longest_matching_prefix(&self.code[self.read_next..]) {
+            None => {
+                self._new_match(0, None, RequireReason::Custom);
+                None
+            }
+            Some(FastrieMatch { end, value }) => {
+                self._new_match(end, None, RequireReason::Custom);
+                Some(*value)
+            }
+        }
     }
     pub fn match_line_terminator(&mut self) -> () {
         self._new_match(match self._maybe_read_offset(0) {
