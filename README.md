@@ -19,7 +19,7 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 Used average of results from running on [common web pages](./bench/tests). See [bench](./bench) folder for more details.
 
-![Chart showing speed of HTML minifiers](./bench/speed.png) ![Chart showing effectiveness of HTML minifiers](./bench/minification.png)
+<img width="435" alt="Chart showing speed of HTML minifiers" src="./bench/speed.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="./bench/minification.png">
 
 ## Usage
 

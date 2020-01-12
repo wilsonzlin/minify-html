@@ -18,6 +18,7 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
       display: true,
       text: title,
       fontColor: '#333',
+      fontSize: 24,
     },
     scales: {
       xAxes: [{
@@ -27,6 +28,7 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
         },
         ticks: {
           fontColor: '#666',
+          fontSize: 20,
         },
       }],
       yAxes: [{
@@ -38,6 +40,7 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
           max: 1,
           callback: yTick,
           fontColor: '#666',
+          fontSize: 20,
         },
       }],
     },
@@ -52,7 +55,7 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
 });
 
 const renderChart = async (file, cfg) => {
-  const chart = new chartjs(435, 320);
+  const chart = new chartjs(900, 650);
   await chart.drawChart(cfg);
   await chart.writeImageToFile('image/png', path.join(__dirname, `${file}.png`));
 };
