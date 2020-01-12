@@ -4,7 +4,6 @@ pub enum ErrorType {
     EntityFollowingMalformedEntity,
     ClosingTagMismatch,
     NoSpaceBeforeAttr,
-    CharNotFound { need: u8, got: u8 },
     MatchNotFound(&'static [u8]),
     NotFound(&'static str),
     ExpectedChar(u8),
@@ -18,13 +17,10 @@ impl ErrorType {
                 format!("Entity cannot follow malformed entity.")
             }
             ErrorType::ClosingTagMismatch => {
-                format!("Opening tag name does not match closing tag.")
+                format!("Closing tag name does not match opening tag.")
             }
             ErrorType::NoSpaceBeforeAttr => {
                 format!("Space required before attribute.")
-            }
-            ErrorType::CharNotFound { need, got } => {
-                format!("Expected {} (U+{:X}), got {} (U+{:X}).", need as char, need, got as char, got)
             }
             ErrorType::MatchNotFound(seq) => {
                 format!("Expected `{}`.", unsafe { std::str::from_utf8_unchecked(seq) })

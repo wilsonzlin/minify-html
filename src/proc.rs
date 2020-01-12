@@ -1,7 +1,6 @@
 use std::ops::Index;
 
 use fastrie::{Fastrie, FastrieMatch};
-use phf::Set;
 
 use crate::err::{ErrorType, ProcessingResult};
 use crate::pattern::SinglePattern;
@@ -31,7 +30,6 @@ macro_rules! chain {
 #[derive(Copy, Clone)]
 pub enum RequireReason {
     Custom,
-    ExpectedNotChar(u8),
     ExpectedMatch(&'static [u8]),
     ExpectedChar(u8),
 }
@@ -157,7 +155,6 @@ impl<'d> Processor<'d> {
         } else {
             match self.match_reason {
                 RequireReason::Custom => Err(ErrorType::NotFound(custom_reason.unwrap())),
-                RequireReason::ExpectedNotChar(c) => Err(ErrorType::CharNotFound { need: c, got: self.match_char.unwrap() }),
                 RequireReason::ExpectedChar(c) => Err(ErrorType::ExpectedChar(c)),
                 RequireReason::ExpectedMatch(m) => Err(ErrorType::MatchNotFound(m)),
             }
@@ -182,9 +179,6 @@ impl<'d> Processor<'d> {
     // Query match.
     pub fn matched(&self) -> bool {
         self.match_len > 0
-    }
-    pub fn length(&self) -> usize {
-        self.match_len
     }
     pub fn char(&self) -> u8 {
         self.match_char.unwrap()
@@ -231,20 +225,8 @@ impl<'d> Processor<'d> {
     pub fn match_char(&mut self, c: u8) -> () {
         self._match_one(|n| n == c, RequireReason::ExpectedChar(c))
     }
-    pub fn match_not_char(&mut self, c: u8) -> () {
-        self._match_one(|n| n != c, RequireReason::ExpectedNotChar(c))
-    }
-    pub fn match_member(&mut self, set: Set<u8>) -> () {
-        self._match_one(|n| set.contains(&n), RequireReason::Custom)
-    }
-    pub fn match_not_member(&mut self, set: Set<u8>) -> () {
-        self._match_one(|n| !set.contains(&n), RequireReason::Custom)
-    }
     pub fn match_pred(&mut self, pred: fn(u8) -> bool) -> () {
-        self._match_one(|n| pred(n), RequireReason::Custom)
-    }
-    pub fn match_not_pred(&mut self, pred: fn(u8) -> bool) -> () {
-        self._match_one(|n| !pred(n), RequireReason::Custom)
+        self._match_one(pred, RequireReason::Custom)
     }
 
     // Sequence matching APIs.
@@ -275,33 +257,15 @@ impl<'d> Processor<'d> {
             }
         }
     }
-    pub fn match_line_terminator(&mut self) -> () {
-        self._new_match(match self._maybe_read_offset(0) {
-            Some(b'\n') => 1,
-            Some(b'\r') => 1 + self._maybe_read_offset(1).filter(|c| *c == b'\n').is_some() as usize,
-            _ => 0,
-        }, None, RequireReason::Custom)
-    }
 
     // Multi-char matching APIs.
-    pub fn match_while_char(&mut self, c: u8) -> () {
-        self._match_greedy(|n| n == c)
-    }
     pub fn match_while_not_char(&mut self, c: u8) -> () {
         self._match_greedy(|n| n != c)
-    }
-    pub fn match_while_member(&mut self, set: Set<u8>) -> () {
-        self._match_greedy(|n| set.contains(&n))
-    }
-    pub fn match_while_not_member(&mut self, set: Set<u8>) -> () {
-        self._match_greedy(|n| !set.contains(&n))
     }
     pub fn match_while_pred(&mut self, pred: fn(u8) -> bool) -> () {
         self._match_greedy(pred)
     }
     pub fn match_while_not_seq(&mut self, s: &SinglePattern) -> () {
-        // TODO Test
-        // TODO Document
         let count = match s.match_against(&self.code[self.read_next..]) {
             Some(idx) => idx,
             None => self.code.len() - self.read_next,
@@ -376,17 +340,6 @@ impl<'d> Processor<'d> {
     }
 
     // Consuming source characters.
-    /// Skip the next `count` characters (can be zero).
-    /// Will result in an error if exceeds bounds.
-    pub fn skip_amount(&mut self, count: usize) -> ProcessingResult<()> {
-        // Check for zero to prevent underflow as type is usize.
-        if count == 0 || self._in_bounds(count - 1) {
-            self.read_next += count;
-            Ok(())
-        } else {
-            Err(ErrorType::UnexpectedEnd)
-        }
-    }
     /// Skip and return the next character.
     /// Will result in an error if exceeds bounds.
     pub fn skip(&mut self) -> ProcessingResult<u8> {
@@ -454,14 +407,5 @@ impl<'d> Processor<'d> {
     pub fn accept_amount_expect(&mut self, count: usize) -> () {
         debug_assert!(self._in_bounds(count - 1));
         self._shift(count);
-    }
-    pub fn accept_amount(&mut self, count: usize) -> ProcessingResult<()> {
-        // Check for zero to prevent underflow as type is usize.
-        if count == 0 || self._in_bounds(count - 1) {
-            self._shift(count);
-            Ok(())
-        } else {
-            Err(ErrorType::UnexpectedEnd)
-        }
     }
 }
