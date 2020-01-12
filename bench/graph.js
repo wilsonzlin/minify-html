@@ -34,6 +34,8 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
           color: '#ccc',
         },
         ticks: {
+          min: 0,
+          max: 1,
           callback: yTick,
           fontColor: '#666',
         },
@@ -77,7 +79,7 @@ const renderChart = async (file, cfg) => {
       // Include it this if this situation changes.
       datasets: [{
         label: 'Average relative OP/s',
-        backgroundColor: '#0366d6',
+        backgroundColor: '#1f77b4',
         data: speedData.map(([_, v]) => v),
       }],
     },
@@ -99,7 +101,7 @@ const renderChart = async (file, cfg) => {
       labels: sizeData.map(([n]) => n),
       datasets: [{
         label: 'Average minified size',
-        backgroundColor: '#0366d6',
+        backgroundColor: '#2ca02c',
         data: sizeData.map(([_, v]) => v),
       }],
     },
