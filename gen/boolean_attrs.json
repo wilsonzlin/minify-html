@@ -18,6 +18,9 @@
   "autoplay": [
     "media"
   ],
+  "capture": [
+    "input"
+  ],
   "checked": [
     "input"
   ],
@@ -26,6 +29,9 @@
   ],
   "default": [
     "track"
+  ],
+  "defaultchecked": [
+    ""
   ],
   "defer": [
     "script"
@@ -46,6 +52,12 @@
   "formnovalidate": [
     "button",
     "input"
+  ],
+  "hidden": [
+    ""
+  ],
+  "itemscope": [
+    ""
   ],
   "loop": [
     "media"
@@ -91,5 +103,11 @@
   ],
   "selected": [
     "option"
+  ],
+  "suppresscontenteditablewarning": [
+    ""
+  ],
+  "suppresshydrationwarning": [
+    ""
   ]
 }

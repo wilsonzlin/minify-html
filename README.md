@@ -301,19 +301,20 @@ Any entities in attribute values are decoded, and then the shortest representati
 `class` attributes have their whitespace (after any decoding) trimmed and collapsed.
 
 [Boolean attribute](./gen/boolean_attrs.json) values are removed.
+[Some attributes](./gen/redundant_if_empty_attrs.json) are completely removed if their value is empty after any processing.
 
-`type` attributes on `script` tags with a value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.  
-`type` attributes on `style` tags are removed.  
+`type` attributes on `script` tags with a value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.
+`type` attributes on `style` tags are removed.
 
-If an attribute value is empty after any processing, it is completely removed (i.e. no `=`), as an empty attribute is implicitly [the same](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2) as an attribute with an empty string value.
+If an attribute value is empty after any processing, everything but the name is completely removed (i.e. no `=`), as an empty attribute is implicitly [the same](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2) as an attribute with an empty string value.
 
 Spaces are removed between attributes if possible.
 
 ### Entities
 
-Entities are decoded if valid (see relevant parsing section). If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`.
-
-This is done as `&amp` is equal to or shorter than all other entity representations of characters that could be encoded as part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
+Entities are decoded if valid (see relevant parsing section) and their decoded characters as UTF-8 is shorter or equal in length.
+ 
+If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity representations of characters part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
 
 ### Comments
 
@@ -362,4 +363,10 @@ Special handling of some attributes require case sensitive names and values. For
 
 `script` and `style` tags must be closed with `</script>` and `</style>` respectively (case sensitive).
 
-hyperbuild does not handle [escaped and double-escaped](./notes/Script%20data.md) script content.
+hyperbuild does **not** handle [escaped and double-escaped](./notes/Script%20data.md) script content.
+
+## Issues and contributions
+
+Contributions welcome!
+
+If hyperbuild did something unexpected, such as misunderstood some syntax, or incorrectly did/didn't do some minification, [raise an issue](https://github.com/wilsonzlin/hyperbuild/issues) with some relevant code that causes the issue.

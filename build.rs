@@ -96,22 +96,32 @@ fn generate_fastrie_code(var_name: &str, value_type: &str, built: &FastrieBuild<
     )
 }
 
-fn generate_boolean_attrs() {
-    let attrs: HashMap<String, Vec<String>> = read_json("boolean_attrs");
+fn generate_attr_map(name: &str) {
+    let name_words = name_words(name);
+    let snake_case = snake_case(&name_words);
+    let file_name = name_words.join("_");
+    let attrs: HashMap<String, Vec<String>> = read_json(file_name.as_str());
     let mut code = String::new();
     for (name, elems) in attrs.iter() {
-        code.push_str(format!(
-            "static {}_BOOLEAN_ATTR: &phf::Set<&'static [u8]> = &phf::phf_set!({});\n\n",
-            name.to_uppercase(),
-            elems.iter().map(|e| format!("b\"{}\"", e)).collect::<Vec<String>>().join(", "),
-        ).as_str());
+        if !elems.contains(&"".to_string()) {
+            code.push_str(format!(
+                "static {}_{}_ATTR: &phf::Set<&'static [u8]> = &phf::phf_set!({});\n\n",
+                name.to_uppercase(),
+                snake_case,
+                elems.iter().map(|e| format!("b\"{}\"", e)).collect::<Vec<String>>().join(", "),
+            ).as_str());
+        };
     };
-    code.push_str("pub static BOOLEAN_ATTRS: phf::Map<&'static [u8], &'static phf::Set<&'static [u8]>> = phf::phf_map!{\n");
-    for name in attrs.keys() {
-        code.push_str(format!("\tb\"{}\" => {}_BOOLEAN_ATTR,\n", name, name.to_uppercase()).as_str());
+    code.push_str(format!("pub static {}: crate::pattern::AttrMap = crate::pattern::AttrMap::new(phf::phf_map!{{\n", snake_case).as_str());
+    for (name, elems) in attrs.iter() {
+        if elems.contains(&"".to_string()) {
+            code.push_str(format!("\tb\"{}\" => crate::pattern::AttrMapEntry::AllHtmlElements,\n", name).as_str());
+        } else {
+            code.push_str(format!("\tb\"{}\" => crate::pattern::AttrMapEntry::SomeHtmlElements({}_{}_ATTR),\n", name, name.to_uppercase(), snake_case).as_str());
+        };
     };
-    code.push_str("};\n\n");
-    write_rs("boolean_attrs", code);
+    code.push_str("});\n\n");
+    write_rs(file_name.as_str(), code);
 }
 
 #[derive(Serialize, Deserialize)]
@@ -180,7 +190,8 @@ fn generate_tries() {
 }
 
 fn main() {
-    generate_boolean_attrs();
+    generate_attr_map("boolean attrs");
+    generate_attr_map("redundant if empty attrs");
     generate_entities();
     generate_patterns();
     generate_tries();

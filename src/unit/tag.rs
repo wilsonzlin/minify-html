@@ -10,6 +10,8 @@ use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
 
+include!(concat!(env!("OUT_DIR"), "/gen_redundant_if_empty_attrs.rs"));
+
 pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
     b"application/ecmascript",
     b"application/javascript",
@@ -133,6 +135,10 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
             (TagType::Style, b"type") => {
                 erase_attr = true;
             }
+            (_, name) => {
+                // TODO Check if HTML tag before checking if attribute removal applies to all elements.
+                erase_attr = value.is_none() && REDUNDANT_IF_EMPTY_ATTRS.contains(&proc[tag_name], name);
+            }
             _ => {}
         };
         if erase_attr {
@@ -142,6 +148,8 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
         };
     };
 
+    // TODO Self closing does not actually close for HTML elements, but might close for foreign elements.
+    // See spec for more details.
     if self_closing || is_void_tag {
         if self_closing {
             // Write discarded tag closing characters.
