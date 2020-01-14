@@ -1,6 +1,24 @@
 # Script data
 
-For legacy reasons, special handling is required for content inside a script tag; see https://www.w3.org/TR/html52/syntax.html#script-data-state for more details.
+## Summary
+
+For legacy reasons, HTML comments can appear within a script tag, and if there is a `<script` in it, the first following `</script>` within the comment does **not** close the main script tag.
+
+hyperbuild does **not** do this special handling, as it adds complexity and slows down performance dramatically, for a legacy feature that is not recommended to be (and almost never) used.
+
+See https://www.w3.org/TR/html52/syntax.html#script-data-state for more details.
+
+Commit [20c59769](https://github.com/wilsonzlin/hyperbuild/commit/20c59769fea6bfb8a9d5ecea47d979dc9b1dcda5) removed support.
+
+## States and transitions
+
+|State|`<script`|`</script`|`<!--`|`-->`|
+|---|---|---|---|---|
+|Normal|-|End|Escaped|-|
+|Escaped|DoubleEscaped|End|-|Normal|
+|DoubleEscaped|-|Escaped|-|Normal|
+
+## Examples
 
 ```html
 <script type="text/html">
@@ -17,11 +35,7 @@ These are true about the above snippet:
 - `!window.exec1 && window.exec2`.
 - `document.querySelector('script[type="text/html"]')` has exactly one child node and it's a text node.
 
-## Comments
-
 If there is one or more `<script>` inside an HTML comment before any `</script>`, the first `</script>` will not end the main script.
-
-### Examples
 
 Ending tag inside comment works because there are no nested script tags.
 

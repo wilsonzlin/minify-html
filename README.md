@@ -309,10 +309,15 @@ If an attribute value is empty after any processing, it is completely removed (i
 
 Spaces are removed between attributes if possible.
 
-### Other
+### Entities
 
-- Comments are removed.
-- Entities are decoded if valid (see relevant parsing section). If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity versions of characters that could be encoded as part of an entity (`[&#a-zA-Z0-9;]`).
+Entities are decoded if valid (see relevant parsing section). If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`.
+
+This is done as `&amp` is equal to or shorter than all other entity representations of characters that could be encoded as part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
+
+### Comments
+
+Comments are removed.
 
 ### Ignored
 
