@@ -40,15 +40,6 @@ pub enum EntityType {
 }
 
 impl EntityType {
-    pub fn is_malformed(&self) -> bool {
-        match self {
-            EntityType::Malformed(_) => true,
-            _ => false,
-        }
-    }
-}
-
-impl EntityType {
     pub fn keep(self, proc: &mut Processor) -> () {
         match self {
             EntityType::NonDecodableRightChevron(r) => { proc.write_range(r); }

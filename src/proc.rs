@@ -69,7 +69,6 @@ enum UnintentionalEntityState {
 }
 
 pub struct UnintentionalEntityPrevention {
-    // Start of ampersand if state is not Safe; otherwise simply the last `write_next` value of proc.
     last_write_next: usize,
     ampersand_pos: usize,
     state: UnintentionalEntityState,
