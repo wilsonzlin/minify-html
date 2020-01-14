@@ -1,7 +1,6 @@
 // Implement debug to allow .unwrap().
 #[derive(Debug)]
 pub enum ErrorType {
-    EntityFollowingMalformedEntity,
     ClosingTagMismatch,
     NoSpaceBeforeAttr,
     MatchNotFound(&'static [u8]),
@@ -13,9 +12,6 @@ pub enum ErrorType {
 impl ErrorType {
     pub fn message(self) -> String {
         match self {
-            ErrorType::EntityFollowingMalformedEntity => {
-                format!("Entity cannot follow malformed entity.")
-            }
             ErrorType::ClosingTagMismatch => {
                 format!("Closing tag name does not match opening tag.")
             }

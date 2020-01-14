@@ -1,9 +1,11 @@
-use std::ops::Index;
+use std::ops::{Index, Range};
 
 use fastrie::{Fastrie, FastrieMatch};
 
 use crate::err::{ErrorType, ProcessingResult};
 use crate::pattern::SinglePattern;
+use crate::spec::codepoint::{is_digit, is_hex_digit};
+use crate::unit::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
 
 macro_rules! chain {
     ($proc:ident $($tail:tt)+) => ({
@@ -54,6 +56,23 @@ impl ProcessorRange {
     pub fn empty(&self) -> bool {
         self.start >= self.end
     }
+}
+
+#[derive(Eq, PartialEq)]
+enum UnintentionalEntityState {
+    Safe,
+    Ampersand,
+    Named,
+    AmpersandHash,
+    Dec,
+    Hex,
+}
+
+pub struct UnintentionalEntityPrevention {
+    // Start of ampersand if state is not Safe; otherwise simply the last `write_next` value of proc.
+    last_write_next: usize,
+    ampersand_pos: usize,
+    state: UnintentionalEntityState,
 }
 
 // Processing state of a file. Most fields are used internally and set during
@@ -123,6 +142,10 @@ impl<'d> Processor<'d> {
         };
         self.read_next += amount;
         self.write_next += amount;
+    }
+    fn _replace(&mut self, range: Range<usize>, data: &[u8]) -> () {
+        self.code.copy_within(range.end..self.write_next, range.end + data.len() - (range.end - range.start));
+        self.code[range.start..range.start + data.len()].copy_from_slice(data);
     }
 
     // Matching.
@@ -252,7 +275,7 @@ impl<'d> Processor<'d> {
                 None
             }
             Some(FastrieMatch { end, value }) => {
-                self._new_match(end, None, RequireReason::Custom);
+                self._new_match(end + 1, None, RequireReason::Custom);
                 Some(*value)
             }
         }
@@ -271,6 +294,15 @@ impl<'d> Processor<'d> {
             None => self.code.len() - self.read_next,
         };
         self._new_match(count, None, RequireReason::Custom)
+    }
+
+    pub fn maybe_match_char_then_discard(&mut self, c: u8) -> bool {
+        let count = match self._maybe_read_offset(0) {
+            Some(n) => n == c,
+            None => false,
+        };
+        self.read_next += count as usize;
+        count
     }
 
     // Checkpoints.
@@ -314,6 +346,100 @@ impl<'d> Processor<'d> {
     /// Get amount of output characters written since checkpoint.
     pub fn written_count(&self, checkpoint: Checkpoint) -> usize {
         self.write_next - checkpoint.write_next
+    }
+
+    pub fn start_preventing_unintentional_entities(&self) -> UnintentionalEntityPrevention {
+        UnintentionalEntityPrevention {
+            last_write_next: self.write_next,
+            ampersand_pos: 0,
+            state: UnintentionalEntityState::Safe,
+        }
+    }
+    fn _handle_end_of_possible_entity(&mut self, uep: &mut UnintentionalEntityPrevention, end_inclusive: usize) -> usize {
+        let should_encode_ampersand = match uep.state {
+            UnintentionalEntityState::Safe => unreachable!(),
+            UnintentionalEntityState::Ampersand => unreachable!(),
+            UnintentionalEntityState::Named => {
+                match ENTITY_REFERENCES.longest_matching_prefix(&self.code[uep.ampersand_pos + 1..end_inclusive + 1]) {
+                    None => false,
+                    Some(_) => true,
+                }
+            }
+            UnintentionalEntityState::AmpersandHash => unreachable!(),
+            UnintentionalEntityState::Dec | UnintentionalEntityState::Hex => {
+                true
+            }
+        };
+        let encoded = b"amp";
+        if should_encode_ampersand {
+            // Insert encoded ampersand.
+            self._replace(uep.ampersand_pos + 1..uep.ampersand_pos + 1, encoded);
+        };
+        self.write_next += encoded.len();
+        uep.state = UnintentionalEntityState::Safe;
+        end_inclusive + encoded.len()
+    }
+    pub fn after_write(&mut self, uep: &mut UnintentionalEntityPrevention, is_end: bool) -> () {
+        let mut i = uep.last_write_next;
+        // Use manual loop as `i` and `self.write_next` could change due to mid-array insertion of entities.
+        while i < self.write_next {
+            let c = self.code[i];
+            match uep.state {
+                UnintentionalEntityState::Safe => match c {
+                    b'&' => {
+                        uep.state = UnintentionalEntityState::Ampersand;
+                        uep.ampersand_pos = i;
+                    }
+                    _ => {}
+                }
+                UnintentionalEntityState::Ampersand => match c {
+                    b'#' => {
+                        uep.state = UnintentionalEntityState::AmpersandHash;
+                    }
+                    c if is_valid_entity_reference_name_char(c) => {
+                        uep.state = UnintentionalEntityState::Named;
+                    }
+                    _ => {
+                        uep.state = UnintentionalEntityState::Safe;
+                    }
+                }
+                UnintentionalEntityState::AmpersandHash => match c {
+                    b'x' => {
+                        uep.state = UnintentionalEntityState::Hex;
+                    }
+                    c if is_digit(c) => {
+                        uep.state = UnintentionalEntityState::Dec;
+                        i = self._handle_end_of_possible_entity(uep, i);
+                    }
+                    _ => {
+                        uep.state = UnintentionalEntityState::Safe;
+                    }
+                }
+                UnintentionalEntityState::Named => match c {
+                    c if is_valid_entity_reference_name_char(c) => {
+                        // TODO Maybe should limit count?
+                        // NOTE: Cannot try to match trie as characters are consumed as we need to find longest match.
+                    }
+                    b';' | _ => {
+                        i = self._handle_end_of_possible_entity(uep, i);
+                    }
+                }
+                UnintentionalEntityState::Dec => unreachable!(),
+                UnintentionalEntityState::Hex => match c {
+                    c if is_hex_digit(c) => {
+                        i = self._handle_end_of_possible_entity(uep, i);
+                    }
+                    _ => {
+                        uep.state = UnintentionalEntityState::Safe;
+                    }
+                }
+            };
+            i += 1;
+        };
+        if is_end && uep.state == UnintentionalEntityState::Named {
+            self._handle_end_of_possible_entity(uep, self.write_next);
+        };
+        uep.last_write_next = self.write_next;
     }
 
     // Looking ahead.

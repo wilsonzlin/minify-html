@@ -127,12 +127,15 @@ fn generate_entities() {
     // Add entities to trie builder.
     let mut trie_builder: FastrieBuilderNode<String> = FastrieBuilderNode::new();
     for (rep, entity) in entities {
-        if rep.as_bytes().len() < entity.characters.as_bytes().len() {
+        let val = if rep.as_bytes().len() < entity.characters.as_bytes().len() {
             // Since we're minifying in place, we need to guarantee we'll never write something longer than source.
-            println!("Entity {} is shorter than decoded UTF-8 bytes, skipping...", rep);
+            println!("Entity {} is shorter than decoded UTF-8 bytes...", rep);
+            // Include '&' in value.
+            create_byte_string_literal(rep.as_bytes())
         } else {
-            trie_builder.add(&(rep.as_bytes())[1..], create_byte_string_literal(entity.characters.as_bytes()));
+            create_byte_string_literal(entity.characters.as_bytes())
         };
+        trie_builder.add(&(rep.as_bytes())[1..], val);
     };
     // Write trie code to output Rust file.
     write_rs("entities", generate_fastrie_code(

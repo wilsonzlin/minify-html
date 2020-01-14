@@ -180,6 +180,8 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     // Needed to check if at beginning of value so that leading whitespace can be trimmed instead of collapsed.
     // NOTE: Only used if `should_collapse_and_trim_ws`.
     let mut currently_first_char = true;
+    // TODO Comment.
+    let mut uep = proc.start_preventing_unintentional_entities();
 
     loop {
         let metrics_char_type = if chain!(proc.match_char(src_delimiter).matched()) {
@@ -215,9 +217,15 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         };
 
         match metrics_char_type {
-            CharType::End => break,
-            CharType::Entity(e) => e.keep(proc),
-            CharType::Normal(c) => proc.write(c),
+            CharType::End => {
+                break;
+            },
+            CharType::Entity(e) => {
+                e.keep(proc);
+            },
+            CharType::Normal(c) => {
+                proc.write(c);
+            },
             CharType::Whitespace(c) => {
                 proc.write(c);
                 metrics.count_whitespace += 1;
@@ -235,12 +243,15 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
                 proc.write(b'>');
             }
         };
+        proc.after_write(&mut uep, false);
+        // TODO Replace {first,last}_char_type with char indexing of range.
         if currently_first_char {
             metrics.first_char_type = Some(metrics_char_type);
             currently_first_char = false;
         };
         metrics.last_char_type = Some(metrics_char_type);
     };
+    proc.after_write(&mut uep, true);
     chain!(proc.match_char(src_delimiter).require_with_reason("attribute value closing delimiter quote")?.discard());
     let minimum_value = proc.written_range(src_start);
     // If minimum value is empty, return now before trying to read out of range later.

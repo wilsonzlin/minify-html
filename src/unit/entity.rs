@@ -1,7 +1,8 @@
+use std::char::from_u32;
+
 use crate::err::ProcessingResult;
-use crate::ErrorType;
 use crate::proc::{Processor, ProcessorRange};
-use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
+use crate::spec::codepoint::{is_digit, is_lower_hex_digit, is_upper_hex_digit};
 
 // The minimum length of any entity is 3, which is a character entity reference
 // with a single character name. The longest UTF-8 representation of a Unicode
@@ -24,13 +25,13 @@ use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_uppe
 
 include!(concat!(env!("OUT_DIR"), "/gen_entities.rs"));
 
-fn is_valid_entity_reference_name_char(c: u8) -> bool {
+pub fn is_valid_entity_reference_name_char(c: u8) -> bool {
     c >= b'0' && c <= b'9' || c >= b'A' && c <= b'Z' || c >= b'a' && c <= b'z'
 }
 
 #[derive(Clone, Copy)]
 pub enum EntityType {
-    NonDecodable(ProcessorRange),
+    NonDecodableRightChevron(ProcessorRange),
     Malformed(ProcessorRange),
     Ascii(u8),
     // If named or numeric reference refers to ASCII char, Type::Ascii is used instead.
@@ -40,10 +41,9 @@ pub enum EntityType {
 
 impl EntityType {
     pub fn is_malformed(&self) -> bool {
-        if let EntityType::Malformed(_) = self {
-            true
-        } else {
-            false
+        match self {
+            EntityType::Malformed(_) => true,
+            _ => false,
         }
     }
 }
@@ -51,7 +51,7 @@ impl EntityType {
 impl EntityType {
     pub fn keep(self, proc: &mut Processor) -> () {
         match self {
-            EntityType::NonDecodable(r) => { proc.write_range(r); }
+            EntityType::NonDecodableRightChevron(r) => { proc.write_range(r); }
             EntityType::Malformed(r) => { proc.write_range(r); }
             EntityType::Ascii(c) => { proc.write(c); }
             EntityType::Named(s) => { proc.write_slice(s); }
@@ -60,63 +60,63 @@ impl EntityType {
     }
 }
 
-macro_rules! handle_decoded_numeric_code_point {
-    ($proc:ident, $at_least_one_digit:ident, $code_point:ident) => {
-        if !$at_least_one_digit || !chain!($proc.match_char(b';').discard().matched()) {
-            return None;
-        };
-        return std::char::from_u32($code_point).map(|c| if c.is_ascii() {
+fn handle_decoded_numeric_code_point(proc: &mut Processor, digits: usize, code_point: u32) -> Option<EntityType> {
+    proc.skip_amount_expect(digits);
+    if digits == 0 {
+        None
+    } else {
+        // Semicolon is required by spec but seems to be optional in actual browser behaviour.
+        chain!(proc.match_char(b';').discard());
+        from_u32(code_point).map(|c| if c.is_ascii() {
             EntityType::Ascii(c as u8)
         } else {
             EntityType::Numeric(c)
-        });
-    };
+        })
+    }
 }
 
 fn parse_decimal(proc: &mut Processor) -> Option<EntityType> {
+    // Skip '#'.
+    proc.skip_amount_expect(1);
     let mut val = 0u32;
-    let mut at_least_one_digit = false;
+    let mut i = 0;
+    // TODO Browser actually consumes unlimited chars but replaces with 0xFFFD if invalid.
     // Parse at most seven characters to prevent parsing forever and overflowing.
-    for _ in 0..7 {
-        if let Some(c) = chain!(proc.match_pred(is_digit).discard().maybe_char()) {
-            at_least_one_digit = true;
-            val = val * 10 + (c - b'0') as u32;
-        } else {
-            break;
+    while i < 7 {
+        match proc.peek_offset_eof(i) {
+            Some(c) if is_digit(c) => val = val * 10 + (c - b'0') as u32,
+            _ => break,
         };
+        i += 1;
     };
-    handle_decoded_numeric_code_point!(proc, at_least_one_digit, val);
+    handle_decoded_numeric_code_point(proc, i, val)
 }
 
 fn parse_hexadecimal(proc: &mut Processor) -> Option<EntityType> {
+    // Skip '#x'.
+    proc.skip_amount_expect(2);
     let mut val = 0u32;
-    let mut at_least_one_digit = false;
+    let mut i = 0;
+    // TODO Browser actually consumes unlimited chars but replaces with 0xFFFD if invalid.
     // Parse at most six characters to prevent parsing forever and overflowing.
-    for _ in 0..6 {
-        if let Some(c) = chain!(proc.match_pred(is_hex_digit).discard().maybe_char()) {
-            at_least_one_digit = true;
-            let digit = if is_digit(c) {
-                c - b'0'
-            } else if is_upper_hex_digit(c) {
-                c - b'A' + 10
-            } else if is_lower_hex_digit(c) {
-                c - b'a' + 10
-            } else {
-                unreachable!();
-            };
-            val = val * 16 + digit as u32;
-        } else {
-            break;
+    while i < 6 {
+        let digit = match proc.peek_offset_eof(i) {
+            Some(c) if is_digit(c) => c - b'0',
+            Some(c) if is_upper_hex_digit(c) => c - b'A' + 10,
+            Some(c) if is_lower_hex_digit(c) => c - b'a' + 10,
+            _ => break,
         };
+        val = val * 16 + digit as u32;
+        i += 1;
     };
-    handle_decoded_numeric_code_point!(proc, at_least_one_digit, val);
+    handle_decoded_numeric_code_point(proc, i, val)
 }
 
 fn parse_name(proc: &mut Processor) -> Option<EntityType> {
     // In UTF-8, one-byte character encodings are always ASCII.
-    let m = proc.match_trie(ENTITY_REFERENCES);
+    let decoded = proc.match_trie(ENTITY_REFERENCES);
     proc.discard();
-    m.map(|s| if s.len() == 1 {
+    decoded.map(|s| if s.len() == 1 {
         EntityType::Ascii(s[0])
     } else {
         EntityType::Named(s)
@@ -161,25 +161,18 @@ pub fn parse_entity(proc: &mut Processor, decode_left_chevron: bool) -> Processi
 
     // These functions do not return EntityType::Malformed as it requires a checkpoint.
     // Instead, they return None if entity is malformed.
-    let entity_type = if chain!(proc.match_seq(b"#x").discard().matched()) {
-        parse_hexadecimal(proc)
-    } else if chain!(proc.match_char(b'#').discard().matched()) {
-        parse_decimal(proc)
-    } else if chain!(proc.match_pred(is_valid_entity_reference_name_char).matched()) {
-        parse_name(proc)
-    } else {
-        // At this point, only consumed ampersand.
-        None
+    let entity_type = match proc.peek_offset_eof(0) {
+        Some(b'#') => match proc.peek_offset_eof(1) {
+            Some(b'x') => parse_hexadecimal(proc),
+            _ => parse_decimal(proc),
+        },
+        _ => parse_name(proc),
     }
         .map(|e| match (decode_left_chevron, e) {
-            (_, EntityType::Ascii(b'&')) | (false, EntityType::Ascii(b'<')) => EntityType::NonDecodable(proc.consumed_range(checkpoint)),
+            (false, EntityType::Ascii(b'<')) => EntityType::NonDecodableRightChevron(proc.consumed_range(checkpoint)),
             (_, e) => e,
         })
         .unwrap_or_else(|| EntityType::Malformed(proc.consumed_range(checkpoint)));
 
-    if entity_type.is_malformed() && chain!(proc.match_char(b'&').matched()) {
-        Err(ErrorType::EntityFollowingMalformedEntity)
-    } else {
-        Ok(entity_type)
-    }
+    Ok(entity_type)
 }

@@ -1,5 +1,5 @@
 use crate::err::ProcessingResult;
-use crate::proc::{Processor, ProcessorRange};
+use crate::proc::{Processor, ProcessorRange, UnintentionalEntityPrevention};
 use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::content::CONTENT_TAGS;
 use crate::spec::tag::contentfirst::CONTENT_FIRST_TAGS;
@@ -8,8 +8,8 @@ use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::wss::WSS_TAGS;
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
-use crate::unit::instruction::process_instruction;
 use crate::unit::entity::{EntityType, parse_entity};
+use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{process_tag, ProcessedTag};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
@@ -54,13 +54,15 @@ impl ContentType {
 }
 
 macro_rules! handle_content_type {
-    ($proc:ident, $parent:ident, $next_content_type:expr, $prev_sibling_closing_tag:ident, $on_entity:block, $on_whitespace:block) => {
+    ($proc:ident, $parent:ident, $next_content_type:expr, $uep:ident, $prev_sibling_closing_tag:ident, $get_entity:expr, $on_whitespace:block) => {
         // Process and consume next character(s).
         match $next_content_type {
             ContentType::OpeningTag => {
+                $uep.take().map(|mut uep| $proc.after_write(&mut uep, true));
                 $prev_sibling_closing_tag = Some(process_tag($proc, $prev_sibling_closing_tag)?);
             }
             ContentType::End => {
+                $uep.take().map(|mut uep| $proc.after_write(&mut uep, true));
                 if let Some(prev_tag) = $prev_sibling_closing_tag {
                     let can_omit = match ($parent, CLOSING_TAG_OMISSION_RULES.get(&$proc[prev_tag.name])) {
                         (Some(parent_range), Some(rule)) => rule.can_omit_as_last_node(&$proc[parent_range]),
@@ -76,12 +78,38 @@ macro_rules! handle_content_type {
                 // Immediate next sibling node is not an element, so write any immediate previous sibling element's closing tag.
                 $prev_sibling_closing_tag.take().map(|tag| tag.write_closing_tag($proc));
                 match content_type {
-                    ContentType::Comment => { process_comment($proc)?; }
-                    ContentType::Bang => { process_bang($proc)?; }
-                    ContentType::Instruction => { process_instruction($proc)?; }
-                    ContentType::Entity => $on_entity,
-                    ContentType::Text => { $proc.accept()?; }
-                    ContentType::Whitespace => $on_whitespace,
+                    ContentType::Comment | ContentType::Bang | ContentType::Instruction => {
+                        // TODO Comment: Do not always initialise `uep` as `prev_sibling_closing_tag` might get written.
+                        $uep.take().map(|mut uep| $proc.after_write(&mut uep, true));
+                        match content_type {
+                            ContentType::Comment => { process_comment($proc)?; }
+                            ContentType::Bang => { process_bang($proc)?; }
+                            ContentType::Instruction => { process_instruction($proc)?; }
+                            _ => unreachable!(),
+                        };
+                    }
+                    ContentType::Entity | ContentType::Text | ContentType::Whitespace => {
+                        if $uep.is_none() {
+                            $uep = Some($proc.start_preventing_unintentional_entities());
+                        };
+                        match content_type {
+                            ContentType::Entity => {
+                                let entity = $get_entity;
+                                match entity {
+                                    EntityType::NonDecodableRightChevron(_) => $proc.after_write(&mut $uep.take().unwrap(), true),
+                                    _ => {}
+                                };
+                                entity.keep($proc);
+                            }
+                            ContentType::Text => { $proc.accept()?; }
+                            ContentType::Whitespace => $on_whitespace,
+                            _ => unreachable!(),
+                        };
+                        // UEP could have become None after matching EntityType::NonDecodableRightChevron.
+                        if let Some(uep) = $uep.as_mut() {
+                            $proc.after_write(uep, false);
+                        };
+                    }
                     _ => unreachable!(),
                 };
             }
@@ -91,8 +119,9 @@ macro_rules! handle_content_type {
 
 fn process_wss_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
     let mut prev_sibling_closing_tag: Option<ProcessedTag> = None;
+    let mut uep: Option<UnintentionalEntityPrevention> = None;
     loop {
-        handle_content_type!(proc, parent, ContentType::peek(proc), prev_sibling_closing_tag, { parse_entity(proc, false)?.keep(proc); }, { proc.accept()?; });
+        handle_content_type!(proc, parent, ContentType::peek(proc), uep, prev_sibling_closing_tag, parse_entity(proc, false)?, { proc.accept()?; });
     };
     Ok(())
 }
@@ -131,6 +160,8 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
     let mut entity: Option<EntityType> = None;
     // TODO Comment.
     let mut prev_sibling_closing_tag: Option<ProcessedTag> = None;
+    // TODO Comment.
+    let mut uep: Option<UnintentionalEntityPrevention> = None;
 
     loop {
         let next_content_type = match ContentType::peek(proc) {
@@ -189,7 +220,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
         };
 
         // Process and consume next character(s).
-        handle_content_type!(proc, parent, next_content_type, prev_sibling_closing_tag, { entity.unwrap().keep(proc); }, { unreachable!(); });
+        handle_content_type!(proc, parent, next_content_type, uep, prev_sibling_closing_tag, entity.unwrap(), { unreachable!(); });
         last_non_whitespace_content_type = next_content_type;
     };
 
