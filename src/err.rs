@@ -2,7 +2,6 @@
 #[derive(Debug)]
 pub enum ErrorType {
     ClosingTagMismatch,
-    NoSpaceBeforeAttr,
     MatchNotFound(&'static [u8]),
     NotFound(&'static str),
     ExpectedChar(u8),
@@ -14,9 +13,6 @@ impl ErrorType {
         match self {
             ErrorType::ClosingTagMismatch => {
                 format!("Closing tag name does not match opening tag.")
-            }
-            ErrorType::NoSpaceBeforeAttr => {
-                format!("Space required before attribute.")
             }
             ErrorType::MatchNotFound(seq) => {
                 format!("Expected `{}`.", unsafe { std::str::from_utf8_unchecked(seq) })

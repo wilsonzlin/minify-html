@@ -351,17 +351,6 @@ Numeric character references that do not reference a valid [Unicode Scalar Value
 Backticks (`` ` ``) are not valid quote marks and not interpreted as such.
 However, backticks are valid attribute value quotes in Internet Explorer.
 
-It is an error if there is:
-
-- whitespace between `=` and an attribute name/value; and/or
-- no whitespace before an attribute.
-
-For example:
-
-```html
-<div id = "a"class="abc"></div>
-```
-
 Special handling of some attributes require case sensitive names and values. For example, `CLASS` won't be recognised as an attribute to minify, and `type="Text/JavaScript"` on a `<script>` will cause the element to be parsed as a [data block](https://html.spec.whatwg.org/dev/scripting.html#data-block) instead of JavaScript code.
 
 ### Script and style

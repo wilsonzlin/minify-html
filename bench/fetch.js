@@ -1,7 +1,6 @@
 const {promises: fs} = require('fs');
 const request = require('request-promise-native');
 const path = require('path');
-const prettier = require('prettier');
 
 const tests = {
   "Amazon": "https://www.amazon.com/",
@@ -38,31 +37,18 @@ const fetchTest = async (name, url) => {
 
   // Format after fetching as formatting is synchronous and can take so long that connections get dropped by server due to inactivity.
   for (const [name, html] of await Promise.all(Object.entries(tests).map(([name, url]) => fetchTest(name, url)))) {
-    // Apply some fixes to HTML to allow strict formatter to work.
-    const formatted = prettier.format(
-      html
-        // Fix missing semicolon after entity in Amazon.
-        .replace(/&#x200b/g, '&#x200b;')
-        // Fix consecutive malformed entities in Amazon.
-        .replace(/&& window.ue_sbl/g, '&amp&amp window.ue_sbl')
-        .replace(/&&pf_rd_p/g, '&amp&amppf_rd_p')
-        // Fix early termination of conditional comment in Amazon.
-        .replace('--></style>\n<![endif]-->', '</style>\n<![endif]-->')
-        // Fix closing of void tag in Amazon.
-        .replace(/><\/hr>/g, '/>')
-        // Fix extra '</div>' in BBC.
-        .replace('</a></span></small></div></div></div></footer>', '</a></span></small></div></div></footer>')
-        // Fix consecutive malformed entities in Google.
-        .replace(/&&google.aft/g, '&amp&ampgoogle.aft')
-        // Fix parser failing to parse unquoted attribute value starting with forward slash in Stack Overflow.
-        .replace('action=/search', 'action="/search"')
-        // Fix broken attribute value in Stack Overflow.
-        .replace('height=151"', 'height="151"')
-      ,
-      {parser: 'html'},
-    );
-    console.log(`Formatted ${name}`);
-    await fs.writeFile(path.join(__dirname, 'tests', `${name}.html`), formatted);
+    // Apply some fixes to HTML.
+    const fixed = html
+      // Fix early termination of conditional comment in Amazon.
+      .replace('--></style>\n<![endif]-->', '</style>\n<![endif]-->')
+      // Fix closing of void tag in Amazon.
+      .replace(/><\/hr>/g, '/>')
+      // Fix extra '</div>' in BBC.
+      .replace('</a></span></small></div></div></div></footer>', '</a></span></small></div></div></footer>')
+      // Fix broken attribute value in Stack Overflow.
+      .replace('height=151"', 'height="151"')
+    ;
+    await fs.writeFile(path.join(__dirname, 'tests', `${name}.html`), fixed);
   }
 })()
   .catch(console.error);

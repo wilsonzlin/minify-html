@@ -108,17 +108,12 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
             break;
         }
 
-        // This needs to be enforced as otherwise there would be difficulty in determining what is the end of a tag/attribute name/attribute value.
-        if !ws_accepted {
-            return Err(ErrorType::NoSpaceBeforeAttr);
-        }
-
         // Mark attribute start in case we want to erase it completely.
         let attr_checkpoint = proc.checkpoint();
         let mut erase_attr = false;
 
         // Write space after tag name or unquoted/valueless attribute.
-        // Don't write after unquoted.
+        // Don't write after quoted.
         match last_attr_type {
             Some(AttrType::Unquoted) | Some(AttrType::NoValue) | None => proc.write(b' '),
             _ => {}

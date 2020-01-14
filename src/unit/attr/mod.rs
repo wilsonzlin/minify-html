@@ -2,7 +2,7 @@ use phf::{phf_set, Set};
 
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
-use crate::spec::codepoint::is_control;
+use crate::spec::codepoint::{is_control, is_whitespace};
 use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue, skip_attr_value};
 
 mod value;
@@ -44,11 +44,13 @@ pub fn process_attr(proc: &mut Processor, element: ProcessorRange) -> Processing
     let after_name = proc.checkpoint();
 
     let should_collapse_and_trim_value_ws = COLLAPSIBLE_AND_TRIMMABLE_ATTRS.contains(&proc[name]);
+    let ws_accepted = chain!(proc.match_while_pred(is_whitespace).discard().matched());
     let has_value = chain!(proc.match_char(b'=').keep().matched());
 
     let (typ, value) = if !has_value {
         (AttrType::NoValue, None)
     } else {
+        let ws_accepted = chain!(proc.match_while_pred(is_whitespace).discard().matched());
         if is_boolean {
             skip_attr_value(proc)?;
             (AttrType::NoValue, None)
