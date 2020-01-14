@@ -287,6 +287,9 @@ impl<'d> Processor<'d> {
     pub fn match_while_pred(&mut self, pred: fn(u8) -> bool) -> () {
         self._match_greedy(pred)
     }
+    pub fn match_while_not_pred(&mut self, pred: fn(u8) -> bool) -> () {
+        self._match_greedy(|c| !pred(c))
+    }
     pub fn match_while_not_seq(&mut self, s: &SinglePattern) -> () {
         let count = match s.match_against(&self.code[self.read_next..]) {
             Some(idx) => idx,

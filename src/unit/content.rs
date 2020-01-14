@@ -96,6 +96,7 @@ macro_rules! handle_content_type {
                             ContentType::Entity => {
                                 let entity = $get_entity;
                                 match entity {
+                                    // TODO Comment: Explain why < is handled this way.
                                     EntityType::NonDecodableRightChevron(_) => $proc.after_write(&mut $uep.take().unwrap(), true),
                                     _ => {}
                                 };

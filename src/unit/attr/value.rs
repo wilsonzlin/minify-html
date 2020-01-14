@@ -5,11 +5,29 @@ use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::is_whitespace;
 use crate::unit::entity::{EntityType, parse_entity};
 
+fn is_double_quote(c: u8) -> bool {
+    c == b'"'
+}
+
+fn is_single_quote(c: u8) -> bool {
+    c == b'\''
+}
+
 // Valid attribute quote characters.
 // See https://html.spec.whatwg.org/multipage/introduction.html#intro-early-example for spec.
-pub fn is_attr_quote(c: u8) -> bool {
+fn is_attr_quote(c: u8) -> bool {
     // Backtick is not a valid quote character according to spec.
-    c == b'"' || c == b'\''
+    is_double_quote(c) || is_single_quote(c)
+}
+
+// Valid unquoted attribute value characters.
+// See https://html.spec.whatwg.org/multipage/syntax.html#unquoted for spec.
+fn is_unquoted_val_char(c: u8) -> bool {
+    !(is_whitespace(c) || c == b'"' || c == b'\'' || c == b'=' || c == b'<' || c == b'>' || c == b'`')
+}
+
+fn is_not_unquoted_val_char(c: u8) -> bool {
+    !is_unquoted_val_char(c)
 }
 
 static ENCODED: Map<u8, &'static [u8]> = phf_map! {
@@ -134,9 +152,17 @@ impl Metrics {
 }
 
 pub fn skip_attr_value(proc: &mut Processor) -> ProcessingResult<()> {
-    let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value opening delimiter quote")?.discard().char());
-    chain!(proc.match_while_not_char(src_delimiter).discard());
-    chain!(proc.match_char(src_delimiter).require_with_reason("attribute value closing delimiter quote")?.discard());
+    let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());
+    let delim_pred = match src_delimiter {
+        Some(b'"') => is_double_quote,
+        Some(b'\'') => is_single_quote,
+        None => is_not_unquoted_val_char,
+        _ => unreachable!(),
+    };
+    chain!(proc.match_while_not_pred(delim_pred).discard());
+    if let Some(c) = src_delimiter {
+        chain!(proc.match_char(c).require_with_reason("attribute value closing delimiter quote")?.discard());
+    };
     Ok(())
 }
 
@@ -163,7 +189,13 @@ pub struct ProcessedAttrValue {
 // Since the actual processed value would have a length equal or greater to it (e.g. it might be quoted, or some characters might get encoded), we can then read minimum value right to left and start writing from actual processed value length (which is calculated), quoting/encoding as necessary.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
     let src_start = proc.checkpoint();
-    let src_delimiter = chain!(proc.match_pred(is_attr_quote).require_with_reason("attribute value opening delimiter quote")?.discard().char());
+    let src_delimiter = chain!(proc.match_pred(is_attr_quote).discard().maybe_char());
+    let delim_pred = match src_delimiter {
+        Some(b'"') => is_double_quote,
+        Some(b'\'') => is_single_quote,
+        None => is_not_unquoted_val_char,
+        _ => unreachable!(),
+    };
 
     // Stage 1: read and collect metrics on attribute value characters.
     let mut metrics = Metrics {
@@ -184,7 +216,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     let mut uep = proc.start_preventing_unintentional_entities();
 
     loop {
-        let metrics_char_type = if chain!(proc.match_char(src_delimiter).matched()) {
+        let metrics_char_type = if chain!(proc.match_pred(delim_pred).matched()) {
             // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
             CharType::End
         } else if chain!(proc.match_char(b'&').matched()) {
@@ -251,8 +283,10 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         };
         metrics.last_char_type = Some(metrics_char_type);
     };
+    if let Some(c) = src_delimiter {
+        chain!(proc.match_char(c).require_with_reason("attribute value closing delimiter quote")?.discard());
+    };
     proc.after_write(&mut uep, true);
-    chain!(proc.match_char(src_delimiter).require_with_reason("attribute value closing delimiter quote")?.discard());
     let minimum_value = proc.written_range(src_start);
     // If minimum value is empty, return now before trying to read out of range later.
     // (Reading starts at one character before end of minimum value.)

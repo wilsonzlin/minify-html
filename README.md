@@ -312,7 +312,7 @@ Spaces are removed between attributes if possible.
 ### Other
 
 - Comments are removed.
-- Entities are decoded if valid (see relevant parsing section).
+- Entities are decoded if valid (see relevant parsing section). If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity versions of characters that could be encoded as part of an entity (`[&#a-zA-Z0-9;]`).
 
 ### Ignored
 
@@ -346,8 +346,6 @@ If a named entity is an invalid reference as per the [specification](https://htm
 
 Numeric character references that do not reference a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are considered malformed.
 
-No ampersand can immediately follow a malformed entity e.g. `&am&`, `&&`, or `&&#97;&#109;&#112;;`.
-
 ### Attributes
 
 Backticks (`` ` ``) are not valid quote marks and not interpreted as such.
@@ -355,14 +353,13 @@ However, backticks are valid attribute value quotes in Internet Explorer.
 
 It is an error if there is:
 
-- whitespace between `=` and an attribute name/value;
-- no whitespace before an attribute; and/or
-- an unquoted attribute value.
+- whitespace between `=` and an attribute name/value; and/or
+- no whitespace before an attribute.
 
 For example:
 
 ```html
-<div id = "a"unquoted=abc></div>
+<div id = "a"class="abc"></div>
 ```
 
 Special handling of some attributes require case sensitive names and values. For example, `CLASS` won't be recognised as an attribute to minify, and `type="Text/JavaScript"` on a `<script>` will cause the element to be parsed as a [data block](https://html.spec.whatwg.org/dev/scripting.html#data-block) instead of JavaScript code.
