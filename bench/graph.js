@@ -22,7 +22,7 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
     },
     scales: {
       xAxes: [{
-        barPercentage: 0.5,
+        barPercentage: 0.25,
         gridLines: {
           color: '#e2e2e2',
         },
@@ -36,8 +36,6 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
           color: '#ccc',
         },
         ticks: {
-          min: 0,
-          max: 1,
           callback: yTick,
           fontColor: '#666',
           fontSize: 20,
