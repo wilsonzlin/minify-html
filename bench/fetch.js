@@ -48,7 +48,7 @@ const fetchTest = async (name, url) => {
       // Fix broken attribute value in Stack Overflow.
       .replace('height=151"', 'height="151"')
     ;
-    await fs.writeFile(path.join(__dirname, 'tests', `${name}.html`), fixed);
+    await fs.writeFile(path.join(__dirname, 'tests', name), fixed);
   }
 })()
   .catch(console.error);
