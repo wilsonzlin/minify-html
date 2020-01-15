@@ -27,9 +27,9 @@ Used average of results from running on [common web pages](./bench/tests). See [
 
 ##### Get
 
-[Windows](https://wilsonl.in/hyperbuild/bin/0.0.12-windows-x86_64.exe) |
-[macOS](https://wilsonl.in/hyperbuild/bin/0.0.12-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.0.12-linux-x86_64)
+[Windows](https://wilsonl.in/hyperbuild/bin/0.0.13-windows-x86_64.exe) |
+[macOS](https://wilsonl.in/hyperbuild/bin/0.0.13-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.0.13-linux-x86_64)
 
 ##### Use
 
@@ -46,7 +46,7 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = "0.0.12"
+hyperbuild = "0.0.13"
 ```
 
 ##### Use
