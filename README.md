@@ -5,19 +5,17 @@ A fast one-pass in-place HTML minifier written in Rust with context-aware whites
 Available as:
 - CLI for Windows, macOS, and Linux.
 - Rust library.
-- Native module for Node.js.
+- Native library for Node.js, Python, and Java.
 
 ## Features
 
 - Minification is done in one pass with no backtracking or DOM/AST building.
 - No extra heap memory is allocated during processing, which increases performance.
-- Context-aware whitespace handling allows maximum minification while retaining wanted spaces.
+- Context-aware whitespace handling allows maximum minification while retaining desired spaces.
 
 ## Performance
 
-Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize).
-
-Used average of results from running on [common web pages](./bench/tests). See [bench](./bench) folder for more details.
+Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize). See [bench](./bench) folder for more details.
 
 <img width="435" alt="Chart showing speed of HTML minifiers" src="./bench/speed.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="./bench/minification.png">
 
