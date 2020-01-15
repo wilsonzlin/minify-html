@@ -4,7 +4,7 @@ use fastrie::{Fastrie, FastrieMatch};
 
 use crate::err::{ErrorType, ProcessingResult};
 use crate::pattern::SinglePattern;
-use crate::spec::codepoint::{is_digit, is_hex_digit};
+use crate::spec::codepoint::{is_digit, is_hex_digit, is_whitespace};
 use crate::unit::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
 
 macro_rules! chain {
@@ -183,6 +183,67 @@ impl<'d> Processor<'d> {
         }
     }
 
+    fn _debug_dump(&self) -> String {
+        let mut lines = vec![(1, String::new())];
+        let mut line_idx = 0;
+        let mut indicator_line_idx_opt: Option<usize> = None;
+        let mut line_cols = 0;
+        let mut line_no = 1;
+        for (i, &c) in self.code.iter().enumerate() {
+            if i == self.read_next || i == self.write_next {
+                let indicator_line_idx = if indicator_line_idx_opt.is_none() {
+                    let indicator_line_idx = lines.len();
+                    lines.push((-1, String::new()));
+                    indicator_line_idx_opt = Some(indicator_line_idx);
+                    indicator_line_idx
+                } else if let Some(indicator_line_idx) = indicator_line_idx_opt {
+                    indicator_line_idx
+                } else {
+                    unreachable!();
+                };
+                // At this point, `line_cols` is how many characters are on this line BEFORE this character.
+                while line_cols > 0 && lines[indicator_line_idx].1.len() < line_cols {
+                    lines[indicator_line_idx].1.push(' ');
+                };
+                lines[indicator_line_idx].1.push(if i == self.read_next && i == self.write_next {
+                    'B'
+                } else if i == self.read_next {
+                    'R'
+                } else {
+                    'W'
+                })
+            };
+            match c {
+                b'\n' => {
+                    lines[line_idx].1.push_str("⏎\n");
+                    line_no += 1;
+                    line_cols = 0;
+                    line_idx = lines.len();
+                    lines.push((line_no, String::new()));
+                    indicator_line_idx_opt = None;
+                }
+                c => {
+                    match c {
+                        c if is_whitespace(c) => lines[line_idx].1.push('·'),
+                        c if c >= b'!' && c <= b'~' => lines[line_idx].1.push(c as char),
+                        _ => lines[line_idx].1.push('�'),
+                    };
+                    line_cols += 1;
+                }
+            };
+        };
+        let max_line_no_width = (line_no as f64).log10().ceil() as usize;
+        lines
+            .iter()
+            .map(|(line_no, line)| if *line_no == -1 {
+                format!("{:>indent$}|{}\n", String::from_utf8(vec![b'>'; max_line_no_width]).unwrap(), line, indent = max_line_no_width)
+            } else {
+                format!("{:>indent$}|{}", line_no, line, indent = max_line_no_width)
+            })
+            .collect::<Vec<String>>()
+            .join("")
+    }
+
     // PUBLIC APIs.
     // Bounds checking
     pub fn at_end(&self) -> bool {
@@ -213,12 +274,6 @@ impl<'d> Processor<'d> {
     }
     pub fn out_range(&self) -> ProcessorRange {
         ProcessorRange { start: self.match_dest, end: self.match_dest + self.match_len }
-    }
-    pub fn slice(&self) -> &[u8] {
-        &self.code[self.match_start..self.match_start + self.match_len]
-    }
-    pub fn out_slice(&self) -> &[u8] {
-        &self.code[self.match_dest..self.match_dest + self.match_len]
     }
 
     // Assert match.
@@ -281,6 +336,9 @@ impl<'d> Processor<'d> {
     }
 
     // Multi-char matching APIs.
+    pub fn match_while_char(&mut self, c: u8) -> () {
+        self._match_greedy(|n| n == c)
+    }
     pub fn match_while_not_char(&mut self, c: u8) -> () {
         self._match_greedy(|n| n != c)
     }
@@ -313,11 +371,6 @@ impl<'d> Processor<'d> {
             read_next: self.read_next,
             write_next: self.write_next,
         }
-    }
-    /// Restore to previously set checkpoint.
-    pub fn restore(&mut self, checkpoint: Checkpoint) -> () {
-        self.read_next = checkpoint.read_next;
-        self.write_next = checkpoint.write_next;
     }
     /// Write characters skipped from source since checkpoint. Must not have written anything since checkpoint.
     pub fn write_skipped(&mut self, checkpoint: Checkpoint) -> () {
@@ -372,14 +425,16 @@ impl<'d> Processor<'d> {
                 true
             }
         };
+        uep.state = UnintentionalEntityState::Safe;
         let encoded = b"amp";
         if should_encode_ampersand {
             // Insert encoded ampersand.
             self._replace(uep.ampersand_pos + 1..uep.ampersand_pos + 1, encoded);
-        };
-        self.write_next += encoded.len();
-        uep.state = UnintentionalEntityState::Safe;
-        end_inclusive + encoded.len()
+            self.write_next += encoded.len();
+            end_inclusive + encoded.len()
+        } else {
+            end_inclusive
+        }
     }
     pub fn after_write(&mut self, uep: &mut UnintentionalEntityPrevention, is_end: bool) -> () {
         let mut i = uep.last_write_next;
@@ -439,7 +494,7 @@ impl<'d> Processor<'d> {
             i += 1;
         };
         if is_end && uep.state == UnintentionalEntityState::Named {
-            self._handle_end_of_possible_entity(uep, self.write_next);
+            self._handle_end_of_possible_entity(uep, self.write_next - 1);
         };
         uep.last_write_next = self.write_next;
     }

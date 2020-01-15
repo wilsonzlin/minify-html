@@ -56,13 +56,19 @@ impl ContentType {
 macro_rules! handle_content_type {
     ($proc:ident, $parent:ident, $next_content_type:expr, $uep:ident, $prev_sibling_closing_tag:ident, $get_entity:expr, $on_whitespace:block) => {
         // Process and consume next character(s).
-        match $next_content_type {
-            ContentType::OpeningTag => {
+        let next_content_type = $next_content_type;
+        match next_content_type {
+            ContentType::OpeningTag | ContentType::End | ContentType::Comment | ContentType::Bang | ContentType::Instruction => {
+                // TODO Comment: Do not always initialise `uep` as `prev_sibling_closing_tag` might get written.
                 $uep.take().map(|mut uep| $proc.after_write(&mut uep, true));
+            }
+            _ => {}
+        };
+        match next_content_type {
+            ContentType::OpeningTag => {
                 $prev_sibling_closing_tag = Some(process_tag($proc, $prev_sibling_closing_tag)?);
             }
             ContentType::End => {
-                $uep.take().map(|mut uep| $proc.after_write(&mut uep, true));
                 if let Some(prev_tag) = $prev_sibling_closing_tag {
                     let can_omit = match ($parent, CLOSING_TAG_OMISSION_RULES.get(&$proc[prev_tag.name])) {
                         (Some(parent_range), Some(rule)) => rule.can_omit_as_last_node(&$proc[parent_range]),
@@ -79,8 +85,6 @@ macro_rules! handle_content_type {
                 $prev_sibling_closing_tag.take().map(|tag| tag.write_closing_tag($proc));
                 match content_type {
                     ContentType::Comment | ContentType::Bang | ContentType::Instruction => {
-                        // TODO Comment: Do not always initialise `uep` as `prev_sibling_closing_tag` might get written.
-                        $uep.take().map(|mut uep| $proc.after_write(&mut uep, true));
                         match content_type {
                             ContentType::Comment => { process_comment($proc)?; }
                             ContentType::Bang => { process_bang($proc)?; }

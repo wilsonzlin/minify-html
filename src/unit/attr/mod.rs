@@ -44,13 +44,13 @@ pub fn process_attr(proc: &mut Processor, element: ProcessorRange) -> Processing
     let after_name = proc.checkpoint();
 
     let should_collapse_and_trim_value_ws = COLLAPSIBLE_AND_TRIMMABLE_ATTRS.contains(&proc[name]);
-    let ws_accepted = chain!(proc.match_while_pred(is_whitespace).discard().matched());
+    chain!(proc.match_while_pred(is_whitespace).discard());
     let has_value = chain!(proc.match_char(b'=').keep().matched());
 
     let (typ, value) = if !has_value {
         (AttrType::NoValue, None)
     } else {
-        let ws_accepted = chain!(proc.match_while_pred(is_whitespace).discard().matched());
+        chain!(proc.match_while_pred(is_whitespace).discard());
         if is_boolean {
             skip_attr_value(proc)?;
             (AttrType::NoValue, None)

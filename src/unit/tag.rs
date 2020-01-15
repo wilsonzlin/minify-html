@@ -97,7 +97,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
 
     loop {
         // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).
-        let ws_accepted = chain!(proc.match_while_pred(is_whitespace).discard().matched());
+        chain!(proc.match_while_pred(is_whitespace).discard());
 
         if chain!(proc.match_char(b'>').keep().matched()) {
             // End of tag.
@@ -116,6 +116,11 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
 
         // Write space after tag name or unquoted/valueless attribute.
         // Don't write after quoted.
+        // Handle rare case where file ends in opening tag before an attribute and no minification has been done yet,
+        // e.g. `<-` (yes, that's the entire file).
+        if proc.at_end() {
+            return Err(ErrorType::UnexpectedEnd);
+        };
         match last_attr_type {
             Some(AttrType::Unquoted) | Some(AttrType::NoValue) | None => proc.write(b' '),
             _ => {}
@@ -139,7 +144,6 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
                 // TODO Check if HTML tag before checking if attribute removal applies to all elements.
                 erase_attr = value.is_none() && REDUNDANT_IF_EMPTY_ATTRS.contains(&proc[tag_name], name);
             }
-            _ => {}
         };
         if erase_attr {
             proc.erase_written(attr_checkpoint);

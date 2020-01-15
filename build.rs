@@ -36,23 +36,15 @@ fn name_words(n: &str) -> Vec<String> {
 }
 
 fn snake_case(n: &Vec<String>) -> String {
-    n
-        .iter()
-        .map(|w| w.to_uppercase())
-        .collect::<Vec<String>>()
-        .join("_")
+    n.iter().map(|w| w.to_uppercase()).collect::<Vec<String>>().join("_")
 }
 
 fn camel_case(n: &Vec<String>) -> String {
-    n
-        .iter()
-        .map(|w| format!(
-            "{}{}",
-            w.as_bytes()[0].to_ascii_uppercase() as char,
-            std::str::from_utf8(&w.as_bytes()[1..]).unwrap(),
-        ))
-        .collect::<Vec<String>>()
-        .join("")
+    n.iter().map(|w| format!(
+        "{}{}",
+        w.as_bytes()[0].to_ascii_uppercase() as char,
+        std::str::from_utf8(&w.as_bytes()[1..]).unwrap(),
+    )).collect::<Vec<String>>().join("")
 }
 
 fn build_pattern(pattern: String) -> String {
