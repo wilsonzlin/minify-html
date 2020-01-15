@@ -1,9 +1,13 @@
 const benchmark = require('benchmark');
 const childProcess = require('child_process');
 const fs = require('fs');
+const minimist = require('minimist');
 const path = require('path');
 const programs = require('./minifiers');
 const tests = require('./tests');
+
+const args = minimist(process.argv.slice(2));
+const shouldRunRust = !!args.rust;
 
 const cmd = (command, ...args) => {
   const throwErr = msg => {
@@ -83,15 +87,17 @@ const runTest = test => new Promise((resolve, reject) => {
 });
 
 (async () => {
-  const results = {};
+  const results = fromEntries(tests.map(t => [t.name, {}]));
 
   // Run Rust library.
-  for (const [testName, testOps] of JSON.parse(cmd(
-    path.join(__dirname, 'hyperbuild-bench', 'target', 'release', 'hyperbuild-bench'),
-    '--iterations', 512,
-    '--tests', path.join(__dirname, 'tests'),
-  ))) {
-    results[testName] = {hyperbuild: testOps};
+  if (shouldRunRust) {
+    for (const [testName, testOps] of JSON.parse(cmd(
+      path.join(__dirname, 'hyperbuild-bench', 'target', 'release', 'hyperbuild-bench'),
+      '--iterations', 512,
+      '--tests', path.join(__dirname, 'tests'),
+    ))) {
+      Object.assign(results[testName], {hyperbuild: testOps});
+    }
   }
 
   for (const t of tests) {

@@ -55,7 +55,7 @@ fn parse_numeric(proc: &mut Processor, skip_amount: usize, max_len: usize, digit
     proc.skip_amount_expect(skip_amount);
     // This is required because leading zeros do not count towards digit limit.
     let has_leading_zeros = chain!(proc.match_while_char(b'0').discard().matched());
-    // Browser actually consumes unlimited amount of digits, but decodes to 0xFFFD if not a valid Unicode scalar value.
+    // Browser actually consumes unlimited amount of digits, but decodes to 0xFFFD if not a valid Unicode Scalar Value.
     // UnintentionalEntityState (UES) encodes leading ampersand in any sequence matching /&#x?\d/. This means that we need to be careful in keeping malformed behaviour consistent between this function and UES methods.
     // For example, if we simply output the entity literally, it will be interpreted as an unintentional entity by UEP and cause the written output to be shifted down to make room for inserting `amp`, which could lead to overwriting source code. This is because this function considers the entity as malformed whereas UEP doesn't and encodes the `&`.
     // Currently, since browsers decode to a replacement character (U+FFFD) if malformed, we'll simply decode to that, which won't trigger any UEP encoding behaviour.

@@ -27,6 +27,10 @@ const attrInterfaceToTagName = {
   'anchor': 'a',
 };
 
+const attrNameNormalised = {
+  'classname': 'class',
+};
+
 const reactSpecificAttributes = [
   'defaultChecked', 'defaultValue', 'suppressContentEditableWarning', 'suppressHydrationWarning',
 ];
@@ -46,7 +50,7 @@ const processReactTypeDeclarations = async (source) => {
         if (!['all', 'webview'].includes(tagName)) {
           for (const n of node.members.filter(n => n.kind === ts.SyntaxKind.PropertySignature)) {
             // TODO Is escapedText the API for getting name?
-            const attr = n.name.escapedText.toLowerCase();
+            const attr = [n.name.escapedText.toLowerCase()].map(n => attrNameNormalised[n] || n)[0];
             const types = n.type.kind === ts.SyntaxKind.UnionType
               ? n.type.types.map(t => t.kind)
               : [n.type.kind];
