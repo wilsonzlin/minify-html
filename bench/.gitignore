@@ -2,3 +2,4 @@ node_modules/
 min/
 hyperbuild-bench/Cargo.lock
 hyperbuild-bench/target/
+perf.data*
