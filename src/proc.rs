@@ -1,4 +1,4 @@
-use std::ops::{Index, Range};
+use std::ops::{Index, Range, IndexMut};
 
 use fastrie::{Fastrie, FastrieMatch};
 
@@ -38,15 +38,24 @@ pub enum RequireReason {
 
 #[derive(Copy, Clone)]
 pub struct Checkpoint {
-    pub(crate) read_next: usize,
-    pub(crate) write_next: usize,
+    read_next: usize,
+    write_next: usize,
+}
+
+impl Checkpoint {
+    pub fn get_written_range_since(&self, amount: usize) -> ProcessorRange {
+        ProcessorRange {
+            start: self.write_next,
+            end: self.write_next + amount,
+        }
+    }
 }
 
 // TODO DOC
 #[derive(Copy, Clone)]
 pub struct ProcessorRange {
-    pub(crate) start: usize,
-    pub(crate) end: usize,
+    start: usize,
+    end: usize,
 }
 
 impl ProcessorRange {
@@ -77,12 +86,12 @@ pub struct UnintentionalEntityPrevention {
 // Processing state of a file. Most fields are used internally and set during
 // processing. Single use only; create one per processing.
 pub struct Processor<'d> {
-    pub(crate) code: &'d mut [u8],
+    code: &'d mut [u8],
 
     // Index of the next character to read.
-    pub(crate) read_next: usize,
+    read_next: usize,
     // Index of the next unwritten space.
-    pub(crate) write_next: usize,
+    write_next: usize,
 
     // Match.
     // Need to record start as we might get slice after keeping or skipping.
@@ -101,6 +110,13 @@ impl<'d> Index<ProcessorRange> for Processor<'d> {
 
     fn index(&self, index: ProcessorRange) -> &Self::Output {
         &self.code[index.start..index.end]
+    }
+}
+
+impl<'d> IndexMut<ProcessorRange> for Processor<'d> {
+    fn index_mut(&mut self, index: ProcessorRange) -> &mut Self::Output {
+        debug_assert!(index.end <= self.write_next);
+        &mut self.code[index.start..index.end]
     }
 }
 
@@ -183,7 +199,7 @@ impl<'d> Processor<'d> {
         }
     }
 
-    fn _debug_dump(&self) -> String {
+    pub fn debug_dump(&self) -> String {
         let mut lines = vec![(1, String::new())];
         let mut line_idx = 0;
         let mut indicator_line_idx_opt: Option<usize> = None;
@@ -215,7 +231,7 @@ impl<'d> Processor<'d> {
             };
             match c {
                 b'\n' => {
-                    lines[line_idx].1.push_str("⏎\n");
+                    lines[line_idx].1.push_str("⏎");
                     line_no += 1;
                     line_cols = 0;
                     line_idx = lines.len();
@@ -236,12 +252,12 @@ impl<'d> Processor<'d> {
         lines
             .iter()
             .map(|(line_no, line)| if *line_no == -1 {
-                format!("{:>indent$}|{}\n", String::from_utf8(vec![b'>'; max_line_no_width]).unwrap(), line, indent = max_line_no_width)
+                format!("{:>indent$}|{}", String::from_utf8(vec![b'>'; max_line_no_width]).unwrap(), line, indent = max_line_no_width)
             } else {
                 format!("{:>indent$}|{}", line_no, line, indent = max_line_no_width)
             })
             .collect::<Vec<String>>()
-            .join("")
+            .join("\n")
     }
 
     // PUBLIC APIs.
@@ -372,6 +388,13 @@ impl<'d> Processor<'d> {
             write_next: self.write_next,
         }
     }
+    pub fn last_written(&self, checkpoint: Checkpoint) -> Option<u8> {
+        if self.write_next <= checkpoint.write_next {
+            None
+        } else {
+            Some(self.code[self.write_next - 1])
+        }
+    }
     /// Write characters skipped from source since checkpoint. Must not have written anything since checkpoint.
     pub fn write_skipped(&mut self, checkpoint: Checkpoint) -> () {
         // Make sure that nothing has been written since checkpoint (which would be lost).
@@ -415,7 +438,7 @@ impl<'d> Processor<'d> {
             UnintentionalEntityState::Safe => unreachable!(),
             UnintentionalEntityState::Ampersand => unreachable!(),
             UnintentionalEntityState::Named => {
-                match ENTITY_REFERENCES.longest_matching_prefix(&self.code[uep.ampersand_pos + 1..end_inclusive + 1]) {
+                match ENTITY_REFERENCES.longest_matching_prefix(&self.code[uep.ampersand_pos + 1..=end_inclusive]) {
                     None => false,
                     Some(_) => true,
                 }
@@ -497,6 +520,10 @@ impl<'d> Processor<'d> {
             self._handle_end_of_possible_entity(uep, self.write_next - 1);
         };
         uep.last_write_next = self.write_next;
+    }
+
+    pub fn reserve_output(&mut self, amount: usize) -> () {
+        self.write_next += amount;
     }
 
     // Looking ahead.
