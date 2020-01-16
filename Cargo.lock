@@ -88,7 +88,7 @@ dependencies = [
 
 [[package]]
 name = "hyperbuild"
-version = "0.0.13"
+version = "0.0.14"
 dependencies = [
  "cascade 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "fastrie 0.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
