@@ -1,4 +1,4 @@
-use std::ops::{Index, Range, IndexMut};
+use std::ops::{Index, IndexMut, Range};
 
 use fastrie::{Fastrie, FastrieMatch};
 
