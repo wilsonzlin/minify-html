@@ -1,67 +1,67 @@
 {
-  "Amazon.html": {
-    "hyperbuild-nodejs": 453.9446367209197,
-    "html-minifier": 42.41045313663229,
-    "minimize": 114.74500577302787
+  "Amazon": {
+    "hyperbuild-nodejs": 508.6052506017873,
+    "html-minifier": 42.25586310792637,
+    "minimize": 112.84668317196737
   },
-  "BBC.html": {
-    "hyperbuild-nodejs": 471.95373182009035,
-    "html-minifier": 44.62434122645009,
-    "minimize": 143.76941073868343
+  "BBC": {
+    "hyperbuild-nodejs": 532.8102905973569,
+    "html-minifier": 54.543166381705994,
+    "minimize": 158.04711027873367
   },
-  "Bing.html": {
-    "hyperbuild-nodejs": 1983.283549298642,
-    "html-minifier": 224.4254863951391,
-    "minimize": 547.4731257876035
+  "Bing": {
+    "hyperbuild-nodejs": 2163.2302078550147,
+    "html-minifier": 226.06394079630297,
+    "minimize": 545.0653574947338
   },
-  "Bootstrap.html": {
-    "hyperbuild-nodejs": 207.1001839706425,
-    "html-minifier": 9.155727796452659,
-    "minimize": 23.405526541070603
+  "Bootstrap": {
+    "hyperbuild-nodejs": 276.9069916779089,
+    "html-minifier": 9.088104379498866,
+    "minimize": 23.551904759608103
   },
-  "Coding Horror.html": {
-    "hyperbuild-nodejs": 1009.9271101767229,
-    "html-minifier": 58.570673337738285,
-    "minimize": 192.6296247484631
+  "Coding Horror": {
+    "hyperbuild-nodejs": 1130.8127333329164,
+    "html-minifier": 57.409616058969526,
+    "minimize": 187.28893041569714
   },
-  "ECMA-262.html": {
-    "hyperbuild-nodejs": 12.651620170239344,
-    "html-minifier": 0.5175151408492638,
-    "minimize": 1.3331944009226142
+  "ECMA-262": {
+    "hyperbuild-nodejs": 16.78425400473028,
+    "html-minifier": 0.5081461293026476,
+    "minimize": 1.3377251957362182
   },
-  "Google.html": {
-    "hyperbuild-nodejs": 1755.84144550864,
-    "html-minifier": 327.57989037094177,
-    "minimize": 559.7413104037764
+  "Google": {
+    "hyperbuild-nodejs": 1856.1401576820815,
+    "html-minifier": 326.33685434942925,
+    "minimize": 555.6574376056606
   },
-  "Hacker News.html": {
-    "hyperbuild-nodejs": 1698.4814577832713,
-    "html-minifier": 86.84874410099094,
-    "minimize": 272.4655268930861
+  "Hacker News": {
+    "hyperbuild-nodejs": 2243.718482073889,
+    "html-minifier": 86.20536879655822,
+    "minimize": 272.83901988612814
   },
-  "NY Times.html": {
-    "hyperbuild-nodejs": 303.09869941070536,
-    "html-minifier": 42.081296690280986,
-    "minimize": 105.9439759928125
+  "NY Times": {
+    "hyperbuild-nodejs": 281.05098122387943,
+    "html-minifier": 35.57258739419913,
+    "minimize": 85.73538788107287
   },
-  "Reddit.html": {
-    "hyperbuild-nodejs": 347.3501992232369,
-    "html-minifier": 43.965316436512296,
-    "minimize": 119.53066163219651
+  "Reddit": {
+    "hyperbuild-nodejs": 410.12831233429847,
+    "html-minifier": 45.16614107393938,
+    "minimize": 122.77229783626386
   },
-  "Stack Overflow.html": {
-    "hyperbuild-nodejs": 699.0528884626148,
-    "html-minifier": 48.9868522505873,
-    "minimize": 158.237902766563
+  "Stack Overflow": {
+    "hyperbuild-nodejs": 844.9492250936706,
+    "html-minifier": 47.752958982642866,
+    "minimize": 157.06321076776504
   },
-  "Twitter.html": {
-    "hyperbuild-nodejs": 261.0846884406236,
-    "html-minifier": 41.807088664465276,
-    "minimize": 165.579606845361
+  "Twitter": {
+    "hyperbuild-nodejs": 279.4114354197891,
+    "html-minifier": 41.71822833204345,
+    "minimize": 164.8527211050192
   },
-  "Wikipedia.html": {
-    "hyperbuild-nodejs": 47.35485721052862,
-    "html-minifier": 3.1776064565607642,
-    "minimize": 8.735035310526898
+  "Wikipedia": {
+    "hyperbuild-nodejs": 57.721598283350104,
+    "html-minifier": 3.1325913382989596,
+    "minimize": 8.741663457588
   }
 }
