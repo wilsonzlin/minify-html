@@ -109,7 +109,7 @@ There are three whitespace minification methods. When processing text content, h
 <details>
 <summary><strong>Collapse whitespace</strong></summary>
 
-> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/wss.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/whitespace.rs) elements.
 
 Reduce a sequence of whitespace characters in text nodes to a single space (U+0020).
 
@@ -135,7 +135,7 @@ Reduce a sequence of whitespace characters in text nodes to a single space (U+00
 <details>
 <summary><strong>Destroy whole whitespace</strong></summary>
 
-> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/wss.rs), [content](./src/spec/tag/content.rs), [content-first](./src/spec/tag/contentfirst.rs), and [formatting](./src/spec/tag/formatting.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/whitespace.rs), [content](src/spec/tag/whitespace.rs), [content-first](./src/spec/tag/whitespace.rs), and [formatting](./src/spec/tag/whitespace.rs) elements.
 
 Remove any text nodes that only consist of whitespace characters.
 
@@ -163,7 +163,7 @@ Remove any text nodes that only consist of whitespace characters.
 <details>
 <summary><strong>Trim whitespace</strong></summary>
 
-> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/wss.rs) and [formatting](./src/spec/tag/formatting.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/whitespace.rs) and [formatting](./src/spec/tag/whitespace.rs) elements.
 
 Remove any leading/trailing whitespace from any leading/trailing text nodes of a tag.
 
@@ -194,10 +194,10 @@ hyperbuild recognises elements based on one of a few ways it assumes they are us
 
 |Group|Elements|Expected children|
 |---|---|---|
-|Formatting|`a`, `strong`, [and others](./src/spec/tag/formatting.rs)|Formatting elements, text.|
-|Content|`h1`, `p`, [and others](./src/spec/tag/content.rs)|Formatting elements, text.|
-|Layout|`div`, `ul`, [and others](./src/spec/tag/layout.rs)|Layout elements, content elements.|
-|Content-first|`label`, `li`, [and others](./src/spec/tag/contentfirst.rs)|Like content but could be layout with only one child.|
+|Formatting|`a`, `strong`, [and others](./src/spec/tag/whitespace.rs)|Formatting elements, text.|
+|Content|`h1`, `p`, [and others](src/spec/tag/whitespace.rs)|Formatting elements, text.|
+|Layout|`div`, `ul`, [and others](./src/spec/tag/whitespace.rs)|Layout elements, content elements.|
+|Content-first|`label`, `li`, [and others](./src/spec/tag/whitespace.rs)|Like content but could be layout with only one child.|
 
 <details>
 <summary><strong>Formatting elements</strong></summary>

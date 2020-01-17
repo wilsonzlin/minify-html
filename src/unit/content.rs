@@ -1,16 +1,13 @@
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange, UnintentionalEntityPrevention};
 use crate::spec::codepoint::is_whitespace;
-use crate::spec::tag::content::CONTENT_TAGS;
-use crate::spec::tag::contentfirst::CONTENT_FIRST_TAGS;
-use crate::spec::tag::formatting::FORMATTING_TAGS;
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
-use crate::spec::tag::wss::WSS_TAGS;
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{process_tag, ProcessedTag};
+use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -132,23 +129,9 @@ fn process_wss_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
 }
 
 pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
-    let collapse_whitespace = match parent {
-        Some(tag_name) => !WSS_TAGS.contains(&proc[tag_name]),
-        // Should collapse whitespace for root content.
-        None => true,
-    };
-    let destroy_whole_whitespace = match parent {
-        Some(tag_name) => !WSS_TAGS.contains(&proc[tag_name]) && !CONTENT_TAGS.contains(&proc[tag_name]) && !CONTENT_FIRST_TAGS.contains(&proc[tag_name]) && !FORMATTING_TAGS.contains(&proc[tag_name]),
-        // Should destroy whole whitespace for root content.
-        None => true,
-    };
-    let trim_whitespace = match parent {
-        Some(tag_name) => !WSS_TAGS.contains(&proc[tag_name]) && !FORMATTING_TAGS.contains(&proc[tag_name]),
-        // Should trim whitespace for root content.
-        None => true,
-    };
+    let &WhitespaceMinification { collapse, destroy_whole, trim } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]));
 
-    if !(collapse_whitespace || destroy_whole_whitespace || trim_whitespace) {
+    if !(collapse || destroy_whole || trim) {
         // Normally whitespace entities are decoded and then ignored.
         // However, if whitespace cannot be minified in any way,
         // and we can't actually do anything but write whitespace as is,
@@ -205,13 +188,13 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
 
         // Next character is not whitespace, so handle any previously ignored whitespace.
         if currently_in_whitespace {
-            if destroy_whole_whitespace && last_non_whitespace_content_type.is_comment_bang_instruction_opening_tag() && next_content_type.is_comment_bang_instruction_opening_tag() {
+            if destroy_whole && last_non_whitespace_content_type.is_comment_bang_instruction_opening_tag() && next_content_type.is_comment_bang_instruction_opening_tag() {
                 // Whitespace is between two tags, comments, or bangs.
-                // destroy_whole_whitespace is on, so don't write it.
-            } else if trim_whitespace && (last_non_whitespace_content_type == ContentType::Start || next_content_type == ContentType::End) {
+                // `destroy_whole` is on, so don't write it.
+            } else if trim && (last_non_whitespace_content_type == ContentType::Start || next_content_type == ContentType::End) {
                 // Whitespace is leading or trailing.
-                // trim_whitespace is on, so don't write it.
-            } else if collapse_whitespace {
+                // `trim` is on, so don't write it.
+            } else if collapse {
                 // Current contiguous whitespace needs to be reduced to a single space character.
                 proc.write(b' ');
                 // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node.
