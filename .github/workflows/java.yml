@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  build_and_upload:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -14,13 +14,13 @@ jobs:
         include:
           - os: ubuntu-latest
             ARCH: linux-x86_64
-            EXT: '.so'
+            FILE: 'libhyperbuild_java.so'
           - os: windows-latest
             ARCH: windows-x86_64
-            EXT: '.dll'
+            FILE: 'hyperbuild_java.dll'
           - os: macos-latest
             ARCH: macos-x86_64
-            EXT: '.dylib'
+            FILE: 'libhyperbuild_java.dylib'
     steps:
       - uses: actions/checkout@v1
       - name: Get version
@@ -36,15 +36,14 @@ jobs:
       - name: Build Java native library
         run: cargo build --release
         working-directory: ./java
-      - uses: chrislennon/action-aws-cli@v1.1
       - name: Upload built library
         uses: actions/upload-artifact@v1
         with:
           name: ${{ matrix.ARCH }}
-          path: ./java/target/rust/release/libhyperbuild_java${{ matrix.EXT }}
+          path: ./java/target/rust/release/${{ matrix.FILE }}
   package:
     runs-on: ubuntu-latest
-    needs: build_and_upload
+    needs: build
     steps:
       - uses: actions/checkout@v1
       - name: Get version
@@ -78,12 +77,11 @@ jobs:
           path: java/src/main/resources/macos-x86_64.nativelib
       - name: Build and package JAR
         working-directory: ./java
-        run: |
-          mvn clean package
+        run: mvn clean package
       - uses: chrislennon/action-aws-cli@v1.1
       - name: Upload to S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-west-2
-        run: aws s3 cp ./target/hyperbuild-${{steps.version.outputs.VERSION }}.jar s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/${{ steps.file.outputs.FILE }}
+        run: aws s3 cp ./target/hyperbuild-${{ steps.version.outputs.VERSION }}.jar s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/${{ steps.file.outputs.FILE }}
