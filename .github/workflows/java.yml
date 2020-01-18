@@ -1,0 +1,88 @@
+name: Build, package, and upload Java library
+
+on:
+  create:
+    tags:
+      - 'v*'
+
+jobs:
+  build_and_upload:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            ARCH: linux-x86_64
+            EXT: '.so'
+          - os: windows-latest
+            ARCH: windows-x86_64
+            EXT: '.dll'
+          - os: macos-latest
+            ARCH: macos-x86_64
+            EXT: '.dylib'
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+      - name: Build Java native library
+        run: cargo build --release
+        working-directory: ./java
+      - uses: chrislennon/action-aws-cli@v1.1
+      - name: Upload built library
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.ARCH }}
+          path: ./java/target/rust/release/libhyperbuild_java${{ matrix.EXT }}
+  package:
+    needs: build_and_upload
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      - name: Get file name
+        id: file
+        shell: bash
+        run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}.jar
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: '1.8'
+          java-package: jdk
+          architecture: x64
+      - name: Download Windows built library
+        uses: actions/download-artifact@v1
+        with:
+          name: windows-x86_64
+          path: java/src/main/resources/windows-x86_64.nativelib
+      - name: Download Linux built library
+        uses: actions/download-artifact@v1
+        with:
+          name: linux-x86_64
+          path: java/src/main/resources/linux-x86_64.nativelib
+      - name: Download macOS built library
+        uses: actions/download-artifact@v1
+        with:
+          name: macos-x86_64
+          path: java/src/main/resources/macos-x86_64.nativelib
+      - name: Build and package JAR
+        working-directory: ./java
+        run: |
+          mvn clean package
+      - uses: chrislennon/action-aws-cli@v1.1
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+        run: aws s3 cp ./target/hyperbuild-${{steps.version.outputs.VERSION }}.jar s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/${{ steps.file.outputs.FILE }}
