@@ -8,6 +8,36 @@
     <artifactId>hyperbuild</artifactId>
     <version>0.0.17</version>
 
+    <name>hyperbuild</name>
+    <description>One-pass in-place HTML minifier written in Rust with context-aware whitespace handling</description>
+    <developers>
+        <developer>
+            <name>Wilson Lin</name>
+            <email>code@wilsonl.in</email>
+            <url>https://wilsonl.in/</url>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://www.opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/wilsonzlin/hyperbuild</url>
+        <connection>scm:git:git@github.com:wilsonzlin/hyperbuild.git</connection>
+        <developerConnection>scm:git:git@github.com:wilsonzlin/hyperbuild.git</developerConnection>
+    </scm>
+
+    <properties>
+        <java.version>1.7</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
