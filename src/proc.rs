@@ -543,7 +543,6 @@ impl<'d> Processor<'d> {
         uep.state = UnintentionalEntityState::Ended;
     }
     pub fn suspend(&mut self, uep: &mut UnintentionalEntityPrevention) -> () {
-        debug_assert!(uep.state != UnintentionalEntityState::Ended);
         if uep.state != UnintentionalEntityState::Suspended {
             self._after_write(uep, true);
             uep.state = UnintentionalEntityState::Suspended;

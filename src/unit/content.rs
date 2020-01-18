@@ -24,8 +24,9 @@ enum ContentType {
 
 impl ContentType {
     fn is_tag_like(&self) -> bool {
+        // Do not include Comment as comments are not written.
         match self {
-            ContentType::Comment | ContentType::Bang | ContentType::Instruction | ContentType::Tag => true,
+            ContentType::Bang | ContentType::Instruction | ContentType::Tag => true,
             _ => false,
         }
     }
@@ -159,9 +160,9 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
                         uep.expect_active();
                         match entity {
                             // TODO Comment: Explain why < is handled this way.
-                            Some(e @ EntityType::NonDecodableRightChevron(_)) => {
+                            Some(entity @ EntityType::NonDecodableRightChevron(_)) => {
                                 proc.suspend(uep);
-                                e.keep(proc);
+                                entity.keep(proc);
                                 proc.resume(uep);
                             }
                             Some(entity) => {
@@ -179,7 +180,10 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
             }
         };
 
-        last_written = next_content_type;
+        // Comments are discarded.
+        if next_content_type != ContentType::Comment {
+            last_written = next_content_type;
+        };
     };
 
     Ok(())

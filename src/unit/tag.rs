@@ -52,7 +52,7 @@ impl MaybeClosingTag {
 
     pub fn write(&mut self, proc: &mut Processor) -> () {
         proc.write_slice(b"</");
-        proc.write_range(self.0.unwrap());
+        proc.write_range(self.0.take().unwrap());
         proc.write(b'>');
     }
 
