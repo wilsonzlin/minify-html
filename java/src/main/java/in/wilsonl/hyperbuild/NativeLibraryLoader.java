@@ -34,16 +34,14 @@ import java.nio.file.Files;
 import java.nio.file.ProviderNotFoundException;
 import java.nio.file.StandardCopyOption;
 
-import static java.lang.String.format;
-
 public class NativeLibraryLoader {
   private NativeLibraryLoader() {
   }
 
   public static void loadLibraryFromJar(String filename) throws IOException {
-    File temp = File.createTempFile("hyperbuild-java-nativelib", filename);
+    File temp = File.createTempFile("hyperbuild-java-nativelib", filename.substring(1));
 
-    try (InputStream is = NativeLibraryLoader.class.getResourceAsStream(format("/%s", filename))) {
+    try (InputStream is = NativeLibraryLoader.class.getResourceAsStream(filename)) {
       Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.load(temp.getAbsolutePath());
     } finally {

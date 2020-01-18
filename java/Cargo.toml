@@ -10,4 +10,4 @@ jni = "0.14.0"
 
 [lib]
 crate-type = ["cdylib"]
-path = "src/main/rust/src/lib.rs"
+path = "src/main/rust/lib.rs"

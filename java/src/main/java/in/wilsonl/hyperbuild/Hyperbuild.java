@@ -1,10 +1,9 @@
 package in.wilsonl.hyperbuild;
 
-import java.util.Arrays;
+import java.nio.ByteBuffer;
 
 import static in.wilsonl.hyperbuild.NativeLibraryLoader.loadLibraryFromJar;
 import static java.lang.String.format;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Hyperbuild {
   static {
@@ -25,20 +24,13 @@ public class Hyperbuild {
     }
 
     try {
-      loadLibraryFromJar(format("%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch));
+      loadLibraryFromJar(format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch));
     } catch (Exception e) {
       throw new RuntimeException("Failed to load native library", e);
     }
   }
 
-  public static native int minifyInPlace(byte[] code) throws HyperbuildException;
+  public static native int minifyInPlace(ByteBuffer code) throws HyperbuildException;
 
-  public static byte[] minify(byte[] code) throws HyperbuildException {
-    int size = minifyInPlace(code);
-    return Arrays.copyOf(code, size);
-  }
-
-  public static String minify(String code) throws HyperbuildException {
-    return new String(Hyperbuild.minify(code.getBytes(UTF_8)), UTF_8);
-  }
+  public static native String minify(String code) throws HyperbuildException;
 }
