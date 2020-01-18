@@ -1,9 +1,9 @@
 const benchmark = require('benchmark');
 const childProcess = require('child_process');
-const fs = require('fs');
 const minimist = require('minimist');
 const path = require('path');
-const programs = require('./minifiers');
+const minifiers = require('./minifiers');
+const results = require('./results');
 const tests = require('./tests');
 
 const args = minimist(process.argv.slice(2));
@@ -59,24 +59,24 @@ const setSize = (program, test, result) => {
 
 // Run once to set sizes.
 for (const t of tests) {
-  for (const p of Object.keys(programs)) {
+  for (const m of Object.keys(minifiers)) {
     try {
-      setSize(p, t.name, programs[p](t.contentAsString, t.contentAsBuffer).length);
+      setSize(m, t.name, minifiers[m](t.contentAsString, t.contentAsBuffer).length);
     } catch (err) {
-      console.error(`Failed to run ${p} on test ${t.name}:`);
+      console.error(`Failed to run ${m} on test ${t.name}:`);
       console.error(err);
       process.exit(1);
     }
   }
 }
-fs.writeFileSync(path.join(__dirname, 'minification.json'), JSON.stringify(sizes, null, 2));
+results.writeSizeResults(sizes);
 
 const runTest = test => new Promise((resolve, reject) => {
   // Run JS libraries.
   const suite = new benchmark.Suite();
-  for (const p of Object.keys(programs)) {
-    suite.add(p, () => {
-      programs[p](test.contentAsString, test.contentAsBuffer);
+  for (const m of Object.keys(minifiers)) {
+    suite.add(m, () => {
+      minifiers[m](test.contentAsString, test.contentAsBuffer);
     });
   }
   suite
@@ -87,7 +87,7 @@ const runTest = test => new Promise((resolve, reject) => {
 });
 
 (async () => {
-  const results = fromEntries(tests.map(t => [t.name, {}]));
+  const speeds = fromEntries(tests.map(t => [t.name, {}]));
 
   // Run Rust library.
   if (shouldRunRust) {
@@ -96,12 +96,12 @@ const runTest = test => new Promise((resolve, reject) => {
       '--iterations', 512,
       '--tests', path.join(__dirname, 'tests'),
     ))) {
-      Object.assign(results[testName], {hyperbuild: testOps});
+      Object.assign(speeds[testName], {hyperbuild: testOps});
     }
   }
 
   for (const t of tests) {
-    Object.assign(results[t.name], await runTest(t));
+    Object.assign(speeds[t.name], await runTest(t));
   }
-  fs.writeFileSync(path.join(__dirname, 'speed.json'), JSON.stringify(results, null, 2));
+  results.writeSpeedResults(speeds);
 })();

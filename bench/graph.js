@@ -1,7 +1,5 @@
 const chartjs = require('chartjs-node');
-const fs = require('fs');
-const path = require('path');
-const tests = require('./tests');
+const results = require('./results');
 
 const colours = {
   'hyperbuild': '#041f60',
@@ -9,8 +7,6 @@ const colours = {
   'minimize': '#ff7f0e',
   'html-minifier': '#2ca02c',
 };
-
-const programNames = ['minimize', 'html-minifier', 'hyperbuild-nodejs'];
 
 const chartOptions = (title, displayLegend, yTick = t => t) => ({
   options: {
@@ -45,67 +41,73 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
     legend: {
       display: displayLegend,
       labels: {
-        fontFamily: 'Arial, sans-serif',
         fontColor: '#000',
       },
     },
   },
 });
 
-const renderChart = async (file, cfg) => {
+const renderChart = async (cfg) => {
   const chart = new chartjs(900, 650);
   await chart.drawChart(cfg);
-  await chart.writeImageToFile('image/png', path.join(__dirname, `${file}.png`));
+  return chart.getImageBuffer('image/png');
 };
 
 (async () => {
-  const testNames = tests.map(t => t.name).sort();
-
-  const speedResults = JSON.parse(fs.readFileSync(path.join(__dirname, 'speed.json'), 'utf8'));
-  const speedData = programNames.map(program => [
-    program,
-    testNames
-      // Get OP/s for each test.
-      .map(test => speedResults[test][program] / speedResults[test]['hyperbuild-nodejs'])
-      // Sum all test OP/s.
-      .reduce((sum, c) => sum + c)
-    // Divide by tests count to get average OP/s.
-    / testNames.length,
-  ]).sort((a, b) => a[1] - b[1]);
-  await renderChart('speed', {
+  const averageSpeeds = results.getSpeedResults().getAverageRelativeSpeedPerMinifier('hyperbuild-nodejs');
+  results.writeAverageSpeedsGraph(await renderChart({
     type: 'bar',
     data: {
-      labels: speedData.map(([n]) => n),
-      // Node.js version is close enough to Rust version, so leave out Rust results.
-      // Include it this if this situation changes.
+      labels: averageSpeeds.map(([n]) => n),
       datasets: [{
         label: 'Average relative OP/s',
         backgroundColor: '#1f77b4',
-        data: speedData.map(([_, v]) => v),
+        data: averageSpeeds.map(([_, v]) => v),
       }],
     },
     ...chartOptions('Average operations per second (higher is better)', false, tick => `${tick * 100}%`),
-  });
+  }));
 
-  const sizes = JSON.parse(fs.readFileSync(path.join(__dirname, 'minification.json'), 'utf8'));
-  const sizeData = programNames.map(program => [
-    program,
-    testNames
-      .map(test => sizes[test][program].relative)
-      .reduce((sum, c) => sum + c)
-    / testNames.length,
-  ]).sort((a, b) => b[1] - a[1]);
-  await renderChart('minification', {
+  const speeds = results.getSpeedResults().getRelativeFileSpeedsPerMinifier('hyperbuild-nodejs');
+  results.writeSpeedsGraph(await renderChart({
+    type: 'bar',
+    data: {
+      labels: speeds[0][1].map(([n]) => n),
+      datasets: speeds.map(([minifier, fileSpeeds]) => ({
+        label: minifier,
+        backgroundColor: colours[minifier],
+        data: fileSpeeds.map(([_, speed]) => speed),
+      })),
+    },
+    ...chartOptions('Operations per second (higher is better)', true, tick => `${tick * 100}%`),
+  }));
+
+  const averageSizes = results.getSizeResults().getAverageRelativeSizePerMinifier();
+  results.writeAverageSizesGraph(await renderChart({
     type: 'bar',
     scaleFontColor: 'red',
     data: {
-      labels: sizeData.map(([n]) => n),
+      labels: averageSizes.map(([n]) => n),
       datasets: [{
         label: 'Average minified size',
         backgroundColor: '#2ca02c',
-        data: sizeData.map(([_, v]) => v),
+        data: averageSizes.map(([_, v]) => v),
       }],
     },
     ...chartOptions('Average minified size (lower is better)', false, tick => `${tick * 100}%`),
-  });
+  }));
+
+  const sizes = results.getSizeResults().getRelativeFileSizesPerMinifier();
+  results.writeSizesGraph(await renderChart({
+    type: 'bar',
+    data: {
+      labels: sizes[0][1].map(([n]) => n),
+      datasets: sizes.map(([minifier, fileSizes]) => ({
+        label: minifier,
+        backgroundColor: colours[minifier],
+        data: fileSizes.map(([_, size]) => size),
+      })),
+    },
+    ...chartOptions('Minified size (lower is better)', true, tick => `${tick * 100}%`),
+  }));
 })();

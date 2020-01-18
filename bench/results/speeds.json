@@ -1,0 +1,67 @@
+{
+  "Amazon": {
+    "hyperbuild-nodejs": 496.69767089636576,
+    "html-minifier": 36.22644969886744,
+    "minimize": 113.46511363852734
+  },
+  "BBC": {
+    "hyperbuild-nodejs": 530.7581308772171,
+    "html-minifier": 49.92474956429014,
+    "minimize": 160.83375271616242
+  },
+  "Bing": {
+    "hyperbuild-nodejs": 2143.2738405584682,
+    "html-minifier": 224.01168295253845,
+    "minimize": 548.4301545148764
+  },
+  "Bootstrap": {
+    "hyperbuild-nodejs": 271.9278016916176,
+    "html-minifier": 8.063475087253176,
+    "minimize": 22.267478295105477
+  },
+  "Coding Horror": {
+    "hyperbuild-nodejs": 1023.4279917437968,
+    "html-minifier": 48.701642742613835,
+    "minimize": 186.3127301413615
+  },
+  "ECMA-262": {
+    "hyperbuild-nodejs": 15.516204982806318,
+    "html-minifier": 0.44813616072549084,
+    "minimize": 1.3379096629237164
+  },
+  "Google": {
+    "hyperbuild-nodejs": 1828.0608850870312,
+    "html-minifier": 243.05811241714517,
+    "minimize": 575.3743754787441
+  },
+  "Hacker News": {
+    "hyperbuild-nodejs": 2098.1972805031955,
+    "html-minifier": 73.59734557807897,
+    "minimize": 271.03920934848253
+  },
+  "NY Times": {
+    "hyperbuild-nodejs": 264.01040398999527,
+    "html-minifier": 36.483800875972946,
+    "minimize": 86.74545622195224
+  },
+  "Reddit": {
+    "hyperbuild-nodejs": 402.9146825613306,
+    "html-minifier": 44.44689052201565,
+    "minimize": 124.65890370904272
+  },
+  "Stack Overflow": {
+    "hyperbuild-nodejs": 822.1712538713629,
+    "html-minifier": 40.65363487825213,
+    "minimize": 158.40795613979014
+  },
+  "Twitter": {
+    "hyperbuild-nodejs": 279.88535523093344,
+    "html-minifier": 36.231829473085334,
+    "minimize": 167.45777652008428
+  },
+  "Wikipedia": {
+    "hyperbuild-nodejs": 54.31371594883309,
+    "html-minifier": 2.808823542495513,
+    "minimize": 8.687326663074192
+  }
+}

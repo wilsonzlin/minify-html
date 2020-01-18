@@ -1,17 +1,17 @@
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const path = require('path');
-const programs = require('./minifiers');
+const minifiers = require('./minifiers');
 const tests = require('./tests');
 
 for (const t of tests) {
-  for (const p of Object.keys(programs)) {
+  for (const m of Object.keys(minifiers)) {
     try {
-      const minPath = path.join(__dirname, 'min', p, `${t.name}.html`);
+      const minPath = path.join(__dirname, 'min', m, `${t.name}.html`);
       mkdirp.sync(path.dirname(minPath));
-      fs.writeFileSync(minPath, programs[p](t.contentAsString, t.contentAsBuffer));
+      fs.writeFileSync(minPath, minifiers[m](t.contentAsString, t.contentAsBuffer));
     } catch (err) {
-      console.error(`Failed to run ${p} on test ${t.name}:`);
+      console.error(`Failed to run ${m} on test ${t.name}:`);
       console.error(err);
       process.exit(1);
     }
