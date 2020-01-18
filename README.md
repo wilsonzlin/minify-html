@@ -92,6 +92,31 @@ const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
 
 </details>
 
+<details>
+<summary><strong>Java</strong></summary>
+
+hyperbuild is available via JNI, and supports Java versions 7 and higher.
+
+##### Get
+
+Download the [JAR](https://wilsonl.in/hyperbuild/bin/0.0.18.jar) file.
+
+##### Use
+
+Make sure to add the JAR file to the class path.
+
+```java
+import in.wilsonl.hyperbuild.Hyperbuild;
+
+class Main {
+    public static void main(String[] args) {
+        String minified = Hyperbuild.minify("<p>  Hello, world!  </p>");
+    }
+}
+```
+
+</details>
+
 ## Minification
 
 ### Whitespace
