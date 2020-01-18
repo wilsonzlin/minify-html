@@ -135,9 +135,6 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
                     erase_attr = true;
                 };
             }
-            (TagType::Style, b"type") => {
-                erase_attr = true;
-            }
             (_, name) => {
                 // TODO Check if HTML tag before checking if attribute removal applies to all elements.
                 erase_attr = match (value, ATTRS.get(&proc[tag_name], name)) {

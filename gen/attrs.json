@@ -981,7 +981,8 @@
     "style": {
       "boolean": false,
       "redundant_if_empty": true,
-      "collapse_and_trim": false
+      "collapse_and_trim": false,
+      "default_value": "all"
     }
   },
   "mediagroup": {
@@ -1675,7 +1676,8 @@
     "style": {
       "boolean": false,
       "redundant_if_empty": true,
-      "collapse_and_trim": false
+      "collapse_and_trim": false,
+      "default_value": "text/css"
     }
   },
   "typeof": {

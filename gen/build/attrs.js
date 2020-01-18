@@ -71,6 +71,10 @@ const defaultAttributeValues = {
     tags: ['iframe', 'img'],
     defaultValue: 'eager',
   }],
+  'media': [{
+    tags: ['style'],
+    defaultValue: 'all',
+  }],
   'method': [{
     tags: ['form'],
     defaultValue: 'get',
@@ -99,7 +103,7 @@ const defaultAttributeValues = {
     tags: ['input'],
     defaultValue: 'text',
   }, {
-    tags: ['link'],
+    tags: ['link', 'style'],
     defaultValue: 'text/css',
   }],
   'width': [{
