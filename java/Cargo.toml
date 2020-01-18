@@ -1,0 +1,13 @@
+[package]
+name = "hyperbuild-java"
+version = "0.0.14"
+authors = ["Wilson Lin <code@wilsonl.in>"]
+edition = "2018"
+
+[dependencies]
+hyperbuild = "0.0.14"
+jni = "0.14.0"
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/main/rust/src/lib.rs"
