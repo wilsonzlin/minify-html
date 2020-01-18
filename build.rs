@@ -88,32 +88,67 @@ fn generate_fastrie_code(var_name: &str, value_type: &str, built: &FastrieBuild<
     )
 }
 
-fn generate_attr_map(name: &str) {
-    let name_words = name_words(name);
-    let snake_case = snake_case(&name_words);
-    let file_name = name_words.join("_");
-    let attrs: HashMap<String, Vec<String>> = read_json(file_name.as_str());
+#[derive(Serialize, Deserialize)]
+struct TagAttr {
+    boolean: bool,
+    redundant_if_empty: bool,
+    collapse_and_trim: bool,
+    default_value: Option<String>,
+}
+
+impl TagAttr {
+    fn code(&self) -> String {
+        format!(r"
+            AttributeMinification {{
+                boolean: {boolean},
+                redundant_if_empty: {redundant_if_empty},
+                collapse_and_trim: {collapse_and_trim},
+                default_value: {default_value},
+            }}
+        ",
+            boolean = self.boolean,
+            redundant_if_empty = self.redundant_if_empty,
+            collapse_and_trim = self.collapse_and_trim,
+            default_value = match &self.default_value {
+                Some(val) => format!("Some({})", create_byte_string_literal(val.as_bytes())),
+                None => "None".to_string(),
+            },
+        )
+    }
+}
+
+fn generate_attr_map() {
+    let attrs: HashMap<String, HashMap<String, TagAttr>> = read_json("attrs");
     let mut code = String::new();
-    for (name, elems) in attrs.iter() {
-        if !elems.contains(&"".to_string()) {
+    for (attr_name, tags_map) in attrs.iter() {
+        if let Some(global_attr) = tags_map.get("") {
             code.push_str(format!(
-                "static {}_{}_ATTR: &phf::Set<&'static [u8]> = &phf::phf_set!({});\n\n",
-                name.to_uppercase(),
-                snake_case,
-                elems.iter().map(|e| format!("b\"{}\"", e)).collect::<Vec<String>>().join(", "),
+                "static {}_ATTR: &AttrMapEntry = &AttrMapEntry::AllHtmlElements({});\n\n",
+                attr_name.to_uppercase(),
+                global_attr.code(),
+            ).as_str());
+        } else {
+            code.push_str(format!(
+                "static {}_ATTR: &AttrMapEntry = &AttrMapEntry::DistinctHtmlElements(phf::phf_map! {{\n{}\n}});\n\n",
+                attr_name.to_uppercase(),
+                tags_map
+                    .iter()
+                    .map(|(tag_name, tag_attr)| format!(
+                        "b\"{}\" => {}",
+                        tag_name,
+                        tag_attr.code(),
+                    ))
+                    .collect::<Vec<String>>()
+                    .join(",\n"),
             ).as_str());
         };
     };
-    code.push_str(format!("pub static {}: crate::pattern::AttrMap = crate::pattern::AttrMap::new(phf::phf_map!{{\n", snake_case).as_str());
-    for (name, elems) in attrs.iter() {
-        if elems.contains(&"".to_string()) {
-            code.push_str(format!("\tb\"{}\" => crate::pattern::AttrMapEntry::AllHtmlElements,\n", name).as_str());
-        } else {
-            code.push_str(format!("\tb\"{}\" => crate::pattern::AttrMapEntry::SomeHtmlElements({}_{}_ATTR),\n", name, name.to_uppercase(), snake_case).as_str());
-        };
+    code.push_str("pub static ATTRS: AttrMap = AttrMap::new(phf::phf_map! {\n");
+    for attr_name in attrs.keys() {
+        code.push_str(format!("\tb\"{}\" => {}_ATTR,\n", attr_name, attr_name.to_uppercase()).as_str());
     };
     code.push_str("});\n\n");
-    write_rs(file_name.as_str(), code);
+    write_rs("attrs", code);
 }
 
 #[derive(Serialize, Deserialize)]
@@ -182,8 +217,7 @@ fn generate_tries() {
 }
 
 fn main() {
-    generate_attr_map("boolean attrs");
-    generate_attr_map("redundant if empty attrs");
+    generate_attr_map();
     generate_entities();
     generate_patterns();
     generate_tries();

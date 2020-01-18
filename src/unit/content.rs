@@ -195,10 +195,10 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
                 // Whitespace is leading or trailing.
                 // `trim` is on, so don't write it.
             } else if collapse {
+                // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node; space will be new previous sibling node (as a text node).
+                prev_sibling_closing_tag.take().map(|tag| tag.write_closing_tag(proc));
                 // Current contiguous whitespace needs to be reduced to a single space character.
                 proc.write(b' ');
-                // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node.
-                prev_sibling_closing_tag.take().map(|tag| tag.write_closing_tag(proc));
             } else {
                 unreachable!();
             };

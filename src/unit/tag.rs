@@ -5,12 +5,10 @@ use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::void::VOID_TAGS;
-use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
+use crate::unit::attr::{AttributeMinification, ATTRS, AttrType, process_attr, ProcessedAttr};
 use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
-
-include!(concat!(env!("OUT_DIR"), "/gen_redundant_if_empty_attrs.rs"));
 
 pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
     b"application/ecmascript",
@@ -73,7 +71,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     let source_tag_name = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.discard().range());
     if let Some(prev_tag) = prev_sibling_closing_tag {
         let can_omit = match CLOSING_TAG_OMISSION_RULES.get(&proc[prev_tag.name]) {
-            Some(rule) => rule.can_omit_as_prev(&proc[source_tag_name]),
+            Some(rule) => rule.can_omit_as_before(&proc[source_tag_name]),
             _ => false,
         };
         if !can_omit {
@@ -142,7 +140,11 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
             }
             (_, name) => {
                 // TODO Check if HTML tag before checking if attribute removal applies to all elements.
-                erase_attr = value.is_none() && REDUNDANT_IF_EMPTY_ATTRS.contains(&proc[tag_name], name);
+                erase_attr = match (value, ATTRS.get(&proc[tag_name], name)) {
+                    (None, Some(AttributeMinification { redundant_if_empty: true, .. })) => true,
+                    (Some(val), Some(AttributeMinification { default_value: Some(defval), .. })) => proc[val].eq(*defval),
+                    _ => false,
+                };
             }
         };
         if erase_attr {
@@ -157,7 +159,11 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     if self_closing || is_void_tag {
         if self_closing {
             // Write discarded tag closing characters.
-            if is_void_tag { proc.write_slice(b">"); } else { proc.write_slice(b"/>"); };
+            if is_void_tag {
+                proc.write_slice(b">");
+            } else {
+                proc.write_slice(b"/>");
+            };
         };
         return Ok(ProcessedTag { name: tag_name, has_closing_tag: false });
     };
@@ -171,6 +177,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     // Require closing tag for non-void.
     chain!(proc.match_seq(b"</").require_with_reason("closing tag")?.discard());
     let closing_tag = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("closing tag name")?.discard().range());
+    // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.
     if !proc[closing_tag].eq(&proc[tag_name]) {
         return Err(ErrorType::ClosingTagMismatch);
     };

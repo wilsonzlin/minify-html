@@ -8,6 +8,10 @@ module.exports = {
     collapseBooleanAttributes: true,
     collapseInlineTagWhitespace: true,
     collapseWhitespace: true,
+    // hyperbuild can do context-aware whitespace removal, which is safe when configured correctly to match how whitespace is used in the document.
+    // html-minifier cannot, so whitespace must be collapsed conservatively.
+    // Alternatively, hyperbuild can also be made to remove whitespace regardless of context.
+    conservativeCollapse: true,
     customEventAttributes: [],
     decodeEntities: true,
     ignoreCustomComments: [],

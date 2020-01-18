@@ -7,7 +7,7 @@ const tests = require('./tests');
 for (const t of tests) {
   for (const p of Object.keys(programs)) {
     try {
-      const minPath = path.join(__dirname, 'min', p, t.name);
+      const minPath = path.join(__dirname, 'min', p, `${t.name}.html`);
       mkdirp.sync(path.dirname(minPath));
       fs.writeFileSync(minPath, programs[p](t.contentAsString, t.contentAsBuffer));
     } catch (err) {

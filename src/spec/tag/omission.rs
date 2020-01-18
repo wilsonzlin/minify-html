@@ -29,7 +29,7 @@ impl ClosingTagOmissionRule {
         }
     }
 
-    pub fn can_omit_as_prev(&self, after: &[u8]) -> bool {
+    pub fn can_omit_as_before(&self, after: &[u8]) -> bool {
         self.followed_by.contains(after)
     }
 }

@@ -1,5 +1,3 @@
-use phf::{Map, Set};
-
 pub struct SinglePattern {
     pub seq: &'static [u8],
     pub table: &'static [usize],
@@ -29,25 +27,5 @@ impl SinglePattern {
         };
 
         None
-    }
-}
-
-pub enum AttrMapEntry {
-    AllHtmlElements,
-    SomeHtmlElements(&'static Set<&'static [u8]>),
-}
-
-pub struct AttrMap(Map<&'static [u8], AttrMapEntry>);
-
-impl AttrMap {
-    pub const fn new(map: Map<&'static [u8], AttrMapEntry>) -> AttrMap {
-        AttrMap(map)
-    }
-
-    pub fn contains(&self, tag: &[u8], attr: &[u8]) -> bool {
-        self.0.get(attr).filter(|elems| match elems {
-            AttrMapEntry::AllHtmlElements => true,
-            AttrMapEntry::SomeHtmlElements(set) => set.contains(tag),
-        }).is_some()
     }
 }

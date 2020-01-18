@@ -1,0 +1,1830 @@
+{
+  "abbr": {
+    "td": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "th": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "about": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "accept": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "acceptcharset": {
+    "form": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "accesskey": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "action": {
+    "form": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "align": {
+    "td": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "th": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "allow": {
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "allowfullscreen": {
+    "iframe": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "allowtransparency": {
+    "iframe": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "alt": {
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "as": {
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "async": {
+    "script": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "autocapitalize": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "autocomplete": {
+    "form": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "autocorrect": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "autofocus": {
+    "button": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "keygen": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "autoplay": {
+    "media": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "autosave": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "capture": {
+    "input": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "cellpadding": {
+    "table": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "cellspacing": {
+    "table": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "challenge": {
+    "keygen": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "charset": {
+    "meta": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "script": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "checked": {
+    "input": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "cite": {
+    "blockquote": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "del": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "ins": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "quote": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "class": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": true
+    }
+  },
+  "classid": {
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "color": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "cols": {
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "colspan": {
+    "td": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "th": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "content": {
+    "meta": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "contenteditable": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "contextmenu": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "controls": {
+    "media": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "controlslist": {
+    "media": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "coords": {
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "crossorigin": {
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "media": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "script": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "data": {
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "datatype": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "datetime": {
+    "del": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "ins": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "time": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "decoding": {
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false,
+      "default_value": "auto"
+    }
+  },
+  "default": {
+    "track": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "defaultchecked": {
+    "": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "defaultvalue": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "defer": {
+    "script": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "dir": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "dirname": {
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "disabled": {
+    "button": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "fieldset": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "keygen": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "optgroup": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "option": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "disablepictureinpicture": {
+    "video": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "download": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "draggable": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "enctype": {
+    "form": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "application/x-www-form-urlencoded"
+    }
+  },
+  "form": {
+    "button": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "fieldset": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "keygen": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "label": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "meter": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "output": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "formaction": {
+    "button": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "formenctype": {
+    "button": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "application/x-www-form-urlencoded"
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "application/x-www-form-urlencoded"
+    }
+  },
+  "formmethod": {
+    "button": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "formnovalidate": {
+    "button": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "formtarget": {
+    "button": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "frameborder": {
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "1"
+    }
+  },
+  "headers": {
+    "td": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "th": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "height": {
+    "canvas": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "embed": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "150"
+    },
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "video": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "hidden": {
+    "": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "high": {
+    "meter": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "href": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "base": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "hreflang": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "htmlfor": {
+    "label": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "output": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "httpequiv": {
+    "meta": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "id": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "inlist": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "inputmode": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "integrity": {
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "script": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "is": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "itemid": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "itemprop": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "itemref": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "itemscope": {
+    "": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "itemtype": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "keyparams": {
+    "keygen": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "keytype": {
+    "keygen": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "kind": {
+    "track": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "label": {
+    "optgroup": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "option": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "track": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "lang": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "list": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "loop": {
+    "media": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "low": {
+    "meter": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "manifest": {
+    "html": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "marginheight": {
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "marginwidth": {
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "max": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "meter": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "progress": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "maxlength": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "media": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "source": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "style": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "mediagroup": {
+    "media": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "method": {
+    "form": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "get"
+    }
+  },
+  "min": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "meter": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "minlength": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "multiple": {
+    "input": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "muted": {
+    "media": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "name": {
+    "button": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "fieldset": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "form": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "keygen": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "map": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "meta": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "output": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "param": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "nomodule": {
+    "script": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "nonce": {
+    "script": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "style": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "novalidate": {
+    "form": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "onchange": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "open": {
+    "details": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "dialog": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "optimum": {
+    "meter": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "pattern": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "ping": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "placeholder": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "playsinline": {
+    "media": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "video": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "poster": {
+    "video": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "prefix": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "preload": {
+    "media": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "property": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "radiogroup": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "readonly": {
+    "input": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "referrerpolicy": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "no-referrer-when-downgrade"
+    }
+  },
+  "rel": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "required": {
+    "input": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "resource": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "results": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "reversed": {
+    "ol": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "role": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "rows": {
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "rowspan": {
+    "td": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "th": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "sandbox": {
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "scope": {
+    "td": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "th": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "scoped": {
+    "style": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "scrolling": {
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "seamless": {
+    "iframe": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "security": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "selected": {
+    "option": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "shape": {
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "size": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "sizes": {
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "source": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "slot": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "span": {
+    "col": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "1"
+    },
+    "colgroup": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "1"
+    }
+  },
+  "spellcheck": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "src": {
+    "embed": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "media": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "script": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "source": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "track": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "srcdoc": {
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "srclang": {
+    "track": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "srcset": {
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "source": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "start": {
+    "ol": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "step": {
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "style": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "summary": {
+    "table": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "suppresscontenteditablewarning": {
+    "": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "suppresshydrationwarning": {
+    "": {
+      "boolean": true,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "tabindex": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "target": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "_self"
+    },
+    "area": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "base": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "form": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "_self"
+    }
+  },
+  "title": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "translate": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "type": {
+    "a": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "button": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false,
+      "default_value": "submit"
+    },
+    "embed": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "text"
+    },
+    "link": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "text/css"
+    },
+    "menu": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "ol": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    },
+    "script": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "source": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "style": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "typeof": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "unselectable": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "usemap": {
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "valign": {
+    "td": {
+      "boolean": false,
+      "redundant_if_empty": false,
+      "collapse_and_trim": false
+    }
+  },
+  "value": {
+    "button": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "data": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "li": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "meter": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "option": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "param": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "progress": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "select": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "vocab": {
+    "": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "width": {
+    "canvas": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "col": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "embed": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "iframe": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false,
+      "default_value": "300"
+    },
+    "img": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "input": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    },
+    "video": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "wmode": {
+    "object": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  },
+  "wrap": {
+    "textarea": {
+      "boolean": false,
+      "redundant_if_empty": true,
+      "collapse_and_trim": false
+    }
+  }
+}

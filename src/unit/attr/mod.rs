@@ -1,4 +1,4 @@
-use phf::{phf_set, Set};
+use phf::Map;
 
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
@@ -7,11 +7,34 @@ use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrV
 
 mod value;
 
-include!(concat!(env!("OUT_DIR"), "/gen_boolean_attrs.rs"));
+pub struct AttributeMinification {
+    pub boolean: bool,
+    pub redundant_if_empty: bool,
+    pub collapse_and_trim: bool,
+    pub default_value: Option<&'static [u8]>,
+}
 
-static COLLAPSIBLE_AND_TRIMMABLE_ATTRS: Set<&'static [u8]> = phf_set! {
-    b"class",
-};
+pub enum AttrMapEntry {
+    AllHtmlElements(AttributeMinification),
+    DistinctHtmlElements(Map<&'static [u8], AttributeMinification>),
+}
+
+pub struct AttrMap(Map<&'static [u8], &'static AttrMapEntry>);
+
+impl AttrMap {
+    pub const fn new(map: Map<&'static [u8], &'static AttrMapEntry>) -> AttrMap {
+        AttrMap(map)
+    }
+
+    pub fn get(&self, tag: &[u8], attr: &[u8]) -> Option<&AttributeMinification> {
+        self.0.get(attr).and_then(|entry| match entry {
+            AttrMapEntry::AllHtmlElements(min) => Some(min),
+            AttrMapEntry::DistinctHtmlElements(map) => map.get(tag),
+        })
+    }
+}
+
+include!(concat!(env!("OUT_DIR"), "/gen_attrs.rs"));
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum AttrType {
@@ -40,10 +63,11 @@ pub fn process_attr(proc: &mut Processor, element: ProcessorRange) -> Processing
     // It's possible to expect attribute name but not be called at an attribute, e.g. due to whitespace between name and
     // value, which causes name to be considered boolean attribute and `=` to be start of new (invalid) attribute name.
     let name = chain!(proc.match_while_pred(is_name_char).require_with_reason("attribute name")?.keep().out_range());
-    let is_boolean = BOOLEAN_ATTRS.contains(&proc[element], &proc[name]);
+    let attr_cfg = ATTRS.get(&proc[element], &proc[name]);
+    let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
     let after_name = proc.checkpoint();
 
-    let should_collapse_and_trim_value_ws = COLLAPSIBLE_AND_TRIMMABLE_ATTRS.contains(&proc[name]);
+    let should_collapse_and_trim_value_ws = attr_cfg.filter(|attr| attr.collapse_and_trim).is_some();
     chain!(proc.match_while_pred(is_whitespace).discard());
     let has_value = chain!(proc.match_char(b'=').keep().matched());
 
@@ -53,6 +77,9 @@ pub fn process_attr(proc: &mut Processor, element: ProcessorRange) -> Processing
         chain!(proc.match_while_pred(is_whitespace).discard());
         if is_boolean {
             skip_attr_value(proc)?;
+            // Discard `=`.
+            debug_assert_eq!(proc.written_count(after_name), 1);
+            proc.erase_written(after_name);
             (AttrType::NoValue, None)
         } else {
             match process_attr_value(proc, should_collapse_and_trim_value_ws)? {
