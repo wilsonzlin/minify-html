@@ -25,9 +25,9 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 ##### Get
 
-[Windows](https://wilsonl.in/hyperbuild/bin/0.0.18-windows-x86_64.exe) |
-[macOS](https://wilsonl.in/hyperbuild/bin/0.0.18-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.0.18-linux-x86_64)
+[Windows](https://wilsonl.in/hyperbuild/bin/0.0.19-windows-x86_64.exe) |
+[macOS](https://wilsonl.in/hyperbuild/bin/0.0.19-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.0.19-linux-x86_64)
 
 ##### Use
 
@@ -44,7 +44,7 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = "0.0.18"
+hyperbuild = "0.0.19"
 ```
 
 ##### Use
@@ -99,7 +99,7 @@ hyperbuild is available via JNI, and supports Java versions 7 and higher.
 
 ##### Get
 
-Download the [JAR](https://wilsonl.in/hyperbuild/bin/0.0.18.jar) file.
+Download the [JAR](https://wilsonl.in/hyperbuild/bin/0.0.19.jar) file.
 
 ##### Use
 
