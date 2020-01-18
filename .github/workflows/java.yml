@@ -64,17 +64,25 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: windows-x86_64
-          path: java/src/main/resources/windows-x86_64.nativelib
+          path: java/src/main/resources/windows-x86_64
       - name: Download Linux built library
         uses: actions/download-artifact@v1
         with:
           name: linux-x86_64
-          path: java/src/main/resources/linux-x86_64.nativelib
+          path: java/src/main/resources/linux-x86_64
       - name: Download macOS built library
         uses: actions/download-artifact@v1
         with:
           name: macos-x86_64
-          path: java/src/main/resources/macos-x86_64.nativelib
+          path: java/src/main/resources/macos-x86_64
+      - name: Move native library files to correct location
+        shell: bash
+        working-directory: ./java/src/main/resources
+        run: |
+          for f in *; do
+            mv $f/* "$f.nativelib"
+            rmdir "$f"
+          done
       - name: Build and package JAR
         working-directory: ./java
         run: mvn clean package
