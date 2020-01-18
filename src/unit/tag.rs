@@ -42,23 +42,47 @@ enum TagType {
     Other,
 }
 
-pub struct ProcessedTag {
-    pub name: ProcessorRange,
-    pub has_closing_tag: bool,
-}
+#[derive(Copy, Clone)]
+pub struct MaybeClosingTag(Option<ProcessorRange>);
 
-impl ProcessedTag {
-    pub fn write_closing_tag(&self, proc: &mut Processor) -> () {
-        if self.has_closing_tag {
+impl MaybeClosingTag {
+    pub fn none() -> MaybeClosingTag {
+        MaybeClosingTag(None)
+    }
+
+    pub fn write(&mut self, proc: &mut Processor) -> () {
+        proc.write_slice(b"</");
+        proc.write_range(self.0.unwrap());
+        proc.write(b'>');
+    }
+
+    pub fn write_if_exists(&mut self, proc: &mut Processor) -> bool {
+        self.0.take().filter(|tag| {
             proc.write_slice(b"</");
-            proc.write_range(self.name);
+            proc.write_range(*tag);
             proc.write(b'>');
-        };
+            true
+        }).is_some()
+    }
+
+    pub fn exists(&self) -> bool {
+        self.0.is_some()
+    }
+
+    pub fn exists_and<F: FnOnce(ProcessorRange) -> bool>(&self, pred: F) -> bool {
+        match self.0 {
+            Some(range) => pred(range),
+            None => false,
+        }
+    }
+
+    pub fn replace(&mut self, tag: MaybeClosingTag) -> () {
+        self.0 = tag.0;
     }
 }
 
 // TODO Comment param `prev_sibling_closing_tag`.
-pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<ProcessedTag>) -> ProcessingResult<ProcessedTag> {
+pub fn process_tag(proc: &mut Processor, mut prev_sibling_closing_tag: MaybeClosingTag) -> ProcessingResult<MaybeClosingTag> {
     // TODO Minify opening and closing tag whitespace after name and last attr.
     // TODO DOC No checking if opening and closing names match.
     // Expect to be currently at an opening tag.
@@ -69,14 +93,13 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     };
     // May not be valid tag name at current position, so require instead of expect.
     let source_tag_name = chain!(proc.match_while_pred(is_valid_tag_name_char).require_with_reason("tag name")?.discard().range());
-    if let Some(prev_tag) = prev_sibling_closing_tag {
-        let can_omit = match CLOSING_TAG_OMISSION_RULES.get(&proc[prev_tag.name]) {
-            Some(rule) => rule.can_omit_as_before(&proc[source_tag_name]),
-            _ => false,
-        };
-        if !can_omit {
-            prev_tag.write_closing_tag(proc);
-        };
+    if prev_sibling_closing_tag.exists_and(|prev_tag|
+        CLOSING_TAG_OMISSION_RULES
+            .get(&proc[prev_tag])
+            .filter(|rule| rule.can_omit_as_before(&proc[source_tag_name]))
+            .is_none()
+    ) {
+        prev_sibling_closing_tag.write(proc);
     };
     // Write initially skipped left chevron.
     proc.write(b'<');
@@ -162,7 +185,7 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
                 proc.write_slice(b"/>");
             };
         };
-        return Ok(ProcessedTag { name: tag_name, has_closing_tag: false });
+        return Ok(MaybeClosingTag(None));
     };
 
     match tag_type {
@@ -180,5 +203,5 @@ pub fn process_tag(proc: &mut Processor, prev_sibling_closing_tag: Option<Proces
     };
     chain!(proc.match_while_pred(is_whitespace).discard());
     chain!(proc.match_char(b'>').require()?.discard());
-    Ok(ProcessedTag { name: tag_name, has_closing_tag: true })
+    Ok(MaybeClosingTag(Some(tag_name)))
 }

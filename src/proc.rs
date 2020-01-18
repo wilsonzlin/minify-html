@@ -69,6 +69,8 @@ impl ProcessorRange {
 
 #[derive(Eq, PartialEq)]
 enum UnintentionalEntityState {
+    Suspended,
+    Ended,
     Safe,
     Ampersand,
     Named,
@@ -81,6 +83,15 @@ pub struct UnintentionalEntityPrevention {
     last_write_next: usize,
     ampersand_pos: usize,
     state: UnintentionalEntityState,
+}
+
+impl UnintentionalEntityPrevention {
+    pub fn expect_active(&self) -> () {
+        debug_assert!(match self.state {
+            UnintentionalEntityState::Suspended | UnintentionalEntityState::Ended => false,
+            _ => true,
+        });
+    }
 }
 
 // Processing state of a file. Most fields are used internally and set during
@@ -447,6 +458,7 @@ impl<'d> Processor<'d> {
             UnintentionalEntityState::Dec | UnintentionalEntityState::Hex => {
                 true
             }
+            _ => unreachable!(),
         };
         uep.state = UnintentionalEntityState::Safe;
         let encoded = b"amp";
@@ -459,9 +471,10 @@ impl<'d> Processor<'d> {
             end_inclusive
         }
     }
-    pub fn after_write(&mut self, uep: &mut UnintentionalEntityPrevention, is_end: bool) -> () {
+    fn _after_write(&mut self, uep: &mut UnintentionalEntityPrevention, is_end: bool) -> () {
         let mut i = uep.last_write_next;
         // Use manual loop as `i` and `self.write_next` could change due to mid-array insertion of entities.
+        debug_assert!(i <= self.write_next);
         while i < self.write_next {
             let c = self.code[i];
             match uep.state {
@@ -513,6 +526,7 @@ impl<'d> Processor<'d> {
                         uep.state = UnintentionalEntityState::Safe;
                     }
                 }
+                _ => unreachable!(),
             };
             i += 1;
         };
@@ -520,6 +534,25 @@ impl<'d> Processor<'d> {
             self._handle_end_of_possible_entity(uep, self.write_next - 1);
         };
         uep.last_write_next = self.write_next;
+    }
+    pub fn update(&mut self, uep: &mut UnintentionalEntityPrevention) -> () {
+        self._after_write(uep, false);
+    }
+    pub fn end(&mut self, uep: &mut UnintentionalEntityPrevention) -> () {
+        self._after_write(uep, true);
+        uep.state = UnintentionalEntityState::Ended;
+    }
+    pub fn suspend(&mut self, uep: &mut UnintentionalEntityPrevention) -> () {
+        debug_assert!(uep.state != UnintentionalEntityState::Ended);
+        if uep.state != UnintentionalEntityState::Suspended {
+            self._after_write(uep, true);
+            uep.state = UnintentionalEntityState::Suspended;
+        };
+    }
+    pub fn resume(&self, uep: &mut UnintentionalEntityPrevention) -> () {
+        debug_assert!(uep.state == UnintentionalEntityState::Suspended);
+        uep.last_write_next = self.write_next;
+        uep.state = UnintentionalEntityState::Safe;
     }
 
     pub fn reserve_output(&mut self, amount: usize) -> () {

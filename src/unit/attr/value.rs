@@ -222,7 +222,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     // NOTE: Only used if `should_collapse_and_trim_ws`.
     let mut currently_in_whitespace = false;
     // TODO Comment.
-    let mut uep = proc.start_preventing_unintentional_entities();
+    let uep = &mut proc.start_preventing_unintentional_entities();
 
     let mut last_char_type: CharType = CharType::Start;
     loop {
@@ -292,13 +292,13 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
                 };
             }
         };
-        proc.after_write(&mut uep, false);
+        proc.update(uep);
         last_char_type = char_type;
     };
     if let Some(c) = src_delimiter {
         chain!(proc.match_char(c).require_with_reason("attribute value closing delimiter quote")?.discard());
     };
-    proc.after_write(&mut uep, true);
+    proc.end(uep);
     let minimum_value = proc.written_range(start);
     // If minimum value is empty, return now before trying to read out of range later.
     // (Reading starts at one character before end of minimum value.)

@@ -36,6 +36,12 @@ static WHITESPACE_SENSITIVE: &WhitespaceMinification = &WhitespaceMinification {
     trim: false,
 };
 
+static ROOT: &WhitespaceMinification = &WhitespaceMinification {
+    collapse: true,
+    destroy_whole: true,
+    trim: true,
+};
+
 static DEFAULT: &WhitespaceMinification = &WhitespaceMinification {
     collapse: true,
     destroy_whole: false,
@@ -154,5 +160,8 @@ static TAG_WHITESPACE_MINIFICATION: Map<&'static [u8], &'static WhitespaceMinifi
 };
 
 pub fn get_whitespace_minification_for_tag(tag_name: Option<&[u8]>) -> &'static WhitespaceMinification {
-    tag_name.and_then(|n| TAG_WHITESPACE_MINIFICATION.get(n)).unwrap_or(&DEFAULT)
+    match tag_name {
+        Some(n) => TAG_WHITESPACE_MINIFICATION.get(n).unwrap_or(&DEFAULT),
+        None => ROOT,
+    }
 }

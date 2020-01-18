@@ -1,32 +1,38 @@
 use crate::err::ProcessingResult;
-use crate::proc::{Processor, ProcessorRange, UnintentionalEntityPrevention};
+use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
+use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::instruction::process_instruction;
-use crate::unit::tag::{process_tag, ProcessedTag};
-use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
+use crate::unit::tag::{MaybeClosingTag, process_tag};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
     Comment,
     Bang,
     Instruction,
-    OpeningTag,
+    Tag,
 
     Start,
     End,
     Entity,
-    Whitespace,
     Text,
 }
 
 impl ContentType {
-    fn is_comment_bang_instruction_opening_tag(&self) -> bool {
+    fn is_tag_like(&self) -> bool {
         match self {
-            ContentType::Comment | ContentType::Bang | ContentType::Instruction | ContentType::OpeningTag => true,
+            ContentType::Comment | ContentType::Bang | ContentType::Instruction | ContentType::Tag => true,
+            _ => false,
+        }
+    }
+
+    fn is_position(&self) -> bool {
+        match self {
+            ContentType::Start | ContentType::End => true,
             _ => false,
         }
     }
@@ -42,174 +48,138 @@ impl ContentType {
                     Some(b"--") => ContentType::Comment,
                     _ => ContentType::Bang,
                 },
-                _ => ContentType::OpeningTag
+                _ => ContentType::Tag
             },
             Some(b'&') => ContentType::Entity,
-            Some(c) => if is_whitespace(c) { ContentType::Whitespace } else { ContentType::Text },
+            Some(_) => ContentType::Text,
         }
     }
-}
-
-macro_rules! handle_content_type {
-    ($proc:ident, $parent:ident, $next_content_type:expr, $uep:ident, $prev_sibling_closing_tag:ident, $get_entity:expr, $on_whitespace:block) => {
-        // Process and consume next character(s).
-        let next_content_type = $next_content_type;
-        match next_content_type {
-            ContentType::OpeningTag | ContentType::End | ContentType::Comment | ContentType::Bang | ContentType::Instruction => {
-                // TODO Comment: Do not always initialise `uep` as `prev_sibling_closing_tag` might get written.
-                $uep.take().map(|mut uep| $proc.after_write(&mut uep, true));
-            }
-            _ => {}
-        };
-        match next_content_type {
-            ContentType::OpeningTag => {
-                $prev_sibling_closing_tag = Some(process_tag($proc, $prev_sibling_closing_tag)?);
-            }
-            ContentType::End => {
-                if let Some(prev_tag) = $prev_sibling_closing_tag {
-                    let can_omit = match ($parent, CLOSING_TAG_OMISSION_RULES.get(&$proc[prev_tag.name])) {
-                        (Some(parent_range), Some(rule)) => rule.can_omit_as_last_node(&$proc[parent_range]),
-                        _ => false,
-                    };
-                    if !can_omit {
-                        prev_tag.write_closing_tag($proc);
-                    };
-                };
-                break;
-            }
-            content_type => {
-                // Immediate next sibling node is not an element, so write any immediate previous sibling element's closing tag.
-                $prev_sibling_closing_tag.take().map(|tag| tag.write_closing_tag($proc));
-                match content_type {
-                    ContentType::Comment | ContentType::Bang | ContentType::Instruction => {
-                        match content_type {
-                            ContentType::Comment => { process_comment($proc)?; }
-                            ContentType::Bang => { process_bang($proc)?; }
-                            ContentType::Instruction => { process_instruction($proc)?; }
-                            _ => unreachable!(),
-                        };
-                    }
-                    ContentType::Entity | ContentType::Text | ContentType::Whitespace => {
-                        if $uep.is_none() {
-                            $uep = Some($proc.start_preventing_unintentional_entities());
-                        };
-                        match content_type {
-                            ContentType::Entity => {
-                                let entity = $get_entity;
-                                match entity {
-                                    // TODO Comment: Explain why < is handled this way.
-                                    EntityType::NonDecodableRightChevron(_) => $proc.after_write(&mut $uep.take().unwrap(), true),
-                                    _ => {}
-                                };
-                                entity.keep($proc);
-                            }
-                            ContentType::Text => { $proc.accept()?; }
-                            ContentType::Whitespace => $on_whitespace,
-                            _ => unreachable!(),
-                        };
-                        // UEP could have become None after matching EntityType::NonDecodableRightChevron.
-                        if let Some(uep) = $uep.as_mut() {
-                            $proc.after_write(uep, false);
-                        };
-                    }
-                    _ => unreachable!(),
-                };
-            }
-        };
-    };
-}
-
-fn process_wss_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
-    let mut prev_sibling_closing_tag: Option<ProcessedTag> = None;
-    let mut uep: Option<UnintentionalEntityPrevention> = None;
-    loop {
-        handle_content_type!(proc, parent, ContentType::peek(proc), uep, prev_sibling_closing_tag, parse_entity(proc, false)?, { proc.accept()?; });
-    };
-    Ok(())
 }
 
 pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
     let &WhitespaceMinification { collapse, destroy_whole, trim } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]));
 
-    if !(collapse || destroy_whole || trim) {
-        // Normally whitespace entities are decoded and then ignored.
-        // However, if whitespace cannot be minified in any way,
-        // and we can't actually do anything but write whitespace as is,
-        // we would have to simply write skipped whitespace. This would cause
-        // issues when skipped whitespace includes encoded entities, so use
-        // function that does no whitespace handling. It's probably faster too.
-        return process_wss_content(proc, parent);
-    };
+    let handle_ws = collapse || destroy_whole || trim;
 
-    let mut last_non_whitespace_content_type = ContentType::Start;
+    let mut last_written = ContentType::Start;
     // Whether or not currently in whitespace.
-    let mut currently_in_whitespace = false;
+    let mut ws_skipped = false;
+    // TODO Comment: Do not always initialise `uep` as `prev_sibling_closing_tag` might get written.
+    let mut prev_sibling_closing_tag = MaybeClosingTag::none();
     // TODO Comment.
-    let mut entity: Option<EntityType> = None;
-    // TODO Comment.
-    let mut prev_sibling_closing_tag: Option<ProcessedTag> = None;
-    // TODO Comment.
-    let mut uep: Option<UnintentionalEntityPrevention> = None;
+    let uep = &mut proc.start_preventing_unintentional_entities();
 
     loop {
-        let next_content_type = match ContentType::peek(proc) {
-            ContentType::Entity => {
-                // Entity could decode to whitespace.
-                entity = Some(parse_entity(proc, false)?);
-                let ws = match entity {
-                    Some(EntityType::Ascii(c)) => is_whitespace(c),
-                    _ => false,
-                };
-                if ws {
-                    // Skip whitespace char, and mark as whitespace.
-                    ContentType::Whitespace
-                } else {
-                    // Not whitespace, but don't write yet until any previously ignored whitespace has been processed later.
-                    ContentType::Entity
-                }
-            }
-            ContentType::Whitespace => {
-                // Whitespace is always ignored and then processed afterwards, even if not minifying.
-                proc.skip_expect();
-                ContentType::Whitespace
-            }
-            other_type => other_type,
+        // Do not write anything until any previously ignored whitespace has been processed later.
+        let next_content_type = ContentType::peek(proc);
+        let entity: Option<EntityType> = match next_content_type {
+            ContentType::Entity => Some(parse_entity(proc, false)?),
+            _ => None,
         };
 
-        if next_content_type == ContentType::Whitespace {
-            if !currently_in_whitespace {
-                // This is the start of one or more whitespace characters.
-                currently_in_whitespace = true;
-            } else {
-                // This is part of a contiguous whitespace, but not the start of, so simply ignore.
-            }
-            continue;
-        }
-
-        // Next character is not whitespace, so handle any previously ignored whitespace.
-        if currently_in_whitespace {
-            if destroy_whole && last_non_whitespace_content_type.is_comment_bang_instruction_opening_tag() && next_content_type.is_comment_bang_instruction_opening_tag() {
-                // Whitespace is between two tags, comments, or bangs.
-                // `destroy_whole` is on, so don't write it.
-            } else if trim && (last_non_whitespace_content_type == ContentType::Start || next_content_type == ContentType::End) {
-                // Whitespace is leading or trailing.
-                // `trim` is on, so don't write it.
-            } else if collapse {
-                // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node; space will be new previous sibling node (as a text node).
-                prev_sibling_closing_tag.take().map(|tag| tag.write_closing_tag(proc));
-                // Current contiguous whitespace needs to be reduced to a single space character.
-                proc.write(b' ');
-            } else {
-                unreachable!();
+        if handle_ws {
+            // If any of these arms match, this is the start or part of one or more whitespace characters.
+            // Simply ignore and process until first non-whitespace.
+            if match (next_content_type, entity) {
+                (_, Some(EntityType::Ascii(c))) if is_whitespace(c) => true,
+                (ContentType::Text, _) => chain!(proc.match_pred(is_whitespace).discard().matched()),
+                _ => false,
+            } {
+                ws_skipped = true;
+                continue;
             };
 
-            // Reset whitespace marker.
-            currently_in_whitespace = false;
+            // Next character is not whitespace, so handle any previously ignored whitespace.
+            if ws_skipped {
+                if destroy_whole && last_written.is_tag_like() && next_content_type.is_tag_like() {
+                    // Whitespace is between two tags, comments, instructions, or bangs.
+                    // `destroy_whole` is on, so don't write it.
+                } else if trim && last_written.is_position() {
+                    // Whitespace is leading or trailing.
+                    // `trim` is on, so don't write it.
+                } else if collapse {
+                    // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node; space will be new previous sibling node (as a text node).
+                    prev_sibling_closing_tag.write_if_exists(proc);
+                    // Current contiguous whitespace needs to be reduced to a single space character.
+                    proc.write(b' ');
+                    last_written = ContentType::Text;
+                } else {
+                    unreachable!();
+                };
+
+                // Reset whitespace marker.
+                ws_skipped = false;
+            };
         };
 
         // Process and consume next character(s).
-        handle_content_type!(proc, parent, next_content_type, uep, prev_sibling_closing_tag, entity.unwrap(), { unreachable!(); });
-        last_non_whitespace_content_type = next_content_type;
+        match next_content_type {
+            ContentType::Tag => {
+                proc.suspend(uep);
+                let new_closing_tag = process_tag(
+                    proc,
+                    prev_sibling_closing_tag,
+                )?;
+                prev_sibling_closing_tag.replace(new_closing_tag);
+                // Always resume as closing tag might not exist or be omitted.
+                proc.resume(uep);
+            }
+            ContentType::End => {
+                proc.end(uep);
+                if prev_sibling_closing_tag.exists_and(|prev_tag|
+                    CLOSING_TAG_OMISSION_RULES
+                        .get(&proc[prev_tag])
+                        .filter(|rule| rule.can_omit_as_last_node(parent.map(|p| &proc[p])))
+                        .is_none()
+                ) {
+                    prev_sibling_closing_tag.write(proc);
+                };
+                break;
+            }
+            content_type => {
+                // Immediate next sibling node is not an element, so write any immediate previous sibling element's closing tag.
+                // UEP is resumed after processing a tag and setting `prev_sibling_closing_tag` (see ContentType::Tag arm), so suspend it before writing any closing tag (even though nothing should've been written since tag was processed and `prev_sibling_closing_tag` was set).
+                if prev_sibling_closing_tag.exists() {
+                    proc.suspend(uep);
+                    prev_sibling_closing_tag.write(proc);
+                    proc.resume(uep);
+                };
+                match content_type {
+                    ContentType::Comment | ContentType::Bang | ContentType::Instruction => {
+                        proc.suspend(uep);
+                        match content_type {
+                            ContentType::Comment => { process_comment(proc)?; }
+                            ContentType::Bang => { process_bang(proc)?; }
+                            ContentType::Instruction => { process_instruction(proc)?; }
+                            _ => unreachable!(),
+                        };
+                        proc.resume(uep);
+                    }
+                    ContentType::Entity | ContentType::Text => {
+                        uep.expect_active();
+                        match entity {
+                            // TODO Comment: Explain why < is handled this way.
+                            Some(e @ EntityType::NonDecodableRightChevron(_)) => {
+                                proc.suspend(uep);
+                                e.keep(proc);
+                                proc.resume(uep);
+                            }
+                            Some(entity) => {
+                                entity.keep(proc);
+                            }
+                            // Is text.
+                            None => {
+                                proc.accept()?;
+                            }
+                        };
+                        proc.update(uep);
+                    }
+                    _ => unreachable!(),
+                };
+            }
+        };
+
+        last_written = next_content_type;
     };
 
     Ok(())

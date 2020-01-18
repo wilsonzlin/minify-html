@@ -21,11 +21,14 @@ pub struct ClosingTagOmissionRule {
 }
 
 impl ClosingTagOmissionRule {
-    pub fn can_omit_as_last_node(&self, parent: &[u8]) -> bool {
+    pub fn can_omit_as_last_node(&self, parent: Option<&[u8]>) -> bool {
         match &self.is_last {
             ClosingTagOmissionRuleIfLast::Always => true,
             ClosingTagOmissionRuleIfLast::Never => false,
-            ClosingTagOmissionRuleIfLast::ParentIsNot(p) => !p.contains(parent),
+            ClosingTagOmissionRuleIfLast::ParentIsNot(parents) => match parent {
+                Some(tag) => !parents.contains(tag),
+                None => true,
+            },
         }
     }
 
