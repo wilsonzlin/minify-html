@@ -31,13 +31,6 @@ impl ContentType {
         }
     }
 
-    fn is_position(&self) -> bool {
-        match self {
-            ContentType::Start | ContentType::End => true,
-            _ => false,
-        }
-    }
-
     fn peek(proc: &mut Processor) -> ContentType {
         // Manually write out matching for fast performance as this is hot spot; don't use generated trie.
         match proc.peek_offset_eof(0) {
@@ -95,7 +88,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
                 if destroy_whole && last_written.is_tag_like() && next_content_type.is_tag_like() {
                     // Whitespace is between two tags, comments, instructions, or bangs.
                     // `destroy_whole` is on, so don't write it.
-                } else if trim && last_written.is_position() {
+                } else if trim && (last_written == ContentType::Start || next_content_type == ContentType::End) {
                     // Whitespace is leading or trailing.
                     // `trim` is on, so don't write it.
                 } else if collapse {
@@ -115,6 +108,11 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
 
         // Process and consume next character(s).
         match next_content_type {
+            ContentType::Comment => {
+                // Comments are completely ignored and do not affect anything (previous element node's closing tag, unintentional entities, whitespace, etc.).
+                process_comment(proc)?;
+                continue;
+            }
             ContentType::Tag => {
                 proc.suspend(uep);
                 let new_closing_tag = process_tag(
@@ -146,10 +144,9 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
                     proc.resume(uep);
                 };
                 match content_type {
-                    ContentType::Comment | ContentType::Bang | ContentType::Instruction => {
+                    ContentType::Bang | ContentType::Instruction => {
                         proc.suspend(uep);
                         match content_type {
-                            ContentType::Comment => { process_comment(proc)?; }
                             ContentType::Bang => { process_bang(proc)?; }
                             ContentType::Instruction => { process_instruction(proc)?; }
                             _ => unreachable!(),
@@ -180,10 +177,8 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
             }
         };
 
-        // Comments are discarded.
-        if next_content_type != ContentType::Comment {
-            last_written = next_content_type;
-        };
+        // This should not be reached if ContentType::Comment.
+        last_written = next_content_type;
     };
 
     Ok(())
