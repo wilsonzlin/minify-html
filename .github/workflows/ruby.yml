@@ -62,17 +62,28 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: windows
-          path: ruby/lib
+          path: ruby/lib/windows
       - name: Download Linux built library
         uses: actions/download-artifact@v1
         with:
           name: linux
-          path: ruby/lib
+          path: ruby/lib/linux
       - name: Download macOS built library
         uses: actions/download-artifact@v1
         with:
           name: macos
-          path: ruby/lib
+          path: ruby/lib/macos
+      - name: Move native library files to correct location
+        shell: bash
+        working-directory: ./ruby/lib
+        run: |
+          for f in *; do
+            if [ -d "$f" ]; then
+              mv $f/* "$f.nativelib"
+              rmdir "$f"
+              mv "$f.nativelib" "$f"
+            fi
+          done
       - name: Package gem
         working-directory: ./ruby
         run: gem build hyperbuild.gemspec
