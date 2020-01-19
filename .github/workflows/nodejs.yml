@@ -62,8 +62,6 @@ jobs:
         with:
           node-version: 13.x
       - uses: chrislennon/action-aws-cli@v1.1
-      - name: Download built modules
-        run: |
       - name: Pack and publish package
         working-directory: ./nodejs
         env:
