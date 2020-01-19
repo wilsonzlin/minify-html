@@ -5,7 +5,7 @@ A fast one-pass in-place HTML minifier written in Rust with context-aware whites
 Available as:
 - CLI for Windows, macOS, and Linux.
 - Rust library.
-- Native library for Node.js, Python, and Java.
+- Native library for Node.js, Python, Java, and Ruby.
 
 ## Features
 
@@ -136,6 +136,25 @@ Make sure the native module can be [found by Python](https://docs.python.org/3/t
 import hyperbuild
 
 minified = hyperbuild.minify("<p>  Hello, world!  </p>")
+```
+
+</details>
+
+<details>
+<summary><strong>Ruby</strong></summary>
+
+hyperbuild is available as a [native module](https://github.com/danielpclark/rutie), and supports Ruby versions 2.5 and higher.
+
+##### Get
+
+Download and install the [gem](https://wilsonl.in/hyperbuild/bin/0.0.20.gem).
+
+##### Use
+
+```ruby
+require 'hyperbuild'
+
+print hyperbuild.minify "<p>  Hello, world!  </p>"
 ```
 
 </details>

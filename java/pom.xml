@@ -9,7 +9,7 @@
     <version>0.0.20</version>
 
     <name>hyperbuild</name>
-    <description>One-pass in-place HTML minifier written in Rust with context-aware whitespace handling</description>
+    <description>Fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling</description>
     <developers>
         <developer>
             <name>Wilson Lin</name>

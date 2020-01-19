@@ -1,0 +1,85 @@
+name: Build, package, and upload Ruby gem
+
+on:
+  create:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            NAME: linux
+            FILE: 'libhyperbuild_ruby_lib.so'
+          - os: windows-latest
+            NAME: windows
+            FILE: 'hyperbuild_ruby_lib.dll'
+          - os: macos-latest
+            NAME: macos
+            FILE: 'libhyperbuild_ruby_lib.dylib'
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+      - name: Build Ruby native library
+        run: cargo build --release
+        working-directory: ./ruby
+      - name: Upload built library
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.NAME }}
+          path: ./ruby/target/release/${{ matrix.FILE }}
+  package:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      - name: Get file name
+        id: file
+        shell: bash
+        run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}.jar
+      - name: Set up JDK
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.5'
+      - name: Download Windows built library
+        uses: actions/download-artifact@v1
+        with:
+          name: windows
+          path: ruby/lib
+      - name: Download Linux built library
+        uses: actions/download-artifact@v1
+        with:
+          name: linux
+          path: ruby/lib
+      - name: Download macOS built library
+        uses: actions/download-artifact@v1
+        with:
+          name: macos
+          path: ruby/lib
+      - name: Package gem
+        working-directory: ./ruby
+        run: gem build hyperbuild.gemspec
+      - uses: chrislennon/action-aws-cli@v1.1
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+        run: aws s3 cp ./ruby/hyperbuild-${{ steps.version.outputs.VERSION }}.gem s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/${{ steps.version.outputs.VERSION }}.gem
