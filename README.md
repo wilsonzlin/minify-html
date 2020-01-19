@@ -118,7 +118,7 @@ class Main {
 </details>
 
 <details>
-<summary><strong>Java</strong></summary>
+<summary><strong>Python</strong></summary>
 
 hyperbuild is available as a [native module](https://github.com/PyO3/pyo3), and supports CPython (default Python interpreter) versions 3.5 and higher.
 
@@ -132,8 +132,8 @@ Rename the file to `hyperbuild.pyd` on Windows or `hyperbuild.so` on macOS/Linux
 
 Make sure the native module can be [found by Python](https://docs.python.org/3/tutorial/modules.html#the-module-search-path). This is usually done by placing it into a folder declared in the `PYTHONPATH` environment variable or `sys.path` value, or the same folder as the script that will import it.
 
-```java
-import hyperbuild;
+```python
+import hyperbuild
 
 minified = hyperbuild.minify("<p>  Hello, world!  </p>")
 ```
