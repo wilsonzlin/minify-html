@@ -27,6 +27,10 @@ jobs:
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.5'
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -50,11 +54,7 @@ jobs:
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
-      - name: Get file name
-        id: file
-        shell: bash
-        run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}.jar
-      - name: Set up JDK
+      - name: Set up Ruby
         uses: actions/setup-ruby@v1
         with:
           ruby-version: '2.5'
