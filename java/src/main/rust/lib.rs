@@ -45,7 +45,7 @@ pub extern "system" fn Java_in_wilsonl_hyperbuild_Hyperbuild_minify(
         Ok(out_len) => env.new_string(unsafe { from_utf8_unchecked(&code[0..out_len]) }).unwrap().into_inner(),
         Err((err, pos)) => {
             env.throw_new(
-                "in/wilsonl/hyperbuild/HyperbuildException",
+                "in/wilsonl/hyperbuild/Hyperbuild$SyntaxException",
                 format!("{} [Character {}]", err.message(), pos),
             ).unwrap();
             JObject::null().into_inner()
