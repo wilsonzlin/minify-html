@@ -14,9 +14,3 @@ hyperbuild = "0.0.20"
 [dependencies.pyo3]
 version = "0.9.0-alpha.1"
 features = ["extension-module"]
-
-[target.x86_64-apple-darwin]
-rustflags = [
-  "-C", "link-arg=-undefined",
-  "-C", "link-arg=dynamic_lookup",
-]
