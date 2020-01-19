@@ -25,9 +25,9 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 ##### Get
 
-[Windows](https://wilsonl.in/hyperbuild/bin/0.0.23-windows-x86_64.exe) |
-[macOS](https://wilsonl.in/hyperbuild/bin/0.0.23-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.0.23-linux-x86_64)
+[Windows](https://wilsonl.in/hyperbuild/bin/0.0.24-windows-x86_64.exe) |
+[macOS](https://wilsonl.in/hyperbuild/bin/0.0.24-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.0.24-linux-x86_64)
 
 ##### Use
 
@@ -44,7 +44,7 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = "0.0.23"
+hyperbuild = "0.0.24"
 ```
 
 ##### Use
@@ -99,7 +99,7 @@ hyperbuild is available via [JNI](https://github.com/jni-rs/jni-rs), and support
 
 ##### Get
 
-Download the [JAR](https://wilsonl.in/hyperbuild/bin/0.0.23.jar) file.
+Download the [JAR](https://wilsonl.in/hyperbuild/bin/0.0.24.jar) file.
 
 ##### Use
 
@@ -124,7 +124,7 @@ hyperbuild is available as a [native module](https://github.com/PyO3/pyo3), and 
 
 ##### Get
 
-Download the native module for [Windows](https://wilsonl.in/hyperbuild/bin/0.0.23-windows-x86_64-python.pyd), [macOS](https://wilsonl.in/hyperbuild/bin/0.0.23-macos-x86_64-python.so), or [Linux](https://wilsonl.in/hyperbuild/bin/0.0.23-linux-x86_64-python.so).
+Download the native module for [Windows](https://wilsonl.in/hyperbuild/bin/0.0.24-windows-x86_64-python.pyd), [macOS](https://wilsonl.in/hyperbuild/bin/0.0.24-macos-x86_64-python.so), or [Linux](https://wilsonl.in/hyperbuild/bin/0.0.24-linux-x86_64-python.so).
 
 Rename the file to `hyperbuild.pyd` on Windows or `hyperbuild.so` on macOS/Linux.
 
@@ -147,7 +147,7 @@ hyperbuild is available as a [native module](https://github.com/danielpclark/rut
 
 ##### Get
 
-Download and install the [gem](https://wilsonl.in/hyperbuild/bin/0.0.23.gem).
+Download and install the [gem](https://wilsonl.in/hyperbuild/bin/0.0.24.gem).
 
 ##### Use
 
