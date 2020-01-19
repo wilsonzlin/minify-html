@@ -2,7 +2,10 @@
   "name": "hyperbuild",
   "version": "0.0.25",
   "description": "Fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "files": [
+    "dist/**"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wilsonzlin/hyperbuild.git"
@@ -20,14 +23,10 @@
     "url": "https://github.com/wilsonzlin/hyperbuild/issues"
   },
   "homepage": "https://github.com/wilsonzlin/hyperbuild#readme",
-  "dependencies": {
+  "devDependencies": {
+    "@types/node": "^13.1.8",
     "neon-cli": "^0.3.3",
-    "request": "^2.88.0"
-  },
-  "scripts": {
-    "install": "node install.js",
-    "prepack": "cp ../README.md .",
-    "postpack": "rm README.md"
+    "typescript": "^3.7.5"
   },
   "keywords": [
     "build",
