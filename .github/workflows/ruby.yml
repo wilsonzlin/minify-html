@@ -78,6 +78,7 @@ jobs:
         working-directory: ./ruby
         run: |
           gem build hyperbuild.gemspec
+          mkdir -p "$HOME/.gem"
           echo '---' > "$HOME/.gem/credentials"
           echo ":rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}" >> "$HOME/.gem/credentials"
           chmod 0600 "$HOME/.gem/credentials"
