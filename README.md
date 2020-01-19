@@ -120,7 +120,7 @@ class Main {
 <details>
 <summary><strong>Python</strong></summary>
 
-hyperbuild is available as a [native module](https://github.com/PyO3/pyo3), and supports CPython (default Python interpreter) versions 3.5 and higher.
+hyperbuild is available as a [native module](https://github.com/PyO3/pyo3), and supports CPython (the default Python interpreter) versions 3.5 and higher.
 
 ##### Get
 
@@ -365,8 +365,8 @@ Any entities in attribute values are decoded, and then the shortest representati
 
 `class` attributes have their whitespace (after any decoding) trimmed and collapsed.
 
-[Boolean attribute](./gen/boolean_attrs.json) values are removed.
-[Some attributes](./gen/redundant_if_empty_attrs.json) are completely removed if their value is empty or the default value after any processing.
+[Boolean attribute](./gen/attrs.json) values are removed.
+[Some attributes](./gen/attrs.json) are completely removed if their value is empty or the default value after any processing.
 
 `type` attributes on `script` tags with a value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.
 
