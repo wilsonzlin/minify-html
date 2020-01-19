@@ -69,9 +69,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-west-2
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" > "$HOME/.npmrc"
-          rm -rf dist
+          echo 'package-lock=false' > .npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" >> .npmrc
           npm install
+          rm -rf dist
           node node_modules/typescript/bin/tsc
           aws s3 mv s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/ ./dist/. --recursive
           npm publish
