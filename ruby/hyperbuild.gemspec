@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Wilson Lin"]
   spec.email         = ["code@wilsonl.in"]
   spec.license       = "MIT"
-  spec.files         = FileList["lib/*"].to_a
+  spec.files         = FileList["lib/*", "README.md"].to_a
   spec.summary       = "Fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling"
   spec.homepage      = "https://github.com/wilsonzlin/hyperbuild"
 

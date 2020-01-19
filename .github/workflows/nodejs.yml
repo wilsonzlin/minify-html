@@ -75,4 +75,5 @@ jobs:
           rm -rf dist
           node node_modules/typescript/bin/tsc
           aws s3 mv s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/ ./dist/. --recursive
+          cp ../README.md .
           npm publish
