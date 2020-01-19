@@ -67,6 +67,11 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
         // Do not write anything until any previously ignored whitespace has been processed later.
         let next_content_type = ContentType::peek(proc);
         let entity: Option<EntityType> = match next_content_type {
+            ContentType::Comment => {
+                // Comments are completely ignored and do not affect anything (previous element node's closing tag, unintentional entities, whitespace, etc.).
+                process_comment(proc)?;
+                continue;
+            }
             ContentType::Entity => Some(parse_entity(proc, false)?),
             _ => None,
         };
@@ -108,11 +113,6 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
 
         // Process and consume next character(s).
         match next_content_type {
-            ContentType::Comment => {
-                // Comments are completely ignored and do not affect anything (previous element node's closing tag, unintentional entities, whitespace, etc.).
-                process_comment(proc)?;
-                continue;
-            }
             ContentType::Tag => {
                 proc.suspend(uep);
                 let new_closing_tag = process_tag(
@@ -177,7 +177,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
             }
         };
 
-        // This should not be reached if ContentType::Comment.
+        // This should not be reached if ContentType::{Comment, End}.
         last_written = next_content_type;
     };
 

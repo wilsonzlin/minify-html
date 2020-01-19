@@ -5,8 +5,8 @@
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 353540,
-      "relative": 0.9585809726259165
+      "absolute": 353498,
+      "relative": 0.9584670947030498
     },
     "html-minifier": {
       "absolute": 355185,
@@ -23,8 +23,8 @@
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 231718,
-      "relative": 0.9411129207162787
+      "absolute": 231702,
+      "relative": 0.9410479373885637
     },
     "html-minifier": {
       "absolute": 234306,
@@ -59,8 +59,8 @@
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 270869,
-      "relative": 0.8744987764010047
+      "absolute": 270827,
+      "relative": 0.8743631796785712
     },
     "html-minifier": {
       "absolute": 277911,
@@ -77,8 +77,8 @@
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 79807,
-      "relative": 0.9430330387105922
+      "absolute": 79804,
+      "relative": 0.9429975894503001
     },
     "html-minifier": {
       "absolute": 81446,
@@ -95,8 +95,8 @@
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 5744290,
-      "relative": 0.9094262560459782
+      "absolute": 5744286,
+      "relative": 0.9094256227727583
     },
     "html-minifier": {
       "absolute": 5785725,
@@ -203,8 +203,8 @@
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 272478,
-      "relative": 0.8645868369114782
+      "absolute": 272477,
+      "relative": 0.8645836638595734
     },
     "html-minifier": {
       "absolute": 266639,
@@ -221,8 +221,8 @@
       "relative": 1
     },
     "hyperbuild-nodejs": {
-      "absolute": 1319434,
-      "relative": 0.9350028877054611
+      "absolute": 1319430,
+      "relative": 0.9350000531479533
     },
     "html-minifier": {
       "absolute": 1327244,
