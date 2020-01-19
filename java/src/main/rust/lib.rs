@@ -39,7 +39,7 @@ pub extern "system" fn Java_in_wilsonl_hyperbuild_Hyperbuild_minify(
 )
     -> jstring {
     let source: String = env.get_string(input).unwrap().into();
-    let mut code = source.as_bytes().to_vec();
+    let mut code = source.into_bytes();
 
     match hyperbuild(&mut code) {
         Ok(out_len) => env.new_string(unsafe { from_utf8_unchecked(&code[0..out_len]) }).unwrap().into_inner(),

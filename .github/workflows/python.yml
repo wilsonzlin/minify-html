@@ -1,0 +1,58 @@
+name: Build and upload Python native module
+
+on:
+  create:
+    tags:
+      - 'v*'
+
+jobs:
+  nodejs:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            ARCH: linux-x86_64
+            LIBFILE: 'libhyperbuild_python_lib.so'
+            PYEXT: 'so'
+          - os: windows-latest
+            ARCH: windows-x86_64
+            LIBFILE: 'hyperbuild_python_lib.dll'
+            PYEXT: 'pyd'
+          - os: macos-latest
+            ARCH: macos-x86_64
+            LIBFILE: 'libhyperbuild_python_lib.dylib'
+            PYEXT: 'so'
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      - name: Get file name
+        id: file
+        shell: bash
+        run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}-${{ matrix.ARCH }}-python.${{ matrix.PYEXT }}
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.5'
+          architecture: 'x64'
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2019-07-19
+          profile: minimal
+          default: true
+      - name: Build native module
+        working-directory: ./python
+        run: |
+          cargo build --release
+      - uses: chrislennon/action-aws-cli@v1.1
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+        run: aws s3 cp ./python/target/release/${{ matrix.LIBFILE }} s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/${{ steps.file.outputs.FILE }}

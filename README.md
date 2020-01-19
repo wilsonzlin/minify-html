@@ -53,10 +53,10 @@ hyperbuild = "0.0.19"
 use hyperbuild::hyperbuild;
 
 fn main() {
-    let mut code = b"<p>  Hello, world!  </p>"; 
+    let mut code = b"<p>  Hello, world!  </p>".to_vec();
     match hyperbuild(&mut code) {
         Ok(minified_len) => {}
-        Err(error_type, error_at_char_no) => {}
+        Err((error_type, error_at_char_no)) => {}
     };
 }
 ```
@@ -66,7 +66,7 @@ fn main() {
 <details>
 <summary><strong>Node.js</strong></summary>
 
-hyperbuild is available as a [Node.js native module](https://www.npmjs.com/package/hyperbuild), and supports Node.js versions 8 and higher.
+hyperbuild is [on npm](https://www.npmjs.com/package/hyperbuild), available as a [Node.js native module](https://neon-bindings.com/), and supports Node.js versions 8 and higher.
 
 ##### Get
 
@@ -95,7 +95,7 @@ const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
 <details>
 <summary><strong>Java</strong></summary>
 
-hyperbuild is available via JNI, and supports Java versions 7 and higher.
+hyperbuild is available via [JNI](https://github.com/jni-rs/jni-rs), and supports Java versions 7 and higher.
 
 ##### Get
 
@@ -113,6 +113,29 @@ class Main {
         String minified = Hyperbuild.minify("<p>  Hello, world!  </p>");
     }
 }
+```
+
+</details>
+
+<details>
+<summary><strong>Java</strong></summary>
+
+hyperbuild is available as a [native module](https://github.com/PyO3/pyo3), and supports CPython (default Python interpreter) versions 3.5 and higher.
+
+##### Get
+
+Download the native module for [Windows](https://wilsonl.in/hyperbuild/bin/0.0.19-windows-x86_64-python.pyd), [macOS](https://wilsonl.in/hyperbuild/bin/0.0.19-macos-x86_64-python.so), or [Linux](https://wilsonl.in/hyperbuild/bin/0.0.19-linux-x86_64-python.so).
+
+Rename the file to `hyperbuild.pyd` on Windows or `hyperbuild.so` on macOS/Linux.
+
+##### Use
+
+Make sure the native module can be [found by Python](https://docs.python.org/3/tutorial/modules.html#the-module-search-path). This is usually done by placing it into a folder declared in the `PYTHONPATH` environment variable or `sys.path` value, or the same folder as the script that will import it.
+
+```java
+import hyperbuild;
+
+minified = hyperbuild.minify("<p>  Hello, world!  </p>")
 ```
 
 </details>
