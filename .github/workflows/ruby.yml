@@ -10,27 +10,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         include:
           - os: ubuntu-latest
             NAME: linux
             FILE: 'libhyperbuild_ruby_lib.so'
-          - os: windows-latest
-            NAME: windows
-            FILE: 'hyperbuild_ruby_lib.dll'
           - os: macos-latest
             NAME: macos
             FILE: 'libhyperbuild_ruby_lib.dylib'
     steps:
       - uses: actions/checkout@v1
-      - name: Get version
-        id: version
-        shell: bash
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
-      - name: Set up Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.5'
+      - name: Set up Ruby (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt install -y ruby2.5 ruby2.5-dev
+      - name: Set up Ruby (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ruby@2.5
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -58,11 +53,6 @@ jobs:
         uses: actions/setup-ruby@v1
         with:
           ruby-version: '2.5'
-      - name: Download Windows built library
-        uses: actions/download-artifact@v1
-        with:
-          name: windows
-          path: ruby/lib/windows
       - name: Download Linux built library
         uses: actions/download-artifact@v1
         with:
