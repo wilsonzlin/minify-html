@@ -29,13 +29,16 @@ jobs:
           EOF
       - name: Set up rbenv (macOS)
         if: runner.os == 'macOS'
+        shell: bash -l {0}
         run: brew install rbenv
       - name: Set up rbenv (Linux)
         if: runner.os == 'Linux'
+        shell: bash -l {0}
         run: |
           wget -O install-rbenv.sh https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-installer
           bash install-rbenv.sh || true # Ignore rbenv-doctor.
       - name: Set up Ruby
+        shell: bash -l {0}
         run: |
           rbenv install ${{ matrix.ruby }}
           rbenv global ${{ matrix.ruby }}
@@ -46,6 +49,7 @@ jobs:
           profile: minimal
           default: true
       - name: Build Ruby native library
+        shell: bash -l {0}
         run: cargo build --release
         working-directory: ./ruby
       - uses: chrislennon/action-aws-cli@v1.1

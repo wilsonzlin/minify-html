@@ -80,6 +80,6 @@ jobs:
           EOF
           cp ../README.md .
           aws s3 mv s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/python/${{ steps.version.outputs.VERSION }}/ ./hyperbuild/. --recursive
-          pip3 install --upgrade setuptools wheel twine
-          python3 setup.py sdist bdist_wheel
-          python3 -m twine upload dist/*
+          pip install --upgrade setuptools wheel twine
+          python setup.py sdist bdist_wheel
+          python -m twine upload dist/*
