@@ -40,37 +40,6 @@ const fromEntries = entries => {
   return obj;
 };
 
-const sizes = {};
-const setSize = (program, test, result) => {
-  if (!sizes[test]) {
-    sizes[test] = {
-      original: {
-        absolute: tests.find(t => t.name === test).contentAsString.length,
-        relative: 1,
-      },
-    };
-  }
-  const original = sizes[test].original.absolute;
-  sizes[test][program] = {
-    absolute: result,
-    relative: result / original,
-  };
-};
-
-// Run once to set sizes.
-for (const t of tests) {
-  for (const m of Object.keys(minifiers)) {
-    try {
-      setSize(m, t.name, minifiers[m](t.contentAsString, t.contentAsBuffer).length);
-    } catch (err) {
-      console.error(`Failed to run ${m} on test ${t.name}:`);
-      console.error(err);
-      process.exit(1);
-    }
-  }
-}
-results.writeSizeResults(sizes);
-
 const runTest = test => new Promise((resolve, reject) => {
   // Run JS libraries.
   const suite = new benchmark.Suite();

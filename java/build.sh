@@ -39,8 +39,8 @@ if [ -f Cargo.toml.orig ]; then
   echo 'Not altering Java Cargo.toml file'
 else
   cp Cargo.toml Cargo.toml.orig
+  sed -i 's%^hyperbuild = .*$%hyperbuild = { path = ".." }%' Cargo.toml
 fi
-sed -i 's%^hyperbuild = .*$%hyperbuild = { path = ".." }%' Cargo.toml
 cargo build $rust_build_arg
 mv Cargo.toml.orig Cargo.toml
 cp target/rust/$rust_build_dir/libhyperbuild_java.$ext src/main/resources/$os_name-x86_64.nativelib
