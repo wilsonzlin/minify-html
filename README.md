@@ -126,17 +126,13 @@ class Main {
 <details>
 <summary><strong>Python</strong></summary>
 
-hyperbuild is available as a [native module](https://github.com/PyO3/pyo3), and supports CPython (the default Python interpreter) versions 3.5 and higher.
+hyperbuild is [on PyPI](https://pypi.org/project/hyperbuild), available as a [native module](https://github.com/PyO3/pyo3), and supports CPython (the default Python interpreter) versions 3.5 and higher.
 
 ##### Get
 
-Download the native module for [Windows](https://wilsonl.in/hyperbuild/bin/0.0.32-windows-x86_64-python.pyd), [macOS](https://wilsonl.in/hyperbuild/bin/0.0.32-macos-x86_64-python.so), or [Linux](https://wilsonl.in/hyperbuild/bin/0.0.32-linux-x86_64-python.so).
-
-Rename the file to `hyperbuild.pyd` on Windows or `hyperbuild.so` on macOS/Linux.
+Add the PyPI project as a dependency and install it using `pip` or `pipenv`.
 
 ##### Use
-
-Make sure the native module can be [found by Python](https://docs.python.org/3/tutorial/modules.html#the-module-search-path). This is usually done by placing it into a folder declared in the `PYTHONPATH` environment variable or `sys.path` value, or the same folder as the script that will import it.
 
 ```python
 import hyperbuild
