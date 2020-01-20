@@ -8,6 +8,11 @@ import java.nio.file.StandardCopyOption;
 
 import static java.lang.String.format;
 
+/**
+ * Class containing only static methods and exception classes. Cannot be instantiated.
+ * Methods call to native compiled Rust code using JNI.
+ * When this class is loaded, a static initialiser will attempt to load a prebuilt native library for the running operating system and architecture from the JAR. If it cannot, a {@link RuntimeException} will be thrown.
+ */
 public class Hyperbuild {
   static {
     String osName = System.getProperty("os.name").toLowerCase();
@@ -41,10 +46,30 @@ public class Hyperbuild {
   private Hyperbuild() {
   }
 
-  public static native int minifyInPlace(ByteBuffer code) throws SyntaxException;
+  /**
+   * Minify UTF-8 HTML code contents of a {@link ByteBuffer} instance in place.
+   * The backing data will be mutated. Returns the length of the minified portion of the ByteBuffer.
+   * The ByteBuffer must be direct, otherwise {@link IllegalArgumentException} will be thrown.
+   * If the code fails to be minified, a {@link SyntaxException} will be thrown with a descriptive English message and position in code where the error occurred.
+   *
+   * @param code {@link ByteBuffer} containing HTML code to minify
+   * @return length of the written minified code in the {@link ByteBuffer}
+   */
+  public static native int minifyInPlace(ByteBuffer code);
 
-  public static native String minify(String code) throws SyntaxException;
+  /**
+   * Minify HTML code represented as a {@link String}.
+   * The {@link String} will be copied to a UTF-8 byte array in native code, and then copied back into a Java {@link String}.
+   * If the code fails to be minified, a {@link SyntaxException} will be thrown with a descriptive English message and position in code where the error occurred.
+   *
+   * @param code HTML code to minify
+   * @return minified HTML code
+   */
+  public static native String minify(String code);
 
+  /**
+   * Basic exception class representing minification errors.
+   */
   public static class SyntaxException extends RuntimeException {
     private SyntaxException(String message) {
       super(message);
