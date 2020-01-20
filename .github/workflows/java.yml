@@ -97,5 +97,5 @@ jobs:
               </profile>
             </profiles>
           </settings>
-          'EOF'
+          EOF
           mvn clean deploy
