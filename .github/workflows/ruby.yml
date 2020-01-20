@@ -78,6 +78,10 @@ jobs:
       - uses: chrislennon/action-aws-cli@v1.1
       - name: Pack and publish gem
         working-directory: ./ruby
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
         run: |
           cp ../README.md .
           aws s3 mv s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/ruby/${{ steps.version.outputs.VERSION }}/ ./lib/. --recursive
