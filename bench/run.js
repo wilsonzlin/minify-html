@@ -10,7 +10,7 @@ const setSize = (program, test, result) => {
   if (!sizes[test]) {
     sizes[test] = {
       original: {
-        absolute: tests.find(t => t.name === test).contentAsBuffer.length,
+        absolute: tests.find(t => t.name === test).contentAsString.length,
         relative: 1,
       },
     };
@@ -26,7 +26,8 @@ for (const t of tests) {
   for (const m of Object.keys(minifiers)) {
     try {
       const min = minifiers[m](t.contentAsString, t.contentAsBuffer);
-      setSize(m, t.name, min.length);
+      // If `min` is a Buffer, convert to string (interpret as UTF-8) to get canonical length.
+      setSize(m, t.name, min.toString().length);
       const minPath = path.join(__dirname, 'min', m, `${t.name}.html`);
       mkdirp.sync(path.dirname(minPath));
       fs.writeFileSync(minPath, min);
