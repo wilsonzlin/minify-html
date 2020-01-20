@@ -11,7 +11,7 @@ class HyperbuildLoader
   end
 
   def self.lib_path
-    File.join(__dir__, [operating_system, '-x86_64-ruby', RUBY_VERSION.split('.')[0...-1].join('.')].join(''))
+    File.join(__dir__, [operating_system, '-ruby', RUBY_VERSION.split('.')[0...-1].join('.')].join(''))
   end
 end
 
