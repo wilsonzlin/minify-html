@@ -69,8 +69,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: us-west-2
         run: |
-          echo 'package-lock=false' > .npmrc
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" >> .npmrc
+          cat << 'EOF' > .npmrc
+          package-lock=false
+          //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
+          EOF
           npm install
           rm -rf dist
           node node_modules/typescript/bin/tsc

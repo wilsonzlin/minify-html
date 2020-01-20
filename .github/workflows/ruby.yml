@@ -80,7 +80,9 @@ jobs:
           cp ../README.md .
           gem build hyperbuild.gemspec
           mkdir -p "$HOME/.gem"
-          echo '---' > "$HOME/.gem/credentials"
-          echo ":rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}" >> "$HOME/.gem/credentials"
+          cat << 'EOF' > "$HOME/.gem/credentials"
+          ---
+          :rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}
+          EOF
           chmod 0600 "$HOME/.gem/credentials"
           gem push hyperbuild-${{ steps.version.outputs.VERSION }}.gem
