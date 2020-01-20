@@ -160,7 +160,7 @@ Add the library as a dependency to `Gemfile` or `*.gemspec`.
 ```ruby
 require 'hyperbuild'
 
-print hyperbuild.minify "<p>  Hello, world!  </p>"
+print Hyperbuild.minify "<p>  Hello, world!  </p>"
 ```
 
 </details>

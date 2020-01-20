@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        ruby: [2.5.7, 2.6.5, 2.7.0]
         include:
           - os: ubuntu-latest
             NAME: linux
@@ -20,12 +21,24 @@ jobs:
             FILE: 'libhyperbuild_ruby_lib.dylib'
     steps:
       - uses: actions/checkout@v1
-      - name: Set up Ruby (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt install -y ruby2.5 ruby2.5-dev
-      - name: Set up Ruby (macOS)
+      - name: Prepare for rbenv
+        run: |
+          cat << 'EOF' >> "$HOME/.bashrc"
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+          EOF
+      - name: Set up rbenv (macOS)
         if: runner.os == 'macOS'
-        run: brew install ruby@2.5
+        run: brew install rbenv
+      - name: Set up rbenv (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          wget -O install-rbenv.sh https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-installer
+          bash install-rbenv.sh || true # Ignore rbenv-doctor.
+      - name: Set up Ruby
+        run: |
+          rbenv install ${{ matrix.ruby }}
+          rbenv global ${{ matrix.ruby }}
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -35,11 +48,14 @@ jobs:
       - name: Build Ruby native library
         run: cargo build --release
         working-directory: ./ruby
-      - name: Upload built library
-        uses: actions/upload-artifact@v1
-        with:
-          name: ${{ matrix.NAME }}
-          path: ./ruby/target/release/${{ matrix.FILE }}
+      - uses: chrislennon/action-aws-cli@v1.1
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+          RUBY_VERSION: ${{ matrix.ruby }}
+        run: aws s3 cp ./ruby/target/release/${{ matrix.FILE }} s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/ruby/${{ steps.version.outputs.VERSION }}/${{ matrix.ARCH }}-ruby${RUBY_VERSION%.*}
   package:
     runs-on: ubuntu-latest
     needs: build
@@ -53,31 +69,12 @@ jobs:
         uses: actions/setup-ruby@v1
         with:
           ruby-version: '2.5'
-      - name: Download Linux built library
-        uses: actions/download-artifact@v1
-        with:
-          name: linux
-          path: ruby/lib/linux
-      - name: Download macOS built library
-        uses: actions/download-artifact@v1
-        with:
-          name: macos
-          path: ruby/lib/macos
-      - name: Move native library files to correct location
-        shell: bash
-        working-directory: ./ruby/lib
-        run: |
-          for f in *; do
-            if [ -d "$f" ]; then
-              mv $f/* "$f.nativelib"
-              rmdir "$f"
-              mv "$f.nativelib" "$f"
-            fi
-          done
+      - uses: chrislennon/action-aws-cli@v1.1
       - name: Package and publish gem
         working-directory: ./ruby
         run: |
           cp ../README.md .
+          aws s3 mv s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/ruby/${{ steps.version.outputs.VERSION }}/ ./lib/. --recursive
           gem build hyperbuild.gemspec
           mkdir -p "$HOME/.gem"
           cat << 'EOF' > "$HOME/.gem/credentials"
