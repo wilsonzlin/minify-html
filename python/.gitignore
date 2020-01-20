@@ -1,5 +1,7 @@
 /Cargo.lock
 /target/
+
+__pycache__/
 /venv/
 
 # Ignore locally built native modules.

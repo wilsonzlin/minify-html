@@ -23,8 +23,9 @@ def _load_native_module():
         os_arch = "unknown"
 
     this_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
+    pyv = sys.version_info
     sys.path.insert(0, this_folder)
-    module = importlib.import_module(''.join([os_name, "-", os_arch, '-', sys.version_info.major, '_', sys.version_info.minor, ".hyperbuild"]))
+    module = importlib.import_module(''.join([os_name, "-", os_arch, '-', str(pyv.major), '_', str(pyv.minor), ".hyperbuild"]))
     sys.path.pop(0)
     return module
 
