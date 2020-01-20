@@ -52,12 +52,16 @@ for (const f of ["Cargo.toml", "nodejs/native/Cargo.toml", "java/Cargo.toml", "p
   replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
 }
 
+for (const f of ["python/setup.py"]) {
+  replaceInFile(f, /^(\s*version=)"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
+}
+
 for (const f of ["README.md", "nodejs/native/Cargo.toml", "java/Cargo.toml", "python/Cargo.toml", "ruby/Cargo.toml"]) {
   replaceInFile(f, /^hyperbuild = "\d+\.\d+\.\d+"\s*$/m, `hyperbuild = "${NEW_VERSION}"`);
 }
 
 for (const f of ["nodejs/package.json"]) {
-  replaceInFile(f, /^(\s*)"version": "\d+\.\d+\.\d+",\s*$/m, `$1"version": "${NEW_VERSION}",`);
+  replaceInFile(f, /^(\s*"version": )"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
 }
 
 for (const f of ["ruby/hyperbuild.gemspec"]) {

@@ -1,4 +1,4 @@
-name: Build and upload Node.js native module
+name: Build and publish Node.js package
 
 on:
   create:

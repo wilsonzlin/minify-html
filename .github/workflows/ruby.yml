@@ -1,4 +1,4 @@
-name: Build, package, and upload Ruby gem
+name: Build and publish Ruby gem
 
 on:
   create:
@@ -70,7 +70,7 @@ jobs:
         with:
           ruby-version: '2.5'
       - uses: chrislennon/action-aws-cli@v1.1
-      - name: Package and publish gem
+      - name: Pack and publish gem
         working-directory: ./ruby
         run: |
           cp ../README.md .

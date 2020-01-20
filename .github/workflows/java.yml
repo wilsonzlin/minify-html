@@ -1,4 +1,4 @@
-name: Build, package, and upload Java library
+name: Build and publish Java artifact
 
 on:
   create:
@@ -71,7 +71,7 @@ jobs:
             mv $f/* "$f.nativelib"
             rmdir "$f"
           done
-      - name: Build, package, and publish JAR
+      - name: Build, pack, and publish JAR
         working-directory: ./java
         env:
           SONATYPE_GPG_PRIVATE_KEY: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
