@@ -149,7 +149,7 @@ minified = hyperbuild.minify("<p>  Hello, world!  </p>")
 <details>
 <summary><strong>Ruby</strong></summary>
 
-hyperbuild is published on RubyGems, available as a [native module](https://github.com/danielpclark/rutie) for macOS and Linux, and supports Ruby versions 2.5 and higher.
+hyperbuild is published on [RubyGems](https://rubygems.org/gems/hyperbuild), available as a [native module](https://github.com/danielpclark/rutie) for macOS and Linux, and supports Ruby versions 2.5 and higher.
 
 ##### Get
 
