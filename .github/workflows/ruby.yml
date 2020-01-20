@@ -21,6 +21,7 @@ jobs:
             FILE: 'libhyperbuild_ruby_lib.dylib'
     steps:
       - uses: actions/checkout@v1
+      # Install Ruby manually as actions/setup-ruby@v1 does not compile with `--enable-shared`.
       - name: Prepare for rbenv
         run: |
           cat << 'EOF' >> "$HOME/.bash_profile"

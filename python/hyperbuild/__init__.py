@@ -1,16 +1,20 @@
-import platform
 import importlib
+import inspect
+import os
+import platform
+import sys
+
 
 def _load_native_module():
-    os_raw = platform.system()
-    if os_raw == "Linux":
-        os = "linux"
-    elif os_raw == "Darwin":
-        os = "macos"
-    elif os_raw == "Windows":
-        os = "windows"
+    os_name_raw = platform.system()
+    if os_name_raw == "Linux":
+        os_name = "linux"
+    elif os_name_raw == "Darwin":
+        os_name = "macos"
+    elif os_name_raw == "Windows":
+        os_name = "windows"
     else:
-        os = "unknown"
+        os_name = "unknown"
 
     os_arch_raw = platform.machine()
     if os_arch_raw == "AMD64" or os_arch_raw == "x86_64":
@@ -18,6 +22,11 @@ def _load_native_module():
     else:
         os_arch = "unknown"
 
-    return importlib.import_module(os + "-" + os_arch + ".hyperbuild")
+    this_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe()))[0]))
+    sys.path.insert(0, this_folder)
+    module = importlib.import_module(''.join([os_name, "-", os_arch, '-', sys.version_info.major, '_', sys.version_info.minor, ".hyperbuild"]))
+    sys.path.pop(0)
+    return module
+
 
 minify = _load_native_module().minify
