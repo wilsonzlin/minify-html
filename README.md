@@ -25,9 +25,9 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 ##### Get
 
-[Windows](https://wilsonl.in/hyperbuild/bin/0.0.30-windows-x86_64.exe) |
-[macOS](https://wilsonl.in/hyperbuild/bin/0.0.30-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.0.30-linux-x86_64)
+[Windows](https://wilsonl.in/hyperbuild/bin/0.0.31-windows-x86_64.exe) |
+[macOS](https://wilsonl.in/hyperbuild/bin/0.0.31-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.0.31-linux-x86_64)
 
 ##### Use
 
@@ -44,7 +44,7 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = "0.0.30"
+hyperbuild = "0.0.31"
 ```
 
 ##### Use
@@ -105,7 +105,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.hyperbuild</groupId>
   <artifactId>hyperbuild</artifactId>
-  <version>0.0.30</version>
+  <version>0.0.31</version>
 </dependency>
 ```
 
@@ -130,7 +130,7 @@ hyperbuild is available as a [native module](https://github.com/PyO3/pyo3), and 
 
 ##### Get
 
-Download the native module for [Windows](https://wilsonl.in/hyperbuild/bin/0.0.30-windows-x86_64-python.pyd), [macOS](https://wilsonl.in/hyperbuild/bin/0.0.30-macos-x86_64-python.so), or [Linux](https://wilsonl.in/hyperbuild/bin/0.0.30-linux-x86_64-python.so).
+Download the native module for [Windows](https://wilsonl.in/hyperbuild/bin/0.0.31-windows-x86_64-python.pyd), [macOS](https://wilsonl.in/hyperbuild/bin/0.0.31-macos-x86_64-python.so), or [Linux](https://wilsonl.in/hyperbuild/bin/0.0.31-linux-x86_64-python.so).
 
 Rename the file to `hyperbuild.pyd` on Windows or `hyperbuild.so` on macOS/Linux.
 
