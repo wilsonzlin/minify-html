@@ -3,9 +3,22 @@
 
 const {readFileSync, writeFileSync} = require('fs');
 const {spawnSync} = require('child_process');
-const {join} = require('path');
 
-const NEW_VERSION = process.argv[2];
+const currentVersion = /^version = "(\d+)\.(\d+)\.(\d+)"\s*$/m.exec(readFileSync('Cargo.toml', 'utf8')).slice(1).map(n => Number.parseInt(n, 10));
+
+const assertBetween = (n, min, max) => {
+  if (n < min || n > max) {
+    throw new Error(`Invalid argument`);
+  }
+  return n;
+};
+
+const newVersion = currentVersion.slice();
+newVersion[assertBetween(['major', 'minor', 'patch'].indexOf(process.argv[2].toLowerCase()), 0, 2)]++;
+
+console.log(`${currentVersion.join('.')} => ${newVersion.join('.')}`);
+
+const NEW_VERSION = newVersion.join('.');
 
 const cmd = (...cfg) => {
   const command = cfg[0];
