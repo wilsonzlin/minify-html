@@ -35,6 +35,7 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash -l {0}
         run: |
+          sudo apt install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
           wget -O install-rbenv.sh https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-installer
           bash install-rbenv.sh || true # Ignore rbenv-doctor.
       - name: Set up Ruby
