@@ -42,7 +42,9 @@ jobs:
       - name: Set up rbenv (macOS)
         if: runner.os == 'macOS'
         shell: bash -l {0}
-        run: brew install rbenv
+        run: |
+          brew install openssl libyaml libffi
+          brew install rbenv
       - name: Set up rbenv (Linux)
         if: runner.os == 'Linux'
         shell: bash -l {0}
