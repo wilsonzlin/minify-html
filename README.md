@@ -99,11 +99,17 @@ hyperbuild is available via [JNI](https://github.com/jni-rs/jni-rs), and support
 
 ##### Get
 
-Download the [JAR](https://wilsonl.in/hyperbuild/bin/0.0.28.jar) file.
+Add as a Maven dependency:
+
+```xml
+<dependency>
+  <groupId>in.wilsonl.hyperbuild</groupId>
+  <artifactId>hyperbuild</artifactId>
+  <version>0.0.28</version>
+</dependency>
+```
 
 ##### Use
-
-Make sure to add the JAR file to the class path.
 
 ```java
 import in.wilsonl.hyperbuild.Hyperbuild;
@@ -143,11 +149,11 @@ minified = hyperbuild.minify("<p>  Hello, world!  </p>")
 <details>
 <summary><strong>Ruby</strong></summary>
 
-hyperbuild is available as a [native module](https://github.com/danielpclark/rutie) for macOS and Linux, and supports Ruby versions 2.5 and higher.
+hyperbuild is published on RubyGems, available as a [native module](https://github.com/danielpclark/rutie) for macOS and Linux, and supports Ruby versions 2.5 and higher.
 
 ##### Get
 
-Download and install the [gem](https://wilsonl.in/hyperbuild/bin/0.0.28.gem).
+Add the library as a dependency to `Gemfile` or `*.gemspec`.
 
 ##### Use
 
