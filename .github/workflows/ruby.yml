@@ -21,6 +21,10 @@ jobs:
             FILE: 'libhyperbuild_ruby_lib.dylib'
     steps:
       - uses: actions/checkout@v1
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
       # Install Ruby manually as actions/setup-ruby@v1 does not compile with `--enable-shared`.
       - name: Prepare for rbenv
         run: |
@@ -34,7 +38,7 @@ jobs:
         env:
           RUBY_VERSION: ${{ matrix.ruby }}
         # PowerShell doesn't support `${...}` syntax.
-        run: echo ::set-output name=NAME::${{ matrix.ARCH }}-ruby${RUBY_VERSION%.*}
+        run: echo ::set-output name=NAME::${{ matrix.NAME }}-ruby${RUBY_VERSION%.*}
       - name: Set up rbenv (macOS)
         if: runner.os == 'macOS'
         shell: bash -l {0}
