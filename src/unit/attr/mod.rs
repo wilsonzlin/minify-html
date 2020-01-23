@@ -4,6 +4,7 @@ use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_control, is_whitespace};
 use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue, skip_attr_value};
+use crate::unit::tag::Namespace;
 
 mod value;
 
@@ -15,21 +16,36 @@ pub struct AttributeMinification {
 }
 
 pub enum AttrMapEntry {
-    AllHtmlElements(AttributeMinification),
-    DistinctHtmlElements(Map<&'static [u8], AttributeMinification>),
+    AllNamespaceElements(AttributeMinification),
+    SpecificNamespaceElements(Map<&'static [u8], AttributeMinification>),
 }
 
-pub struct AttrMap(Map<&'static [u8], &'static AttrMapEntry>);
+#[derive(Clone, Copy)]
+pub struct ByNamespace {
+    html: Option<&'static AttrMapEntry>,
+    svg: Option<&'static AttrMapEntry>,
+}
+
+impl ByNamespace {
+    fn get(&self, ns: Namespace) -> Option<&'static AttrMapEntry> {
+        match ns {
+            Namespace::Html => self.html,
+            Namespace::Svg => self.svg,
+        }
+    }
+}
+
+pub struct AttrMap(Map<&'static [u8], ByNamespace>);
 
 impl AttrMap {
-    pub const fn new(map: Map<&'static [u8], &'static AttrMapEntry>) -> AttrMap {
+    pub const fn new(map: Map<&'static [u8], ByNamespace>) -> AttrMap {
         AttrMap(map)
     }
 
-    pub fn get(&self, tag: &[u8], attr: &[u8]) -> Option<&AttributeMinification> {
-        self.0.get(attr).and_then(|entry| match entry {
-            AttrMapEntry::AllHtmlElements(min) => Some(min),
-            AttrMapEntry::DistinctHtmlElements(map) => map.get(tag),
+    pub fn get(&self, ns: Namespace, tag: &[u8], attr: &[u8]) -> Option<&AttributeMinification> {
+        self.0.get(attr).and_then(|namespaces| namespaces.get(ns)).and_then(|entry| match entry {
+            AttrMapEntry::AllNamespaceElements(min) => Some(min),
+            AttrMapEntry::SpecificNamespaceElements(map) => map.get(tag),
         })
     }
 }
@@ -59,11 +75,11 @@ fn is_name_char(c: u8) -> bool {
     }
 }
 
-pub fn process_attr(proc: &mut Processor, element: ProcessorRange) -> ProcessingResult<ProcessedAttr> {
+pub fn process_attr(proc: &mut Processor, ns: Namespace, element: ProcessorRange) -> ProcessingResult<ProcessedAttr> {
     // It's possible to expect attribute name but not be called at an attribute, e.g. due to whitespace between name and
     // value, which causes name to be considered boolean attribute and `=` to be start of new (invalid) attribute name.
     let name = chain!(proc.match_while_pred(is_name_char).require_with_reason("attribute name")?.keep().out_range());
-    let attr_cfg = ATTRS.get(&proc[element], &proc[name]);
+    let attr_cfg = ATTRS.get(ns, &proc[element], &proc[name]);
     let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
     let after_name = proc.checkpoint();
 

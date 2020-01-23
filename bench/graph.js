@@ -8,6 +8,8 @@ const colours = {
   'html-minifier': '#2ca02c',
 };
 
+const percentageTick = t => (Math.round(t * 1000) / 10).toFixed(1) + '%';
+
 const chartOptions = (title, displayLegend, yTick = t => t) => ({
   options: {
     title: {
@@ -65,7 +67,7 @@ const renderChart = async (cfg) => {
         data: averageSpeeds.map(([_, v]) => v),
       }],
     },
-    ...chartOptions('Average operations per second (higher is better)', false, tick => `${tick * 100}%`),
+    ...chartOptions('Average operations per second (higher is better)', false, percentageTick),
   }));
 
   const speeds = results.getSpeedResults().getRelativeFileSpeedsPerMinifier('hyperbuild-nodejs');
@@ -79,7 +81,7 @@ const renderChart = async (cfg) => {
         data: fileSpeeds.map(([_, speed]) => speed),
       })),
     },
-    ...chartOptions('Operations per second (higher is better)', true, tick => `${tick * 100}%`),
+    ...chartOptions('Operations per second (higher is better)', true, percentageTick),
   }));
 
   const averageSizes = results.getSizeResults().getAverageRelativeSizePerMinifier();
@@ -94,7 +96,7 @@ const renderChart = async (cfg) => {
         data: averageSizes.map(([_, v]) => v),
       }],
     },
-    ...chartOptions('Average minified size (lower is better)', false, tick => `${tick * 100}%`),
+    ...chartOptions('Average minified size (lower is better)', false, percentageTick),
   }));
 
   const sizes = results.getSizeResults().getRelativeFileSizesPerMinifier();
@@ -108,6 +110,6 @@ const renderChart = async (cfg) => {
         data: fileSizes.map(([_, size]) => size),
       })),
     },
-    ...chartOptions('Minified size (lower is better)', true, tick => `${tick * 100}%`),
+    ...chartOptions('Minified size (lower is better)', true, percentageTick),
   }));
 })();

@@ -118,33 +118,50 @@ impl TagAttr {
 }
 
 fn generate_attr_map() {
-    let attrs: HashMap<String, HashMap<String, TagAttr>> = read_json("attrs");
+    let attrs: HashMap<String, HashMap<String, HashMap<String, TagAttr>>> = read_json("attrs");
     let mut code = String::new();
-    for (attr_name, tags_map) in attrs.iter() {
-        if let Some(global_attr) = tags_map.get("") {
-            code.push_str(format!(
-                "static {}_ATTR: &AttrMapEntry = &AttrMapEntry::AllHtmlElements({});\n\n",
-                attr_name.to_uppercase(),
-                global_attr.code(),
-            ).as_str());
-        } else {
-            code.push_str(format!(
-                "static {}_ATTR: &AttrMapEntry = &AttrMapEntry::DistinctHtmlElements(phf::phf_map! {{\n{}\n}});\n\n",
-                attr_name.to_uppercase(),
-                tags_map
-                    .iter()
-                    .map(|(tag_name, tag_attr)| format!(
-                        "b\"{}\" => {}",
-                        tag_name,
-                        tag_attr.code(),
-                    ))
-                    .collect::<Vec<String>>()
-                    .join(",\n"),
-            ).as_str());
+    for (attr_name, namespaces) in attrs.iter() {
+        let mut by_namespace_code = String::new();
+        by_namespace_code.push_str(format!("static {}_ATTR: ByNamespace = ByNamespace {{\n", attr_name.to_uppercase()).as_str());
+        for namespace in ["html".to_string(), "svg".to_string()].iter() {
+            by_namespace_code.push_str(format!("\t{}: ", namespace).as_str());
+            match namespaces.get(namespace) {
+                None => by_namespace_code.push_str("None"),
+                Some(tags_map) => {
+                    if let Some(global_attr) = tags_map.get("*") {
+                        code.push_str(format!(
+                            "static {}_{}_ATTR: &AttrMapEntry = &AttrMapEntry::AllNamespaceElements({});\n\n",
+                            namespace.to_uppercase(),
+                            attr_name.to_uppercase(),
+                            global_attr.code(),
+                        ).as_str());
+                    } else {
+                        code.push_str(format!(
+                            "static {}_{}_ATTR: &AttrMapEntry = &AttrMapEntry::SpecificNamespaceElements(phf::phf_map! {{\n{}\n}});\n\n",
+                            namespace.to_uppercase(),
+                            attr_name.to_uppercase(),
+                            tags_map
+                                .iter()
+                                .map(|(tag_name, tag_attr)| format!(
+                                    "b\"{}\" => {}",
+                                    tag_name,
+                                    tag_attr.code(),
+                                ))
+                                .collect::<Vec<String>>()
+                                .join(",\n"),
+                        ).as_str());
+                    };
+                    by_namespace_code.push_str(format!("Some({}_{}_ATTR)", namespace.to_uppercase(), attr_name.to_uppercase()).as_str());
+                }
+            };
+            by_namespace_code.push_str(",\n");
         };
+        by_namespace_code.push_str("};\n\n");
+        code.push_str(&by_namespace_code);
     };
     code.push_str("pub static ATTRS: AttrMap = AttrMap::new(phf::phf_map! {\n");
-    for attr_name in attrs.keys() {
+    for (attr_name, namespaces) in attrs.iter() {
+        for (namespace, tags_map) in namespaces.iter() {}
         code.push_str(format!("\tb\"{}\" => {}_ATTR,\n", attr_name, attr_name.to_uppercase()).as_str());
     };
     code.push_str("});\n\n");

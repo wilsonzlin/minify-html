@@ -10,6 +10,12 @@ use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
 
+#[derive(Copy, Clone, PartialEq, Eq)]
+pub enum Namespace {
+    Html,
+    Svg,
+}
+
 pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
     b"application/ecmascript",
     b"application/javascript",
@@ -82,7 +88,7 @@ impl MaybeClosingTag {
 }
 
 // TODO Comment param `prev_sibling_closing_tag`.
-pub fn process_tag(proc: &mut Processor, mut prev_sibling_closing_tag: MaybeClosingTag) -> ProcessingResult<MaybeClosingTag> {
+pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing_tag: MaybeClosingTag) -> ProcessingResult<MaybeClosingTag> {
     // TODO Minify opening and closing tag whitespace after name and last attr.
     // TODO DOC No checking if opening and closing names match.
     // Expect to be currently at an opening tag.
@@ -147,7 +153,7 @@ pub fn process_tag(proc: &mut Processor, mut prev_sibling_closing_tag: MaybeClos
             _ => {}
         };
 
-        let ProcessedAttr { name, typ, value } = process_attr(proc, tag_name)?;
+        let ProcessedAttr { name, typ, value } = process_attr(proc, ns, tag_name)?;
         match (tag_type, &proc[name]) {
             (TagType::Script, b"type") => {
                 // It's JS if the value is empty or one of `JAVASCRIPT_MIME_TYPES`.
@@ -160,7 +166,7 @@ pub fn process_tag(proc: &mut Processor, mut prev_sibling_closing_tag: MaybeClos
             }
             (_, name) => {
                 // TODO Check if HTML tag before checking if attribute removal applies to all elements.
-                erase_attr = match (value, ATTRS.get(&proc[tag_name], name)) {
+                erase_attr = match (value, ATTRS.get(ns, &proc[tag_name], name)) {
                     (None, Some(AttributeMinification { redundant_if_empty: true, .. })) => true,
                     (Some(val), Some(AttributeMinification { default_value: Some(defval), .. })) => proc[val].eq(*defval),
                     _ => false,
@@ -188,10 +194,16 @@ pub fn process_tag(proc: &mut Processor, mut prev_sibling_closing_tag: MaybeClos
         return Ok(MaybeClosingTag(None));
     };
 
+    let child_ns = if ns != Namespace::Svg && proc[tag_name].eq(b"svg") {
+        Namespace::Svg
+    } else {
+        ns
+    };
+
     match tag_type {
         TagType::Script => process_script(proc)?,
         TagType::Style => process_style(proc)?,
-        _ => process_content(proc, Some(tag_name))?,
+        _ => process_content(proc, child_ns, Some(tag_name))?,
     };
 
     // Require closing tag for non-void.

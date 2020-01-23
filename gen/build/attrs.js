@@ -3,7 +3,14 @@ const {promises: fs} = require('fs');
 const ts = require('typescript');
 const path = require('path');
 
+const compareEntryNames = (a, b) => a[0].localeCompare(b[0]);
+const deepObjectifyMap = map => Object.fromEntries(
+  [...map.entries()]
+    .map(([key, value]) => [key, value instanceof Map ? deepObjectifyMap(value) : value])
+    .sort(compareEntryNames)
+);
 const fromCamelCase = camelCase => camelCase.split(/(?=^|[A-Z])/).map(w => w.toLowerCase());
+const prettyjson = v => JSON.stringify(v, null, 2);
 
 const ATTRS_PATH = path.join(__dirname, '..', 'attrs.json');
 
@@ -38,83 +45,84 @@ const reactSpecificAttributes = [
 // TODO This is currently manually sourced and written. Try to get machine-readable spec and automate.
 const defaultAttributeValues = {
   'align': [{
-    tags: ['img'],
+    tags: ['html:img'],
     defaultValue: 'bottom',
   }],
   'decoding': [{
-    tags: ['img'],
+    tags: ['html:img'],
     defaultValue: 'auto',
   }],
   'enctype': [{
-    tags: ['form'],
+    tags: ['html:form'],
     defaultValue: 'application/x-www-form-urlencoded',
   }],
   'frameborder': [{
-    tags: ['iframe'],
+    tags: ['html:iframe'],
     defaultValue: '1',
     isPositiveInteger: true,
   }],
   'formenctype': [{
-    tags: ['button', 'input'],
+    tags: ['html:button', 'html:input'],
     defaultValue: 'application/x-www-form-urlencoded',
   }],
   'height': [{
-    tags: ['iframe'],
+    tags: ['html:iframe'],
     defaultValue: '150',
     isPositiveInteger: true,
   }],
   'importance': [{
-    tags: ['iframe'],
+    tags: ['html:iframe'],
     defaultValue: 'auto',
   }],
   'loading': [{
-    tags: ['iframe', 'img'],
+    tags: ['html:iframe', 'html:img'],
     defaultValue: 'eager',
   }],
   'media': [{
-    tags: ['style'],
+    tags: ['html:style'],
     defaultValue: 'all',
   }],
   'method': [{
-    tags: ['form'],
+    tags: ['html:form'],
     defaultValue: 'get',
   }],
   'referrerpolicy': [{
-    tags: ['iframe', 'img'],
+    tags: ['html:iframe', 'html:img'],
     defaultValue: 'no-referrer-when-downgrade',
   }],
   'rules': [{
-    tags: ['table'],
+    tags: ['html:table'],
     defaultValue: 'none',
   }],
   'span': [{
-    tags: ['col', 'colgroup'],
+    tags: ['html:col', 'html:colgroup'],
     defaultValue: '1',
     isPositiveInteger: true,
   }],
   'target': [{
-    tags: ['a', 'form'],
+    tags: ['html:a', 'html:form'],
     defaultValue: '_self',
   }],
   'type': [{
-    tags: ['button'],
+    tags: ['html:button'],
     defaultValue: 'submit',
   }, {
-    tags: ['input'],
+    tags: ['html:input'],
     defaultValue: 'text',
   }, {
-    tags: ['link', 'style'],
+    tags: ['html:link', 'html:style'],
     defaultValue: 'text/css',
   }],
   'width': [{
-    tags: ['iframe'],
+    tags: ['html:iframe'],
     defaultValue: '300',
     isPositiveInteger: true,
-  }],
+  }]
 };
 
 const collapsibleAndTrimmable = {
-  'class': [''],
+  'class': ['html:*'],
+  'd': ['svg:*'],
 };
 
 // TODO Is escapedText the API for getting name?
@@ -130,20 +138,23 @@ const processReactTypeDeclarations = async (source) => {
   }
   const attributeNodes = nodes
     .filter(n => n.kind === ts.SyntaxKind.InterfaceDeclaration)
-    .map(n => [/^([A-Za-z]*)HTMLAttributes/.exec(getNameOfNode(n)), n])
+    .map(n => [/^([A-Za-z]*)(HTML|SVG)Attributes/.exec(getNameOfNode(n)), n])
     .filter(([matches]) => matches)
-    .map(([matches, node]) => [normaliseName(matches[1], tagNameNormalised), node])
-    .filter(([tagName]) => !['all', 'webview'].includes(tagName))
-    .sort((a, b) => a[0].localeCompare(b[0]));
+    .map(([matches, node]) => [matches[2].toLowerCase(), normaliseName(matches[1], tagNameNormalised), node])
+    .filter(([namespace, tagName]) => namespace !== 'html' || !['all', 'webview'].includes(tagName))
+    .map(([namespace, tag, node]) => ({namespace, tag, node}))
+    .sort((a, b) => a.namespace.localeCompare(b.namespace) || a.tag.localeCompare(b.tag));
 
-  // Process global attributes first as they also appear on some specific tags but we don't want to keep the specific ones if they're global.
-  if (attributeNodes[0][0] !== '') {
-    throw new Error(`Global attributes is not first to be processed`);
+  // Process global HTML attributes first as they also appear on some specific HTML tags but we don't want to keep the specific ones if they're global.
+  if (attributeNodes[0].namespace !== 'html' || attributeNodes[0].tag !== '') {
+    throw new Error(`Global HTML attributes is not first to be processed`);
   }
 
+  // Map structure: attr => namespace => tag => config.
   const attributes = new Map();
 
-  for (const [tagName, node] of attributeNodes) {
+  for (const {namespace, tag, node} of attributeNodes) {
+    const fullyQualifiedTagName = [namespace, tag || '*'].join(':');
     for (const n of node.members.filter(n => n.kind === ts.SyntaxKind.PropertySignature)) {
       const attrName = normaliseName(getNameOfNode(n), attrNameNormalised);
       if (reactSpecificAttributes.includes(attrName)) continue;
@@ -157,11 +168,11 @@ const processReactTypeDeclarations = async (source) => {
       const redundantIfEmpty = !boolean &&
         (types.includes(ts.SyntaxKind.StringKeyword) || types.includes(ts.SyntaxKind.NumberKeyword));
       const defaultValue = (defaultAttributeValues[attrName] || [])
-        .filter(a => a.tags.includes(tagName))
+        .filter(a => a.tags.includes(fullyQualifiedTagName))
         .map(a => a.defaultValue);
-      const collapseAndTrim = (collapsibleAndTrimmable[attrName] || []).includes(tagName);
+      const collapseAndTrim = (collapsibleAndTrimmable[attrName] || []).includes(fullyQualifiedTagName);
       if (defaultValue.length > 1) {
-        throw new Error(`Tag-attribute combination has multiple default values: ${defaultValue}`);
+        throw new Error(`Tag-attribute combination <${fullyQualifiedTagName} ${attrName}> has multiple default values: ${defaultValue}`);
       }
       const attr = {
         boolean,
@@ -171,36 +182,27 @@ const processReactTypeDeclarations = async (source) => {
       };
 
       if (!attributes.has(attrName)) attributes.set(attrName, new Map());
-      const tagsForAttribute = attributes.get(attrName);
-      if (tagsForAttribute.has(tagName)) throw new Error(`Duplicate tag-attribute combination: <${tagName} ${attrName}>`);
+      const namespacesForAttribute = attributes.get(attrName);
+      if (!namespacesForAttribute.has(namespace)) namespacesForAttribute.set(namespace, new Map());
+      const tagsForNSAttribute = namespacesForAttribute.get(namespace);
+      if (tagsForNSAttribute.has(tag)) throw new Error(`Duplicate tag-attribute combination: <${fullyQualifiedTagName} ${attrName}>`);
 
-      const globalAttr = tagsForAttribute.get('');
+      const globalAttr = tagsForNSAttribute.get('*');
       if (globalAttr) {
         if (globalAttr.boolean !== attr.boolean
           || globalAttr.redundant_if_empty !== attr.redundant_if_empty
           || globalAttr.collapse_and_trim !== attr.collapse_and_trim
           || globalAttr.default_value !== attr.default_value) {
-          throw new Error(`Global and tag-specific attributes conflict: ${JSON.stringify(globalAttr, null, 2)} ${JSON.stringify(attr, null, 2)}`);
+          throw new Error(`Global and tag-specific attributes conflict: ${prettyjson(globalAttr)} ${prettyjson(attr)}`);
         }
       } else {
-        tagsForAttribute.set(tagName, attr);
+        tagsForNSAttribute.set(tag || '*', attr);
       }
     }
   }
 
   // Sort output JSON object by property so diffs are clearer.
-  await fs.writeFile(ATTRS_PATH, JSON.stringify(
-    Object.fromEntries(
-      [...attributes.entries()]
-        .map(([attrName, tagsMap]) => [attrName, Object.fromEntries(
-          [...tagsMap.entries()]
-            .sort((a, b) => a[0].localeCompare(b[0]))
-        )])
-        .sort((a, b) => a[0].localeCompare(b[0]))
-    ),
-    null,
-    2,
-  ));
+  await fs.writeFile(ATTRS_PATH, prettyjson(deepObjectifyMap(attributes)));
 };
 
 (async () => {

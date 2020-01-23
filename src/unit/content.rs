@@ -7,7 +7,7 @@ use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::instruction::process_instruction;
-use crate::unit::tag::{MaybeClosingTag, process_tag};
+use crate::unit::tag::{MaybeClosingTag, Namespace, process_tag};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -50,7 +50,7 @@ impl ContentType {
     }
 }
 
-pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
+pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
     let &WhitespaceMinification { collapse, destroy_whole, trim } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]));
 
     let handle_ws = collapse || destroy_whole || trim;
@@ -115,10 +115,7 @@ pub fn process_content(proc: &mut Processor, parent: Option<ProcessorRange>) -> 
         match next_content_type {
             ContentType::Tag => {
                 proc.suspend(uep);
-                let new_closing_tag = process_tag(
-                    proc,
-                    prev_sibling_closing_tag,
-                )?;
+                let new_closing_tag = process_tag(proc, ns, prev_sibling_closing_tag)?;
                 prev_sibling_closing_tag.replace(new_closing_tag);
                 // Always resume as closing tag might not exist or be omitted.
                 proc.resume(uep);
