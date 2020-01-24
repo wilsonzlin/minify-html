@@ -94,6 +94,10 @@ const defaultAttributeValues = {
     tags: ['html:table'],
     defaultValue: 'none',
   }],
+  'shape': [{
+    tags: ['html:area'],
+    defaultValue: 'rect',
+  }],
   'span': [{
     tags: ['html:col', 'html:colgroup'],
     defaultValue: '1',

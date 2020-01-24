@@ -194,7 +194,7 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
         return Ok(MaybeClosingTag(None));
     };
 
-    let child_ns = if ns != Namespace::Svg && proc[tag_name].eq(b"svg") {
+    let child_ns = if proc[tag_name].eq(b"svg") {
         Namespace::Svg
     } else {
         ns
