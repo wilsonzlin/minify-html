@@ -42,11 +42,11 @@ module.exports = {
         return minifierNames.map(minifier => [
           minifier,
           testNames
-            // Get OP/s for each test.
+            // Get operations per second for each test.
             .map(test => data[test][minifier] / data[test][baselineMinifier])
-            // Sum all test OP/s.
+            // Sum all test operations per second.
             .reduce((sum, c) => sum + c)
-          // Divide by tests count to get average OP/s.
+          // Divide by tests count to get average operations per second.
           / testNames.length,
         ]).sort((a, b) => a[1] - b[1]);
       },

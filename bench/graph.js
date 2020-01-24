@@ -62,7 +62,7 @@ const renderChart = async (cfg) => {
     data: {
       labels: averageSpeeds.map(([n]) => n),
       datasets: [{
-        label: 'Average relative OP/s',
+        label: 'Average relative op/s',
         backgroundColor: '#1f77b4',
         data: averageSpeeds.map(([_, v]) => v),
       }],
