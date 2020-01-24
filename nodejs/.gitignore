@@ -4,3 +4,4 @@
 /native/artifacts.json
 /native/Cargo.lock
 node_modules/
+package-lock.json

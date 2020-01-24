@@ -3,3 +3,4 @@ min/
 hyperbuild-bench/Cargo.lock
 hyperbuild-bench/target/
 perf.data*
+package-lock.json
