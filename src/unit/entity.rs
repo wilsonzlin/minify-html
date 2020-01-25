@@ -2,10 +2,10 @@ use std::char::from_u32;
 
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
-use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
 
 // Some entities are actually shorter than their decoded characters as UTF-8.
 // See `build.rs` for more details.

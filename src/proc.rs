@@ -4,11 +4,11 @@ use fastrie::Fastrie;
 
 use crate::err::{ErrorType, ProcessingResult};
 use crate::pattern::SinglePattern;
-use crate::spec::codepoint::{is_digit, is_hex_digit, is_whitespace};
-use crate::unit::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::spec::codepoint::{is_digit, is_hex_digit, is_whitespace};
+use crate::unit::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
 
 #[derive(Copy, Clone)]
 pub struct Checkpoint {

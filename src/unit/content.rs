@@ -1,5 +1,8 @@
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
+use crate::proc::MatchAction::*;
+use crate::proc::MatchCond::*;
+use crate::proc::MatchMode::*;
 use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
@@ -8,9 +11,6 @@ use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{MaybeClosingTag, Namespace, process_tag};
-use crate::proc::MatchAction::*;
-use crate::proc::MatchCond::*;
-use crate::proc::MatchMode::*;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {

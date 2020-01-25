@@ -2,11 +2,11 @@ use phf::{Map, phf_map};
 
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
-use crate::spec::codepoint::{is_digit, is_whitespace};
-use crate::unit::entity::{EntityType, parse_entity};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::spec::codepoint::{is_digit, is_whitespace};
+use crate::unit::entity::{EntityType, parse_entity};
 
 fn is_double_quote(c: u8) -> bool {
     c == b'"'

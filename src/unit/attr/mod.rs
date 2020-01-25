@@ -2,12 +2,12 @@ use phf::Map;
 
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
-use crate::spec::codepoint::{is_control, is_whitespace};
-use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue, skip_attr_value};
-use crate::unit::tag::Namespace;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::spec::codepoint::{is_control, is_whitespace};
+use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue, skip_attr_value};
+use crate::unit::tag::Namespace;
 
 mod value;
 

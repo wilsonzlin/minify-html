@@ -1,8 +1,8 @@
 use crate::err::ProcessingResult;
-use crate::proc::Processor;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::proc::Processor;
 
 include!(concat!(env!("OUT_DIR"), "/gen_pattern_SCRIPT_END.rs"));
 

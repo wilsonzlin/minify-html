@@ -1,4 +1,4 @@
-use phf::{phf_map, Map};
+use phf::{Map, phf_map};
 
 pub struct WhitespaceMinification {
     pub collapse: bool,

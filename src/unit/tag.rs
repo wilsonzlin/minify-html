@@ -2,6 +2,9 @@ use phf::{phf_set, Set};
 
 use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::{Processor, ProcessorRange};
+use crate::proc::MatchAction::*;
+use crate::proc::MatchCond::*;
+use crate::proc::MatchMode::*;
 use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::void::VOID_TAGS;
@@ -9,9 +12,6 @@ use crate::unit::attr::{AttributeMinification, ATTRS, AttrType, process_attr, Pr
 use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
-use crate::proc::MatchAction::*;
-use crate::proc::MatchCond::*;
-use crate::proc::MatchMode::*;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum Namespace {
