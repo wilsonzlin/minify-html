@@ -1,40 +1,14 @@
 use std::ops::{Index, IndexMut, Range};
 
-use fastrie::{Fastrie, FastrieMatch};
+use fastrie::Fastrie;
 
 use crate::err::{ErrorType, ProcessingResult};
 use crate::pattern::SinglePattern;
 use crate::spec::codepoint::{is_digit, is_hex_digit, is_whitespace};
 use crate::unit::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
-
-macro_rules! chain {
-    ($proc:ident $($tail:tt)+) => ({
-        chain!(@line $proc, last, $($tail)+);
-        last
-    });
-    // Match `?` operator before a call without `?`.
-    (@line $proc:ident, $last:ident, . $method:ident($($arg:expr),*)? $($tail:tt)+) => {
-        $proc.$method($($arg),*)?;
-        chain!(@line $proc, $last, $($tail)*);
-    };
-    (@line $proc:ident, $last:ident, . $method:ident($($arg:expr),*) $($tail:tt)+) => {
-        $proc.$method($($arg),*);
-        chain!(@line $proc, $last, $($tail)*);
-    };
-    (@line $proc:ident, $last:ident, . $method:ident($($arg:expr),*)?) => {
-        let $last = $proc.$method($($arg),*)?;
-    };
-    (@line $proc:ident, $last:ident, . $method:ident($($arg:expr),*)) => {
-        let $last = $proc.$method($($arg),*);
-    };
-}
-
-#[derive(Copy, Clone)]
-pub enum RequireReason {
-    Custom,
-    ExpectedMatch(&'static [u8]),
-    ExpectedChar(u8),
-}
+use crate::proc::MatchAction::*;
+use crate::proc::MatchCond::*;
+use crate::proc::MatchMode::*;
 
 #[derive(Copy, Clone)]
 pub struct Checkpoint {
@@ -65,6 +39,26 @@ impl ProcessorRange {
     pub fn empty(&self) -> bool {
         self.start >= self.end
     }
+    pub fn nonempty(&self) -> bool {
+        !self.empty()
+    }
+    pub fn first(&self, proc: &Processor) -> Option<u8> {
+        if self.empty() {
+            None
+        } else {
+            Some(proc.code[self.start])
+        }
+    }
+    pub fn require(&self, reason: &'static str) -> ProcessingResult<Self> {
+        if self.empty() {
+            Err(ErrorType::NotFound(reason))
+        } else {
+            Ok(*self)
+        }
+    }
+    pub fn expect(&self) -> () {
+        debug_assert!(self.nonempty());
+    }
 }
 
 #[derive(Eq, PartialEq)]
@@ -94,26 +88,34 @@ impl UnintentionalEntityPrevention {
     }
 }
 
+pub enum MatchCond {
+    Is,
+    IsNot,
+    While,
+    WhileNot,
+}
+
+pub enum MatchMode {
+    Char(u8),
+    Pred(fn(u8) -> bool),
+    Seq(&'static [u8]),
+    Pat(&'static SinglePattern),
+}
+
+pub enum MatchAction {
+    Keep,
+    Discard,
+    MatchOnly,
+}
+
 // Processing state of a file. Most fields are used internally and set during
 // processing. Single use only; create one per processing.
 pub struct Processor<'d> {
     code: &'d mut [u8],
-
     // Index of the next character to read.
     read_next: usize,
     // Index of the next unwritten space.
     write_next: usize,
-
-    // Match.
-    // Need to record start as we might get slice after keeping or skipping.
-    match_start: usize,
-    // Position in output match has been written to. Useful for long term slices where source would already be overwritten.
-    match_dest: usize,
-    // Guaranteed amount of characters that exist from `start` at time of creation of this struct.
-    match_len: usize,
-    // Character matched, if any. Only exists for single-character matches and if matched.
-    match_char: Option<u8>,
-    match_reason: RequireReason,
 }
 
 impl<'d> Index<ProcessorRange> for Processor<'d> {
@@ -134,7 +136,7 @@ impl<'d> IndexMut<ProcessorRange> for Processor<'d> {
 impl<'d> Processor<'d> {
     // Constructor.
     pub fn new(code: &mut [u8]) -> Processor {
-        Processor { write_next: 0, read_next: 0, code, match_start: 0, match_dest: 0, match_len: 0, match_char: None, match_reason: RequireReason::Custom }
+        Processor { write_next: 0, read_next: 0, code }
     }
 
     // INTERNAL APIs.
@@ -151,8 +153,11 @@ impl<'d> Processor<'d> {
         self.code[self.read_next + offset]
     }
     fn _maybe_read_offset(&self, offset: usize) -> Option<u8> {
-        if self._in_bounds(offset) {
-            Some(self._read_offset(offset))
+        self.code.get(self.read_next + offset).map(|c| *c)
+    }
+    fn _maybe_read_slice_offset(&self, offset: usize, count: usize) -> Option<&[u8]> {
+        if self._in_bounds(offset + count - 1) {
+            Some(&self.code[self.read_next + offset..self.read_next + offset + count])
         } else {
             None
         }
@@ -175,39 +180,61 @@ impl<'d> Processor<'d> {
     }
 
     // Matching.
-    // Set match.
-    fn _new_match(&mut self, count: usize, char: Option<u8>, reason: RequireReason) -> () {
-        // Don't assert match doesn't exist, as otherwise we would need to clear match on every use
-        // which would slow down performance and require mutable methods for querying match.
-        self.match_start = self.read_next;
-        self.match_len = count;
-        self.match_char = char;
-        self.match_reason = reason;
+    fn _one<C: FnOnce(u8) -> bool>(&mut self, cond: C) -> usize {
+        self._maybe_read_offset(0).filter(|n| cond(*n)).is_some() as usize
     }
-    fn _match_one<C: FnOnce(u8) -> bool>(&mut self, cond: C, reason: RequireReason) -> () {
-        match self._maybe_read_offset(0).filter(|n| cond(*n)) {
-            Some(c) => self._new_match(1, Some(c), reason),
-            None => self._new_match(0, None, reason),
-        }
-    }
-    fn _match_greedy<C: Fn(u8) -> bool>(&mut self, cond: C) -> () {
+    fn _many<C: Fn(u8) -> bool>(&mut self, cond: C) -> usize {
         let mut count = 0usize;
-        while self._in_bounds(count) && cond(self._read_offset(count)) {
+        while self._maybe_read_offset(count).filter(|c| cond(*c)).is_some() {
             count += 1;
         };
-        self._new_match(count, None, RequireReason::Custom)
+        count
     }
-    // Ensure that match is nonempty or return error.
-    fn _match_require(&self, custom_reason: Option<&'static str>) -> ProcessingResult<()> {
-        if self.match_len > 0 {
-            Ok(())
-        } else {
-            match self.match_reason {
-                RequireReason::Custom => Err(ErrorType::NotFound(custom_reason.unwrap())),
-                RequireReason::ExpectedChar(c) => Err(ErrorType::ExpectedChar(c)),
-                RequireReason::ExpectedMatch(m) => Err(ErrorType::MatchNotFound(m)),
-            }
-        }
+
+    // Make expectation explicit, even for Maybe.
+    pub(crate) fn m(&mut self, cond: MatchCond, mode: MatchMode, action: MatchAction) -> ProcessorRange {
+        let count = match (cond, mode) {
+            (Is, Char(c)) => self._one(|n| n == c),
+            (IsNot, Char(c)) => self._one(|n| n != c),
+            (While, Char(c)) => self._many(|n| n == c),
+            (WhileNot, Char(c)) => self._many(|n| n != c),
+
+            (Is, Pred(p)) => self._one(|n| p(n)),
+            (IsNot, Pred(p)) => self._one(|n| !p(n)),
+            (While, Pred(p)) => self._many(|n| p(n)),
+            (WhileNot, Pred(p)) => self._many(|n| !p(n)),
+
+            // Sequence matching is slow. If using in a loop, use Pat or Trie instead.
+            (Is, Seq(seq)) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src == seq).map_or(0, |_| seq.len()),
+            (IsNot, Seq(seq)) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src != seq).map_or(0, |_| seq.len()),
+            (While, Seq(_)) => unimplemented!(),
+            (WhileNot, Seq(_)) => unimplemented!(),
+
+            (Is, Pat(_)) => unimplemented!(),
+            (IsNot, Pat(_)) => unimplemented!(),
+            (While, Pat(_)) => unimplemented!(),
+            (WhileNot, Pat(pat)) => pat.match_against(&self.code[self.read_next..]).unwrap_or(self.code.len() - self.read_next),
+        };
+        // If keeping, match will be available in written range (which is better as source might eventually get overwritten).
+        // If discarding, then only option is source range.
+        let start = match action {
+            Discard | MatchOnly => self.read_next,
+            Keep => self.write_next,
+        };
+        match action {
+            Discard => self.read_next += count,
+            Keep => self._shift(count),
+            MatchOnly => {}
+        };
+
+        ProcessorRange { start, end: start + count }
+    }
+
+    pub(crate) fn trie<V: 'static + Copy>(&mut self, trie: &Fastrie<V>) -> Option<(ProcessorRange, V)> {
+        trie.longest_matching_prefix(&self.code[self.read_next..]).map(|m| (
+            ProcessorRange { start: self.read_next, end: self.read_next + m.end + 1 },
+            *m.value,
+        ))
     }
 
     pub fn debug_dump(&self) -> String {
@@ -283,113 +310,6 @@ impl<'d> Processor<'d> {
     /// Get how many characters have been written to output.
     pub fn written_len(&self) -> usize {
         self.write_next
-    }
-
-    // Consume match APIs.
-    // Query match.
-    pub fn matched(&self) -> bool {
-        self.match_len > 0
-    }
-    pub fn char(&self) -> u8 {
-        self.match_char.unwrap()
-    }
-    pub fn maybe_char(&self) -> Option<u8> {
-        self.match_char
-    }
-    pub fn range(&self) -> ProcessorRange {
-        ProcessorRange { start: self.match_start, end: self.match_start + self.match_len }
-    }
-    pub fn out_range(&self) -> ProcessorRange {
-        ProcessorRange { start: self.match_dest, end: self.match_dest + self.match_len }
-    }
-
-    // Assert match.
-    pub fn require(&self) -> ProcessingResult<()> {
-        self._match_require(None)
-    }
-    pub fn require_with_reason(&self, reason: &'static str) -> ProcessingResult<()> {
-        self._match_require(Some(reason))
-    }
-    // TODO Document
-    pub fn expect(&self) -> () {
-        debug_assert!(self.match_len > 0);
-    }
-
-    // Take action on match.
-    // Note that match_len has already been verified to be valid, so don't need to bounds check again.
-    pub fn keep(&mut self) -> () {
-        self.match_dest = self.write_next;
-        self._shift(self.match_len);
-    }
-    pub fn discard(&mut self) -> () {
-        self.read_next = self.match_start + self.match_len;
-    }
-
-    // Single-char matching APIs.
-    pub fn match_char(&mut self, c: u8) -> () {
-        self._match_one(|n| n == c, RequireReason::ExpectedChar(c))
-    }
-    pub fn match_pred(&mut self, pred: fn(u8) -> bool) -> () {
-        self._match_one(pred, RequireReason::Custom)
-    }
-
-    // Sequence matching APIs.
-    pub fn match_seq(&mut self, pat: &'static [u8]) -> () {
-        // For faster short-circuiting matching, compare char-by-char instead of slices.
-        let len = pat.len();
-        let mut count = 0;
-        if len > 0 && self._in_bounds(len - 1) {
-            for i in 0..len {
-                if self._read_offset(i) != pat[i] {
-                    count = 0;
-                    break;
-                };
-                count += 1;
-            };
-        };
-        self._new_match(count, None, RequireReason::ExpectedMatch(pat))
-    }
-    pub fn match_trie<V: 'static + Copy>(&mut self, trie: &Fastrie<V>) -> Option<V> {
-        match trie.longest_matching_prefix(&self.code[self.read_next..]) {
-            None => {
-                self._new_match(0, None, RequireReason::Custom);
-                None
-            }
-            Some(FastrieMatch { end, value }) => {
-                self._new_match(end + 1, None, RequireReason::Custom);
-                Some(*value)
-            }
-        }
-    }
-
-    // Multi-char matching APIs.
-    pub fn match_while_char(&mut self, c: u8) -> () {
-        self._match_greedy(|n| n == c)
-    }
-    pub fn match_while_not_char(&mut self, c: u8) -> () {
-        self._match_greedy(|n| n != c)
-    }
-    pub fn match_while_pred(&mut self, pred: fn(u8) -> bool) -> () {
-        self._match_greedy(pred)
-    }
-    pub fn match_while_not_pred(&mut self, pred: fn(u8) -> bool) -> () {
-        self._match_greedy(|c| !pred(c))
-    }
-    pub fn match_while_not_seq(&mut self, s: &SinglePattern) -> () {
-        let count = match s.match_against(&self.code[self.read_next..]) {
-            Some(idx) => idx,
-            None => self.code.len() - self.read_next,
-        };
-        self._new_match(count, None, RequireReason::Custom)
-    }
-
-    pub fn maybe_match_char_then_discard(&mut self, c: u8) -> bool {
-        let count = match self._maybe_read_offset(0) {
-            Some(n) => n == c,
-            None => false,
-        };
-        self.read_next += count as usize;
-        count
     }
 
     // Checkpoints.
@@ -571,11 +491,7 @@ impl<'d> Processor<'d> {
         self._maybe_read_offset(0)
     }
     pub fn peek_slice_offset_eof(&self, offset: usize, count: usize) -> Option<&[u8]> {
-        if self._in_bounds(offset + count - 1) {
-            Some(&self.code[self.read_next + offset..self.read_next + offset + count])
-        } else {
-            None
-        }
+        self._maybe_read_slice_offset(offset, count)
     }
     pub fn peek(&self) -> ProcessingResult<u8> {
         self._maybe_read_offset(0).ok_or(ErrorType::UnexpectedEnd)
@@ -585,13 +501,10 @@ impl<'d> Processor<'d> {
     /// Skip and return the next character.
     /// Will result in an error if exceeds bounds.
     pub fn skip(&mut self) -> ProcessingResult<u8> {
-        if !self.at_end() {
-            let c = self._read_offset(0);
+        self._maybe_read_offset(0).map(|c| {
             self.read_next += 1;
-            Ok(c)
-        } else {
-            Err(ErrorType::UnexpectedEnd)
-        }
+            c
+        }).ok_or(ErrorType::UnexpectedEnd)
     }
     pub fn skip_amount_expect(&mut self, amount: usize) -> () {
         debug_assert!(!self.at_end(), "skip known characters");
@@ -628,15 +541,12 @@ impl<'d> Processor<'d> {
 
     // Shifting characters.
     pub fn accept(&mut self) -> ProcessingResult<u8> {
-        if !self.at_end() {
-            let c = self._read_offset(0);
+        self._maybe_read_offset(0).map(|c| {
             self.code[self.write_next] = c;
             self.read_next += 1;
             self.write_next += 1;
-            Ok(c)
-        } else {
-            Err(ErrorType::UnexpectedEnd)
-        }
+            c
+        }).ok_or(ErrorType::UnexpectedEnd)
     }
     pub fn accept_expect(&mut self) -> u8 {
         debug_assert!(!self.at_end());

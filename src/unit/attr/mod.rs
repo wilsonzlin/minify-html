@@ -5,6 +5,9 @@ use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_control, is_whitespace};
 use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue, skip_attr_value};
 use crate::unit::tag::Namespace;
+use crate::proc::MatchAction::*;
+use crate::proc::MatchCond::*;
+use crate::proc::MatchMode::*;
 
 mod value;
 
@@ -78,19 +81,19 @@ fn is_name_char(c: u8) -> bool {
 pub fn process_attr(proc: &mut Processor, ns: Namespace, element: ProcessorRange) -> ProcessingResult<ProcessedAttr> {
     // It's possible to expect attribute name but not be called at an attribute, e.g. due to whitespace between name and
     // value, which causes name to be considered boolean attribute and `=` to be start of new (invalid) attribute name.
-    let name = chain!(proc.match_while_pred(is_name_char).require_with_reason("attribute name")?.keep().out_range());
+    let name = proc.m(While, Pred(is_name_char), Keep).require("attribute name")?;
     let attr_cfg = ATTRS.get(ns, &proc[element], &proc[name]);
     let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
     let after_name = proc.checkpoint();
 
     let should_collapse_and_trim_value_ws = attr_cfg.filter(|attr| attr.collapse_and_trim).is_some();
-    chain!(proc.match_while_pred(is_whitespace).discard());
-    let has_value = chain!(proc.match_char(b'=').keep().matched());
+    proc.m(While, Pred(is_whitespace), Discard);
+    let has_value = proc.m(Is, Char(b'='), Keep).nonempty();
 
     let (typ, value) = if !has_value {
         (AttrType::NoValue, None)
     } else {
-        chain!(proc.match_while_pred(is_whitespace).discard());
+        proc.m(While, Pred(is_whitespace), Discard);
         if is_boolean {
             skip_attr_value(proc)?;
             // Discard `=`.

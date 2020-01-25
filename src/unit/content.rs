@@ -8,6 +8,9 @@ use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{MaybeClosingTag, Namespace, process_tag};
+use crate::proc::MatchAction::*;
+use crate::proc::MatchCond::*;
+use crate::proc::MatchMode::*;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -81,7 +84,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
             // Simply ignore and process until first non-whitespace.
             if match (next_content_type, entity) {
                 (_, Some(EntityType::Ascii(c))) if is_whitespace(c) => true,
-                (ContentType::Text, _) => chain!(proc.match_pred(is_whitespace).discard().matched()),
+                (ContentType::Text, _) => proc.m(Is, Pred(is_whitespace), Discard).nonempty(),
                 _ => false,
             } {
                 ws_skipped = true;

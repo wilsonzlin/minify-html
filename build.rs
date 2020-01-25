@@ -160,8 +160,7 @@ fn generate_attr_map() {
         code.push_str(&by_namespace_code);
     };
     code.push_str("pub static ATTRS: AttrMap = AttrMap::new(phf::phf_map! {\n");
-    for (attr_name, namespaces) in attrs.iter() {
-        for (namespace, tags_map) in namespaces.iter() {}
+    for attr_name in attrs.keys() {
         code.push_str(format!("\tb\"{}\" => {}_ATTR,\n", attr_name, attr_name.to_uppercase()).as_str());
     };
     code.push_str("});\n\n");

@@ -1,18 +1,14 @@
 use crate::err::ProcessingResult;
 use crate::proc::Processor;
+use crate::proc::MatchAction::*;
+use crate::proc::MatchCond::*;
+use crate::proc::MatchMode::*;
 
 include!(concat!(env!("OUT_DIR"), "/gen_pattern_INSTRUCTION_END.rs"));
 
 pub fn process_instruction(proc: &mut Processor) -> ProcessingResult<()> {
-    if cfg!(debug_assertions) {
-        chain!(proc.match_seq(b"<?").expect().keep());
-    } else {
-        proc.accept_amount_expect(2);
-    };
-
-    chain!(proc.match_while_not_seq(INSTRUCTION_END).keep());
-
-    chain!(proc.match_seq(b"?>").require_with_reason("end of processing instruction")?.keep());
-
+    proc.m(Is, Seq(b"<?"), Keep).expect();
+    proc.m(WhileNot, Pat(INSTRUCTION_END), Keep);
+    proc.m(Is, Seq(b"?>"), Keep).require("instruction end")?;
     Ok(())
 }

@@ -3,6 +3,9 @@ use std::char::from_u32;
 use crate::err::ProcessingResult;
 use crate::proc::{Processor, ProcessorRange};
 use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
+use crate::proc::MatchAction::*;
+use crate::proc::MatchCond::*;
+use crate::proc::MatchMode::*;
 
 // Some entities are actually shorter than their decoded characters as UTF-8.
 // See `build.rs` for more details.
@@ -54,14 +57,14 @@ fn parse_numeric(proc: &mut Processor, skip_amount: usize, max_len: usize, digit
     // Skip '#' or '#x'.
     proc.skip_amount_expect(skip_amount);
     // This is required because leading zeros do not count towards digit limit.
-    let has_leading_zeros = chain!(proc.match_while_char(b'0').discard().matched());
+    let has_leading_zeros = proc.m(While, Char(b'0'), Discard).nonempty();
     // Browser actually consumes unlimited amount of digits, but decodes to 0xFFFD if not a valid Unicode Scalar Value.
     // UnintentionalEntityState (UES) encodes leading ampersand in any sequence matching /&#x?\d/. This means that we need to be careful in keeping malformed behaviour consistent between this function and UES methods.
     // For example, if we simply output the entity literally, it will be interpreted as an unintentional entity by UEP and cause the written output to be shifted down to make room for inserting `amp`, which could lead to overwriting source code. This is because this function considers the entity as malformed whereas UEP doesn't and encodes the `&`.
     // Currently, since browsers decode to a replacement character (U+FFFD) if malformed, we'll simply decode to that, which won't trigger any UEP encoding behaviour.
-    let raw = chain!(proc.match_while_pred(digit_pred).discard().range());
+    let raw = proc.m(While, Pred(digit_pred), Discard);
     // Semicolon is required by spec but seems to be optional in actual browser behaviour.
-    chain!(proc.match_char(b';').discard());
+    proc.m(Is, Char(b';'), Discard);
     // `&` or `&#` without any digits are simply treated literally in browsers.
     if raw.len() < 1 {
         if has_leading_zeros {
@@ -87,24 +90,22 @@ fn parse_numeric(proc: &mut Processor, skip_amount: usize, max_len: usize, digit
 }
 
 fn parse_name(proc: &mut Processor) -> Option<EntityType> {
-    let decoded = proc.match_trie(ENTITY_REFERENCES);
-    proc.discard();
+    let decoded = proc.trie(ENTITY_REFERENCES);
     // In UTF-8, one-byte character encodings are always ASCII.
-    decoded.map(|s| if s.len() == 1 {
-        EntityType::Ascii(s[0])
-    } else {
-        EntityType::Named(s)
+    decoded.map(|(r, s)| {
+        proc.skip_amount_expect(r.len());
+        if s.len() == 1 {
+            EntityType::Ascii(s[0])
+        } else {
+            EntityType::Named(s)
+        }
     })
 }
 
 // This will parse and skip characters.
 pub fn parse_entity(proc: &mut Processor, decode_left_chevron: bool) -> ProcessingResult<EntityType> {
     let checkpoint = proc.checkpoint();
-    if cfg!(debug_assertions) {
-        chain!(proc.match_char(b'&').expect().discard());
-    } else {
-        proc.skip_expect();
-    };
+    proc.m(Is, Char(b'&'), Discard).expect();
 
     // The input can end at any time after initial ampersand.
     // Examples of valid complete source code: "&", "&a", "&#", "&#09",

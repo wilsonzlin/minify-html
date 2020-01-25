@@ -1,16 +1,12 @@
 use crate::err::ProcessingResult;
 use crate::proc::Processor;
+use crate::proc::MatchAction::*;
+use crate::proc::MatchCond::*;
+use crate::proc::MatchMode::*;
 
 pub fn process_bang(proc: &mut Processor) -> ProcessingResult<()> {
-    if cfg!(debug_assertions) {
-        chain!(proc.match_seq(b"<!").expect().keep());
-    } else {
-        proc.accept_amount_expect(2);
-    };
-
-    chain!(proc.match_while_not_char(b'>').keep());
-
-    chain!(proc.match_char(b'>').require()?.keep());
-
+    proc.m(Is, Seq(b"<!"), Keep).expect();
+    proc.m(WhileNot, Char(b'>'), Keep);
+    proc.m(Is, Char(b'>'), Keep).require("Bang close")?;
     Ok(())
 }
