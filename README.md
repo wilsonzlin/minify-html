@@ -365,10 +365,10 @@ Any entities in attribute values are decoded, and then the shortest representati
 - Single quoted, with any `'` encoded.
 - Unquoted, with `"`/`'` first character (if applicable), `>` last character (if applicable), and any whitespace encoded.
 
-`class` attributes have their whitespace (after any decoding) trimmed and collapsed.
+`class` and `d` attributes have their whitespace (after any decoding) trimmed and collapsed.
 
 [Boolean attribute](./gen/attrs.json) values are removed.
-[Some attributes](./gen/attrs.json) are completely removed if their value is empty or the default value after any processing.
+[Some other attributes](./gen/attrs.json) are completely removed if their value is empty or the default value after any processing.
 
 `type` attributes on `script` tags with a value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.
 
@@ -383,6 +383,8 @@ Entities are decoded if valid (see relevant parsing section) and their decoded c
 Numeric entities that do not refer to a valid Unicode Scalar Value are decoded to U+FFFD REPLACEMENT CHARACTER.
  
 If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity representations of characters part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
+
+Right chevrons after any decoding in text are encoded to `&GT` if possible or `&GT;` otherwise. 
 
 ### Comments
 
