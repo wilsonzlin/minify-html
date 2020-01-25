@@ -380,7 +380,7 @@ Spaces are removed between attributes if possible.
 
 Entities are decoded if valid (see relevant parsing section) and their decoded characters as UTF-8 is shorter or equal in length.
 
-Numeric entities that do not refer to a valid Unicode Scalar Value are decoded to U+FFFD REPLACEMENT CHARACTER.
+Numeric entities that do not refer to a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are decoded to U+FFFD REPLACEMENT CHARACTER.
  
 If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity representations of characters part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
 
@@ -402,7 +402,7 @@ hyperbuild simply does HTML minification, and almost does no syntax checking or 
 
 For example, this means that it's not an error to have self-closing tags, declare multiple `<body>` elements, use incorrect attribute names and values, or write something like `<br>alert('');</br>`
 
-However, there are some syntax requirements for speed and sanity reasons.
+However, there are some syntax requirements for speed and sanity.
 
 ### Tags
 
@@ -427,7 +427,7 @@ Numeric character references that do not reference a valid [Unicode Scalar Value
 Backticks (`` ` ``) are not valid quote marks and not interpreted as such.
 However, backticks are valid attribute value quotes in Internet Explorer.
 
-Special handling of some attributes require case sensitive names and values. For example, `CLASS` won't be recognised as an attribute to minify, and `type="Text/JavaScript"` on a `<script>` will cause the element to be parsed as a [data block](https://html.spec.whatwg.org/dev/scripting.html#data-block) instead of JavaScript code.
+Special handling of some attributes require case sensitive names and values. For example, `CLASS` won't be recognised as an attribute to minify, and `type="Text/JavaScript"` on a `<script>` will not be removed.
 
 ### Script and style
 
@@ -437,6 +437,6 @@ hyperbuild does **not** handle [escaped and double-escaped](./notes/Script%20dat
 
 ## Issues and contributions
 
-Contributions welcome!
+Pull requests and any contributions welcome!
 
-If hyperbuild did something unexpected, such as misunderstood some syntax, or incorrectly did/didn't do some minification, [raise an issue](https://github.com/wilsonzlin/hyperbuild/issues) with some relevant code that causes the issue.
+If hyperbuild did something unexpected, misunderstood some syntax, or incorrectly kept/removed some code, [raise an issue](https://github.com/wilsonzlin/hyperbuild/issues) with some relevant code that can be used to reproduce and investigate the issue.
