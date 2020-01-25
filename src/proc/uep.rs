@@ -71,7 +71,6 @@ impl UnintentionalEntityPrevention {
         debug_assert!(i <= proc.write_next);
         while i < proc.write_next {
             let c = proc.code[i];
-            println!("{}", proc.debug_dump());
             if c == b'>' && self.encode_right_chevrons {
                 match self.state {
                     Dec | Named | Hex => { self._handle_end_of_possible_entity(proc, i - 1); }

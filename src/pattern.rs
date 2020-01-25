@@ -4,6 +4,10 @@ pub struct SinglePattern {
 }
 
 impl SinglePattern {
+    pub fn len(&self) -> usize {
+        self.table.len()
+    }
+
     pub fn match_against(&self, haystack: &[u8]) -> Option<usize> {
         let mut hay_idx = 0usize;
         let mut pat_idx = 0usize;
