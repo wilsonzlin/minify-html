@@ -1,10 +1,13 @@
 use phf::{Map, phf_map};
 
 use crate::err::ProcessingResult;
-use crate::proc::{Processor, ProcessorRange};
+use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::proc::Processor;
+use crate::proc::range::ProcessorRange;
+use crate::proc::uep::UnintentionalEntityPrevention;
 use crate::spec::codepoint::{is_digit, is_whitespace};
 use crate::unit::entity::{EntityType, parse_entity};
 
@@ -203,7 +206,7 @@ fn handle_whitespace_char_type(c: u8, proc: &mut Processor, metrics: &mut Metric
 // The resulting written value would have the minimum possible value length.
 // Since the actual processed value would have a length equal or greater to it (e.g. it might be quoted, or some characters might get encoded), we can then read minimum value right to left and start writing from actual processed value length (which is calculated), quoting/encoding as necessary.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
-    let start = proc.checkpoint();
+    let start = Checkpoint::new(proc);
     let src_delimiter = proc.m(Is, Pred(is_attr_quote), Discard).first(proc);
     let delim_pred = match src_delimiter {
         Some(b'"') => is_double_quote,
@@ -225,7 +228,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     // NOTE: Only used if `should_collapse_and_trim_ws`.
     let mut currently_in_whitespace = false;
     // TODO Comment.
-    let uep = &mut proc.start_preventing_unintentional_entities();
+    let uep = &mut UnintentionalEntityPrevention::new(proc, false);
 
     let mut last_char_type: CharType = CharType::Start;
     loop {
@@ -234,7 +237,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
             CharType::End
         } else if proc.m(Is, Char(b'&'), MatchOnly).nonempty() {
             // Don't write entity here; wait until any previously ignored whitespace has been handled.
-            match parse_entity(proc, true)? {
+            match parse_entity(proc)? {
                 EntityType::Ascii(c) => CharType::from_char(c),
                 entity => CharType::Entity(entity),
             }
@@ -295,14 +298,14 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
                 };
             }
         };
-        proc.update(uep);
+        uep.update(proc);
         last_char_type = char_type;
     };
     if let Some(c) = src_delimiter {
         proc.m(Is, Char(c), Discard).require("attribute value closing quote")?;
     };
-    proc.end(uep);
-    let minimum_value = proc.written_range(start);
+    uep.end(proc);
+    let minimum_value = start.written_range(proc);
     // If minimum value is empty, return now before trying to read out of range later.
     // (Reading starts at one character before end of minimum value.)
     if minimum_value.empty() {
@@ -380,6 +383,6 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
 
     Ok(ProcessedAttrValue {
         delimiter: optimal_delimiter,
-        value: Some(proc.written_range(start)).filter(|r| !r.empty()),
+        value: Some(start.written_range(proc)).filter(|r| !r.empty()),
     })
 }

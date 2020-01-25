@@ -1,10 +1,12 @@
 use phf::Map;
 
 use crate::err::ProcessingResult;
-use crate::proc::{Processor, ProcessorRange};
+use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::proc::Processor;
+use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::{is_control, is_whitespace};
 use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue, skip_attr_value};
 use crate::unit::tag::Namespace;
@@ -84,7 +86,7 @@ pub fn process_attr(proc: &mut Processor, ns: Namespace, element: ProcessorRange
     let name = proc.m(While, Pred(is_name_char), Keep).require("attribute name")?;
     let attr_cfg = ATTRS.get(ns, &proc[element], &proc[name]);
     let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
-    let after_name = proc.checkpoint();
+    let after_name = Checkpoint::new(proc);
 
     let should_collapse_and_trim_value_ws = attr_cfg.filter(|attr| attr.collapse_and_trim).is_some();
     proc.m(While, Pred(is_whitespace), Discard);
@@ -97,15 +99,15 @@ pub fn process_attr(proc: &mut Processor, ns: Namespace, element: ProcessorRange
         if is_boolean {
             skip_attr_value(proc)?;
             // Discard `=`.
-            debug_assert_eq!(proc.written_count(after_name), 1);
-            proc.erase_written(after_name);
+            debug_assert_eq!(after_name.written_count(proc), 1);
+            after_name.erase_written(proc);
             (AttrType::NoValue, None)
         } else {
             match process_attr_value(proc, should_collapse_and_trim_value_ws)? {
                 ProcessedAttrValue { value: None, .. } => {
                     // Value is empty, which is equivalent to no value, so discard `=`.
-                    debug_assert_eq!(proc.written_count(after_name), 1);
-                    proc.erase_written(after_name);
+                    debug_assert_eq!(after_name.written_count(proc), 1);
+                    after_name.erase_written(proc);
                     (AttrType::NoValue, None)
                 }
                 ProcessedAttrValue { delimiter: DelimiterType::Unquoted, value } => (AttrType::Unquoted, value),

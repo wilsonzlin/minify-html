@@ -1,10 +1,12 @@
 use phf::{phf_set, Set};
 
 use crate::err::{ErrorType, ProcessingResult};
-use crate::proc::{Processor, ProcessorRange};
+use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::proc::Processor;
+use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::void::VOID_TAGS;
@@ -137,7 +139,7 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
         }
 
         // Mark attribute start in case we want to erase it completely.
-        let attr_checkpoint = proc.checkpoint();
+        let attr_checkpoint = Checkpoint::new(proc);
         let mut erase_attr = false;
 
         // Write space after tag name or unquoted/valueless attribute.
@@ -173,7 +175,7 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
             }
         };
         if erase_attr {
-            proc.erase_written(attr_checkpoint);
+            attr_checkpoint.erase_written(proc);
         } else {
             last_attr_type = Some(typ);
         };

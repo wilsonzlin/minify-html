@@ -1,8 +1,10 @@
 use crate::err::ProcessingResult;
-use crate::proc::{Processor, ProcessorRange};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
+use crate::proc::Processor;
+use crate::proc::range::ProcessorRange;
+use crate::proc::uep::UnintentionalEntityPrevention;
 use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
@@ -36,12 +38,12 @@ impl ContentType {
 
     fn peek(proc: &mut Processor) -> ContentType {
         // Manually write out matching for fast performance as this is hot spot; don't use generated trie.
-        match proc.peek_offset_eof(0) {
+        match proc.peek(0) {
             None => ContentType::End,
-            Some(b'<') => match proc.peek_offset_eof(1) {
+            Some(b'<') => match proc.peek(1) {
                 Some(b'/') => ContentType::End,
                 Some(b'?') => ContentType::Instruction,
-                Some(b'!') => match proc.peek_slice_offset_eof(2, 2) {
+                Some(b'!') => match proc.peek_many(2, 2) {
                     Some(b"--") => ContentType::Comment,
                     _ => ContentType::Bang,
                 },
@@ -64,7 +66,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
     // TODO Comment: Do not always initialise `uep` as `prev_sibling_closing_tag` might get written.
     let mut prev_sibling_closing_tag = MaybeClosingTag::none();
     // TODO Comment.
-    let uep = &mut proc.start_preventing_unintentional_entities();
+    let uep = &mut UnintentionalEntityPrevention::new(proc, true);
 
     loop {
         // Do not write anything until any previously ignored whitespace has been processed later.
@@ -75,7 +77,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                 process_comment(proc)?;
                 continue;
             }
-            ContentType::Entity => Some(parse_entity(proc, false)?),
+            ContentType::Entity => Some(parse_entity(proc)?),
             _ => None,
         };
 
@@ -117,14 +119,14 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
         // Process and consume next character(s).
         match next_content_type {
             ContentType::Tag => {
-                proc.suspend(uep);
+                uep.suspend(proc);
                 let new_closing_tag = process_tag(proc, ns, prev_sibling_closing_tag)?;
                 prev_sibling_closing_tag.replace(new_closing_tag);
                 // Always resume as closing tag might not exist or be omitted.
-                proc.resume(uep);
+                uep.resume(proc);
             }
             ContentType::End => {
-                proc.end(uep);
+                uep.end(proc);
                 if prev_sibling_closing_tag.exists_and(|prev_tag|
                     CLOSING_TAG_OMISSION_RULES
                         .get(&proc[prev_tag])
@@ -139,38 +141,28 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                 // Immediate next sibling node is not an element, so write any immediate previous sibling element's closing tag.
                 // UEP is resumed after processing a tag and setting `prev_sibling_closing_tag` (see ContentType::Tag arm), so suspend it before writing any closing tag (even though nothing should've been written since tag was processed and `prev_sibling_closing_tag` was set).
                 if prev_sibling_closing_tag.exists() {
-                    proc.suspend(uep);
+                    uep.suspend(proc);
                     prev_sibling_closing_tag.write(proc);
-                    proc.resume(uep);
+                    uep.resume(proc);
                 };
                 match content_type {
                     ContentType::Bang | ContentType::Instruction => {
-                        proc.suspend(uep);
+                        uep.suspend(proc);
                         match content_type {
                             ContentType::Bang => { process_bang(proc)?; }
                             ContentType::Instruction => { process_instruction(proc)?; }
                             _ => unreachable!(),
                         };
-                        proc.resume(uep);
+                        uep.resume(proc);
                     }
                     ContentType::Entity | ContentType::Text => {
                         uep.expect_active();
                         match entity {
-                            // TODO Comment: Explain why < is handled this way.
-                            Some(entity @ EntityType::NonDecodableRightChevron(_)) => {
-                                proc.suspend(uep);
-                                entity.keep(proc);
-                                proc.resume(uep);
-                            }
-                            Some(entity) => {
-                                entity.keep(proc);
-                            }
+                            Some(entity) => { entity.keep(proc); }
                             // Is text.
-                            None => {
-                                proc.accept()?;
-                            }
+                            None => { proc.accept()?; }
                         };
-                        proc.update(uep);
+                        uep.update(proc);
                     }
                     _ => unreachable!(),
                 };
