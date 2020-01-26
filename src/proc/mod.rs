@@ -1,3 +1,5 @@
+use core::fmt;
+use std::fmt::{Debug, Formatter};
 use std::ops::{Index, IndexMut};
 
 use fastrie::Fastrie;
@@ -9,8 +11,6 @@ use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::is_whitespace;
-use std::fmt::{Debug, Formatter};
-use core::fmt;
 
 pub mod checkpoint;
 pub mod range;
@@ -345,6 +345,7 @@ impl Debug for Processor<'_> {
             };
         };
         let max_line_no_width = (line_no as f64).log10().ceil() as usize;
+        // Don't use for_each as otherwise we can't return errors.
         for l in lines
             .iter()
             .map(|(line_no, line)| if *line_no == -1 {
@@ -352,7 +353,6 @@ impl Debug for Processor<'_> {
             } else {
                 format!("{:>indent$}|{}\n", line_no, line, indent = max_line_no_width)
             })
-            // Don't use for_each as otherwise we can't return errors.
         {
             f.write_str(l.as_str())?;
         }
