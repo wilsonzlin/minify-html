@@ -1,6 +1,7 @@
+/hyperbuild-bench/Cargo.lock
+/hyperbuild-bench/target/
+/min/
+/results/
 node_modules/
-min/
-hyperbuild-bench/Cargo.lock
-hyperbuild-bench/target/
-perf.data*
 package-lock.json
+perf.data*
