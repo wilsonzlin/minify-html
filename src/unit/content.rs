@@ -1,6 +1,5 @@
 use crate::err::ProcessingResult;
 use crate::proc::MatchAction::*;
-use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
@@ -86,7 +85,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
             // Simply ignore and process until first non-whitespace.
             if match (next_content_type, entity) {
                 (_, Some(EntityType::Ascii(c))) if is_whitespace(c) => true,
-                (ContentType::Text, _) => proc.m(Is, Pred(is_whitespace), Discard).nonempty(),
+                (ContentType::Text, _) => proc.m(IsPred(is_whitespace), Discard).nonempty(),
                 _ => false,
             } {
                 ws_skipped = true;

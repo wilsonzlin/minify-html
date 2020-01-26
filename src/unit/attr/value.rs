@@ -3,7 +3,6 @@ use phf::{Map, phf_map};
 use crate::err::ProcessingResult;
 use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
-use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
@@ -164,16 +163,16 @@ impl Metrics {
 }
 
 pub fn skip_attr_value(proc: &mut Processor) -> ProcessingResult<()> {
-    let src_delimiter = proc.m(Is, Pred(is_attr_quote), Discard).first(proc);
+    let src_delimiter = proc.m(IsPred(is_attr_quote), Discard).first(proc);
     let delim_pred = match src_delimiter {
         Some(b'"') => is_double_quote,
         Some(b'\'') => is_single_quote,
         None => is_not_unquoted_val_char,
         _ => unreachable!(),
     };
-    proc.m(WhileNot, Pred(delim_pred), Discard);
+    proc.m(WhileNotPred(delim_pred), Discard);
     if let Some(c) = src_delimiter {
-        proc.m(Is, Char(c), Discard).require("attribute value closing quote")?;
+        proc.m(IsChar(c), Discard).require("attribute value closing quote")?;
     };
     Ok(())
 }
@@ -207,7 +206,7 @@ fn handle_whitespace_char_type(c: u8, proc: &mut Processor, metrics: &mut Metric
 // Since the actual processed value would have a length equal or greater to it (e.g. it might be quoted, or some characters might get encoded), we can then read minimum value right to left and start writing from actual processed value length (which is calculated), quoting/encoding as necessary.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
     let start = Checkpoint::new(proc);
-    let src_delimiter = proc.m(Is, Pred(is_attr_quote), Discard).first(proc);
+    let src_delimiter = proc.m(IsPred(is_attr_quote), Discard).first(proc);
     let delim_pred = match src_delimiter {
         Some(b'"') => is_double_quote,
         Some(b'\'') => is_single_quote,
@@ -232,10 +231,10 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
 
     let mut last_char_type: CharType = CharType::Start;
     loop {
-        let char_type = if proc.m(Is, Pred(delim_pred), MatchOnly).nonempty() {
+        let char_type = if proc.m(IsPred(delim_pred), MatchOnly).nonempty() {
             // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
             CharType::End
-        } else if proc.m(Is, Char(b'&'), MatchOnly).nonempty() {
+        } else if proc.m(IsChar(b'&'), MatchOnly).nonempty() {
             // Don't write entity here; wait until any previously ignored whitespace has been handled.
             match parse_entity(proc)? {
                 EntityType::Ascii(c) => CharType::from_char(c),
@@ -302,7 +301,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         last_char_type = char_type;
     };
     if let Some(c) = src_delimiter {
-        proc.m(Is, Char(c), Discard).require("attribute value closing quote")?;
+        proc.m(IsChar(c), Discard).require("attribute value closing quote")?;
     };
     uep.end(proc);
     let minimum_value = start.written_range(proc);

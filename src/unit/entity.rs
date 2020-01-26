@@ -3,7 +3,6 @@ use std::char::from_u32;
 use crate::err::ProcessingResult;
 use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
-use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
@@ -27,7 +26,7 @@ use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_uppe
 
 include!(concat!(env!("OUT_DIR"), "/gen_entities.rs"));
 
-pub fn is_valid_entity_reference_name_char(c: u8) -> bool {
+pub fn is_entity_reference_name_char(c: u8) -> bool {
     c >= b'0' && c <= b'9' || c >= b'A' && c <= b'Z' || c >= b'a' && c <= b'z'
 }
 
@@ -57,14 +56,14 @@ fn parse_numeric(proc: &mut Processor, skip_amount: usize, max_len: usize, digit
     // Skip '#' or '#x'.
     proc.skip_amount_expect(skip_amount);
     // This is required because leading zeros do not count towards digit limit.
-    let has_leading_zeros = proc.m(While, Char(b'0'), Discard).nonempty();
+    let has_leading_zeros = proc.m(WhileChar(b'0'), Discard).nonempty();
     // Browser actually consumes unlimited amount of digits, but decodes to 0xFFFD if not a valid Unicode Scalar Value.
     // UnintentionalEntityState (UES) encodes leading ampersand in any sequence matching /&#x?\d/. This means that we need to be careful in keeping malformed behaviour consistent between this function and UES methods.
     // For example, if we simply output the entity literally, it will be interpreted as an unintentional entity by UEP and cause the written output to be shifted down to make room for inserting `amp`, which could lead to overwriting source code. This is because this function considers the entity as malformed whereas UEP doesn't and encodes the `&`.
     // Currently, since browsers decode to a replacement character (U+FFFD) if malformed, we'll simply decode to that, which won't trigger any UEP encoding behaviour.
-    let raw = proc.m(While, Pred(digit_pred), Discard);
+    let raw = proc.m(WhilePred(digit_pred), Discard);
     // Semicolon is required by spec but seems to be optional in actual browser behaviour.
-    proc.m(Is, Char(b';'), Discard);
+    proc.m(IsChar(b';'), Discard);
     // `&` or `&#` without any digits are simply treated literally in browsers.
     if raw.empty() {
         if has_leading_zeros {
@@ -100,7 +99,7 @@ fn parse_name(proc: &mut Processor) -> Option<EntityType> {
 // This will parse and skip characters.
 pub fn parse_entity(proc: &mut Processor) -> ProcessingResult<EntityType> {
     let checkpoint = Checkpoint::new(proc);
-    proc.m(Is, Char(b'&'), Discard).expect();
+    proc.m(IsChar(b'&'), Discard).expect();
 
     // The input can end at any time after initial ampersand.
     // Examples of valid complete source code: "&", "&a", "&#", "&#09",

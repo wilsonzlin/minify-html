@@ -3,7 +3,6 @@ use phf::{phf_set, Set};
 use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
-use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
@@ -94,12 +93,10 @@ impl MaybeClosingTag {
 
 // TODO Comment param `prev_sibling_closing_tag`.
 pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing_tag: MaybeClosingTag) -> ProcessingResult<MaybeClosingTag> {
-    // TODO Minify opening and closing tag whitespace after name and last attr.
-    // TODO DOC No checking if opening and closing names match.
     // Expect to be currently at an opening tag.
-    proc.m(Is, Char(b'<'), Discard).expect();
+    proc.m(IsChar(b'<'), Discard).expect();
     // May not be valid tag name at current position, so require instead of expect.
-    let source_tag_name = proc.m(While, Pred(is_valid_tag_name_char), Discard).require("tag name")?;
+    let source_tag_name = proc.m(WhilePred(is_valid_tag_name_char), Discard).require("tag name")?;
     if prev_sibling_closing_tag.exists_and(|prev_tag|
         CLOSING_TAG_OMISSION_RULES
             .get(&proc[prev_tag])
@@ -125,15 +122,15 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
 
     loop {
         // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).
-        proc.m(While, Pred(is_whitespace), Discard);
+        proc.m(WhilePred(is_whitespace), Discard);
 
-        if proc.m(Is, Char(b'>'), Keep).nonempty() {
+        if proc.m(IsChar(b'>'), Keep).nonempty() {
             // End of tag.
             break;
         }
 
         // Don't write self closing "/>" as it could be shortened to ">" if void tag.
-        self_closing = proc.m(Is, Seq(b"/>"), Discard).nonempty();
+        self_closing = proc.m(IsSeq(b"/>"), Discard).nonempty();
         if self_closing {
             break;
         }
@@ -208,13 +205,13 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
     };
 
     // Require closing tag for non-void.
-    proc.m(Is, Seq(b"</"), Discard).require("closing tag")?;
-    let closing_tag = proc.m(While, Pred(is_valid_tag_name_char), Discard).require("closing tag name")?;
+    proc.m(IsSeq(b"</"), Discard).require("closing tag")?;
+    let closing_tag = proc.m(WhilePred(is_valid_tag_name_char), Discard).require("closing tag name")?;
     // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.
     if !proc[closing_tag].eq(&proc[tag_name]) {
         return Err(ErrorType::ClosingTagMismatch);
     };
-    proc.m(While, Pred(is_whitespace), Discard);
-    proc.m(Is, Char(b'>'), Discard).require("closing tag end")?;
+    proc.m(WhilePred(is_whitespace), Discard);
+    proc.m(IsChar(b'>'), Discard).require("closing tag end")?;
     Ok(MaybeClosingTag(Some(tag_name)))
 }

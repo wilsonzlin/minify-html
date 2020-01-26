@@ -1,7 +1,7 @@
 use crate::proc::Processor;
 use crate::proc::uep::UnintentionalEntityState::*;
 use crate::spec::codepoint::{is_digit, is_hex_digit};
-use crate::unit::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
+use crate::unit::entity::{ENTITY_REFERENCES, is_entity_reference_name_char};
 
 macro_rules! uep_ignore {
     ($uep:ident, $proc:ident, $code:block) => {
@@ -29,11 +29,11 @@ enum UnintentionalEntityState {
     Ended,
     Safe,
     Ampersand,
-    Named,
+    Name,
     AmpersandHash,
     Dec,
     Hex,
-    AfterEncodedRightChevron,
+    EncodedRightChevron,
 }
 
 pub struct UnintentionalEntityPrevention {
@@ -60,12 +60,9 @@ impl UnintentionalEntityPrevention {
         }
     }
 
-    fn _handle_end_of_possible_entity(&mut self, proc: &mut Processor, end_inclusive: usize) -> usize {
+    fn _handle_entity(&mut self, proc: &mut Processor, end_inclusive: usize) -> usize {
         let should_encode_ampersand = match self.state {
-            Named => match ENTITY_REFERENCES.longest_matching_prefix(&proc.code[self.ampersand_pos + 1..=end_inclusive]) {
-                None => false,
-                Some(_) => true,
-            },
+            Name => ENTITY_REFERENCES.longest_matching_prefix(&proc.code[self.ampersand_pos + 1..=end_inclusive]).is_some(),
             Dec | Hex => true,
             _ => unreachable!(),
         };
@@ -86,59 +83,65 @@ impl UnintentionalEntityPrevention {
         let mut i = self.last_write_next;
         // Use manual loop as `i` and `proc.write_next` could change due to mid-array insertion.
         while i < proc.write_next {
-            let c = proc.code[i];
-            if c == b'>' && self.encode_right_chevrons {
-                if self.state == Named {
-                    i += self._handle_end_of_possible_entity(proc, i - 1);
-                };
-                self.state = AfterEncodedRightChevron;
-                // Use "&GT" instead of "&gt" as there are other entity names starting with "gt".
-                i += proc._replace(i, i + 1, b"&GT");
-            } else {
-                match (self.state, c) {
-                    // Problem: semicolon after encoded '>' will cause '&GT;', making it part of the entity.
-                    // Solution: insert another semicolon.
-                    (AfterEncodedRightChevron, b';') => {
-                        self.state = Safe;
-                        i += proc._insert(i, b";");
+            match proc.code[i] {
+                b'>' if self.encode_right_chevrons => {
+                    if self.state == Name {
+                        i += self._handle_entity(proc, i - 1);
+                    };
+                    self.state = EncodedRightChevron;
+                    // Use "&GT" instead of "&gt" as there are other entity names starting with "gt".
+                    i += proc._replace(i, i + 1, b"&GT");
+                }
+                // If ampersand, then regardless of state, this is the start of a new entity.
+                b'&' => {
+                    if self.state == Name {
+                        i += self._handle_entity(proc, i - 1);
+                    };
+                    self.state = Ampersand;
+                    self.ampersand_pos = i;
+                }
+                c => match self.state {
+                    Ampersand => match c {
+                        b'#' => self.state = AmpersandHash,
+                        c if is_entity_reference_name_char(c) => self.state = Name,
+                        _ => self.state = Safe,
                     }
-
-                    // If ampersand, then regardless of state, this is the start of a new entity.
-                    (s, b'&') => {
-                        if s == Named {
-                            i += self._handle_end_of_possible_entity(proc, i - 1);
-                        };
-                        self.state = Ampersand;
-                        self.ampersand_pos = i;
+                    AmpersandHash => match c {
+                        b'x' => self.state = Hex,
+                        c if is_digit(c) => {
+                            self.state = Dec;
+                            i += self._handle_entity(proc, i);
+                        }
+                        _ => self.state = Safe,
                     }
-
-                    (Ampersand, b'#') => self.state = AmpersandHash,
-                    (Ampersand, c) if is_valid_entity_reference_name_char(c) => self.state = Named,
-
-                    (AmpersandHash, b'x') => self.state = Hex,
-                    (AmpersandHash, c) if is_digit(c) => {
-                        self.state = Dec;
-                        i += self._handle_end_of_possible_entity(proc, i);
+                    EncodedRightChevron => match c {
+                        // Problem: semicolon after encoded '>' will cause '&GT;', making it part of the entity.
+                        // Solution: insert another semicolon.
+                        b';' => {
+                            self.state = Safe;
+                            i += proc._insert(i, b";");
+                        }
+                        _ => self.state = Safe,
                     }
-
-                    // TODO Maybe should limit count?
-                    // NOTE: Cannot try to match trie right now as we need to find longest match.
-                    (Named, c) if is_valid_entity_reference_name_char(c) => {}
-                    (Named, b';') => i += self._handle_end_of_possible_entity(proc, i),
-                    (Named, _) => i += self._handle_end_of_possible_entity(proc, i - 1),
-
-                    (Hex, c) if is_hex_digit(c) => i += self._handle_end_of_possible_entity(proc, i),
-
-                    (Safe, _) => {}
-                    (AfterEncodedRightChevron, _) | (Ampersand, _) | (AmpersandHash, _) | (Hex, _) => self.state = Safe,
-                    // Dec state is unreachable.
+                    Hex => match c {
+                        c if is_hex_digit(c) => i += self._handle_entity(proc, i),
+                        _ => self.state = Safe,
+                    }
+                    Name => match c {
+                        // TODO Maybe should limit count?
+                        // NOTE: Cannot try to match trie right now as we need to find longest match.
+                        c if is_entity_reference_name_char(c) => {}
+                        b';' => i += self._handle_entity(proc, i),
+                        _ => i += self._handle_entity(proc, i - 1),
+                    }
+                    Safe => {}
                     _ => unreachable!(),
-                };
+                }
             };
             i += 1;
         };
-        if is_end && self.state == Named {
-            self._handle_end_of_possible_entity(proc, proc.write_next - 1);
+        if is_end && self.state == Name {
+            self._handle_entity(proc, proc.write_next - 1);
         };
         self.last_write_next = proc.write_next;
     }

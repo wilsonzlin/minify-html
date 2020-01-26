@@ -7,7 +7,6 @@ use fastrie::Fastrie;
 use crate::err::{ErrorType, ProcessingResult};
 use crate::pattern::SinglePattern;
 use crate::proc::MatchAction::*;
-use crate::proc::MatchCond::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::is_whitespace;
@@ -17,21 +16,23 @@ pub mod range;
 #[macro_use]
 pub mod uep;
 
-pub enum MatchCond {
-    Is,
-    IsNot,
-    While,
-    WhileNot,
+pub enum MatchMode {
+    IsChar(u8),
+    IsNotChar(u8),
+    WhileChar(u8),
+    WhileNotChar(u8),
+
+    IsPred(fn(u8) -> bool),
+    IsNotPred(fn(u8) -> bool),
+    WhilePred(fn(u8) -> bool),
+    WhileNotPred(fn(u8) -> bool),
+
+    IsSeq(&'static [u8]),
+
+    WhileNotPat(&'static SinglePattern),
     // Through is like WhileNot followed by Is, but matches zero if Is is zero.
     // Useful for matching delimiter patterns. For example, matching Through "</script>" match everything up to and including the next "</script>", but would match zero if there is no "</script>".
-    Through,
-}
-
-pub enum MatchMode {
-    Char(u8),
-    Pred(fn(u8) -> bool),
-    Seq(&'static [u8]),
-    Pat(&'static SinglePattern),
+    ThroughPat(&'static SinglePattern),
 }
 
 pub enum MatchAction {
@@ -133,32 +134,23 @@ impl<'d> Processor<'d> {
     }
 
     // Make expectation explicit, even for Maybe.
-    pub fn m(&mut self, cond: MatchCond, mode: MatchMode, action: MatchAction) -> ProcessorRange {
-        let count = match (cond, mode) {
-            (Is, Char(c)) => self._one(|n| n == c),
-            (IsNot, Char(c)) => self._one(|n| n != c),
-            (While, Char(c)) => self._many(|n| n == c),
-            (WhileNot, Char(c)) => self._many(|n| n != c),
-            (Through, Char(c)) => self.code[self.read_next..].iter().position(|n| *n == c).map_or(0, |p| p + 1),
+    pub fn m(&mut self, mode: MatchMode, action: MatchAction) -> ProcessorRange {
+        let count = match mode {
+            IsChar(c) => self._one(|n| n == c),
+            IsNotChar(c) => self._one(|n| n != c),
+            WhileChar(c) => self._many(|n| n == c),
+            WhileNotChar(c) => self._many(|n| n != c),
 
-            (Is, Pred(p)) => self._one(|n| p(n)),
-            (IsNot, Pred(p)) => self._one(|n| !p(n)),
-            (While, Pred(p)) => self._many(|n| p(n)),
-            (WhileNot, Pred(p)) => self._many(|n| !p(n)),
-            (Through, Pred(p)) => self.code[self.read_next..].iter().position(|n| p(*n)).map_or(0, |p| p + 1),
+            IsPred(p) => self._one(|n| p(n)),
+            IsNotPred(p) => self._one(|n| !p(n)),
+            WhilePred(p) => self._many(|n| p(n)),
+            WhileNotPred(p) => self._many(|n| !p(n)),
 
             // Sequence matching is slow. If using in a loop, use Pat or Trie instead.
-            (Is, Seq(seq)) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src == seq).map_or(0, |_| seq.len()),
-            (IsNot, Seq(seq)) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src != seq).map_or(0, |_| seq.len()),
-            (While, Seq(_)) => unimplemented!(),
-            (WhileNot, Seq(_)) => unimplemented!(),
-            (Through, Seq(_)) => unimplemented!(),
+            IsSeq(seq) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src == seq).map_or(0, |_| seq.len()),
 
-            (Is, Pat(_)) => unimplemented!(),
-            (IsNot, Pat(_)) => unimplemented!(),
-            (While, Pat(_)) => unimplemented!(),
-            (WhileNot, Pat(pat)) => pat.match_against(&self.code[self.read_next..]).unwrap_or(self.code.len() - self.read_next),
-            (Through, Pat(pat)) => pat.match_against(&self.code[self.read_next..]).map_or(0, |p| p + pat.len()),
+            WhileNotPat(pat) => pat.match_against(&self.code[self.read_next..]).unwrap_or(self.code.len() - self.read_next),
+            ThroughPat(pat) => pat.match_against(&self.code[self.read_next..]).map_or(0, |p| p + pat.len()),
         };
         // If keeping, match will be available in written range (which is better as source might eventually get overwritten).
         // If discarding, then only option is source range.
