@@ -44,7 +44,7 @@ The settings used for each minifier can be found in [minifiers.js](./minifiers.j
 
 ## Running
 
-Make sure to install the dependencies listed in [package.json](./package.json) by running `npm i` or `yarn`. Node.js 10 is required, and system dependencies for building [canvas](https://www.npmjs.com/package/canvas), used for rendering graphs, might need to be installed. See the [npm package](https://www.npmjs.com/package/canvas) for more details.
+Make sure to install the dependencies listed in [package.json](./package.json) by running `npm i` or `yarn`. Node.js 10 is required, and system dependencies for building [canvas](https://www.npmjs.com/package/canvas), used for rendering graphs, may need to be installed. See the [npm package](https://www.npmjs.com/package/canvas) for more details.
 
 Run [build.sh](./build.sh) to build hyperbuild-nodejs with the local hyperbuild.
 
