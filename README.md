@@ -23,9 +23,9 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 ### CLI
 
-##### Get
+Precompiled binaries are available for x86-64 Windows, macOS, and Linux. To compile and install from source, run `cargo install hyperbuild`, which requires [Rust](https://www.rust-lang.org/tools/install).
 
-Supports x86-64 only.
+##### Get
 
 [Windows](https://wilsonl.in/hyperbuild/bin/0.0.39-windows-x86_64.exe) |
 [macOS](https://wilsonl.in/hyperbuild/bin/0.0.39-macos-x86_64) |

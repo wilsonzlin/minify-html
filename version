@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 "use strict";
 
 const {readFileSync, writeFileSync} = require('fs');
@@ -8,7 +9,7 @@ const currentVersion = /^version = "(\d+)\.(\d+)\.(\d+)"\s*$/m.exec(readFileSync
 
 const assertBetween = (n, min, max) => {
   if (n < min || n > max) {
-    throw new Error(`Invalid argument`);
+    throw new Error('Invalid argument');
   }
   return n;
 };
@@ -29,7 +30,7 @@ const cmd = (...cfg) => {
     throwOnSignal = true,
     captureStdio = false,
     throwOnStdErr = false,
-  } = typeof args[args.length - 1] == "object" ? args.pop() : {};
+  } = typeof args[args.length - 1] == 'object' ? args.pop() : {};
 
   const throwErr = msg => {
     throw new Error(`${msg}\n  ${command} ${args.join(' ')}`);
@@ -55,41 +56,41 @@ const cmd = (...cfg) => {
   return {status, signal, stdout, stderr};
 };
 
-const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFileSync(path, "utf8").replace(pattern, replacement));
+const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFileSync(path, 'utf8').replace(pattern, replacement));
 
 if (cmd('git', 'status', '--porcelain', {throwOnStderr: true, captureStdio: true}).stdout) {
-  throw new Error(`Working directory not clean`);
+  throw new Error('Working directory not clean');
 }
 
-for (const f of ["Cargo.toml", "nodejs/native/Cargo.toml", "java/Cargo.toml", "python/Cargo.toml", "ruby/Cargo.toml"]) {
+for (const f of ['Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.toml', 'ruby/Cargo.toml']) {
   replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
 }
 
-for (const f of ["python/setup.py"]) {
+for (const f of ['python/setup.py']) {
   replaceInFile(f, /^(\s*version=)"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
 }
 
-for (const f of ["README.md", "nodejs/native/Cargo.toml", "java/Cargo.toml", "python/Cargo.toml", "ruby/Cargo.toml"]) {
+for (const f of ['README.md', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.toml', 'ruby/Cargo.toml']) {
   replaceInFile(f, /^hyperbuild = "\d+\.\d+\.\d+"\s*$/m, `hyperbuild = "${NEW_VERSION}"`);
 }
 
-for (const f of ["nodejs/package.json"]) {
+for (const f of ['nodejs/package.json']) {
   replaceInFile(f, /^(\s*"version": )"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
 }
 
-for (const f of ["ruby/hyperbuild.gemspec"]) {
+for (const f of ['ruby/hyperbuild.gemspec']) {
   replaceInFile(f, /^(\s*spec\.version\s*=\s*)"\d+\.\d+\.\d+"\s*$/m, `$1"${NEW_VERSION}"`);
 }
 
-for (const f of ["java/pom.xml", "README.md"]) {
+for (const f of ['java/pom.xml', 'README.md']) {
   replaceInFile(f, /(<artifactId>hyperbuild<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/, `$1${NEW_VERSION}$2`);
 }
 
-for (const f of ["README.md"]) {
+for (const f of ['README.md']) {
   replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bin\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
 }
 
-for (const f of ["README.md", "bench/README.md"]) {
+for (const f of ['README.md', 'bench/README.md']) {
   replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bench\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
 }
 
