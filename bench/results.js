@@ -1,7 +1,8 @@
+const minifiers = require('./minifiers');
+const mkdirp = require('mkdirp');
+const tests = require('./tests');
 const {join} = require('path');
 const {readFileSync, writeFileSync} = require('fs');
-const minifiers = require('./minifiers');
-const tests = require('./tests');
 
 const RESULTS_DIR = join(__dirname, 'results');
 const SPEEDS_JSON = join(RESULTS_DIR, 'speeds.json');
@@ -13,6 +14,8 @@ const AVERAGE_SIZES_GRAPH = join(RESULTS_DIR, 'average-sizes.png');
 
 const minifierNames = Object.keys(minifiers);
 const testNames = tests.map(t => t.name);
+
+mkdirp.sync(RESULTS_DIR);
 
 module.exports = {
   writeSpeedResults(speeds) {

@@ -2,7 +2,7 @@
 
 This folder contains scripts used to test the performance and effectiveness of hyperbuild, for guided optimisation and/or comparisons.
 
-It also contains a set of common web pages as tests and the benchmarking results of running various HTML minifiers on them. Tests and results are committed to the repository for historical tracking and reproducibility.
+It also contains a set of common web pages as tests for benchmarking.
 
 ## Comparison
 
@@ -33,7 +33,7 @@ For more information on how the tests are fetched, see [fetch.js](./fetch.js).
 
 The results are available in the [results](./results) folder. On this [project's README](../README.md), average graphs are shown. Graphs showing per-test results are shown below:
 
-<img width="435" alt="Chart showing speed of HTML minifiers per test" src="./results/speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers per test" src="./results/sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers per test" src="https://wilsonl.in/hyperbuild/bench/0.0.36/speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers per test" src="https://wilsonl.in/hyperbuild/bench/0.0.36/sizes.png">
 
 Since speed depends on the input, speed charts show performance relative to hyperbuild-nodejs as a percentage.
 

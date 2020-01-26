@@ -89,6 +89,10 @@ for (const f of ["README.md"]) {
   replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bin\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
 }
 
+for (const f of ["README.md", "bench/README.md"]) {
+  replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bench\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
+}
+
 cmd('cargo', 'generate-lockfile');
 cmd('git', 'add', '-A');
 cmd('git', 'commit', '-m', NEW_VERSION);

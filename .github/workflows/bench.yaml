@@ -1,0 +1,48 @@
+name: Run benchmark and upload results
+
+on:
+  create:
+    tags:
+      - 'v*'
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+      - name: Set up Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: 10.x
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+      - name: Set up Node.js module
+        working-directory: ./nodejs
+        run: npm install
+      - name: Build bench
+        working-directory: ./bench
+        run: |
+          sudo apt install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+          npm install
+          bash build.sh
+      - name: Run bench and graph results
+        working-directory: ./bench
+        run: |
+          node run.js
+          node bench.js
+          node graph.js
+      - uses: chrislennon/action-aws-cli@v1.1
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-west-2
+        run: aws s3 cp ./bench/results/ s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bench/${{ steps.version.outputs.VERSION }}/ --recursive
