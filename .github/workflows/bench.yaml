@@ -32,10 +32,10 @@ jobs:
         run: |
           sudo apt install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
           npm install
-          bash build.sh
+          ./build.sh
       - name: Run bench and graph results
         working-directory: ./bench
-        run: bash bench.sh
+        run: ./bench.sh
       - uses: chrislennon/action-aws-cli@v1.1
       - name: Upload to S3
         env:
