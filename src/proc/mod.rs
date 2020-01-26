@@ -39,8 +39,7 @@ pub enum MatchAction {
     MatchOnly,
 }
 
-// Processing state of a file. Most fields are used internally and set during
-// processing. Single use only; create one per processing.
+// Processing state of a file. Single use only; create one per processing.
 pub struct Processor<'d> {
     code: &'d mut [u8],
     // Index of the next character to read.
@@ -89,14 +88,9 @@ impl<'d> Processor<'d> {
     }
 
     fn _maybe_read_slice_offset(&self, offset: usize, count: usize) -> Option<&[u8]> {
-        if self._in_bounds(offset + count - 1) {
-            Some(&self.code[self.read_next + offset..self.read_next + offset + count])
-        } else {
-            None
-        }
+        self.code.get(self.read_next + offset..self.read_next + offset + count)
     }
 
-    // Shifting.
     /// Move next `amount` characters to output.
     /// Panics. Does not check bounds for performance (e.g. already checked).
     fn _shift(&mut self, amount: usize) -> () {
@@ -128,6 +122,7 @@ impl<'d> Processor<'d> {
     fn _one<C: FnOnce(u8) -> bool>(&mut self, cond: C) -> usize {
         self._maybe_read_offset(0).filter(|n| cond(*n)).is_some() as usize
     }
+
     fn _many<C: Fn(u8) -> bool>(&mut self, cond: C) -> usize {
         let mut count = 0usize;
         while self._maybe_read_offset(count).filter(|c| cond(*c)).is_some() {
