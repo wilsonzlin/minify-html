@@ -3,7 +3,27 @@ use crate::proc::uep::UnintentionalEntityState::*;
 use crate::spec::codepoint::{is_digit, is_hex_digit};
 use crate::unit::entity::{ENTITY_REFERENCES, is_valid_entity_reference_name_char};
 
-#[derive(Eq, PartialEq)]
+macro_rules! uep_ignore {
+    ($uep:ident, $proc:ident, $code:block) => {
+        {
+            $uep.suspend($proc);
+            $code;
+            $uep.resume($proc);
+        }
+    };
+}
+
+macro_rules! uep_process {
+    ($uep:ident, $proc:ident, $code:block) => {
+        {
+            $uep.expect_active();
+            $code;
+            $uep.update($proc);
+        }
+    };
+}
+
+#[derive(Eq, PartialEq, Copy, Clone)]
 enum UnintentionalEntityState {
     Suspended,
     Ended,
@@ -42,22 +62,16 @@ impl UnintentionalEntityPrevention {
 
     fn _handle_end_of_possible_entity(&mut self, proc: &mut Processor, end_inclusive: usize) -> usize {
         let should_encode_ampersand = match self.state {
-            Safe => unreachable!(),
-            Ampersand => unreachable!(),
-            Named => {
-                match ENTITY_REFERENCES.longest_matching_prefix(&proc.code[self.ampersand_pos + 1..=end_inclusive]) {
-                    None => false,
-                    Some(_) => true,
-                }
-            }
-            AmpersandHash => unreachable!(),
-            Dec | Hex => {
-                true
-            }
+            Named => match ENTITY_REFERENCES.longest_matching_prefix(&proc.code[self.ampersand_pos + 1..=end_inclusive]) {
+                None => false,
+                Some(_) => true,
+            },
+            Dec | Hex => true,
             _ => unreachable!(),
         };
         self.state = Safe;
-        end_inclusive + if should_encode_ampersand {
+        // Return added count rather than new absolute index as `end_inclusive` might not be `i` in `_after_write`.
+        if should_encode_ampersand {
             // Insert encoded ampersand.
             proc._insert(self.ampersand_pos + 1, b"amp")
         } else {
@@ -66,46 +80,59 @@ impl UnintentionalEntityPrevention {
     }
 
     fn _after_write(&mut self, proc: &mut Processor, is_end: bool) -> () {
+        debug_assert!(self.state != Suspended);
+        debug_assert!(self.state != Ended);
+        debug_assert!(self.last_write_next <= proc.write_next);
         let mut i = self.last_write_next;
-        // Use manual loop as `i` and `proc.write_next` could change due to mid-array insertion of entities.
-        debug_assert!(i <= proc.write_next);
+        // Use manual loop as `i` and `proc.write_next` could change due to mid-array insertion.
         while i < proc.write_next {
             let c = proc.code[i];
             if c == b'>' && self.encode_right_chevrons {
-                match self.state {
-                    Dec | Named | Hex => { self._handle_end_of_possible_entity(proc, i - 1); }
-                    _ => {}
+                if self.state == Named {
+                    i += self._handle_end_of_possible_entity(proc, i - 1);
                 };
                 self.state = AfterEncodedRightChevron;
                 // Use "&GT" instead of "&gt" as there are other entity names starting with "gt".
                 i += proc._replace(i, i + 1, b"&GT");
             } else {
-                match (&self.state, c) {
+                match (self.state, c) {
+                    // Problem: semicolon after encoded '>' will cause '&GT;', making it part of the entity.
+                    // Solution: insert another semicolon.
                     (AfterEncodedRightChevron, b';') => {
-                        // Problem: semicolon after encoded '>' will cause '&GT;', making it part of the entity.
-                        // Solution: insert another semicolon.
                         self.state = Safe;
                         i += proc._insert(i, b";");
                     }
-                    (AfterEncodedRightChevron, b'&') | (Safe, b'&') => {
+
+                    // If ampersand, then regardless of state, this is the start of a new entity.
+                    (s, b'&') => {
+                        if s == Named {
+                            i += self._handle_end_of_possible_entity(proc, i - 1);
+                        };
                         self.state = Ampersand;
                         self.ampersand_pos = i;
                     }
-                    (Safe, _) => {}
+
                     (Ampersand, b'#') => self.state = AmpersandHash,
                     (Ampersand, c) if is_valid_entity_reference_name_char(c) => self.state = Named,
+
                     (AmpersandHash, b'x') => self.state = Hex,
                     (AmpersandHash, c) if is_digit(c) => {
                         self.state = Dec;
-                        i = self._handle_end_of_possible_entity(proc, i);
+                        i += self._handle_end_of_possible_entity(proc, i);
                     }
+
                     // TODO Maybe should limit count?
-                    // NOTE: Cannot try to match trie right now as characters are consumed as we need to find longest match.
+                    // NOTE: Cannot try to match trie right now as we need to find longest match.
                     (Named, c) if is_valid_entity_reference_name_char(c) => {}
-                    (Named, b';') | (Named, _) => i = self._handle_end_of_possible_entity(proc, i),
-                    (Hex, c) if is_hex_digit(c) => i = self._handle_end_of_possible_entity(proc, i),
+                    (Named, b';') => i += self._handle_end_of_possible_entity(proc, i),
+                    (Named, _) => i += self._handle_end_of_possible_entity(proc, i - 1),
+
+                    (Hex, c) if is_hex_digit(c) => i += self._handle_end_of_possible_entity(proc, i),
+
+                    (Safe, _) => {}
                     (AfterEncodedRightChevron, _) | (Ampersand, _) | (AmpersandHash, _) | (Hex, _) => self.state = Safe,
-                    (Dec, _) | _ => unreachable!(),
+                    // Dec state is unreachable.
+                    _ => unreachable!(),
                 };
             };
             i += 1;

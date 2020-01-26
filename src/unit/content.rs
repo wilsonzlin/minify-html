@@ -103,7 +103,9 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                     // `trim` is on, so don't write it.
                 } else if collapse {
                     // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node; space will be new previous sibling node (as a text node).
-                    prev_sibling_closing_tag.write_if_exists(proc);
+                    uep_ignore!(uep, proc, {
+                        prev_sibling_closing_tag.write_if_exists(proc);
+                    });
                     // Current contiguous whitespace needs to be reduced to a single space character.
                     proc.write(b' ');
                     last_written = ContentType::Text;
@@ -119,11 +121,11 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
         // Process and consume next character(s).
         match next_content_type {
             ContentType::Tag => {
-                uep.suspend(proc);
-                let new_closing_tag = process_tag(proc, ns, prev_sibling_closing_tag)?;
-                prev_sibling_closing_tag.replace(new_closing_tag);
-                // Always resume as closing tag might not exist or be omitted.
-                uep.resume(proc);
+                // Always resume UEP as closing tag might not exist or be omitted.
+                uep_ignore!(uep, proc, {
+                    let new_closing_tag = process_tag(proc, ns, prev_sibling_closing_tag)?;
+                    prev_sibling_closing_tag.replace(new_closing_tag);
+                });
             }
             ContentType::End => {
                 uep.end(proc);
@@ -141,29 +143,25 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                 // Immediate next sibling node is not an element, so write any immediate previous sibling element's closing tag.
                 // UEP is resumed after processing a tag and setting `prev_sibling_closing_tag` (see ContentType::Tag arm), so suspend it before writing any closing tag (even though nothing should've been written since tag was processed and `prev_sibling_closing_tag` was set).
                 if prev_sibling_closing_tag.exists() {
-                    uep.suspend(proc);
-                    prev_sibling_closing_tag.write(proc);
-                    uep.resume(proc);
+                    uep_ignore!(uep, proc, {
+                        prev_sibling_closing_tag.write(proc);
+                    });
                 };
                 match content_type {
-                    ContentType::Bang | ContentType::Instruction => {
-                        uep.suspend(proc);
+                    ContentType::Bang | ContentType::Instruction => uep_ignore!(uep, proc, {
                         match content_type {
                             ContentType::Bang => { process_bang(proc)?; }
                             ContentType::Instruction => { process_instruction(proc)?; }
                             _ => unreachable!(),
                         };
-                        uep.resume(proc);
-                    }
-                    ContentType::Entity | ContentType::Text => {
-                        uep.expect_active();
+                    }),
+                    ContentType::Entity | ContentType::Text => uep_process!(uep, proc, {
                         match entity {
                             Some(entity) => { entity.keep(proc); }
                             // Is text.
                             None => { proc.accept()?; }
                         };
-                        uep.update(proc);
-                    }
+                    }),
                     _ => unreachable!(),
                 };
             }

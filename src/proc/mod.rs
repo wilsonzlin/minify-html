@@ -14,6 +14,7 @@ use crate::spec::codepoint::is_whitespace;
 
 pub mod checkpoint;
 pub mod range;
+#[macro_use]
 pub mod uep;
 
 pub enum MatchCond {
@@ -103,7 +104,7 @@ impl<'d> Processor<'d> {
     }
 
     fn _replace(&mut self, start: usize, end: usize, data: &[u8]) -> usize {
-        debug_assert!(end <= self.read_next);
+        debug_assert!(start <= end);
         let added = data.len() - (end - start);
         // Do not allow writing over source.
         debug_assert!(self.write_next + added <= self.read_next);
@@ -260,8 +261,7 @@ impl<'d> Processor<'d> {
 
     pub fn write_utf8(&mut self, c: char) -> () {
         let mut encoded = [0u8; 4];
-        c.encode_utf8(&mut encoded);
-        self.write_slice(&encoded);
+        self.write_slice(c.encode_utf8(&mut encoded).as_bytes());
     }
 
     // Shifting characters.
