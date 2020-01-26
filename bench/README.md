@@ -48,11 +48,11 @@ Make sure to install the dependencies listed in [package.json](./package.json) b
 
 Run [build.sh](./build.sh) to build hyperbuild-nodejs with the local hyperbuild.
 
-Run [run.js](./run.js) to run each HTML minifier against each test and record the minified size results. This will also output the minified files in [min](./min) if inspection of minified outputs is necessary. [compare.sh](./compare.sh) is a useful script for viewing a character-by-character diff between the minified outputs of hyperbuild and html-minifier for a specific test. Pass the test's file name as the first argument.
+Run [run.js](./run.js) to run each HTML minifier against each test and record the minified size results. This will also output the minified files in `min` if inspection of minified outputs is necessary. [compare.sh](./compare.sh) is a useful script for viewing a character-by-character diff between the minified outputs of hyperbuild and html-minifier for a specific test. Pass the test's file name as the first argument.
 
 Run [bench.js](./bench.js) to benchmark the performance of each HTML minifier against each test and record the op/s results.
 
-Run [graph.js](./graph.js) to render graphs from recorded speed and size results in the [results](./results) folder.
+Run [graph.js](./graph.js) to render graphs from recorded speed and size results in the `results` folder.
 
 ## hyperbuild-bench
 

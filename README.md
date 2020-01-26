@@ -25,6 +25,8 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 ##### Get
 
+Supports x86-64 only.
+
 [Windows](https://wilsonl.in/hyperbuild/bin/0.0.39-windows-x86_64.exe) |
 [macOS](https://wilsonl.in/hyperbuild/bin/0.0.39-macos-x86_64) |
 [Linux](https://wilsonl.in/hyperbuild/bin/0.0.39-linux-x86_64)
