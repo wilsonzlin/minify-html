@@ -31,7 +31,7 @@ The [Node.js version of hyperbuild](../nodejs) is tested against [html-minfier](
 
 For more information on how the tests are fetched, see [fetch.js](./fetch.js).
 
-The results are available in the [results](./results) folder. On this [project's README](../README.md), average graphs are shown. Graphs showing per-test results are shown below:
+On this [project's README](../README.md), average graphs are shown. Graphs showing per-test results are shown below:
 
 <img width="435" alt="Chart showing speed of HTML minifiers per test" src="https://wilsonl.in/hyperbuild/bench/0.0.39/speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers per test" src="https://wilsonl.in/hyperbuild/bench/0.0.39/sizes.png">
 
@@ -48,9 +48,9 @@ Make sure to install the dependencies listed in [package.json](./package.json) b
 
 Run [build.sh](./build.sh) to build hyperbuild-nodejs with the local hyperbuild.
 
-Run [run.js](./run.js) to run each HTML minifier against each test and record the minified size results. This will also output the minified files in `min` if inspection of minified outputs is necessary. [compare.sh](./compare.sh) is a useful script for viewing a character-by-character diff between the minified outputs of hyperbuild and html-minifier for a specific test. Pass the test's file name as the first argument.
+Run [sizes.js](sizes.js) to run each HTML minifier against each test and record the minified size results. This will also output the minified files in `min` if inspection of minified outputs is necessary. [compare.sh](./compare.sh) is a useful script for viewing a character-by-character diff between the minified outputs of hyperbuild and html-minifier for a specific test. Pass the test's file name as the first argument.
 
-Run [bench.js](./bench.js) to benchmark the performance of each HTML minifier against each test and record the op/s results.
+Run [speeds.js](./speeds.js) to benchmark the performance of each HTML minifier against each test and record the op/s results.
 
 Run [graph.js](./graph.js) to render graphs from recorded speed and size results in the `results` folder.
 
@@ -67,9 +67,4 @@ It takes two arguments:
 
 The results will be written to stdout as a JSON object, where properties are the test file names and values are the operations per second.
 
-Profiling hyperbuild can be done on Linux by using `perf`, for example:
-
-```bash
-perf record -g hyperbuild-bench/target/release/hyperbuild-bench --tests tests --iterations 1000
-perf report
-```
+Profiling hyperbuild can be done on Linux by using [profile.sh](./profile.sh), which uses `perf`. The generated report can be used using `perf report`.

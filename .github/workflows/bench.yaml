@@ -35,10 +35,7 @@ jobs:
           bash build.sh
       - name: Run bench and graph results
         working-directory: ./bench
-        run: |
-          node run.js
-          node bench.js
-          node graph.js
+        run: bash bench.sh
       - uses: chrislennon/action-aws-cli@v1.1
       - name: Upload to S3
         env:
