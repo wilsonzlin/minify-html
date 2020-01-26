@@ -16,7 +16,8 @@ if [ -f native/Cargo.toml.orig ]; then
   echo 'Not altering Node.js Cargo.toml file'
 else
   cp native/Cargo.toml native/Cargo.toml.orig
-  sed -i '' 's%^hyperbuild = .*$%hyperbuild = { path = "../.." }%' native/Cargo.toml
+  # Don't use -i as macOS requires '' argument but then Ubuntu will treat as pattern.
+  sed 's%^hyperbuild = .*$%hyperbuild = { path = "../.." }%' native/Cargo.toml.orig > native/Cargo.toml
 fi
 npx neon build --release
 mv native/Cargo.toml.orig native/Cargo.toml

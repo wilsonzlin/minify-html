@@ -39,7 +39,8 @@ if [ -f Cargo.toml.orig ]; then
   echo 'Not altering Java Cargo.toml file'
 else
   cp Cargo.toml Cargo.toml.orig
-  sed -i 's%^hyperbuild = .*$%hyperbuild = { path = ".." }%' Cargo.toml
+  # Don't use -i as macOS requires '' argument but then Ubuntu will treat as pattern.
+  sed 's%^hyperbuild = .*$%hyperbuild = { path = ".." }%' Cargo.toml.orig > Cargo.toml
 fi
 cargo build $rust_build_arg
 mv Cargo.toml.orig Cargo.toml
