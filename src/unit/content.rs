@@ -62,7 +62,6 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
     let mut last_written = ContentType::Start;
     // Whether or not currently in whitespace.
     let mut ws_skipped = false;
-    // TODO Comment: Do not always initialise `uep` as `prev_sibling_closing_tag` might get written.
     let mut prev_sibling_closing_tag = MaybeClosingTag::none();
     // TODO Comment.
     let uep = &mut UnintentionalEntityPrevention::new(proc, true);

@@ -2,7 +2,6 @@ use crate::err::ProcessingResult;
 use crate::ErrorType;
 use crate::proc::Processor;
 
-// TODO DOC
 #[derive(Copy, Clone)]
 pub struct ProcessorRange {
     pub(super) start: usize,
