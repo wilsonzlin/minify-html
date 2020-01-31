@@ -23,7 +23,9 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 ### CLI
 
-Precompiled binaries are available for x86-64 Windows, macOS, and Linux. To compile and install from source, run `cargo install hyperbuild`, which requires [Rust](https://www.rust-lang.org/tools/install).
+Precompiled binaries are available for x86-64 Windows, macOS, and Linux.
+
+To compile and install from source, run `cargo install hyperbuild`, which requires [Rust](https://www.rust-lang.org/tools/install).
 
 ##### Get
 
@@ -88,6 +90,14 @@ yarn add hyperbuild
 
 ```js
 const hyperbuild = require("hyperbuild");
+
+const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
+```
+
+hyperbuild is also available for TypeScript:
+
+```ts
+import * as hyperbuild from "hyperbuild";
 
 const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
 ```
@@ -383,10 +393,10 @@ Spaces are removed between attributes if possible.
 Entities are decoded if valid (see relevant parsing section) and their decoded characters as UTF-8 is shorter or equal in length.
 
 Numeric entities that do not refer to a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are replaced with the [replacement character](https://en.wikipedia.org/wiki/Specials_(Unicode_block)#Replacement_character).
- 
+
 If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity representations of characters part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
 
-Right chevrons after any decoding in text are encoded to `&GT` if possible or `&GT;` otherwise. 
+Right chevrons after any decoding in text are encoded to `&GT` if possible or `&GT;` otherwise.
 
 ### Comments
 
