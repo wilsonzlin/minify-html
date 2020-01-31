@@ -21,7 +21,7 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: 1.39.0
           profile: minimal
           default: true
       - name: Set up Node.js module
