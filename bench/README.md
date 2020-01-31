@@ -33,7 +33,7 @@ For more information on how the tests are fetched, see [fetch.js](./fetch.js).
 
 On this [project's README](../README.md), average graphs are shown. Graphs showing per-test results are shown below:
 
-<img width="435" alt="Chart showing speed of HTML minifiers per test" src="https://wilsonl.in/hyperbuild/bench/0.0.42/speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers per test" src="https://wilsonl.in/hyperbuild/bench/0.0.42/sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers per test" src="https://wilsonl.in/hyperbuild/bench/0.0.43/speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers per test" src="https://wilsonl.in/hyperbuild/bench/0.0.43/sizes.png">
 
 Since speed depends on the input, speed charts show performance relative to hyperbuild-nodejs as a percentage.
 

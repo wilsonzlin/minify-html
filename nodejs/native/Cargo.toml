@@ -1,7 +1,7 @@
 [package]
 name = "hyperbuild-nodejs"
 publish = false
-version = "0.0.42"
+version = "0.0.43"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 license = "MIT"
 build = "build.rs"
@@ -16,5 +16,5 @@ crate-type = ["cdylib"]
 neon-build = "0.3.3"
 
 [dependencies]
-hyperbuild = "0.0.42"
+hyperbuild = "0.0.43"
 neon = "0.3.3"
