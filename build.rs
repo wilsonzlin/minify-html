@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use std::env;
 use std::fs::File;
 use std::io::Write;
+use std::ops::{Index, IndexMut};
 use std::path::Path;
 
-use fastrie::{FastrieBuild, FastrieBuilderNode};
 use serde::{Deserialize, Serialize};
 
 fn create_byte_string_literal(bytes: &[u8]) -> String {
@@ -47,44 +47,61 @@ fn camel_case(n: &Vec<String>) -> String {
     )).collect::<Vec<String>>().join("")
 }
 
+pub struct TwoDimensionalArray {
+    data: Vec<usize>,
+    cols: usize,
+}
+
+impl TwoDimensionalArray {
+    pub fn new(rows: usize, cols: usize) -> TwoDimensionalArray {
+        TwoDimensionalArray {
+            data: vec![0usize; rows * cols],
+            cols,
+        }
+    }
+
+    pub fn prebuilt(data: Vec<usize>, cols: usize) -> TwoDimensionalArray {
+        TwoDimensionalArray { data, cols }
+    }
+}
+
+type TwoDimensionalArrayIndex = (usize, usize);
+
+impl Index<TwoDimensionalArrayIndex> for TwoDimensionalArray {
+    type Output = usize;
+
+    fn index(&self, (row, col): TwoDimensionalArrayIndex) -> &Self::Output {
+        &self.data[row * self.cols + col]
+    }
+}
+
+impl IndexMut<TwoDimensionalArrayIndex> for TwoDimensionalArray {
+    fn index_mut(&mut self, (row, col): TwoDimensionalArrayIndex) -> &mut Self::Output {
+        &mut self.data[row * self.cols + col]
+    }
+}
+
 fn build_pattern(pattern: String) -> String {
     assert!(pattern.is_ascii());
     let seq = pattern.as_bytes();
-    let mut max_prefix_len = 0usize;
-    let mut table = vec![0usize; seq.len()];
+    let dfa = &mut TwoDimensionalArray::new(256, seq.len());
 
-    let mut i = 1;
-    while i < seq.len() {
-        if seq[i] == seq[max_prefix_len] {
-            max_prefix_len += 1;
-            table[i] = max_prefix_len;
-            i += 1;
-        } else {
-            if max_prefix_len != 0 {
-                max_prefix_len = table[max_prefix_len - 1];
-            } else {
-                table[i] = 0;
-                i += 1;
-            };
+    dfa[(seq[0] as usize, 0)] = 1;
+    let mut x = 0;
+    let mut j = 1;
+    while j < seq.len() {
+        for c in 0..256 {
+            dfa[(c, j)] = dfa[(c, x)];
         };
+        dfa[(seq[j] as usize, j)] = j + 1;
+        x = dfa[(seq[j] as usize, x)];
+        j += 1;
     };
 
-    format!("crate::pattern::SinglePattern {{ seq: {}, table: &[{}] }}",
-        create_byte_string_literal(pattern.as_bytes()),
-        table.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "))
-}
-
-fn generate_fastrie_code(var_name: &str, value_type: &str, built: &FastrieBuild<String>) -> String {
-    format!(r"
-        pub static {var_name}: &fastrie::Fastrie<{value_type}> = &fastrie::Fastrie::<{value_type}>::from_prebuilt(
-            &[{values}],
-            &[{data}],
-        );
-    ",
-        var_name = var_name,
-        value_type = value_type,
-        values = built.values.join(", "),
-        data = built.data.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "),
+    format!(
+        "crate::pattern::SinglePattern::prebuilt(&[{}], {})",
+        dfa.data.iter().map(|v| v.to_string()).collect::<Vec<String>>().join(", "),
+        seq.len(),
     )
 }
 
@@ -173,12 +190,90 @@ struct Entity {
     characters: String,
 }
 
+pub struct TrieBuilderNode {
+    value: Option<String>,
+    children: Vec<Option<TrieBuilderNode>>,
+}
+
+struct TrieBuilderGenerationContext<'t, 'v, 'o> {
+    trie_name: &'t str,
+    value_type: &'v str,
+    next_id: usize,
+    out: &'o mut String,
+}
+
+impl<'t, 'v, 'o> TrieBuilderGenerationContext<'t, 'v, 'o> {
+    pub fn id(&mut self) -> usize {
+        let next = self.next_id;
+        self.next_id += 1;
+        next
+    }
+}
+
+impl TrieBuilderNode {
+    pub fn new() -> TrieBuilderNode {
+        let mut children = Vec::new();
+        for _ in 0..256 {
+            children.push(None);
+        };
+        TrieBuilderNode { value: None, children }
+    }
+
+    pub fn add(&mut self, seq: &[u8], value: String) -> () {
+        let mut current = self;
+        for c in seq.iter() {
+            current = current.children[*c as usize].get_or_insert_with(|| TrieBuilderNode::new());
+        };
+        current.value.replace(value);
+    }
+
+    fn _generated_node_var_name(&self, trie_name: &str, node_id: usize) -> String {
+        format!("{trie_name}_NODE_{node_id}", trie_name = trie_name, node_id = node_id)
+    }
+
+    fn _generate(&self, ctx: &mut TrieBuilderGenerationContext) -> usize {
+        let children = self.children.iter().map(|c| match c {
+            None => "None".to_string(),
+            Some(c) => {
+                let child_id = c._generate(ctx);
+                format!("Some({})", self._generated_node_var_name(ctx.trie_name, child_id))
+            }
+        }).collect::<Vec<String>>().join(", ");
+        let id = ctx.id();
+        let code = format!(
+            "static {var_name}: &'static crate::pattern::TrieNode<{value_type}> = &crate::pattern::TrieNode {{\n\tvalue: {value},\n\tchildren: [{children}],\n}};\n\n",
+            var_name = self._generated_node_var_name(ctx.trie_name, id),
+            value_type = ctx.value_type,
+            value = self.value.as_ref().map_or("None".to_string(), |v| format!("Some({})", v)),
+            children = children,
+        );
+        ctx.out.push_str(code.as_str());
+        id
+    }
+
+    pub fn generate(&self, trie_name: &str, value_type: &str) -> String {
+        let mut out = String::new();
+        let mut ctx = TrieBuilderGenerationContext {
+            trie_name,
+            value_type,
+            next_id: 0,
+            out: &mut out,
+        };
+        let root_id = self._generate(&mut ctx);
+        // Make root node public and use proper name.
+        ctx.out.replace(
+            format!("static {}", self._generated_node_var_name(trie_name, root_id)).as_str(),
+            format!("pub static {}", trie_name).as_str()
+        )
+    }
+}
+
 fn generate_entities() {
     // Read named entities map from JSON file.
     let entities: HashMap<String, Entity> = read_json("entities");
 
     // Add entities to trie builder.
-    let mut trie_builder: FastrieBuilderNode<String> = FastrieBuilderNode::new();
+    let mut trie_builder: TrieBuilderNode = TrieBuilderNode::new();
     for (rep, entity) in entities {
         let val = if rep.as_bytes().len() < entity.characters.as_bytes().len() {
             // Since we're minifying in place, we need to guarantee we'll never write something longer than source.
@@ -191,10 +286,9 @@ fn generate_entities() {
         trie_builder.add(&(rep.as_bytes())[1..], val);
     };
     // Write trie code to output Rust file.
-    write_rs("entities", generate_fastrie_code(
+    write_rs("entities", trie_builder.generate(
         "ENTITY_REFERENCES",
         "&'static [u8]",
-        &trie_builder.prebuild(),
     ));
 }
 
@@ -208,33 +302,8 @@ fn generate_patterns() {
     };
 }
 
-#[derive(Serialize, Deserialize)]
-struct Trie {
-    value_type: String,
-    values: HashMap<String, String>,
-}
-
-fn generate_tries() {
-    let tries: HashMap<String, Trie> = read_json("value_tries");
-
-    for (name, trie) in tries {
-        let mut trie_builder = FastrieBuilderNode::new();
-        for (seq, value_code) in trie.values {
-            trie_builder.add(seq.as_bytes(), value_code);
-        };
-        let var_name = snake_case(&name_words(name.as_str()));
-        let trie_code = generate_fastrie_code(
-            var_name.as_str(),
-            trie.value_type.as_str(),
-            &trie_builder.prebuild(),
-        );
-        write_rs(format!("trie_{}", var_name).as_str(), trie_code);
-    };
-}
-
 fn main() {
     generate_attr_map();
     generate_entities();
     generate_patterns();
-    generate_tries();
 }

@@ -2,10 +2,8 @@ use core::fmt;
 use std::fmt::{Debug, Formatter};
 use std::ops::{Index, IndexMut};
 
-use fastrie::Fastrie;
-
 use crate::err::{ErrorType, ProcessingResult};
-use crate::pattern::SinglePattern;
+use crate::pattern::{SinglePattern, TrieNode};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
@@ -95,6 +93,7 @@ impl<'d> Processor<'d> {
 
     /// Move next `amount` characters to output.
     /// Panics. Does not check bounds for performance (e.g. already checked).
+    #[inline(always)]
     fn _shift(&mut self, amount: usize) -> () {
         // Optimisation: Don't shift if already there (but still update offsets).
         if self.read_next != self.write_next {
@@ -104,6 +103,7 @@ impl<'d> Processor<'d> {
         self.write_next += amount;
     }
 
+    #[inline(always)]
     fn _replace(&mut self, start: usize, end: usize, data: &[u8]) -> usize {
         debug_assert!(start <= end);
         let added = data.len() - (end - start);
@@ -116,15 +116,18 @@ impl<'d> Processor<'d> {
         added
     }
 
+    #[inline(always)]
     fn _insert(&mut self, at: usize, data: &[u8]) -> usize {
         self._replace(at, at, data)
     }
 
     // Matching.
+    #[inline(always)]
     fn _one<C: FnOnce(u8) -> bool>(&mut self, cond: C) -> usize {
         self._maybe_read_offset(0).filter(|n| cond(*n)).is_some() as usize
     }
 
+    #[inline(always)]
     fn _many<C: Fn(u8) -> bool>(&mut self, cond: C) -> usize {
         let mut count = 0usize;
         while self._maybe_read_offset(count).filter(|c| cond(*c)).is_some() {
@@ -133,7 +136,7 @@ impl<'d> Processor<'d> {
         count
     }
 
-    // Make expectation explicit, even for Maybe.
+    #[inline(always)]
     pub fn m(&mut self, mode: MatchMode, action: MatchAction) -> ProcessorRange {
         let count = match mode {
             IsChar(c) => self._one(|n| n == c),
@@ -167,7 +170,8 @@ impl<'d> Processor<'d> {
         ProcessorRange { start, end: start + count }
     }
 
-    pub fn m_trie<V: 'static + Copy>(&mut self, trie: &Fastrie<V>, action: MatchAction) -> Option<V> {
+    #[inline(always)]
+    pub fn m_trie<V: 'static + Copy>(&mut self, trie: &TrieNode<V>, action: MatchAction) -> Option<V> {
         trie.longest_matching_prefix(&self.code[self.read_next..]).map(|m| {
             let count = m.end + 1;
             match action {
@@ -175,7 +179,7 @@ impl<'d> Processor<'d> {
                 Keep => self._shift(count),
                 MatchOnly => {}
             };
-            *m.value
+            m.value
         })
     }
 

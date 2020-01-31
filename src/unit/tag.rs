@@ -60,12 +60,14 @@ impl MaybeClosingTag {
         MaybeClosingTag(None)
     }
 
+    #[inline(always)]
     pub fn write(&mut self, proc: &mut Processor) -> () {
         proc.write_slice(b"</");
         proc.write_range(self.0.take().unwrap());
         proc.write(b'>');
     }
 
+    #[inline(always)]
     pub fn write_if_exists(&mut self, proc: &mut Processor) -> bool {
         self.0.take().filter(|tag| {
             proc.write_slice(b"</");
@@ -75,10 +77,12 @@ impl MaybeClosingTag {
         }).is_some()
     }
 
+    #[inline(always)]
     pub fn exists(&self) -> bool {
         self.0.is_some()
     }
 
+    #[inline(always)]
     pub fn exists_and<F: FnOnce(ProcessorRange) -> bool>(&self, pred: F) -> bool {
         match self.0 {
             Some(range) => pred(range),
@@ -86,6 +90,7 @@ impl MaybeClosingTag {
         }
     }
 
+    #[inline(always)]
     pub fn replace(&mut self, tag: MaybeClosingTag) -> () {
         self.0 = tag.0;
     }

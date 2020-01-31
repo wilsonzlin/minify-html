@@ -4,7 +4,7 @@ set -e
 shopt -s nullglob
 
 for i in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
-  echo performance | sudo tee /sys/devices/system/cpu/cpu"$i"/cpufreq/scaling_governor
+  echo performance | sudo dd status=none of="$i"
 done
 
 node sizes.js

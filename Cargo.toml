@@ -22,7 +22,6 @@ phf = { version = "0.8.0", features = ["macros"] }
 structopt = "0.3.5"
 
 [build-dependencies]
-fastrie = "0.0.6"
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0.44"
 

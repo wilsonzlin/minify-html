@@ -1,35 +1,62 @@
 pub struct SinglePattern {
-    pub seq: &'static [u8],
-    pub table: &'static [usize],
+    dfa: &'static [usize],
+    length: usize,
 }
 
 impl SinglePattern {
-    pub fn len(&self) -> usize {
-        self.table.len()
+    pub const fn prebuilt(dfa: &'static [usize], length: usize) -> SinglePattern {
+        SinglePattern {
+            dfa, length
+        }
     }
 
+    pub fn len(&self) -> usize {
+        self.length
+    }
+
+    #[inline(always)]
     pub fn match_against(&self, haystack: &[u8]) -> Option<usize> {
-        let mut hay_idx = 0usize;
-        let mut pat_idx = 0usize;
-        while hay_idx < haystack.len() {
-            if self.seq[pat_idx] == haystack[hay_idx] {
-                pat_idx += 1;
-                hay_idx += 1;
-            };
-
-            if pat_idx == self.seq.len() {
-                return Some(hay_idx - pat_idx);
-            };
-
-            if hay_idx < haystack.len() && self.seq[pat_idx] != haystack[hay_idx] {
-                if pat_idx != 0 {
-                    pat_idx = self.table[pat_idx - 1];
-                } else {
-                    hay_idx += 1;
-                };
-            };
+        let mut i = 0;
+        let mut j = 0;
+        while i < haystack.len() && j < self.length {
+            j = self.dfa[haystack[i] as usize * self.length + j];
+            i += 1;
         };
-
-        None
+        if j == self.length {
+            Some(i - self.length)
+        } else {
+            None
+        }
     }
 }
+
+// Can't use pub const fn constructor due to Copy trait, so allow directly creating struct publicly for now.
+pub struct TrieNode<V: 'static + Copy> {
+    pub value: Option<V>,
+    pub children: [Option<&'static TrieNode<V>>; 256],
+}
+
+pub struct TrieNodeMatch<V: 'static + Copy> {
+    pub end: usize,
+    pub value: V,
+}
+
+impl<V: 'static + Copy> TrieNode<V> {
+    #[inline(always)]
+    pub fn longest_matching_prefix(&self, text: &[u8]) -> Option<TrieNodeMatch<V>> {
+        let mut node: &TrieNode<V> = self;
+        let mut value: Option<TrieNodeMatch<V>> = None;
+        for (i, &c) in text.iter().enumerate() {
+            match node.children[c as usize] {
+                Some(child) => node = child,
+                None => break,
+            };
+            match node.value {
+                Some(v) => value = Some(TrieNodeMatch { end: i, value: v }),
+                None => {}
+            };
+        };
+        value
+    }
+}
+
