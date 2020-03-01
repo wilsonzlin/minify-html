@@ -33,14 +33,14 @@ enum UnintentionalEntityState {
     AmpersandHash,
     Dec,
     Hex,
-    EncodedRightChevron,
+    EncodedLeftChevron,
 }
 
 pub struct UnintentionalEntityPrevention {
     last_write_next: usize,
     ampersand_pos: usize,
     state: UnintentionalEntityState,
-    encode_right_chevrons: bool,
+    encode_left_chevrons: bool,
 }
 
 impl UnintentionalEntityPrevention {
@@ -51,12 +51,12 @@ impl UnintentionalEntityPrevention {
         });
     }
 
-    pub fn new(proc: &Processor, encode_right_chevrons: bool) -> UnintentionalEntityPrevention {
+    pub fn new(proc: &Processor, encode_left_chevrons: bool) -> UnintentionalEntityPrevention {
         UnintentionalEntityPrevention {
             last_write_next: proc.write_next,
             ampersand_pos: 0,
             state: Safe,
-            encode_right_chevrons,
+            encode_left_chevrons,
         }
     }
 
@@ -84,13 +84,13 @@ impl UnintentionalEntityPrevention {
         // Use manual loop as `i` and `proc.write_next` could change due to mid-array insertion.
         while i < proc.write_next {
             match proc.code[i] {
-                b'>' if self.encode_right_chevrons => {
+                b'<' if self.encode_left_chevrons => {
                     if self.state == Name {
                         i += self._handle_entity(proc, i - 1);
                     };
-                    self.state = EncodedRightChevron;
-                    // Use "&GT" instead of "&gt" as there are other entity names starting with "gt".
-                    i += proc._replace(i, i + 1, b"&GT");
+                    self.state = EncodedLeftChevron;
+                    // Use "&LT" instead of "&lt" as there are other entity names starting with "lt".
+                    i += proc._replace(i, i + 1, b"&LT");
                 }
                 // If ampersand, then regardless of state, this is the start of a new entity.
                 b'&' => {
@@ -114,8 +114,8 @@ impl UnintentionalEntityPrevention {
                         }
                         _ => self.state = Safe,
                     }
-                    EncodedRightChevron => match c {
-                        // Problem: semicolon after encoded '>' will cause '&GT;', making it part of the entity.
+                    EncodedLeftChevron => match c {
+                        // Problem: semicolon after encoded '<' will cause '&LT;', making it part of the entity.
                         // Solution: insert another semicolon.
                         b';' => {
                             self.state = Safe;
