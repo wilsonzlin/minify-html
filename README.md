@@ -175,6 +175,10 @@ print Hyperbuild.minify "<p>  Hello, world!  </p>"
 
 ## Minification
 
+### Configurability
+
+Configuration of minification is currently WIP across all languages. The behaviour mentioned below is the default.
+
 ### Whitespace
 
 hyperbuild has advanced context-aware whitespace minification that does things such as:
