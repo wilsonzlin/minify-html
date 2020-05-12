@@ -3,7 +3,7 @@ use std::io::{Read, stdin, stdout, Write};
 
 use structopt::StructOpt;
 
-use hyperbuild::{FriendlyError, hyperbuild_friendly};
+use hyperbuild::{FriendlyError, hyperbuild_friendly_error};
 
 #[derive(StructOpt)]
 struct Cli {
@@ -34,7 +34,7 @@ fn main() {
         None => Box::new(stdin()),
     };
     io_expect!(src_file.read_to_end(&mut code), "could not load source code");
-    match hyperbuild_friendly(&mut code) {
+    match hyperbuild_friendly_error(&mut code) {
         Ok(out_len) => {
             let mut out_file: Box<dyn Write> = match args.out {
                 Some(p) => Box::new(io_expect!(File::create(p), "could not open output file")),

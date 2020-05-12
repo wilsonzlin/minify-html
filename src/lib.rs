@@ -21,7 +21,7 @@ pub fn hyperbuild(code: &mut [u8]) -> Result<usize, (ErrorType, usize)> {
 pub fn hyperbuild_truncate(code: &mut Vec<u8>) -> Result<(), (ErrorType, usize)> {
     match hyperbuild(code) {
         Ok(written_len) => {
-            code.truncate(written_len());
+            code.truncate(written_len);
             Ok(())
         },
         Err(e) => Err(e),
