@@ -94,7 +94,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
             // Next character is not whitespace, so handle any previously ignored whitespace.
             if ws_skipped {
                 if destroy_whole && last_written.is_tag_like() && next_content_type.is_tag_like() {
-                    // Whitespace is between two tags, comments, instructions, or bangs.
+                    // Whitespace is between two tags, instructions, or bangs.
                     // `destroy_whole` is on, so don't write it.
                 } else if trim && (last_written == ContentType::Start || next_content_type == ContentType::End) {
                     // Whitespace is leading or trailing.

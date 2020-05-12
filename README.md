@@ -58,9 +58,27 @@ use hyperbuild::hyperbuild;
 
 fn main() {
     let mut code = b"<p>  Hello, world!  </p>".to_vec();
+
+    // `hyperbuild_copy` creates a copy instead of minifying in-place.
+    match hyperbuild_copy(&code) {
+        Ok(minified) => {}
+        Err((error_type, error_position)) => {}
+    };
+    // `hyperbuild_truncate` minifies a vector in-place, and then truncates the vector to the new minified length.
+    match hyperbuild_truncate(&mut code) {
+        Ok(()) => {}
+        Err((error_type, error_position)) => {}
+    };
+    // `hyperbuild` minifies a slice in place and returns the new minified length but leaves any original code after the minified code intact.
     match hyperbuild(&mut code) {
         Ok(minified_len) => {}
-        Err((error_type, error_at_char_no)) => {}
+        Err((error_type, error_position)) => {}
+    };
+    // `hyperbuild_friendly_error` is identical to `hyperbuild` except the error is a FriendlyError instead, which includes three fields: `position`, `message`, and `code_context`.
+    // `code_context` is a string of a visual representation of the source code with line numbers and position markers to aid in debugging syntax issues, and should be printed.
+    match hyperbuild(&mut code) {
+        Ok(minified_len) => {}
+        Err((error_type, error_position)) => {}
     };
 }
 ```
@@ -92,14 +110,20 @@ yarn add hyperbuild
 const hyperbuild = require("hyperbuild");
 
 const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
+
+// Alternatively, minify in place to avoid copying.
+const source = Buffer.from("<p>  Hello, world!  </p>");
+hyperbuild.minifyInPlace(source);
 ```
 
 hyperbuild is also available for TypeScript:
 
 ```ts
 import * as hyperbuild from "hyperbuild";
+import * as fs from "fs";
 
 const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
+hyperbuild.minifyInPlace(fs.readFileSync("source.html"));
 ```
 
 </details>
@@ -126,11 +150,15 @@ Add as a Maven dependency:
 ```java
 import in.wilsonl.hyperbuild.Hyperbuild;
 
-class Main {
-    public static void main(String[] args) {
-        String minified = Hyperbuild.minify("<p>  Hello, world!  </p>");
-    }
+try {
+    String minified = Hyperbuild.minify("<p>  Hello, world!  </p>");
+} catch (Hyperbuild.SyntaxException e) {
+    System.err.println(e.getMessage());
 }
+
+// Alternatively, minify in place:
+assert source instanceof ByteBuffer && source.isDirect();
+Hyperbuild.minifyInPlace(source);
 ```
 
 </details>
@@ -149,7 +177,10 @@ Add the PyPI project as a dependency and install it using `pip` or `pipenv`.
 ```python
 import hyperbuild
 
-minified = hyperbuild.minify("<p>  Hello, world!  </p>")
+try:
+    minified = hyperbuild.minify("<p>  Hello, world!  </p>")
+except SyntaxError as e:
+    print(e)
 ```
 
 </details>
@@ -222,7 +253,7 @@ Reduce a sequence of whitespace characters in text nodes to a single space (U+00
 
 > **Applies to:** any element except [whitespace sensitive](./src/spec/tag/whitespace.rs), [content](src/spec/tag/whitespace.rs), [content-first](./src/spec/tag/whitespace.rs), and [formatting](./src/spec/tag/whitespace.rs) elements.
 
-Remove any text nodes that only consist of whitespace characters.
+Remove any text nodes between tags that only consist of whitespace characters.
 
 <table><thead><tr><th>Before<th>After<tbody><tr><td>
 

@@ -18,6 +18,24 @@ pub fn hyperbuild(code: &mut [u8]) -> Result<usize, (ErrorType, usize)> {
     }
 }
 
+pub fn hyperbuild_truncate(code: &mut Vec<u8>) -> Result<(), (ErrorType, usize)> {
+    match hyperbuild(code) {
+        Ok(written_len) => {
+            code.truncate(written_len());
+            Ok(())
+        },
+        Err(e) => Err(e),
+    }
+}
+
+pub fn hyperbuild_copy(code: &[u8]) -> Result<Vec<u8>, (ErrorType, usize)> {
+    let mut copy = code.to_vec();
+    match hyperbuild_truncate(&mut copy) {
+        Ok(()) => Ok(copy),
+        Err(e) => Err(e),
+    }
+}
+
 pub struct FriendlyError {
     // Make public to allow destructuring.
     pub position: usize,
@@ -25,7 +43,7 @@ pub struct FriendlyError {
     pub code_context: String,
 }
 
-pub fn hyperbuild_friendly(code: &mut [u8]) -> Result<usize, FriendlyError> {
+pub fn hyperbuild_friendly_error(code: &mut [u8]) -> Result<usize, FriendlyError> {
     let mut proc = Processor::new(code);
     match process_content(&mut proc, Namespace::Html, None) {
         Ok(()) => Ok(proc.written_len()),
