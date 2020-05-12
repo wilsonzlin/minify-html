@@ -59,12 +59,13 @@ use hyperbuild::hyperbuild;
 fn main() {
     let mut code = b"<p>  Hello, world!  </p>".to_vec();
 
+    // `hyperbuild` minifies a slice in-place and returns the new minified length, but leaves any original code after the minified code intact.
     match hyperbuild(&mut code) {
         Ok(minified_len) => {}
         Err((error_type, error_position)) => {}
     };
 
-    // `hyperbuild_copy` creates a copy instead of minifying in-place.
+    // `hyperbuild_copy` creates a vector copy containing only minified code instead of minifying in-place.
     match hyperbuild_copy(&code) {
         Ok(minified) => {}
         Err((error_type, error_position)) => {}
@@ -73,12 +74,6 @@ fn main() {
     // `hyperbuild_truncate` minifies a vector in-place, and then truncates the vector to the new minified length.
     match hyperbuild_truncate(&mut code) {
         Ok(()) => {}
-        Err((error_type, error_position)) => {}
-    };
-
-    // `hyperbuild` minifies a slice in place and returns the new minified length but leaves any original code after the minified code intact.
-    match hyperbuild(&mut code) {
-        Ok(minified_len) => {}
         Err((error_type, error_position)) => {}
     };
 
