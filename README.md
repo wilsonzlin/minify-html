@@ -59,26 +59,38 @@ use hyperbuild::hyperbuild;
 fn main() {
     let mut code = b"<p>  Hello, world!  </p>".to_vec();
 
+    match hyperbuild(&mut code) {
+        Ok(minified_len) => {}
+        Err((error_type, error_position)) => {}
+    };
+
     // `hyperbuild_copy` creates a copy instead of minifying in-place.
     match hyperbuild_copy(&code) {
         Ok(minified) => {}
         Err((error_type, error_position)) => {}
     };
+
     // `hyperbuild_truncate` minifies a vector in-place, and then truncates the vector to the new minified length.
     match hyperbuild_truncate(&mut code) {
         Ok(()) => {}
         Err((error_type, error_position)) => {}
     };
+
     // `hyperbuild` minifies a slice in place and returns the new minified length but leaves any original code after the minified code intact.
     match hyperbuild(&mut code) {
         Ok(minified_len) => {}
         Err((error_type, error_position)) => {}
     };
-    // `hyperbuild_friendly_error` is identical to `hyperbuild` except the error is a FriendlyError instead, which includes three fields: `position`, `message`, and `code_context`.
+
+    // `hyperbuild_friendly_error` is identical to `hyperbuild` except the error is a FriendlyError instead.
     // `code_context` is a string of a visual representation of the source code with line numbers and position markers to aid in debugging syntax issues, and should be printed.
-    match hyperbuild(&mut code) {
+    match hyperbuild_friendly_error(&mut code) {
         Ok(minified_len) => {}
-        Err((error_type, error_position)) => {}
+        Err(FriendlyError { position, message, code_context }) => {
+            eprintln!("Failed at character {}:", position);
+            eprintln!("{}", message);
+            eprintln!("{}", code_context);
+        }
     };
 }
 ```
