@@ -15,7 +15,11 @@ const assertBetween = (n, min, max) => {
 };
 
 const newVersion = currentVersion.slice();
-newVersion[assertBetween(['major', 'minor', 'patch'].indexOf(process.argv[2].toLowerCase()), 0, 2)]++;
+let versionPart = assertBetween(['major', 'minor', 'patch'].indexOf(process.argv[2].toLowerCase()), 0, 2);
+newVersion[versionPart++]++;
+while (versionPart < 3) {
+  newVersion[versionPart++] = 0;
+}
 
 console.log(`${currentVersion.join('.')} => ${newVersion.join('.')}`);
 
