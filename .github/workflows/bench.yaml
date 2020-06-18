@@ -36,10 +36,11 @@ jobs:
       - name: Run bench and graph results
         working-directory: ./bench
         run: ./bench.sh
-      - uses: chrislennon/action-aws-cli@v1.1
-      - name: Upload to S3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-west-2
-        run: aws s3 cp ./bench/results/ s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bench/${{ steps.version.outputs.VERSION }}/ --recursive
+      - name: Install B2 CLI
+        run: |
+          pip install setuptools
+          pip install --upgrade b2
+      - name: Upload to B2
+        run: |
+          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
+          b2 sync ./bench/results/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/hyperbuild/bench/${{ steps.version.outputs.VERSION }}/

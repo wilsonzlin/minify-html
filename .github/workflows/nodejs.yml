@@ -12,7 +12,7 @@ jobs:
       matrix:
         # Use windows-2016 as windows-2019 has LNK1181 error when building Neon module.
         os: [ubuntu-latest, windows-2016, macos-latest]
-        node: [8, 9, 10, 11, 12, 13]
+        node: [8, 9, 10, 11, 12, 13, 14]
         include:
           - os: ubuntu-latest
             ARCH: linux-x86_64
@@ -41,13 +41,19 @@ jobs:
         run: |
           npm install
           node node_modules/neon-cli/bin/cli.js build --release
-      - uses: chrislennon/action-aws-cli@v1.1
-      - name: Upload to S3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-west-2
-        run: aws s3 cp ./nodejs/native/index.node s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ matrix.ARCH }}-node${{ matrix.node }}.node
+      - name: Install B2 CLI (macOS, Linux)
+        if: runner.os != 'Windows'
+        run: |
+          sudo pip install setuptools
+          sudo pip install --upgrade b2
+      - name: Install B2 CLI (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          pip install --upgrade b2
+      - name: Upload to B2
+        run: |
+          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
+          b2 upload-file --contentType ${{ matrix.MIME }} ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/native/index.node hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ matrix.ARCH }}-node${{ matrix.node }}.node
   package:
     runs-on: ubuntu-latest
     needs: build
@@ -60,14 +66,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@master
         with:
-          node-version: 13.x
-      - uses: chrislennon/action-aws-cli@v1.1
+          node-version: 14.x
+      - name: Install B2 CLI
+        run: pip install --upgrade b2
       - name: Pack and publish package
         working-directory: ./nodejs
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: us-west-2
         run: |
           cat << 'EOF' > .npmrc
           package-lock=false
@@ -76,6 +79,7 @@ jobs:
           npm install
           rm -rf dist
           node node_modules/typescript/bin/tsc
-          aws s3 mv s3://${{ secrets.AWS_S3_BUCKET }}/hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/ ./dist/. --recursive
+          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
+          b2 sync b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/ ./dist/.
           cp ../README.md .
           npm publish
