@@ -38,8 +38,8 @@ jobs:
         run: ./bench.sh
       - name: Install B2 CLI
         run: |
-          pip install setuptools
-          pip install --upgrade b2
+          sudo pip install setuptools
+          sudo pip install --upgrade b2
       - name: Upload to B2
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
