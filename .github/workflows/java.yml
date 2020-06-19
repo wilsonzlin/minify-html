@@ -4,6 +4,8 @@ on:
   create:
     tags:
       - 'v*'
+  repository_dispatch:
+    types: [wf-java]
 
 jobs:
   build:
@@ -98,4 +100,6 @@ jobs:
             </profiles>
           </settings>
           EOF
-          mvn clean deploy
+          if [[ "$GITHUB_REF" != refs/tags/v* ]]; then
+            mvn clean deploy
+          fi

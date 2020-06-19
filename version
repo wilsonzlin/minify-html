@@ -66,7 +66,7 @@ if (cmd('git', 'status', '--porcelain', {throwOnStderr: true, captureStdio: true
   throw new Error('Working directory not clean');
 }
 
-for (const f of ['Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.toml', 'ruby/Cargo.toml']) {
+for (const f of ['Cargo.toml', 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.toml', 'ruby/Cargo.toml']) {
   replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
 }
 

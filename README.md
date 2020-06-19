@@ -15,9 +15,9 @@ Available as:
 
 ## Performance
 
-Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize). See [bench](./bench) folder for more details.
+Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on popular already-minified web pages. See [bench](./bench) folder for more details.
 
-<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.0.45/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.0.45/average-sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.1.1/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.1.1/average-sizes.png">
 
 ## Usage
 
@@ -25,13 +25,11 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 Precompiled binaries are available for x86-64 Windows, macOS, and Linux.
 
-To compile and install from source, run `cargo install hyperbuild`, which requires [Rust](https://www.rust-lang.org/tools/install).
-
 ##### Get
 
-[Windows](https://wilsonl.in/hyperbuild/bin/0.0.45-windows-x86_64.exe) |
-[macOS](https://wilsonl.in/hyperbuild/bin/0.0.45-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.0.45-linux-x86_64)
+[Windows](https://wilsonl.in/hyperbuild/bin/0.1.1-windows-x86_64.exe) |
+[macOS](https://wilsonl.in/hyperbuild/bin/0.1.1-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.1.1-linux-x86_64)
 
 ##### Use
 
@@ -48,37 +46,41 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = "0.0.45"
+hyperbuild = "0.1.1"
 ```
 
 ##### Use
 
 ```rust
-use hyperbuild::hyperbuild;
+use hyperbuild::{FriendlyError, hyperbuild};
 
 fn main() {
     let mut code = b"<p>  Hello, world!  </p>".to_vec();
 
-    // `hyperbuild` minifies a slice in-place and returns the new minified length, but leaves any original code after the minified code intact.
+    // Minifies a slice in-place and returns the new minified length,
+    // but leaves any original code after the minified code intact.
     match hyperbuild(&mut code) {
         Ok(minified_len) => {}
         Err((error_type, error_position)) => {}
     };
 
-    // `hyperbuild_copy` creates a vector copy containing only minified code instead of minifying in-place.
+    // Creates a vector copy containing only minified code
+    // instead of minifying in-place.
     match hyperbuild_copy(&code) {
         Ok(minified) => {}
         Err((error_type, error_position)) => {}
     };
 
-    // `hyperbuild_truncate` minifies a vector in-place, and then truncates the vector to the new minified length.
+    // Minifies a vector in-place, and then truncates the
+    // vector to the new minified length.
     match hyperbuild_truncate(&mut code) {
         Ok(()) => {}
         Err((error_type, error_position)) => {}
     };
 
-    // `hyperbuild_friendly_error` is identical to `hyperbuild` except the error is a FriendlyError instead.
-    // `code_context` is a string of a visual representation of the source code with line numbers and position markers to aid in debugging syntax issues, and should be printed.
+    // Identical to `hyperbuild` except with FriendlyError instead.
+    // `code_context` is a string of a visual representation of the source,
+    // with line numbers and position markers to aid in debugging syntax.
     match hyperbuild_friendly_error(&mut code) {
         Ok(minified_len) => {}
         Err(FriendlyError { position, message, code_context }) => {
@@ -148,7 +150,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.hyperbuild</groupId>
   <artifactId>hyperbuild</artifactId>
-  <version>0.0.45</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
