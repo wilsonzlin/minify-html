@@ -1,0 +1,77 @@
+# Prefixes:
+# `_` means to lowercase accumulate.
+# `<` means to accumulate transition pattern as part of current state.
+# `+` means to accumulate transition pattern as part of next state.
+# `?` means to look ahead but don't accumulate transition pattern and allow next state to reconsume.
+
+Text:
+  '\w': ?TextWhitespace
+  '\<': +OpeningTagStart
+  '\</': +ClosingTag
+  '\<!--': +Comment
+  '&': ?TextEntity
+  '': Text
+
+TextWhitespace:
+  '\w': TextWhitespace
+  '&': ?TextEntity
+  '': ?Text
+
+Comment:
+  '-->': <Text
+  '': Comment
+
+ClosingTag:
+  '<tagName>': _ClosingTag
+  '>': <Text
+
+OpeningTagStart:
+  '\w': ?OpeningTagWhitespace
+  '<tagName>': _OpeningTagStart
+
+OpeningTagWhitespace:
+  '\w': OpeningTagWhitespace
+  '<attrName>': ?AttrName
+  '>': <Text
+
+AttrName:
+  '[>=\w]': ?AttrAfterName
+  '<attrName>': _AttrName
+
+AttrAfterName:
+  '\w': AttrAfterName
+  '>': ?OpeningTagWhitespace
+  '=': +AttrBeforeValue
+
+AttrBeforeValue:
+  '\w': AttrBeforeValue
+  "'": +AttrSingleQuotedValue
+  '"': +AttrDoubleQuotedValue
+  '': ?AttrUnquotedValue
+
+AttrSingleQuotedValue:
+  "'": <OpeningTagWhitespace
+  '&': ?AttrValueEntity
+  '\w': ?AttrSingleQuotedValueWhitespace
+  '': AttrSingleQuotedValue
+
+AttrSingleQuotedValueWhitespace:
+  '\w': AttrSingleQuotedValueWhitespace
+  '&': ?AttrValueEntity
+  '': ?AttrSingleQuotedValue
+
+AttrDoubleQuotedValue:
+  '"': <OpeningTagWhitespace
+  '&': ?AttrValueEntity
+  '\w': ?AttrDoubleQuotedValueWhitespace
+  '': AttrDoubleQuotedValue
+
+AttrDoubleQuotedValueWhitespace:
+  '\w': AttrDoubleQuotedValueWhitespace
+  '&': ?AttrValueEntity
+  '': ?AttrDoubleQuotedValue
+
+AttrUnquotedValue:
+  '\w': ?OpeningTagWhitespace
+  '&': ?AttrValueEntity
+  '': AttrUnquotedValue

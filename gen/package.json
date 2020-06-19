@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "dependencies": {
+    "@types/node": "^14.0.5",
+    "ts-node": "^8.10.1",
+    "typescript": "^3.7.4",
+    "yaml": "^1.10.0"
+  }
+}

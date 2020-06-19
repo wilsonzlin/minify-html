@@ -1,2 +1,2 @@
 node_modules/
-build/*.d.ts
+/package-lock.json
