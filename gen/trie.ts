@@ -139,14 +139,18 @@ export class TrieBuilder {
 
   // Generate the code for a node's variable name and value, and return the name.
   private generateNode (node: Node): string {
-    // Only generate elements up to the last non-undefined child to cut down on size of array.
+    // Only generate defined children to cut down on size of array, which would otherwise
+    // bog down compile time and binary size for large trees with lots of nodes.
+    // If array is empty, just use zero.
+    const firstIdx = node.children.length && node.children.findIndex(v => v);
     const children = Array.from(
-      {length: node.children.length},
-      (_, i) => node.children[i] ? `Some(${this.generateNode(node.children[i])})` : 'None',
+      {length: node.children.length - firstIdx},
+      (_, i) => node.children[i + firstIdx] ? `Some(${this.generateNode(node.children[i + firstIdx])})` : 'None',
     ).join(', ');
 
     const value = node.value === undefined ? 'None' : `Some(${node.value})`;
     const varValue = `&crate::pattern::TrieNode {
+      offset: ${firstIdx},
       value: ${value},
       children: &[${children}],
     }`;

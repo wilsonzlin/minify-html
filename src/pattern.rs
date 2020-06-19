@@ -33,6 +33,10 @@ impl SinglePattern {
 
 // Can't use pub const fn constructor due to Copy trait, so allow directly creating struct publicly for now.
 pub struct TrieNode<V: 'static + Copy> {
+    // Using a children array of size 256 would probably be fastest, but waste too much memory and cause slow compiles
+    // and large binaries. Instead, we only store the children between the first and last defined (see `gen/trie.ts`).
+    // When getting a child, use `index + offset`.
+    pub offset: usize,
     pub value: Option<V>,
     pub children: &'static [Option<&'static TrieNode<V>>],
 }
@@ -58,7 +62,7 @@ impl<V: 'static + Copy> TrieNode<V> {
         let mut node: &TrieNode<V> = self;
         let mut next_pos = from;
         while let Some(&c) = text.get(next_pos) {
-            match node.children.get(c as usize) {
+            match node.children.get(c as usize + node.offset) {
                 Some(Some(child)) => node = child,
                 None | Some(None) => return None,
             };
