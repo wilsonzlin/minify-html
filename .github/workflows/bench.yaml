@@ -16,16 +16,16 @@ jobs:
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
-      - name: Set up Node.js
-        uses: actions/setup-node@master
-        with:
-          node-version: 10.x
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: 1.39.0
           profile: minimal
           default: true
+      - name: Set up Node.js for generating code
+        uses: actions/setup-node@master
+        with:
+          node-version: 14.x
       - name: Build generated code
         working-directory: ./gen
         run: |
@@ -34,6 +34,10 @@ jobs:
           node node_modules/ts-node/dist/bin.js dfa.ts
           node node_modules/ts-node/dist/bin.js entities.ts
           node node_modules/ts-node/dist/bin.js patterns.ts
+      - name: Set up Node.js for benching
+        uses: actions/setup-node@master
+        with:
+          node-version: 10.x
       - name: Set up Node.js module
         working-directory: ./nodejs
         run: npm install
