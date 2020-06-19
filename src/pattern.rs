@@ -6,7 +6,8 @@ pub struct SinglePattern {
 impl SinglePattern {
     pub const fn prebuilt(dfa: &'static [usize], length: usize) -> SinglePattern {
         SinglePattern {
-            dfa, length
+            dfa,
+            length,
         }
     }
 
@@ -33,30 +34,44 @@ impl SinglePattern {
 // Can't use pub const fn constructor due to Copy trait, so allow directly creating struct publicly for now.
 pub struct TrieNode<V: 'static + Copy> {
     pub value: Option<V>,
-    pub children: [Option<&'static TrieNode<V>>; 256],
+    pub children: &'static [Option<&'static TrieNode<V>>],
 }
 
-pub struct TrieNodeMatch<V: 'static + Copy> {
-    pub end: usize,
-    pub value: V,
+pub enum TrieNodeMatch<V: 'static + Copy> {
+    Found { len: usize, value: V },
+    NotFound { reached: usize },
 }
 
 impl<V: 'static + Copy> TrieNode<V> {
+    // Find the node that matches the shortest prefix of {@param text} and has a value, or the entire text.
     #[inline(always)]
-    pub fn longest_matching_prefix(&self, text: &[u8]) -> Option<TrieNodeMatch<V>> {
+    pub fn next_matching_node(&self, text: &[u8], from: usize) -> Option<(&TrieNode<V>, usize)> {
         let mut node: &TrieNode<V> = self;
-        let mut value: Option<TrieNodeMatch<V>> = None;
-        for (i, &c) in text.iter().enumerate() {
-            match node.children[c as usize] {
-                Some(child) => node = child,
-                None => break,
+        let mut next_pos = from;
+        while let Some(&c) = text.get(next_pos) {
+            match node.children.get(c as usize) {
+                Some(Some(child)) => node = child,
+                None | Some(None) => return None,
             };
-            match node.value {
-                Some(v) => value = Some(TrieNodeMatch { end: i, value: v }),
-                None => {}
+            next_pos += 1;
+            if node.value.is_some() {
+                break;
             };
         };
-        value
+        Some((node, next_pos))
+    }
+
+    #[inline(always)]
+    pub fn longest_matching_prefix(&self, text: &[u8]) -> TrieNodeMatch<V> {
+        let mut node: &TrieNode<V> = self;
+        let mut value: Option<TrieNodeMatch<V>> = None;
+        let mut pos = 0;
+        while let Some((new_node, new_pos)) = node.next_matching_node(text, pos) {
+            value = Some(TrieNodeMatch::Found { len: pos, value: new_node.value.unwrap() });
+            node = new_node;
+            pos = new_pos;
+        };
+        value.unwrap_or(TrieNodeMatch::NotFound { reached: pos })
     }
 }
 

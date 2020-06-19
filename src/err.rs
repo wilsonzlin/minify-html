@@ -1,25 +1,25 @@
 // Implement debug to allow .unwrap().
 #[derive(Debug)]
-pub enum ErrorType {
+pub enum HbErr {
     ClosingTagMismatch,
-    NotFound(&'static str),
+    Unexpected(usize),
     UnexpectedEnd,
 }
 
-impl ErrorType {
+impl HbErr {
     pub fn message(self) -> String {
         match self {
-            ErrorType::ClosingTagMismatch => {
+            HbErr::ClosingTagMismatch => {
                 format!("Closing tag name does not match opening tag.")
             }
-            ErrorType::NotFound(exp) => {
-                format!("Expected {}.", exp)
+            HbErr::Unexpected(pos) => {
+                format!("Unexpected character at position {}.", pos)
             }
-            ErrorType::UnexpectedEnd => {
+            HbErr::UnexpectedEnd => {
                 format!("Unexpected end of source code.")
             }
         }
     }
 }
 
-pub type ProcessingResult<T> = Result<T, ErrorType>;
+pub type HbRes<T> = Result<T, HbErr>;
