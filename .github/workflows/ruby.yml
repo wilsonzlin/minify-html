@@ -4,6 +4,8 @@ on:
   create:
     tags:
       - 'v*'
+  repository_dispatch:
+    types: [wf-ruby]
 
 jobs:
   build:
@@ -24,7 +26,9 @@ jobs:
       - name: Get version
         id: version
         shell: bash
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+        run: |
+          v=${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=VERSION::${v:-0.0.0}
       # Install Ruby manually as actions/setup-ruby@v1 does not compile with `--enable-shared`.
       - name: Prepare for rbenv
         run: |
@@ -91,7 +95,9 @@ jobs:
       - name: Get version
         id: version
         shell: bash
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+        run: |
+          v=${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=VERSION::${v:-0.0.0}
       - name: Set up Ruby
         uses: actions/setup-ruby@v1
         with:

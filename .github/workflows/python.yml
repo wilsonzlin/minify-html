@@ -4,6 +4,8 @@ on:
   create:
     tags:
       - 'v*'
+  repository_dispatch:
+    types: [wf-python]
 
 jobs:
   build:
@@ -30,7 +32,9 @@ jobs:
       - name: Get version
         id: version
         shell: bash
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+        run: |
+          v=${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=VERSION::${v:-0.0.0}
       - name: Get native module file name
         id: native_file
         shell: bash
@@ -74,7 +78,9 @@ jobs:
       - name: Get version
         id: version
         shell: bash
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/v}
+        run: |
+          v=${GITHUB_REF#refs/tags/v}
+          echo ::set-output name=VERSION::${v:-0.0.0}
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
