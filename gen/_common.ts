@@ -12,7 +12,6 @@ try {
 }
 writeFileSync(join(RUST_OUT_DIR, 'mod.rs'), `
 pub mod attrs;
-pub mod dfa;
 pub mod entities;
 pub mod patterns;
 `);

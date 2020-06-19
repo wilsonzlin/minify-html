@@ -31,7 +31,6 @@ jobs:
         run: |
           npm install
           node node_modules/ts-node/dist/bin.js attrs.ts
-          node node_modules/ts-node/dist/bin.js dfa.ts
           node node_modules/ts-node/dist/bin.js entities.ts
           node node_modules/ts-node/dist/bin.js patterns.ts
       - name: Set up Node.js for benching
