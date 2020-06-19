@@ -100,6 +100,6 @@ jobs:
             </profiles>
           </settings>
           EOF
-          if [[ "$GITHUB_REF" != refs/tags/v* ]]; then
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             mvn clean deploy
           fi

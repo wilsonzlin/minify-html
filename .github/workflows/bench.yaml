@@ -26,6 +26,14 @@ jobs:
           toolchain: 1.39.0
           profile: minimal
           default: true
+      - name: Build generated code
+        working-directory: ./gen
+        run: |
+          npm install
+          node node_modules/ts-node/dist/bin.js attrs.ts
+          node node_modules/ts-node/dist/bin.js dfa.ts
+          node node_modules/ts-node/dist/bin.js entities.ts
+          node node_modules/ts-node/dist/bin.js patterns.ts
       - name: Set up Node.js module
         working-directory: ./nodejs
         run: npm install
