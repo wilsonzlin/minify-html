@@ -17,7 +17,7 @@ Available as:
 
 Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on popular already-minified web pages. See [bench](./bench) folder for more details.
 
-<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.1.1/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.1.1/average-sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.1.2/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.1.2/average-sizes.png">
 
 ## Usage
 
@@ -27,9 +27,9 @@ Precompiled binaries are available for x86-64 Windows, macOS, and Linux.
 
 ##### Get
 
-[Windows](https://wilsonl.in/hyperbuild/bin/0.1.1-windows-x86_64.exe) |
-[macOS](https://wilsonl.in/hyperbuild/bin/0.1.1-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.1.1-linux-x86_64)
+[Windows](https://wilsonl.in/hyperbuild/bin/0.1.2-windows-x86_64.exe) |
+[macOS](https://wilsonl.in/hyperbuild/bin/0.1.2-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.1.2-linux-x86_64)
 
 ##### Use
 
@@ -46,7 +46,7 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = "0.1.1"
+hyperbuild = "0.1.2"
 ```
 
 ##### Use
@@ -150,7 +150,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.hyperbuild</groupId>
   <artifactId>hyperbuild</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
 </dependency>
 ```
 
