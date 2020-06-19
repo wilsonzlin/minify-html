@@ -86,7 +86,7 @@ jobs:
           pip install --upgrade setuptools
           pip install --upgrade twine
       - name: Install B2 CLI
-        run: pip install --upgrade b2
+        run: sudo pip install --upgrade b2
       - name: Pack and publish package
         working-directory: ./python
         run: |

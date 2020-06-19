@@ -48,10 +48,13 @@ jobs:
       - name: Set up rbenv (Linux)
         if: runner.os == 'Linux'
         shell: bash -l {0}
+        # rbenv-installer now uses Linux brew to install Ruby, which we do not want.
         run: |
           sudo apt install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
-          wget -O install-rbenv.sh https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-installer
-          bash install-rbenv.sh || true # Ignore rbenv-doctor.
+          git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+          echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
+          mkdir -p "$HOME/.rbenv/plugins"
+          git clone https://github.com/rbenv/ruby-build.git "$HOME/.rbenv/plugins/ruby-build"
       - name: Set up Ruby
         shell: bash -l {0}
         run: |
@@ -95,8 +98,8 @@ jobs:
           ruby-version: '2.5'
       - name: Install B2 CLI
         run: |
-          pip install setuptools
-          pip install --upgrade b2
+          sudo pip install setuptools
+          sudo pip install --upgrade b2
       - name: Pack and publish gem
         working-directory: ./ruby
         run: |
