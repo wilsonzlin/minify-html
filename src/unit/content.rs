@@ -11,7 +11,8 @@ use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::instruction::process_instruction;
-use crate::unit::tag::{MaybeClosingTag, Namespace, process_tag};
+use crate::unit::tag::{MaybeClosingTag, process_tag};
+use crate::spec::tag::ns::Namespace;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {

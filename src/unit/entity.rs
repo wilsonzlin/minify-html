@@ -1,34 +1,13 @@
 use std::char::from_u32;
 
 use crate::err::ProcessingResult;
+use crate::gen::entities::ENTITY;
 use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::{is_digit, is_hex_digit, is_lower_hex_digit, is_upper_hex_digit};
-
-// Some entities are actually shorter than their decoded characters as UTF-8.
-// See `build.rs` for more details.
-
-// Based on the data sourced from https://html.spec.whatwg.org/entities.json:
-// - Entity names can have [A-Za-z0-9] characters, and are case sensitive.
-// - Some character entity references do not end with a semicolon.
-//   - All of these entities also have a corresponding entity with semicolon.
-// - The longest name is "CounterClockwiseContourIntegral", with length 31
-// (excluding leading ampersand and trailing semicolon).
-// - All entity names are at least 2 characters long.
-
-// Browser implementation behaviour to consider:
-// - Browsers match longest sequence of characters that would form a valid entity.
-// - Names must match case sensitively.
-// - Entities that don't have a semicolon do work e.g. `&amp2` => `&2`.
-
-include!(concat!(env!("OUT_DIR"), "/gen_entities.rs"));
-
-pub fn is_entity_reference_name_char(c: u8) -> bool {
-    c >= b'0' && c <= b'9' || c >= b'A' && c <= b'Z' || c >= b'a' && c <= b'z'
-}
 
 #[derive(Clone, Copy)]
 pub enum EntityType {
@@ -89,7 +68,7 @@ fn parse_numeric(proc: &mut Processor, skip_amount: usize, max_len: usize, digit
 }
 
 fn parse_name(proc: &mut Processor) -> Option<EntityType> {
-    proc.m_trie(ENTITY_REFERENCES, Discard).map(|s| match s.len() {
+    proc.m_trie(ENTITY, Discard).map(|s| match s.len() {
         // In UTF-8, one-byte character encodings are always ASCII.
         1 => EntityType::Ascii(s[0]),
         _ => EntityType::Named(s)

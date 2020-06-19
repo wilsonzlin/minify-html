@@ -1,9 +1,10 @@
 pub use crate::err::ErrorType as ErrorType;
 use crate::proc::Processor;
 use crate::unit::content::process_content;
-use crate::unit::tag::Namespace;
+use crate::spec::tag::ns::Namespace;
 
 mod err;
+mod gen;
 mod pattern;
 #[macro_use]
 mod proc;

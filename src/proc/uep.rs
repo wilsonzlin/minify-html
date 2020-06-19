@@ -1,7 +1,8 @@
+use crate::gen::entities::ENTITY;
 use crate::proc::Processor;
 use crate::proc::uep::UnintentionalEntityState::*;
 use crate::spec::codepoint::{is_digit, is_hex_digit};
-use crate::unit::entity::{ENTITY_REFERENCES, is_entity_reference_name_char};
+use crate::spec::entity::is_entity_reference_name_char;
 
 macro_rules! uep_ignore {
     ($uep:ident, $proc:ident, $code:block) => {
@@ -62,7 +63,7 @@ impl UnintentionalEntityPrevention {
 
     fn _handle_entity(&mut self, proc: &mut Processor, end_inclusive: usize) -> usize {
         let should_encode_ampersand = match self.state {
-            Name => ENTITY_REFERENCES.longest_matching_prefix(&proc.code[self.ampersand_pos + 1..=end_inclusive]).is_some(),
+            Name => ENTITY.longest_matching_prefix(&proc.code[self.ampersand_pos + 1..=end_inclusive]).found(),
             Dec | Hex => true,
             _ => unreachable!(),
         };

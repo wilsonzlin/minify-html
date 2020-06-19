@@ -1,5 +1,3 @@
-use phf::Map;
-
 use crate::err::ProcessingResult;
 use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
@@ -8,53 +6,10 @@ use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::{is_control, is_whitespace};
 use crate::unit::attr::value::{DelimiterType, process_attr_value, ProcessedAttrValue, skip_attr_value};
-use crate::unit::tag::Namespace;
+use crate::gen::attrs::ATTRS;
+use crate::spec::tag::ns::Namespace;
 
 mod value;
-
-pub struct AttributeMinification {
-    pub boolean: bool,
-    pub redundant_if_empty: bool,
-    pub collapse_and_trim: bool,
-    pub default_value: Option<&'static [u8]>,
-}
-
-pub enum AttrMapEntry {
-    AllNamespaceElements(AttributeMinification),
-    SpecificNamespaceElements(Map<&'static [u8], AttributeMinification>),
-}
-
-#[derive(Clone, Copy)]
-pub struct ByNamespace {
-    html: Option<&'static AttrMapEntry>,
-    svg: Option<&'static AttrMapEntry>,
-}
-
-impl ByNamespace {
-    fn get(&self, ns: Namespace) -> Option<&'static AttrMapEntry> {
-        match ns {
-            Namespace::Html => self.html,
-            Namespace::Svg => self.svg,
-        }
-    }
-}
-
-pub struct AttrMap(Map<&'static [u8], ByNamespace>);
-
-impl AttrMap {
-    pub const fn new(map: Map<&'static [u8], ByNamespace>) -> AttrMap {
-        AttrMap(map)
-    }
-
-    pub fn get(&self, ns: Namespace, tag: &[u8], attr: &[u8]) -> Option<&AttributeMinification> {
-        self.0.get(attr).and_then(|namespaces| namespaces.get(ns)).and_then(|entry| match entry {
-            AttrMapEntry::AllNamespaceElements(min) => Some(min),
-            AttrMapEntry::SpecificNamespaceElements(map) => map.get(tag),
-        })
-    }
-}
-
-include!(concat!(env!("OUT_DIR"), "/gen_attrs.rs"));
 
 #[derive(Clone, Copy, Eq, PartialEq)]
 pub enum AttrType {

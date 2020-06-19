@@ -9,16 +9,12 @@ use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::void::VOID_TAGS;
-use crate::unit::attr::{AttributeMinification, ATTRS, AttrType, process_attr, ProcessedAttr};
+use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
 use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
-
-#[derive(Copy, Clone, PartialEq, Eq)]
-pub enum Namespace {
-    Html,
-    Svg,
-}
+use crate::gen::attrs::{ATTRS, AttributeMinification};
+use crate::spec::tag::ns::Namespace;
 
 pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
     b"application/ecmascript",
