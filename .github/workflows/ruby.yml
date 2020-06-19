@@ -119,4 +119,6 @@ jobs:
           :rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}
           EOF
           chmod 0600 "$HOME/.gem/credentials"
-          gem push hyperbuild-${{ steps.version.outputs.VERSION }}.gem
+          if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
+            gem push hyperbuild-${{ steps.version.outputs.VERSION }}.gem
+          fi

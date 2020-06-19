@@ -88,4 +88,6 @@ jobs:
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
           b2 sync b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/ ./dist/.
           cp ../README.md .
-          npm publish
+          if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
+            npm publish
+          fi

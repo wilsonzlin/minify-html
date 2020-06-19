@@ -105,4 +105,6 @@ jobs:
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
           b2 sync b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/hyperbuild/bin/python/${{ steps.version.outputs.VERSION }}/ ./hyperbuild/.
           python setup.py sdist bdist_wheel
-          python -m twine upload dist/*
+          if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
+            python -m twine upload dist/*
+          fi
