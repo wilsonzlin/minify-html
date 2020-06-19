@@ -29,6 +29,8 @@ The [Node.js version of hyperbuild](../nodejs) is tested against [html-minfier](
 |Twitter|https://twitter.com/|
 |Wikipedia|https://en.wikipedia.org/wiki/Soil|
 
+**Note that these pages are already mostly minified.**
+
 For more information on how the tests are fetched, see [fetch.js](./fetch.js).
 
 On this [project's README](../README.md), average graphs are shown. Graphs showing per-test results are shown below:

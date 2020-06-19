@@ -15,7 +15,7 @@ Available as:
 
 ## Performance
 
-Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize). See [bench](./bench) folder for more details.
+Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on popular already-minified web pages. See [bench](./bench) folder for more details.
 
 <img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.1.0/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.1.0/average-sizes.png">
 
