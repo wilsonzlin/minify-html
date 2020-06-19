@@ -102,5 +102,6 @@ cmd('cargo', 'generate-lockfile');
 cmd('git', 'add', '-A');
 cmd('git', 'commit', '-m', NEW_VERSION);
 cmd('git', 'tag', '-a', `v${NEW_VERSION}`, '-m', '');
-cmd('cargo', 'publish');
+// We have generated but ignored in `src/gen`.
+cmd('cargo', 'publish', '--allow-dirty');
 cmd('git', 'push', '--follow-tags');
