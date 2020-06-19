@@ -2,7 +2,7 @@ require 'rake'
 
 Gem::Specification.new do |spec|
   spec.name          = "hyperbuild"
-  spec.version       = "0.1.0"
+  spec.version       = "0.1.1"
   spec.authors       = ["Wilson Lin"]
   spec.email         = ["code@wilsonl.in"]
   spec.license       = "MIT"
