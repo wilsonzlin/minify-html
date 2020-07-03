@@ -39,7 +39,7 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: 1.39.0
+          toolchain: stable
           profile: minimal
           default: true
       - name: Build CLI

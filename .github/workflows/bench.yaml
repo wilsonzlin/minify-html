@@ -19,7 +19,7 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: 1.39.0
+          toolchain: stable
           profile: minimal
           default: true
       - name: Set up Node.js for generating code
@@ -32,7 +32,6 @@ jobs:
           npm install
           node node_modules/ts-node/dist/bin.js attrs.ts
           node node_modules/ts-node/dist/bin.js entities.ts
-          node node_modules/ts-node/dist/bin.js patterns.ts
       - name: Set up Node.js for benching
         uses: actions/setup-node@master
         with:
