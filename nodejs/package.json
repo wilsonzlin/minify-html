@@ -11,7 +11,7 @@
     "url": "git+https://github.com/wilsonzlin/hyperbuild.git"
   },
   "engines": {
-    "node": ">=8 <=13"
+    "node": ">=8 <=14"
   },
   "author": {
     "email": "npm@wilsonl.in",
