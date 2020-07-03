@@ -1,5 +1,5 @@
-use phf::{Map, phf_map};
-
+use lazy_static::lazy_static;
+use std::collections::HashMap;
 use crate::err::ProcessingResult;
 use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
@@ -40,17 +40,21 @@ fn entity_requires_semicolon(next_char: u8) -> bool {
 }
 
 // See comment in `process_attr_value` for full description of why these intentionally do not have semicolons.
-static ENCODED: Map<u8, &'static [u8]> = phf_map! {
-    b'\'' => b"&#39",
-    b'"' => b"&#34",
-    b'>' => b"&gt",
-    // Whitespace characters as defined by spec in crate::spec::codepoint::is_whitespace.
-    b'\x09' => b"&#9",
-    b'\x0a' => b"&#10",
-    b'\x0c' => b"&#12",
-    b'\x0d' => b"&#13",
-    b'\x20' => b"&#32",
-};
+lazy_static! {
+    static ref ENCODED: HashMap<u8, &'static [u8]> = {
+        let mut m = HashMap::<u8, &'static [u8]>::new();
+        m.insert(b'\'', b"&#39");
+        m.insert(b'"', b"&#34");
+        m.insert(b'>', b"&gt");
+        // Whitespace characters as defined by spec in crate::spec::codepoint::is_whitespace.
+        m.insert(b'\x09', b"&#9");
+        m.insert(b'\x0a', b"&#10");
+        m.insert(b'\x0c', b"&#12");
+        m.insert(b'\x0d', b"&#13");
+        m.insert(b'\x20', b"&#32");
+        m
+    };
+}
 
 #[derive(Clone, Copy)]
 enum CharType {

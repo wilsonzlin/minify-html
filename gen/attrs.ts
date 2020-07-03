@@ -48,12 +48,7 @@ const rsTagAttr = ({
   defaultValue,
   collapseAndTrim,
   boolean,
-}: AttrConfig) => `AttributeMinification {
-    boolean: ${boolean},
-    redundant_if_empty: ${redundantIfEmpty},
-    collapse_and_trim: ${collapseAndTrim},
-    default_value: ${defaultValue == undefined ? 'None' : `Some(b"${defaultValue}")`},
-}`;
+}: AttrConfig) => `AttributeMinification { boolean: ${boolean}, redundant_if_empty: ${redundantIfEmpty}, collapse_and_trim: ${collapseAndTrim}, default_value: ${defaultValue == undefined ? 'None' : `Some(b"${defaultValue}")`} }`;
 
 const processReactTypeDeclarations = (source: SourceFile) => {
   const nodes: Node[] = [source];
@@ -127,7 +122,9 @@ const processReactTypeDeclarations = (source: SourceFile) => {
   }
 
   let code = `
-use crate::spec::tag::ns::Namespace;  
+use lazy_static::lazy_static;
+use std::collections::HashMap;
+use crate::spec::tag::ns::Namespace;
 
 pub struct AttributeMinification {
     pub boolean: bool,
@@ -138,29 +135,28 @@ pub struct AttributeMinification {
 
 pub enum AttrMapEntry {
     AllNamespaceElements(AttributeMinification),
-    SpecificNamespaceElements(phf::Map<&'static [u8], AttributeMinification>),
+    SpecificNamespaceElements(HashMap<&'static [u8], AttributeMinification>),
 }
 
-#[derive(Clone, Copy)]
 pub struct ByNamespace {
     // Make pub so this struct can be statically created in gen/attrs.rs.
-    pub html: Option<&'static AttrMapEntry>,
-    pub svg: Option<&'static AttrMapEntry>,
+    pub html: Option<AttrMapEntry>,
+    pub svg: Option<AttrMapEntry>,
 }
 
 impl ByNamespace {
-    fn get(&self, ns: Namespace) -> Option<&'static AttrMapEntry> {
+    fn get(&self, ns: Namespace) -> Option<&AttrMapEntry> {
         match ns {
-            Namespace::Html => self.html,
-            Namespace::Svg => self.svg,
+            Namespace::Html => self.html.as_ref(),
+            Namespace::Svg => self.svg.as_ref(),
         }
     }
 }
 
-pub struct AttrMap(phf::Map<&'static [u8], ByNamespace>);
+pub struct AttrMap(HashMap<&'static [u8], ByNamespace>);
 
 impl AttrMap {
-    pub const fn new(map: phf::Map<&'static [u8], ByNamespace>) -> AttrMap {
+    pub const fn new(map: HashMap<&'static [u8], ByNamespace>) -> AttrMap {
         AttrMap(map)
     }
 
@@ -174,35 +170,32 @@ impl AttrMap {
 
 `;
 
-  for (const [attrName, namespaces] of attributes) {
-    let byNsCode = '';
-    byNsCode += `static ${attrName.toUpperCase()}_ATTR: ByNamespace = ByNamespace {\n`;
-    for (const ns of ['html', 'svg'] as const) {
-      byNsCode += `\t${ns}: `;
-      const tagsMap = namespaces.get(ns);
-      if (!tagsMap) {
-        byNsCode += 'None';
-      } else {
+  code += `
+lazy_static! {
+  pub static ref ATTRS: AttrMap = {
+    let mut m = HashMap::<&'static [u8], ByNamespace>::new();
+${[...attributes].map(([attr_name, namespaces]) => `    m.insert(b\"${attr_name}\", ByNamespace {
+${(['html', 'svg'] as const).map(ns => `      ${ns}: ` + (() => {
+        const tagsMap = namespaces.get(ns);
+        if (!tagsMap) {
+          return 'None';
+        }
         const globalAttr = tagsMap.get('*');
         if (globalAttr) {
-          code += `static ${ns.toUpperCase()}_${attrName.toUpperCase()}_ATTR: &AttrMapEntry = &AttrMapEntry::AllNamespaceElements(${rsTagAttr(globalAttr)});\n\n`;
-        } else {
-          code += `static ${ns.toUpperCase()}_${attrName.toUpperCase()}_ATTR: &AttrMapEntry = &AttrMapEntry::SpecificNamespaceElements(phf::phf_map! {\n${
-            [...tagsMap].map(([tagName, tagAttr]) => `b\"${tagName}\" => ${rsTagAttr(tagAttr)}`).join(',\n')
-          }\n});\n\n`;
+          return `Some(AttrMapEntry::AllNamespaceElements(${rsTagAttr(globalAttr)}))`;
         }
-        byNsCode += `Some(${ns.toUpperCase()}_${attrName.toUpperCase()}_ATTR)`;
-      }
-      byNsCode += ',\n';
-    }
-    byNsCode += '};\n\n';
-    code += byNsCode;
-  }
-  code += 'pub static ATTRS: AttrMap = AttrMap::new(phf::phf_map! {\n';
-  for (const attr_name of attributes.keys()) {
-    code += `\tb\"${attr_name}\" => ${attr_name.toUpperCase()}_ATTR,\n`;
-  }
-  code += '});\n\n';
+        return `Some({
+        let mut m = HashMap::<&'static [u8], AttributeMinification>::new();
+${[...tagsMap].map(([tagName, tagAttr]) => `        m.insert(b\"${tagName}\", ${rsTagAttr(tagAttr)});`).join('\n')}
+        AttrMapEntry::SpecificNamespaceElements(m)
+      })`;
+      })() + ',').join('\n')}
+    });
+
+`).join('')}
+    AttrMap::new(m)
+  };
+}`;
   return code;
 };
 

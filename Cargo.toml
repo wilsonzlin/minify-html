@@ -16,7 +16,7 @@ include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md"]
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-phf = { version = "0.8.0", features = ["macros"] }
+lazy_static = "1.4.0"
 
 [profile.release]
 panic = 'abort'

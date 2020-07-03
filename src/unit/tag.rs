@@ -1,5 +1,5 @@
-use phf::{phf_set, Set};
-
+use lazy_static::lazy_static;
+use std::collections::HashSet;
 use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::checkpoint::Checkpoint;
 use crate::proc::MatchAction::*;
@@ -16,24 +16,28 @@ use crate::unit::style::process_style;
 use crate::gen::attrs::{ATTRS, AttributeMinification};
 use crate::spec::tag::ns::Namespace;
 
-pub static JAVASCRIPT_MIME_TYPES: Set<&'static [u8]> = phf_set! {
-    b"application/ecmascript",
-    b"application/javascript",
-    b"application/x-ecmascript",
-    b"application/x-javascript",
-    b"text/ecmascript",
-    b"text/javascript",
-    b"text/javascript1.0",
-    b"text/javascript1.1",
-    b"text/javascript1.2",
-    b"text/javascript1.3",
-    b"text/javascript1.4",
-    b"text/javascript1.5",
-    b"text/jscript",
-    b"text/livescript",
-    b"text/x-ecmascript",
-    b"text/x-javascript",
-};
+lazy_static! {
+    pub static ref JAVASCRIPT_MIME_TYPES: HashSet<&'static [u8]> = {
+        let mut s = HashSet::<&'static [u8]>::new();
+        s.insert(b"application/ecmascript");
+        s.insert(b"application/javascript");
+        s.insert(b"application/x-ecmascript");
+        s.insert(b"application/x-javascript");
+        s.insert(b"text/ecmascript");
+        s.insert(b"text/javascript");
+        s.insert(b"text/javascript1.0");
+        s.insert(b"text/javascript1.1");
+        s.insert(b"text/javascript1.2");
+        s.insert(b"text/javascript1.3");
+        s.insert(b"text/javascript1.4");
+        s.insert(b"text/javascript1.5");
+        s.insert(b"text/jscript");
+        s.insert(b"text/livescript");
+        s.insert(b"text/x-ecmascript");
+        s.insert(b"text/x-javascript");
+        s
+    };
+}
 
 // Tag names may only use ASCII alphanumerics. However, some people also use `:` and `-`.
 // See https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name for spec.
