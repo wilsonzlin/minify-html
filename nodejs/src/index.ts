@@ -1,30 +1,6 @@
-const binaryName = [
-  [process.platform, {
-    darwin: 'macos',
-    linux: 'linux',
-    win32: 'windows',
-  }],
-  '-',
-  [process.arch, {
-    x64: 'x86_64',
-  }],
-  '-node',
-  [process.versions.modules, {
-    // Sourced from https://nodejs.org/en/download/releases/.
-    57: 8,
-    59: 9,
-    64: 10,
-    67: 11,
-    72: 12,
-    79: 13,
-  }],
-  '.node',
-].map(p => typeof p == 'string'
-  ? p
-  : p[1][p[0] as string]
-).join('');
+const binaryName = [process.platform, process.arch, process.versions.modules].join('__');
 
-const hyperbuild = require(`./${binaryName}`);
+const hyperbuild = require(`./${binaryName}.node`);
 
 export const minify = (code: string): string => {
   const buf = Buffer.from(code);

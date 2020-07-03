@@ -22,23 +22,8 @@ fi
 npx neon build --release
 mv native/Cargo.toml.orig native/Cargo.toml
 
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-  os_name="linux"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-  os_name="macos"
-elif [[ "$OSTYPE" == "cygwin" ]]; then
-  os_name="windows"
-elif [[ "$OSTYPE" == "msys" ]]; then
-  os_name="windows"
-elif [[ "$OSTYPE" == "win32" ]]; then
-  os_name="windows"
-else
-  echo "Unknown OS"
-  exit 1
-fi
+binary_name="$(node -e 'console.log([process.platform, process.arch, process.versions.modules].join("__"))')"
 
-node_version=$(node -e 'console.log(process.versions.node.split(".")[0])')
-
-mv native/index.node "dist/$os_name-x86_64-node$node_version.node"
+mv native/index.node "dist/$binary_name.node"
 
 popd
