@@ -2,7 +2,7 @@
 pub struct TrieNode<V: 'static + Copy> {
     // Using a children array of size 256 would probably be fastest, but waste too much memory and cause slow compiles
     // and large binaries. Instead, we only store the children between the first and last defined (see `gen/trie.ts`).
-    // When getting a child, use `index + offset`.
+    // When getting a child, use `index - offset`.
     pub offset: usize,
     pub value: Option<V>,
     pub children: &'static [Option<&'static TrieNode<V>>],
@@ -29,7 +29,8 @@ impl<V: 'static + Copy> TrieNode<V> {
         let mut node: &TrieNode<V> = self;
         let mut next_pos = from;
         while let Some(&c) = text.get(next_pos) {
-            match node.children.get(c as usize + node.offset) {
+            // Let it underflow for performance, it should be safe as the largest index is 256.
+            match node.children.get((c as usize).wrapping_sub(node.offset)) {
                 Some(Some(child)) => node = child,
                 None | Some(None) => return None,
             };
@@ -47,9 +48,12 @@ impl<V: 'static + Copy> TrieNode<V> {
         let mut value: Option<TrieNodeMatch<V>> = None;
         let mut pos = 0;
         while let Some((new_node, new_pos)) = node.next_matching_node(text, pos) {
-            value = Some(TrieNodeMatch::Found { len: pos, value: new_node.value.unwrap() });
+            if new_pos == pos || new_node.value.is_none() {
+                break;
+            };
             node = new_node;
             pos = new_pos;
+            value = Some(TrieNodeMatch::Found { len: pos, value: node.value.unwrap() });
         };
         value.unwrap_or(TrieNodeMatch::NotFound { reached: pos })
     }
