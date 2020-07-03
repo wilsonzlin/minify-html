@@ -67,7 +67,7 @@ jobs:
         # Convert dots to underscores in Python version as Python uses dots to represent import hierarchy.
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file --contentType ${{ matrix.MIME }} ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./python/target/release/${{ matrix.LIBFILE }} hyperbuild/bin/python/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
+          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./python/target/release/${{ matrix.LIBFILE }} hyperbuild/bin/python/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
   package:
     runs-on: ubuntu-latest
     needs: build
