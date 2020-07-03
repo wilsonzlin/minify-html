@@ -48,7 +48,7 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2019-07-19
+          toolchain: stable
           profile: minimal
           default: true
       - name: Build native module
