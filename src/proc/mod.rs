@@ -3,11 +3,12 @@ use std::fmt::{Debug, Formatter};
 use std::ops::{Index, IndexMut};
 
 use crate::err::{ErrorType, ProcessingResult};
-use crate::pattern::{SinglePattern, TrieNode, TrieNodeMatch};
+use crate::pattern::{TrieNode, TrieNodeMatch};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::is_whitespace;
+use regex::bytes::Regex;
 
 pub mod checkpoint;
 pub mod range;
@@ -27,10 +28,11 @@ pub enum MatchMode {
 
     IsSeq(&'static [u8]),
 
-    WhileNotPat(&'static SinglePattern),
+    // Provide the length of the pattern as the second element.
+    WhileNotPat(&'static Regex, usize),
     // Through is like WhileNot followed by Is, but matches zero if Is is zero.
     // Useful for matching delimiter patterns. For example, matching Through "</script>" match everything up to and including the next "</script>", but would match zero if there is no "</script>".
-    ThroughPat(&'static SinglePattern),
+    ThroughPat(&'static Regex),
 }
 
 pub enum MatchAction {
@@ -152,8 +154,8 @@ impl<'d> Processor<'d> {
             // Sequence matching is slow. If using in a loop, use Pat or Trie instead.
             IsSeq(seq) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src == seq).map_or(0, |_| seq.len()),
 
-            WhileNotPat(pat) => pat.match_against(&self.code[self.read_next..]).unwrap_or(self.code.len() - self.read_next),
-            ThroughPat(pat) => pat.match_against(&self.code[self.read_next..]).map_or(0, |p| p + pat.len()),
+            WhileNotPat(pat, len) => pat.shortest_match(&self.code[self.read_next..]).map_or(self.code.len() - self.read_next, |p| p - len),
+            ThroughPat(pat) => pat.shortest_match(&self.code[self.read_next..]).unwrap_or(0),
         };
         // If keeping, match will be available in written range (which is better as source might eventually get overwritten).
         // If discarding, then only option is source range.

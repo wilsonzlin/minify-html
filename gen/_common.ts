@@ -13,7 +13,6 @@ try {
 writeFileSync(join(RUST_OUT_DIR, 'mod.rs'), `
 pub mod attrs;
 pub mod entities;
-pub mod patterns;
 `);
 
 export const DATA_DIR = join(__dirname, 'data');

@@ -1,36 +1,3 @@
-pub struct SinglePattern {
-    dfa: &'static [usize],
-    length: usize,
-}
-
-impl SinglePattern {
-    pub const fn prebuilt(dfa: &'static [usize], length: usize) -> SinglePattern {
-        SinglePattern {
-            dfa,
-            length,
-        }
-    }
-
-    pub fn len(&self) -> usize {
-        self.length
-    }
-
-    #[inline(always)]
-    pub fn match_against(&self, haystack: &[u8]) -> Option<usize> {
-        let mut i = 0;
-        let mut j = 0;
-        while i < haystack.len() && j < self.length {
-            j = self.dfa[haystack[i] as usize * self.length + j];
-            i += 1;
-        };
-        if j == self.length {
-            Some(i - self.length)
-        } else {
-            None
-        }
-    }
-}
-
 // Can't use pub const fn constructor due to Copy trait, so allow directly creating struct publicly for now.
 pub struct TrieNode<V: 'static + Copy> {
     // Using a children array of size 256 would probably be fastest, but waste too much memory and cause slow compiles
