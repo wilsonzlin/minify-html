@@ -191,6 +191,10 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
             if is_void_tag {
                 proc.write_slice(b">");
             } else {
+                if let Some(AttrType::Unquoted) = last_attr_type {
+                    // Prevent `/` from being part of the value.
+                    proc.write(b' ');
+                };
                 proc.write_slice(b"/>");
             };
         };
