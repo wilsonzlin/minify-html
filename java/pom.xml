@@ -6,7 +6,7 @@
 
     <groupId>in.wilsonl.hyperbuild</groupId>
     <artifactId>hyperbuild</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.9</version>
 
     <name>hyperbuild</name>
     <description>Fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling</description>

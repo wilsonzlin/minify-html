@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hyperbuild",
-    version="0.1.8",
+    version="0.1.9",
     author="Wilson Lin",
     author_email="code@wilsonl.in",
     description="Fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling",
