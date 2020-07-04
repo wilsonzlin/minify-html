@@ -53,6 +53,7 @@ jobs:
         run: |
           pip install --upgrade b2
       - name: Upload to B2
+        shell: bash
         run: |
           binary_name="$(node -e 'console.log([process.platform, process.arch, process.versions.modules].join("__"))')"
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
