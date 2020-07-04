@@ -9,11 +9,11 @@ use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::is_whitespace;
 use regex::bytes::Regex;
+use memchr::memchr;
 
 pub mod checkpoint;
+pub mod entity;
 pub mod range;
-#[macro_use]
-pub mod uep;
 
 pub enum MatchMode {
     IsChar(u8),
@@ -144,7 +144,7 @@ impl<'d> Processor<'d> {
             IsChar(c) => self._one(|n| n == c),
             IsNotChar(c) => self._one(|n| n != c),
             WhileChar(c) => self._many(|n| n == c),
-            WhileNotChar(c) => self._many(|n| n != c),
+            WhileNotChar(c) => memchr(c, &self.code[self.read_next..]).unwrap_or(0),
 
             IsPred(p) => self._one(|n| p(n)),
             IsNotPred(p) => self._one(|n| !p(n)),

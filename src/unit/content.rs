@@ -3,16 +3,15 @@ use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
-use crate::proc::uep::UnintentionalEntityPrevention;
 use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
-use crate::unit::entity::{EntityType, parse_entity};
 use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{MaybeClosingTag, process_tag};
 use crate::spec::tag::ns::Namespace;
+use crate::proc::entity::maybe_normalise_entity;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -23,15 +22,13 @@ enum ContentType {
 
     Start,
     End,
-    Entity,
     Text,
 }
 
 impl ContentType {
-    fn is_tag_like(&self) -> bool {
-        // Do not include Comment as comments are not written.
+    fn is_tag(&self) -> bool {
         match self {
-            ContentType::Bang | ContentType::Instruction | ContentType::Tag => true,
+            ContentType::Tag => true,
             _ => false,
         }
     }
@@ -49,7 +46,6 @@ impl ContentType {
                 },
                 _ => ContentType::Tag
             },
-            Some(b'&') => ContentType::Entity,
             Some(_) => ContentType::Text,
         }
     }
@@ -64,28 +60,35 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
     // Whether or not currently in whitespace.
     let mut ws_skipped = false;
     let mut prev_sibling_closing_tag = MaybeClosingTag::none();
-    // TODO Comment.
-    let uep = &mut UnintentionalEntityPrevention::new(proc, true);
 
     loop {
-        // Do not write anything until any previously ignored whitespace has been processed later.
+        // WARNING: Do not write anything until any previously ignored whitespace has been processed later.
+
+        // Process comments, bangs, and instructions, which are completely ignored and do not affect anything (previous element node's closing tag, unintentional entities, whitespace, etc.).
         let next_content_type = ContentType::peek(proc);
-        let entity: Option<EntityType> = match next_content_type {
+        match next_content_type {
             ContentType::Comment => {
-                // Comments are completely ignored and do not affect anything (previous element node's closing tag, unintentional entities, whitespace, etc.).
                 process_comment(proc)?;
                 continue;
             }
-            ContentType::Entity => Some(parse_entity(proc)?),
-            _ => None,
+            ContentType::Bang => {
+                process_bang(proc)?;
+                continue;
+            }
+            ContentType::Instruction => {
+                process_instruction(proc)?;
+                continue;
+            }
+            _ => {}
         };
+
+        let next_is_decoded_chevron = maybe_normalise_entity(proc) && proc.peek(0).filter(|c| *c == b'<').is_some();
 
         if handle_ws {
             // If any of these arms match, this is the start or part of one or more whitespace characters.
             // Simply ignore and process until first non-whitespace.
-            if match (next_content_type, entity) {
-                (_, Some(EntityType::Ascii(c))) if is_whitespace(c) => true,
-                (ContentType::Text, _) => proc.m(IsPred(is_whitespace), Discard).nonempty(),
+            if match next_content_type {
+                ContentType::Text => proc.m(IsPred(is_whitespace), Discard).nonempty(),
                 _ => false,
             } {
                 ws_skipped = true;
@@ -94,7 +97,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
 
             // Next character is not whitespace, so handle any previously ignored whitespace.
             if ws_skipped {
-                if destroy_whole && last_written.is_tag_like() && next_content_type.is_tag_like() {
+                if destroy_whole && last_written.is_tag() && next_content_type.is_tag() {
                     // Whitespace is between two tags, instructions, or bangs.
                     // `destroy_whole` is on, so don't write it.
                 } else if trim && (last_written == ContentType::Start || next_content_type == ContentType::End) {
@@ -102,9 +105,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                     // `trim` is on, so don't write it.
                 } else if collapse {
                     // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node; space will be new previous sibling node (as a text node).
-                    uep_ignore!(uep, proc, {
-                        prev_sibling_closing_tag.write_if_exists(proc);
-                    });
+                    prev_sibling_closing_tag.write_if_exists(proc);
                     // Current contiguous whitespace needs to be reduced to a single space character.
                     proc.write(b' ');
                     last_written = ContentType::Text;
@@ -117,17 +118,26 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
             };
         };
 
+        if next_is_decoded_chevron {
+            // Problem: semicolon after encoded '<' will cause '&LT;', making it part of the entity.
+            // Solution: insert another semicolon.
+            let encoded: &[u8] = match proc.peek(1) {
+                // Use "&LT" instead of "&lt" as there are other entity names starting with "lt".
+                Some(b';') => b"&LT;",
+                _ => b"&LT",
+            };
+            proc.write_slice(encoded);
+            proc.skip_expect();
+            continue;
+        };
+
         // Process and consume next character(s).
         match next_content_type {
             ContentType::Tag => {
-                // Always resume UEP as closing tag might not exist or be omitted.
-                uep_ignore!(uep, proc, {
-                    let new_closing_tag = process_tag(proc, ns, prev_sibling_closing_tag)?;
-                    prev_sibling_closing_tag.replace(new_closing_tag);
-                });
+                let new_closing_tag = process_tag(proc, ns, prev_sibling_closing_tag)?;
+                prev_sibling_closing_tag.replace(new_closing_tag);
             }
             ContentType::End => {
-                uep.end(proc);
                 if prev_sibling_closing_tag.exists_and(|prev_tag|
                     CLOSING_TAG_OMISSION_RULES
                         .get(&proc[prev_tag])
@@ -138,32 +148,14 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                 };
                 break;
             }
-            content_type => {
+            ContentType::Text => {
                 // Immediate next sibling node is not an element, so write any immediate previous sibling element's closing tag.
-                // UEP is resumed after processing a tag and setting `prev_sibling_closing_tag` (see ContentType::Tag arm), so suspend it before writing any closing tag (even though nothing should've been written since tag was processed and `prev_sibling_closing_tag` was set).
                 if prev_sibling_closing_tag.exists() {
-                    uep_ignore!(uep, proc, {
-                        prev_sibling_closing_tag.write(proc);
-                    });
+                    prev_sibling_closing_tag.write(proc);
                 };
-                match content_type {
-                    ContentType::Bang | ContentType::Instruction => uep_ignore!(uep, proc, {
-                        match content_type {
-                            ContentType::Bang => { process_bang(proc)?; }
-                            ContentType::Instruction => { process_instruction(proc)?; }
-                            _ => unreachable!(),
-                        };
-                    }),
-                    ContentType::Entity | ContentType::Text => uep_process!(uep, proc, {
-                        match entity {
-                            Some(entity) => { entity.keep(proc); }
-                            // Is text.
-                            None => { proc.accept()?; }
-                        };
-                    }),
-                    _ => unreachable!(),
-                };
+                proc.accept()?;
             }
+            _ => unreachable!(),
         };
 
         // This should not be reached if ContentType::{Comment, End}.

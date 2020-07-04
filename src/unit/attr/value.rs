@@ -6,9 +6,8 @@ use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
-use crate::proc::uep::UnintentionalEntityPrevention;
 use crate::spec::codepoint::{is_digit, is_whitespace};
-use crate::unit::entity::{EntityType, parse_entity};
+use crate::proc::entity::maybe_normalise_entity;
 
 fn is_double_quote(c: u8) -> bool {
     c == b'"'
@@ -60,7 +59,6 @@ lazy_static! {
 enum CharType {
     Start,
     End,
-    Entity(EntityType),
     // Normal needs associated character to be able to write it.
     Normal(u8),
     // Whitespace needs associated character to determine cost of encoding it.
@@ -230,20 +228,14 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
     // Set to true when one or more immediately previous characters were whitespace and deferred for processing after the contiguous whitespace.
     // NOTE: Only used if `should_collapse_and_trim_ws`.
     let mut currently_in_whitespace = false;
-    // TODO Comment.
-    let uep = &mut UnintentionalEntityPrevention::new(proc, false);
 
     let mut last_char_type: CharType = CharType::Start;
     loop {
-        let char_type = if proc.m(IsPred(delim_pred), MatchOnly).nonempty() {
+        let char_type = if maybe_normalise_entity(proc) && proc.peek(0).filter(|c| delim_pred(*c)).is_some() {
+            CharType::from_char(proc.skip()?)
+        } else if proc.m(IsPred(delim_pred), MatchOnly).nonempty() {
             // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
             CharType::End
-        } else if proc.m(IsChar(b'&'), MatchOnly).nonempty() {
-            // Don't write entity here; wait until any previously ignored whitespace has been handled.
-            match parse_entity(proc)? {
-                EntityType::Ascii(c) => CharType::from_char(c),
-                entity => CharType::Entity(entity),
-            }
         } else {
             CharType::from_char(proc.skip()?)
         };
@@ -272,9 +264,6 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
             CharType::End => {
                 break;
             }
-            CharType::Entity(e) => {
-                e.keep(proc);
-            }
             CharType::Whitespace(c) => {
                 handle_whitespace_char_type(c, proc, &mut metrics);
             }
@@ -301,13 +290,11 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
                 };
             }
         };
-        uep.update(proc);
         last_char_type = char_type;
     };
     if let Some(c) = src_delimiter {
         proc.m(IsChar(c), Discard).require("attribute value closing quote")?;
     };
-    uep.end(proc);
     let minimum_value = start.written_range(proc);
     // If minimum value is empty, return now before trying to read out of range later.
     // (Reading starts at one character before end of minimum value.)

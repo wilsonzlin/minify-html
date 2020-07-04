@@ -29,7 +29,6 @@ impl<V: 'static + Copy> TrieNode<V> {
         let mut node: &TrieNode<V> = self;
         let mut next_pos = from;
         while let Some(&c) = text.get(next_pos) {
-            // Let it underflow for performance, it should be safe as the largest index is 256.
             match node.children.get((c as usize).wrapping_sub(node.offset)) {
                 Some(Some(child)) => node = child,
                 None | Some(None) => return None,
@@ -47,13 +46,16 @@ impl<V: 'static + Copy> TrieNode<V> {
         let mut node: &TrieNode<V> = self;
         let mut value: Option<TrieNodeMatch<V>> = None;
         let mut pos = 0;
-        while let Some((new_node, new_pos)) = node.next_matching_node(text, pos) {
-            if new_pos == pos || new_node.value.is_none() {
-                break;
+        while let Some(&c) = text.get(pos) {
+            match node.children.get((c as usize).wrapping_sub(node.offset)) {
+                Some(Some(child)) => node = child,
+                None | Some(None) => break,
             };
-            node = new_node;
-            pos = new_pos;
-            value = Some(TrieNodeMatch::Found { len: pos, value: node.value.unwrap() });
+            pos += 1;
+            match node.value {
+                Some(v) => value = Some(TrieNodeMatch::Found { len: pos, value: v }),
+                None => {}
+            };
         };
         value.unwrap_or(TrieNodeMatch::NotFound { reached: pos })
     }
