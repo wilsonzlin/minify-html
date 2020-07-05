@@ -10,6 +10,7 @@ use crate::proc::range::ProcessorRange;
 use crate::spec::codepoint::is_whitespace;
 use regex::bytes::Regex;
 use memchr::memchr;
+use aho_corasick::AhoCorasick;
 
 pub mod checkpoint;
 pub mod entity;
@@ -39,6 +40,17 @@ pub enum MatchAction {
     Keep,
     Discard,
     MatchOnly,
+}
+
+pub struct AhoCorasickMatch {
+    pub pattern: usize,
+    pub offset: usize,
+}
+
+impl AhoCorasickMatch {
+    pub fn pattern(&self) -> usize {
+        self.pattern
+    }
 }
 
 // Processing state of a file. Single use only; create one per processing.
@@ -187,6 +199,14 @@ impl<'d> Processor<'d> {
         }
     }
 
+    #[inline(always)]
+    pub fn m_aho_corasick(&self, ac: &AhoCorasick) -> Option<AhoCorasickMatch> {
+        ac.find(&self.code[self.read_next..]).map(|m| AhoCorasickMatch {
+            pattern: m.pattern(),
+            offset: m.start(),
+        })
+    }
+
     // PUBLIC APIs.
     // Bounds checking
     pub fn at_end(&self) -> bool {
@@ -196,6 +216,10 @@ impl<'d> Processor<'d> {
     /// Get how many characters have been consumed from source.
     pub fn read_len(&self) -> usize {
         self.read_next
+    }
+
+    pub fn read_remaining(&self) -> usize {
+        self.code.len() - self.read_next
     }
 
     /// Get how many characters have been written to output.

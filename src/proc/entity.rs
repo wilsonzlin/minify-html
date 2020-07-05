@@ -78,9 +78,9 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> (usize, u
 
 // Normalise entity such that "&lt; hello" becomes "___< hello" and the range of '<' is returned.
 // For something like "&a&#109;&#112; hello", it becomes "_______&ampamp hello" and (7, 14) is returned.
-pub fn maybe_normalise_entity(proc: &mut Processor) -> bool {
+pub fn maybe_normalise_entity(proc: &mut Processor) -> usize {
     if proc.peek(0).filter(|c| *c == b'&').is_none() {
-        return false;
+        return 0;
     };
 
     let start = proc.read_next;
@@ -113,5 +113,5 @@ pub fn maybe_normalise_entity(proc: &mut Processor) -> bool {
     };
 
     proc.read_next = shifted_start;
-    return true;
+    return read_next - shifted_start;
 }
