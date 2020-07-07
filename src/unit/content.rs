@@ -26,13 +26,6 @@ enum ContentType {
 }
 
 impl ContentType {
-    fn is_tag(&self) -> bool {
-        match self {
-            ContentType::Tag => true,
-            _ => false,
-        }
-    }
-
     fn peek(proc: &mut Processor) -> ContentType {
         // Manually write out matching for fast performance as this is hot spot; don't use generated trie.
         match proc.peek(0) {
@@ -64,7 +57,8 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
     loop {
         // WARNING: Do not write anything until any previously ignored whitespace has been processed later.
 
-        // Process comments, bangs, and instructions, which are completely ignored and do not affect anything (previous element node's closing tag, unintentional entities, whitespace, etc.).
+        // Process comments, bangs, and instructions, which are completely ignored and do not affect anything (previous
+        // element node's closing tag, unintentional entities, whitespace, etc.).
         let next_content_type = ContentType::peek(proc);
         match next_content_type {
             ContentType::Comment => {
@@ -82,29 +76,27 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
             _ => {}
         };
 
-        let next_is_decoded_chevron = maybe_normalise_entity(proc) && proc.peek(0).filter(|c| *c == b'<').is_some();
+        maybe_normalise_entity(proc);
 
         if handle_ws {
-            // If any of these arms match, this is the start or part of one or more whitespace characters.
-            // Simply ignore and process until first non-whitespace.
-            if match next_content_type {
-                ContentType::Text => proc.m(IsPred(is_whitespace), Discard).nonempty(),
-                _ => false,
-            } {
+            if next_content_type == ContentType::Text && proc.m(IsPred(is_whitespace), Discard).nonempty() {
+                // This is the start or part of one or more whitespace characters.
+                // Simply ignore and process until first non-whitespace.
                 ws_skipped = true;
                 continue;
             };
 
             // Next character is not whitespace, so handle any previously ignored whitespace.
             if ws_skipped {
-                if destroy_whole && last_written.is_tag() && next_content_type.is_tag() {
+                if destroy_whole && last_written == ContentType::Tag && next_content_type == ContentType::Tag {
                     // Whitespace is between two tags, instructions, or bangs.
                     // `destroy_whole` is on, so don't write it.
                 } else if trim && (last_written == ContentType::Start || next_content_type == ContentType::End) {
                     // Whitespace is leading or trailing.
                     // `trim` is on, so don't write it.
                 } else if collapse {
-                    // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling node; space will be new previous sibling node (as a text node).
+                    // If writing space, then prev_sibling_closing_tag no longer represents immediate previous sibling
+                    // node; space will be new previous sibling node (as a text node).
                     prev_sibling_closing_tag.write_if_exists(proc);
                     // Current contiguous whitespace needs to be reduced to a single space character.
                     proc.write(b' ');
@@ -116,19 +108,6 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                 // Reset whitespace marker.
                 ws_skipped = false;
             };
-        };
-
-        if next_is_decoded_chevron {
-            // Problem: semicolon after encoded '<' will cause '&LT;', making it part of the entity.
-            // Solution: insert another semicolon.
-            let encoded: &[u8] = match proc.peek(1) {
-                // Use "&LT" instead of "&lt" as there are other entity names starting with "lt".
-                Some(b';') => b"&LT;",
-                _ => b"&LT",
-            };
-            proc.write_slice(encoded);
-            proc.skip_expect();
-            continue;
         };
 
         // Process and consume next character(s).
@@ -153,7 +132,20 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                 if prev_sibling_closing_tag.exists() {
                     prev_sibling_closing_tag.write(proc);
                 };
-                proc.accept()?;
+
+                // The only way the next character is `<` but the state is `Text` is if it was decoded from an entity.
+                if proc.peek(0).filter(|c| *c == b'<').is_some() {
+                    // Problem: semicolon after encoded '<' will cause '&LT;', making it part of the entity.
+                    // Solution: insert another semicolon.
+                    proc.write_slice(match proc.peek(1) {
+                        Some(b';') => b"&LT;",
+                        // Use "&LT" instead of "&lt" as there are other entity names starting with "lt".
+                        _ => b"&LT",
+                    });
+                    proc.skip_expect();
+                } else {
+                    proc.accept()?;
+                };
             }
             _ => unreachable!(),
         };
