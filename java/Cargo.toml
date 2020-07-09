@@ -1,12 +1,12 @@
 [package]
 name = "hyperbuild-java"
 publish = false
-version = "0.1.10"
+version = "0.1.11"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-hyperbuild = "0.1.10"
+hyperbuild = "0.1.11"
 jni = "0.14.0"
 
 [lib]
