@@ -3,7 +3,6 @@ use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
-use crate::spec::codepoint::is_whitespace;
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
 use crate::unit::bang::process_bang;
@@ -12,6 +11,7 @@ use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{MaybeClosingTag, process_tag};
 use crate::spec::tag::ns::Namespace;
 use crate::proc::entity::maybe_normalise_entity;
+use crate::gen::codepoints::WHITESPACE;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -79,7 +79,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
         maybe_normalise_entity(proc);
 
         if handle_ws {
-            if next_content_type == ContentType::Text && proc.m(IsPred(is_whitespace), Discard).nonempty() {
+            if next_content_type == ContentType::Text && proc.m(IsInLookup(WHITESPACE), Discard).nonempty() {
                 // This is the start or part of one or more whitespace characters.
                 // Simply ignore and process until first non-whitespace.
                 ws_skipped = true;

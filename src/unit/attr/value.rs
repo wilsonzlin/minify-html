@@ -6,36 +6,11 @@ use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
-use crate::spec::codepoint::{is_digit, is_whitespace};
 use crate::proc::entity::maybe_normalise_entity;
-
-fn is_double_quote(c: u8) -> bool {
-    c == b'"'
-}
-
-fn is_single_quote(c: u8) -> bool {
-    c == b'\''
-}
-
-// Valid attribute quote characters.
-// See https://html.spec.whatwg.org/multipage/introduction.html#intro-early-example for spec.
-fn is_attr_quote(c: u8) -> bool {
-    // Backtick is not a valid quote character according to spec.
-    is_double_quote(c) || is_single_quote(c)
-}
-
-// Valid unquoted attribute value characters.
-// See https://html.spec.whatwg.org/multipage/syntax.html#unquoted for spec.
-fn is_unquoted_val_char(c: u8) -> bool {
-    !(is_whitespace(c) || c == b'"' || c == b'\'' || c == b'=' || c == b'<' || c == b'>' || c == b'`')
-}
-
-fn is_not_unquoted_val_char(c: u8) -> bool {
-    !is_unquoted_val_char(c)
-}
+use crate::gen::codepoints::{DIGIT, WHITESPACE, ATTR_QUOTE, DOUBLE_QUOTE, SINGLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR};
 
 fn entity_requires_semicolon(next_char: u8) -> bool {
-    is_digit(next_char) || next_char == b';'
+    DIGIT[next_char] || next_char == b';'
 }
 
 // See comment in `process_attr_value` for full description of why these intentionally do not have semicolons.
@@ -72,7 +47,7 @@ impl CharType {
         match c {
             b'"' => CharType::DoubleQuote,
             b'\'' => CharType::SingleQuote,
-            c => if is_whitespace(c) { CharType::Whitespace(c) } else { CharType::Normal(c) },
+            c => if WHITESPACE[c] { CharType::Whitespace(c) } else { CharType::Normal(c) },
         }
     }
 
@@ -165,14 +140,14 @@ impl Metrics {
 }
 
 pub fn skip_attr_value(proc: &mut Processor) -> ProcessingResult<()> {
-    let src_delimiter = proc.m(IsPred(is_attr_quote), Discard).first(proc);
+    let src_delimiter = proc.m(IsInLookup(ATTR_QUOTE), Discard).first(proc);
     let delim_pred = match src_delimiter {
-        Some(b'"') => is_double_quote,
-        Some(b'\'') => is_single_quote,
-        None => is_not_unquoted_val_char,
+        Some(b'"') => DOUBLE_QUOTE,
+        Some(b'\'') => SINGLE_QUOTE,
+        None => NOT_UNQUOTED_ATTR_VAL_CHAR,
         _ => unreachable!(),
     };
-    proc.m(WhileNotPred(delim_pred), Discard);
+    proc.m(WhileNotInLookup(delim_pred), Discard);
     if let Some(c) = src_delimiter {
         proc.m(IsChar(c), Discard).require("attribute value closing quote")?;
     };
@@ -208,11 +183,11 @@ fn handle_whitespace_char_type(c: u8, proc: &mut Processor, metrics: &mut Metric
 // Since the actual processed value would have a length equal or greater to it (e.g. it might be quoted, or some characters might get encoded), we can then read minimum value right to left and start writing from actual processed value length (which is calculated), quoting/encoding as necessary.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
     let start = Checkpoint::new(proc);
-    let src_delimiter = proc.m(IsPred(is_attr_quote), Discard).first(proc);
-    let delim_pred = match src_delimiter {
-        Some(b'"') => is_double_quote,
-        Some(b'\'') => is_single_quote,
-        None => is_not_unquoted_val_char,
+    let src_delimiter = proc.m(IsInLookup(ATTR_QUOTE), Discard).first(proc);
+    let delim_lookup = match src_delimiter {
+        Some(b'"') => DOUBLE_QUOTE,
+        Some(b'\'') => SINGLE_QUOTE,
+        None => NOT_UNQUOTED_ATTR_VAL_CHAR,
         _ => unreachable!(),
     };
 
@@ -231,9 +206,9 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
 
     let mut last_char_type: CharType = CharType::Start;
     loop {
-        let char_type = if maybe_normalise_entity(proc) && proc.peek(0).filter(|c| delim_pred(*c)).is_some() {
+        let char_type = if maybe_normalise_entity(proc) && proc.peek(0).filter(|c| delim_lookup[*c]).is_some() {
             CharType::from_char(proc.skip()?)
-        } else if proc.m(IsPred(delim_pred), MatchOnly).nonempty() {
+        } else if proc.m(IsInLookup(delim_lookup), MatchOnly).nonempty() {
             // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
             CharType::End
         } else {
@@ -331,8 +306,8 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         // TODO Comment is_first and is_last could both be true,
         let should_encode = match (c, optimal_delimiter, is_first, is_last) {
             (b'>', DelimiterType::Unquoted, _, true) => true,
-            (c, DelimiterType::Unquoted, true, _) => is_attr_quote(c),
-            (c, DelimiterType::Unquoted, _, _) => is_whitespace(c),
+            (c, DelimiterType::Unquoted, true, _) => ATTR_QUOTE[c],
+            (c, DelimiterType::Unquoted, _, _) => WHITESPACE[c],
             (b'\'', DelimiterType::Single, _, _) => true,
             (b'"', DelimiterType::Double, _, _) => true,
             _ => false,

@@ -7,9 +7,9 @@ use crate::pattern::{TrieNode, TrieNodeMatch};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
-use crate::spec::codepoint::is_whitespace;
 use regex::bytes::Regex;
 use memchr::memchr;
+use crate::gen::codepoints::{WHITESPACE, Lookup};
 
 pub mod checkpoint;
 pub mod entity;
@@ -25,6 +25,10 @@ pub enum MatchMode {
     IsNotPred(fn(u8) -> bool),
     WhilePred(fn(u8) -> bool),
     WhileNotPred(fn(u8) -> bool),
+
+    IsInLookup(&'static Lookup),
+    WhileInLookup(&'static Lookup),
+    WhileNotInLookup(&'static Lookup),
 
     IsSeq(&'static [u8]),
 
@@ -145,6 +149,10 @@ impl<'d> Processor<'d> {
             IsNotChar(c) => self._one(|n| n != c),
             WhileChar(c) => self._many(|n| n == c),
             WhileNotChar(c) => memchr(c, &self.code[self.read_next..]).unwrap_or(0),
+
+            IsInLookup(lookup) => self._one(|n| lookup[n]),
+            WhileInLookup(lookup) => self._many(|n| lookup[n]),
+            WhileNotInLookup(lookup) => self._many(|n| !lookup[n]),
 
             IsPred(p) => self._one(|n| p(n)),
             IsNotPred(p) => self._one(|n| !p(n)),
@@ -331,7 +339,7 @@ impl Debug for Processor<'_> {
                 }
                 c => {
                     match c {
-                        c if is_whitespace(c) => lines[line_idx].1.push('·'),
+                        c if WHITESPACE[c] => lines[line_idx].1.push('·'),
                         c if c >= b'!' && c <= b'~' => lines[line_idx].1.push(c as char),
                         _ => lines[line_idx].1.push('�'),
                     };

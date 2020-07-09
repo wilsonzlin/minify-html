@@ -1,11 +1,26 @@
+// Based on the data sourced from https://html.spec.whatwg.org/entities.json:
+// - Entity names can have [A-Za-z0-9] characters, and are case sensitive.
+// - Some character entity references do not end with a semicolon.
+//   - All of these entities also have a corresponding entity with semicolon.
+// - The longest name is "CounterClockwiseContourIntegral", with length 31
+// (excluding leading ampersand and trailing semicolon).
+// - All entity names are at least 2 characters long.
+// - Some named entities are actually shorter than their decoded characters as UTF-8.
+
+// Browser implementation behaviour to consider:
+// - Browsers match longest sequence of characters that would form a valid entity.
+// - Names must match case sensitively.
+// - For a numeric entity, browsers actually consume an unlimited amount of digits, but decode to 0xFFFD if not a valid
+//   Unicode Scalar Value.
+
 use crate::gen::entities::{ENTITY, EntityType};
 use crate::pattern::TrieNodeMatch;
 use std::char::from_u32;
-use crate::spec::codepoint::{is_hex_digit, is_digit, is_lower_hex_digit, is_upper_hex_digit};
 use crate::proc::Processor;
+use crate::gen::codepoints::{DIGIT, HEX_DIGIT, LOWER_HEX_DIGIT, UPPER_HEX_DIGIT, Lookup};
 
 #[inline(always)]
-fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, write_pos: usize, is_digit: fn(u8) -> bool, on_digit: fn(u32, u8) -> u32, max_digits: u8) -> (usize, usize) {
+fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, write_pos: usize, digit_lookup: &'static Lookup, on_digit: fn(u32, u8) -> u32, max_digits: u8) -> (usize, usize) {
     let mut value = 0u32;
     let mut digits = 0;
     let mut read_next = read_start;
@@ -16,7 +31,7 @@ fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, w
     // Browser will still continue to consume digits past max_digits.
     loop {
         match code.get(read_next) {
-            Some(&c) if is_digit(c) => {
+            Some(&c) if digit_lookup[c] => {
                 // We don't care about overflow, as it will be considered malformed past max_digits anyway.
                 value = on_digit(value, c);
                 read_next += 1;
@@ -49,7 +64,7 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> (usize, u
                 // Skip past '&#'. Note that match_len is 3 as it matches '&#[0-9]'.
                 2,
                 write_pos,
-                is_digit,
+                DIGIT,
                 |value, c| value.wrapping_mul(10).wrapping_add((c - b'0') as u32),
                 7,
             ),
@@ -59,11 +74,11 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> (usize, u
                 // Skip past '&#x'. Note that match_len is 4 as it matches '&#x[0-9a-fA-F]'.
                 3,
                 write_pos,
-                is_hex_digit,
+                HEX_DIGIT,
                 |value, c| value.wrapping_mul(16).wrapping_add(match c {
-                    c if is_digit(c) => (c - b'0') as u32,
-                    c if is_lower_hex_digit(c) => (c - b'a') as u32,
-                    c if is_upper_hex_digit(c) => (c - b'A') as u32,
+                    c if DIGIT[c] => (c - b'0') as u32,
+                    c if LOWER_HEX_DIGIT[c] => (c - b'a') as u32,
+                    c if UPPER_HEX_DIGIT[c] => (c - b'A') as u32,
                     _ => unreachable!(),
                 }),
                 6,
@@ -74,7 +89,7 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> (usize, u
             }
         },
         // The entity is malformed.
-        TrieNodeMatch::NotFound { reached } => (0, 0),
+        TrieNodeMatch::NotFound { .. } => (0, 0),
     }
 }
 

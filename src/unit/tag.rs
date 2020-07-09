@@ -6,7 +6,6 @@ use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
-use crate::spec::codepoint::{is_alphanumeric, is_whitespace};
 use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::void::VOID_TAGS;
 use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
@@ -15,6 +14,7 @@ use crate::unit::script::process_script;
 use crate::unit::style::process_style;
 use crate::gen::attrs::{ATTRS, AttributeMinification};
 use crate::spec::tag::ns::Namespace;
+use crate::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
 
 lazy_static! {
     pub static ref JAVASCRIPT_MIME_TYPES: HashSet<&'static [u8]> = {
@@ -37,12 +37,6 @@ lazy_static! {
         s.insert(b"text/x-javascript");
         s
     };
-}
-
-// Tag names may only use ASCII alphanumerics. However, some people also use `:` and `-`.
-// See https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name for spec.
-fn is_valid_tag_name_char(c: u8) -> bool {
-    is_alphanumeric(c) || c == b':' || c == b'-'
 }
 
 #[derive(Copy, Clone)]
@@ -101,7 +95,7 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
     // Expect to be currently at an opening tag.
     proc.m(IsChar(b'<'), Discard).expect();
     // May not be valid tag name at current position, so require instead of expect.
-    let source_tag_name = proc.m(WhilePred(is_valid_tag_name_char), Discard).require("tag name")?;
+    let source_tag_name = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("tag name")?;
     if prev_sibling_closing_tag.exists_and(|prev_tag|
         CLOSING_TAG_OMISSION_RULES
             .get(&proc[prev_tag])
@@ -127,7 +121,7 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
 
     loop {
         // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).
-        proc.m(WhilePred(is_whitespace), Discard);
+        proc.m(WhileInLookup(WHITESPACE), Discard);
 
         if proc.m(IsChar(b'>'), Keep).nonempty() {
             // End of tag.
@@ -215,12 +209,12 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
 
     // Require closing tag for non-void.
     proc.m(IsSeq(b"</"), Discard).require("closing tag")?;
-    let closing_tag = proc.m(WhilePred(is_valid_tag_name_char), Discard).require("closing tag name")?;
+    let closing_tag = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name")?;
     // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.
     if !proc[closing_tag].eq(&proc[tag_name]) {
         return Err(ErrorType::ClosingTagMismatch);
     };
-    proc.m(WhilePred(is_whitespace), Discard);
+    proc.m(WhileInLookup(WHITESPACE), Discard);
     proc.m(IsChar(b'>'), Discard).require("closing tag end")?;
     Ok(MaybeClosingTag(Some(tag_name)))
 }

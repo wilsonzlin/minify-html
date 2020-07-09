@@ -30,8 +30,7 @@ jobs:
         working-directory: ./gen
         run: |
           npm install
-          node node_modules/ts-node/dist/bin.js attrs.ts
-          node node_modules/ts-node/dist/bin.js entities.ts
+          bash ./gen.sh
       - name: Set up Node.js for benching
         uses: actions/setup-node@master
         with:

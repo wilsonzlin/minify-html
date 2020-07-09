@@ -12,6 +12,7 @@ try {
 }
 writeFileSync(join(RUST_OUT_DIR, 'mod.rs'), `
 pub mod attrs;
+pub mod codepoints;
 pub mod entities;
 `);
 
