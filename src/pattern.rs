@@ -23,22 +23,38 @@ impl<V: 'static + Copy> TrieNodeMatch<V> {
 }
 
 impl<V: 'static + Copy> TrieNode<V> {
-    // Find the node that matches the shortest prefix of {@param text} and has a value, or the entire text.
+    // Find the node that matches the shortest prefix of {@param text} that:
+    // - has a value (except the start node if it has a value);
+    // - fails to match any further characters (the node itself matches); or,
+    // - the entire text (essentially same as previous point).
+    //
+    // For example, given a trie with only two paths "&amp" and "&amp;":
+    // - "&amp" will return node `p`.
+    // - "&ampere" will return node `p`.
+    // - "&amp;" will return node `p`.
+    // - "&amp;ere" will return node `p`.
+    // - "&am" will return node `m`.
+    //   - Further matching "p;" will return node `p`.
+    //   - Further matching "xyz" will return node `m` (itself).
+    // - "&amx" will return node `m`.
+    // - "&ax" will return node `a`.
+    // - "+ax" will return itself.
+    // - "" will return the itself.
     #[inline(always)]
-    pub fn next_matching_node(&self, text: &[u8], from: usize) -> Option<(&TrieNode<V>, usize)> {
+    pub fn shortest_matching_prefix(&self, text: &[u8], from: usize) -> (&TrieNode<V>, usize) {
         let mut node: &TrieNode<V> = self;
-        let mut next_pos = from;
-        while let Some(&c) = text.get(next_pos) {
+        let mut pos = from;
+        while let Some(&c) = text.get(pos) {
             match node.children.get((c as usize).wrapping_sub(node.offset)) {
                 Some(Some(child)) => node = child,
-                None | Some(None) => return None,
+                None | Some(None) => break,
             };
-            next_pos += 1;
+            pos += 1;
             if node.value.is_some() {
                 break;
             };
         };
-        Some((node, next_pos))
+        (node, pos)
     }
 
     #[inline(always)]

@@ -226,6 +226,11 @@ impl<'d> Processor<'d> {
         self._maybe_read_slice_offset(offset, count)
     }
 
+    // Looking behind.
+    pub fn last(&self, count: usize) -> &[u8] {
+        self.code.get(self.write_next - count..self.write_next).unwrap()
+    }
+
     // Consuming source characters.
     /// Skip and return the next character.
     /// Will result in an error if exceeds bounds.

@@ -2,8 +2,8 @@
 // - Entity names can have [A-Za-z0-9] characters, and are case sensitive.
 // - Some character entity references do not end with a semicolon.
 //   - All of these entities also have a corresponding entity with semicolon.
-// - The longest name is "CounterClockwiseContourIntegral", with length 31
-// (excluding leading ampersand and trailing semicolon).
+// - The longest name is "CounterClockwiseContourIntegral", with length 31 (excluding leading ampersand and trailing
+//   semicolon).
 // - All entity names are at least 2 characters long.
 // - Some named entities are actually shorter than their decoded characters as UTF-8.
 
@@ -19,11 +19,27 @@ use std::char::from_u32;
 use crate::proc::Processor;
 use crate::gen::codepoints::{DIGIT, HEX_DIGIT, LOWER_HEX_DIGIT, UPPER_HEX_DIGIT, Lookup};
 
+enum Parsed {
+    // This includes numeric entities that were invalid and decoded to 0xFFFD.
+    Decoded {
+        read_len: usize,
+        write_len: usize,
+    },
+    // Some entities are shorter than their decoded UTF-8 sequence. As such, we leave them encoded.
+    LeftEncoded {
+        len: usize,
+    },
+    // This is for any entity-like sequence that couldn't match the `ENTITY` trie.
+    Invalid {
+        len: usize,
+    }
+}
+
 #[inline(always)]
-fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, write_pos: usize, digit_lookup: &'static Lookup, on_digit: fn(u32, u8) -> u32, max_digits: u8) -> (usize, usize) {
+fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, write_pos: usize, digit_lookup: &'static Lookup, on_digit: fn(u32, u8) -> u32, max_digits: u8) -> Parsed {
     let mut value = 0u32;
     let mut digits = 0;
-    let mut read_next = read_start;
+    let mut read_next = read_start + prefix_len;
     // Skip initial zeros.
     while code.get(read_next).filter(|c| **c == b'0').is_some() {
         read_next += 1;
@@ -49,13 +65,15 @@ fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, w
         .filter(|_| digits <= max_digits)
         .and_then(|v| from_u32(v))
         .unwrap_or('\u{FFFD}');
-    (read_next - read_start + prefix_len, char.encode_utf8(&mut code[write_pos..]).len())
+    Parsed::Decoded {
+        read_len: read_next - read_start,
+        write_len: char.encode_utf8(&mut code[write_pos..]).len(),
+    }
 }
 
-// Parse the entity and write its decoded value at the beginning of {@param code}.
-// Return the (read_len, write_len).
-// If malformed, returns the longest matching entity prefix length as (0, 0).
-fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> (usize, usize) {
+// Parse the entity and write its decoded value at {@param write_pos}.
+// If malformed, returns the longest matching entity prefix length, and does not write/decode anything.
+fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> Parsed {
     match ENTITY.longest_matching_prefix(&code[read_pos..]) {
         TrieNodeMatch::Found { len: match_len, value } => match value {
             EntityType::Dec => parse_numeric_entity(
@@ -84,17 +102,28 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> (usize, u
                 6,
             ),
             EntityType::Named(decoded) => {
-                code[write_pos..write_pos + decoded.len()].copy_from_slice(decoded);
-                (match_len, decoded.len())
+                if decoded[0] == b'&' && decoded.len() > 1 {
+                    Parsed::LeftEncoded {
+                        len: decoded.len(),
+                    }
+                } else {
+                    code[write_pos..write_pos + decoded.len()].copy_from_slice(decoded);
+                    Parsed::Decoded {
+                        read_len: match_len,
+                        write_len: decoded.len(),
+                    }
+                }
             }
         },
         // The entity is malformed.
-        TrieNodeMatch::NotFound { .. } => (0, 0),
+        TrieNodeMatch::NotFound { reached } => Parsed::Invalid {
+            len: reached,
+        },
     }
 }
 
-// Normalise entity such that "&lt; hello" becomes "___< hello" and the range of '<' is returned.
-// For something like "&a&#109;&#112; hello", it becomes "_______&ampamp hello" and (7, 14) is returned.
+// Normalise entity such that "&lt; hello" becomes "___< hello".
+// For something like "&a&#109;&#112; hello", it becomes "_______&ampamp hello".
 pub fn maybe_normalise_entity(proc: &mut Processor) -> bool {
     if proc.peek(0).filter(|c| *c == b'&').is_none() {
         return false;
@@ -102,31 +131,71 @@ pub fn maybe_normalise_entity(proc: &mut Processor) -> bool {
 
     let start = proc.read_next;
 
-    // We want to look ahead in case this entity decodes to something beginning with '&' and following code are also
-    // entities that would decode to form an unintentional entity once decoded.
-    // For example, `&am&#113;` would output as `&amp` which is an unintentional entity.
+    // We want to look ahead in case this entity decodes to something beginning with '&' and the following code (after
+    // any decoding) would form an unintentional entity.
+    // For example, `&a&#109p;` would output as `&amp`, which is an unintentional entity.
     let mut read_next = start;
     let mut write_next = start;
-    let mut node = Some(ENTITY);
-    // NOTE: We only want to keep reading valid entities. No malformed entity could be part of an unintentional entity
-    // as no valid entity has an ampersand after the first character; however, malformed entities could be part of their
-    // own unintentional entity, so don't consume them. For example:
-    // &am&am&#113;
-    // When parsing from the first `&`, stop before the second `&`, as otherwise the second `&am` won't be normalised to
-    // `&ampamp;`.
-    while node.filter(|n| n.value.is_none()).is_some() {
-        let (entity_read, entity_write) = parse_entity(proc.code, read_next, write_next);
-        if entity_read == 0 {
-            break;
-        };
+    let mut node = ENTITY;
+    while node.value.is_none() {
+        match proc.code.get(read_next) {
+            None => break,
+            Some(b'&') => {
+                // Decode before checking to see if it continues current entity.
+                let (read_len, write_len) = match parse_entity(proc.code, read_next, write_next) {
+                    Parsed::LeftEncoded { len } => {
+                        // Don't mistake an intentionally undecoded entity for an unintentional entity.
+                        break;
+                    }
+                    Parsed::Decoded { read_len, write_len } => {
+                        debug_assert!(read_len > 0);
+                        debug_assert!(write_len > 0);
+                        (read_len, write_len)
+                    }
+                    Parsed::Invalid { len } => {
+                        debug_assert!(len > 0);
+                        // We only want to keep reading entities that will decode. No entity has an ampersand after the
+                        // first character, so we don't need to keep checking if we see one; however, malformed entities
+                        // could be part of their own unintentional entity, so don't consume them.
+                        //
+                        // For example:
+                        // &am&am&#112;
+                        // When parsing from the first `&`, stop before the second `&`, as otherwise the second `&am`
+                        // won't be normalised to `&ampamp;`.
+                        if read_next != start {
+                            break;
+                        };
+                        proc.code.copy_within(read_next..read_next + len, write_next);
+                        (len, len)
+                    }
+                };
+                debug_assert!(read_len > 0);
 
-        node = node.unwrap().next_matching_node(&proc.code[write_next..write_next + entity_write], 0).map(|(node, _)| node);
-        debug_assert!(entity_read > 0);
-        read_next += entity_read;
-        write_next += entity_write;
+                let (new_node, match_len) = node.shortest_matching_prefix(&proc.code[write_next..write_next + write_len], 0);
+                node = new_node;
+                read_next += read_len;
+                write_next += write_len;
+                if match_len < write_len {
+                    // Either new_node has a value, or we can't match anymore and so there will definitely be no
+                    // unintentional entity.
+                    break;
+                };
+            }
+            Some(_) => {
+                let (new_node, new_read_next) = node.shortest_matching_prefix(&proc.code, read_next);
+                let len = new_read_next - read_next;
+                if len == 0 {
+                    break;
+                };
+                proc.code.copy_within(read_next..new_read_next, write_next);
+                read_next += len;
+                write_next += len;
+                node = new_node;
+            }
+        };
     };
-    // Need to encode initial '&', so add 'amp'.
-    let undecodable = node.and_then(|n| n.value).is_some();
+    // Check if we need to encode initial '&' and add 'amp'.
+    let undecodable = node.value.is_some();
     // Shift decoded value down so that it ends at read_next (exclusive).
     let mut shifted_start = read_next - (write_next - start - undecodable as usize);
     proc.code.copy_within(start + undecodable as usize..write_next, shifted_start);

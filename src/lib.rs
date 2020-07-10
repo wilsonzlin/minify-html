@@ -9,6 +9,7 @@ mod pattern;
 #[macro_use]
 mod proc;
 mod spec;
+mod tests;
 mod unit;
 
 pub fn hyperbuild(code: &mut [u8]) -> Result<usize, (ErrorType, usize)> {

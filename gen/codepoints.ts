@@ -50,7 +50,10 @@ impl std::ops::Index<u8> for Lookup {
   type Output = bool;
   
   fn index(&self, c: u8) -> &Self::Output {
-    &self.table[c as usize] 
+    // \`c\` is definitely below 256 so it's always safe to directly index table without checking.
+    unsafe {
+      self.table.get_unchecked(c as usize)
+    } 
   }
 }
 

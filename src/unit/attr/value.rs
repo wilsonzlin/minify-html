@@ -51,9 +51,16 @@ impl CharType {
         }
     }
 
-    fn is_start_or_end(&self) -> bool {
+    fn is_start(&self) -> bool {
         match self {
-            CharType::Start | CharType::End => true,
+            CharType::Start => true,
+            _ => false,
+        }
+    }
+
+    fn is_end(&self) -> bool {
+        match self {
+            CharType::End => true,
             _ => false,
         }
     }
@@ -225,7 +232,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
             // Now past whitespace (e.g. moved to non-whitespace char or end of attribute value). Either:
             // - ignore contiguous whitespace (i.e. do nothing) if we are currently at beginning or end of value; or
             // - collapse contiguous whitespace (i.e. count as one whitespace char) otherwise.
-            if currently_in_whitespace && !char_type.is_start_or_end() {
+            if currently_in_whitespace && !(last_char_type.is_start() || char_type.is_end()) {
                 // Collect current collapsed contiguous whitespace that was ignored previously.
                 // Update `last_char_type` as this space character will become the new "previous character", important later when checking if previous character as an entity requires semicolon.
                 last_char_type = CharType::Whitespace(b' ');

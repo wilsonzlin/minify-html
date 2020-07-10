@@ -133,18 +133,24 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
                     prev_sibling_closing_tag.write(proc);
                 };
 
-                // The only way the next character is `<` but the state is `Text` is if it was decoded from an entity.
-                if proc.peek(0).filter(|c| *c == b'<').is_some() {
-                    // Problem: semicolon after encoded '<' will cause '&LT;', making it part of the entity.
-                    // Solution: insert another semicolon.
-                    proc.write_slice(match proc.peek(1) {
-                        Some(b';') => b"&LT;",
-                        // Use "&LT" instead of "&lt" as there are other entity names starting with "lt".
-                        _ => b"&LT",
-                    });
-                    proc.skip_expect();
-                } else {
-                    proc.accept()?;
+                match proc.peek(0).unwrap() {
+                    b';' => {
+                        // Problem: semicolon after encoded '<' will cause '&LT;', making it part of the entity.
+                        // Solution: insert another semicolon.
+                        // NOTE: We can't just peek at the time of inserting '&LT', as the semicolon might be encoded.
+                        if proc.last(3) == b"&LT" {
+                            proc.write(b';');
+                        };
+                        proc.accept_expect();
+                    }
+                    b'<' => {
+                        // The only way the next character is `<` but the state is `Text` is if it was decoded from an entity.
+                        proc.write_slice(b"&LT");
+                        proc.skip_expect();
+                    }
+                    _ => {
+                        proc.accept_expect();
+                    }
                 };
             }
             _ => unreachable!(),
