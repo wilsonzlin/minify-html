@@ -1,6 +1,6 @@
 {
   "name": "hyperbuild",
-  "version": "0.1.12",
+  "version": "0.2.0",
   "description": "Fast allocation-less HTML minifier with smart whitespace handling",
   "main": "dist/index.js",
   "files": [
