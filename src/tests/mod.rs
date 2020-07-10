@@ -1,13 +1,11 @@
-use super::*;
-use std::str::from_utf8;
-
+#[cfg(test)]
 fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
     let mut code = src.to_vec();
-    match hyperbuild_friendly_error(&mut code) {
+    match super::hyperbuild_friendly_error(&mut code) {
         Ok(len) => {
-            assert_eq!(from_utf8(&code[..len]).unwrap(), from_utf8(expected).unwrap());
+            assert_eq!(std::str::from_utf8(&code[..len]).unwrap(), std::str::from_utf8(expected).unwrap());
         }
-        Err(FriendlyError { code_context, message, .. }) => {
+        Err(super::FriendlyError { code_context, message, .. }) => {
             println!("{}", message);
             println!("{}", code_context);
             assert!(false);

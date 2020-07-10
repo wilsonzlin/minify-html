@@ -13,15 +13,6 @@ pub enum TrieNodeMatch<V: 'static + Copy> {
     NotFound { reached: usize },
 }
 
-impl<V: 'static + Copy> TrieNodeMatch<V> {
-    pub fn found(&self) -> bool {
-        match self {
-            TrieNodeMatch::Found { .. } => true,
-            TrieNodeMatch::NotFound { .. } => false,
-        }
-    }
-}
-
 impl<V: 'static + Copy> TrieNode<V> {
     // Find the node that matches the shortest prefix of {@param text} that:
     // - has a value (except the start node if it has a value);

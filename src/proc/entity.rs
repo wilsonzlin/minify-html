@@ -26,9 +26,7 @@ enum Parsed {
         write_len: usize,
     },
     // Some entities are shorter than their decoded UTF-8 sequence. As such, we leave them encoded.
-    LeftEncoded {
-        len: usize,
-    },
+    LeftEncoded,
     // This is for any entity-like sequence that couldn't match the `ENTITY` trie.
     Invalid {
         len: usize,
@@ -103,9 +101,7 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> Parsed {
             ),
             EntityType::Named(decoded) => {
                 if decoded[0] == b'&' && decoded.len() > 1 {
-                    Parsed::LeftEncoded {
-                        len: decoded.len(),
-                    }
+                    Parsed::LeftEncoded
                 } else {
                     code[write_pos..write_pos + decoded.len()].copy_from_slice(decoded);
                     Parsed::Decoded {
@@ -143,7 +139,7 @@ pub fn maybe_normalise_entity(proc: &mut Processor) -> bool {
             Some(b'&') => {
                 // Decode before checking to see if it continues current entity.
                 let (read_len, write_len) = match parse_entity(proc.code, read_next, write_next) {
-                    Parsed::LeftEncoded { len } => {
+                    Parsed::LeftEncoded => {
                         // Don't mistake an intentionally undecoded entity for an unintentional entity.
                         break;
                     }

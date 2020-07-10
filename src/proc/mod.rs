@@ -3,7 +3,6 @@ use std::fmt::{Debug, Formatter};
 use std::ops::{Index, IndexMut};
 
 use crate::err::{ErrorType, ProcessingResult};
-use crate::pattern::{TrieNode, TrieNodeMatch};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
@@ -178,21 +177,6 @@ impl<'d> Processor<'d> {
         };
 
         ProcessorRange { start, end: start + count }
-    }
-
-    #[inline(always)]
-    pub fn m_trie<V: 'static + Copy>(&mut self, trie: &TrieNode<V>, action: MatchAction) -> Option<V> {
-        match trie.longest_matching_prefix(&self.code[self.read_next..]) {
-            TrieNodeMatch::Found { len, value } => {
-                match action {
-                    Discard => self.read_next += len,
-                    Keep => self._shift(len),
-                    MatchOnly => {}
-                };
-                Some(value)
-            }
-            TrieNodeMatch::NotFound { .. } => None,
-        }
     }
 
     // PUBLIC APIs.
