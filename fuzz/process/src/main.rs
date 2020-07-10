@@ -9,7 +9,9 @@ fn main() {
         let path_in_catch = path.clone();
         let res = panic::catch_unwind(|| {
             let mut contents = fs::read(path_in_catch).unwrap();
-            let _ = hyperbuild::hyperbuild(&mut contents);
+            let _ = hyperbuild::hyperbuild(&mut contents, &hyperbuild::Cfg {
+                minify_js: false,
+            });
         });
         if res.is_err() {
             let contents = fs::read(path).unwrap();

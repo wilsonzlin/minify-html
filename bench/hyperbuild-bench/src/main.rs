@@ -1,4 +1,4 @@
-use hyperbuild::hyperbuild;
+use hyperbuild::{Cfg, hyperbuild};
 use std::fs;
 use std::io::{stdout};
 use std::time::Instant;
@@ -23,7 +23,9 @@ fn main() {
         let start = Instant::now();
         for _ in 0..args.iterations {
             let mut data = source.to_vec();
-            hyperbuild(&mut data).unwrap();
+            hyperbuild(&mut data, &Cfg {
+                minify_js: false,
+            }).unwrap();
         };
         let elapsed = start.elapsed().as_secs_f64();
         let ops = args.iterations as f64 / elapsed;
