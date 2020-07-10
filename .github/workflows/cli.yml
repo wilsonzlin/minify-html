@@ -42,13 +42,18 @@ jobs:
           toolchain: stable
           profile: minimal
           default: true
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '^1.14.0'
+      - name: Set up Go (Windows)
+        if: runner.os == 'Windows'
+        run: choco install golang
+      - name: Set up Go (macOS)
+        if: runner.os == 'macOS'
+        run: brew install go
+      - name: Set up Go (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt install golang-go
       - name: Build CLI
         working-directory: ./cli
-        run: cargo build --release
+        run: cargo build --release -vvv
       - name: Install B2 CLI (macOS, Linux)
         if: runner.os != 'Windows'
         run: |
