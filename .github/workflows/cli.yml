@@ -42,20 +42,16 @@ jobs:
           toolchain: stable
           profile: minimal
           default: true
-      - name: Set up Go (Windows)
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.14.0'
+      - name: Set up GCC (Windows)
         if: runner.os == 'Windows'
-        run: choco install golang
-      - name: Set up Go (macOS)
-        if: runner.os == 'macOS'
         run: |
-          brew install go
-          sudo xcode-select -s /Applications/Xcode_11.1.app/Contents/Developer
-      - name: Set up Go (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          sudo add-apt-repository -y ppa:longsleep/golang-backports
-          sudo apt update
-          sudo apt install golang-go
+          Invoke-WebRequest 'https://wilsonl.in/TDM-GCC-64.7z' -OutFile C:\gcc.7z
+          7z x C:\gcc.7z -oC:\
+          $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
+          Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value "C:\TDM-GCC-64\bin;$oldpath"
       - name: Build CLI
         working-directory: ./cli
         run: cargo build --release -vvv
