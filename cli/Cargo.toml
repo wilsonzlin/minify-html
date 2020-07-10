@@ -1,10 +1,10 @@
 [package]
 name = "hyperbuild-cli"
 publish = false
-version = "0.1.11"
+version = "0.1.12"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-hyperbuild = "0.1.11"
+hyperbuild = "0.1.12"
 structopt = "0.3.5"
