@@ -12,6 +12,7 @@ Available as:
 - Minification is done in one pass with no backtracking or DOM/AST building.
 - No extra heap memory is allocated during processing, which increases performance.
 - Context-aware whitespace handling allows maximum minification while retaining desired spaces.
+- Well tested with a large test suite and extensive [fuzzing](./fuzz).
 
 ## Performance
 
