@@ -1,6 +1,6 @@
 [package]
 name = "hyperbuild"
-description = "Fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling"
+description = "Fast allocation-less HTML minifier with smart whitespace handling"
 license = "MIT"
 homepage = "https://github.com/wilsonzlin/hyperbuild"
 readme = "README.md"

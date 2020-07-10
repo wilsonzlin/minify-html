@@ -9,7 +9,7 @@
     <version>0.1.12</version>
 
     <name>hyperbuild</name>
-    <description>Fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling</description>
+    <description>Fast allocation-less HTML minifier with smart whitespace handling</description>
     <url>https://github.com/wilsonzlin/hyperbuild</url>
     <developers>
         <developer>

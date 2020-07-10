@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.1.12",
     author="Wilson Lin",
     author_email="code@wilsonl.in",
-    description="Fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling",
+    description="Fast allocation-less HTML minifier with smart whitespace handling",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/wilsonzlin/hyperbuild",
