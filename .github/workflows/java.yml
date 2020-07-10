@@ -62,11 +62,6 @@ jobs:
           java-version: '1.7'
           java-package: jdk
           architecture: x64
-      - name: Download Windows built library
-        uses: actions/download-artifact@v1
-        with:
-          name: windows-x86_64
-          path: java/src/main/resources/windows-x86_64
       - name: Download Linux built library
         uses: actions/download-artifact@v1
         with:

@@ -5,7 +5,7 @@ A fast one-pass in-place HTML minifier written in Rust with context-aware whites
 Also supports JS minification by plugging into [esbuild](https://github.com/evanw/esbuild).
 
 Available as:
-- CLI for Windows, macOS, and Linux.
+- CLI for macOS and Linux.
 - Rust library.
 - Native library for Node.js, Python, Java, and Ruby.
 
@@ -26,13 +26,12 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 ### CLI
 
-Precompiled binaries are available for x86-64 Windows, macOS, and Linux.
+Precompiled binaries are available for x86-64 macOS and Linux.
 
 Building from source currently requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/evanw/esbuild).
 
 ##### Get
 
-[Windows](https://wilsonl.in/hyperbuild/bin/0.2.2-windows-x86_64.exe) |
 [macOS](https://wilsonl.in/hyperbuild/bin/0.2.2-macos-x86_64) |
 [Linux](https://wilsonl.in/hyperbuild/bin/0.2.2-linux-x86_64)
 
