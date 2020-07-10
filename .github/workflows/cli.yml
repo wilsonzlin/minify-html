@@ -47,7 +47,9 @@ jobs:
         run: choco install golang
       - name: Set up Go (macOS)
         if: runner.os == 'macOS'
-        run: brew install go
+        run: |
+          brew install go
+          sudo xcode-select -s /Applications/Xcode_11.1.app/Contents/Developer
       - name: Set up Go (Linux)
         if: runner.os == 'Linux'
         run: |
