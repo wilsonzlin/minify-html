@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hyperbuild",
-    version="0.2.1",
+    version="0.2.2",
     author="Wilson Lin",
     author_email="code@wilsonl.in",
     description="Fast allocation-less HTML minifier with smart whitespace handling",
