@@ -1,7 +1,7 @@
 #[cfg(test)]
-fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
+fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
     let mut code = src.to_vec();
-    match super::hyperbuild_friendly_error(&mut code) {
+    match super::hyperbuild_friendly_error(&mut code, cfg) {
         Ok(len) => {
             assert_eq!(std::str::from_utf8(&code[..len]).unwrap(), std::str::from_utf8(expected).unwrap());
         }
@@ -11,6 +11,20 @@ fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
             assert!(false);
         }
     };
+}
+
+#[cfg(test)]
+fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
+    _eval(src, expected, &super::Cfg {
+        minify_js: false,
+    });
+}
+
+#[cfg(test)]
+fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
+    _eval(src, expected, &super::Cfg {
+        minify_js: true,
+    });
 }
 
 #[test]
@@ -257,4 +271,9 @@ fn test_left_chevron_entities_in_content() {
     eval(b"&lt;;", b"&LT;;");
     eval(b"&lt;&#59", b"&LT;;");
     eval(b"&lt;&#59;", b"&LT;;");
+}
+
+#[test]
+fn test_js_minification() {
+    eval_with_js_min(b"<script>let a = 1;</script>", b"<script>let a=1;</script>");
 }

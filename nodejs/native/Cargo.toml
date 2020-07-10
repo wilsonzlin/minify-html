@@ -13,8 +13,8 @@ name = "hyperbuild_nodejs_lib"
 crate-type = ["cdylib"]
 
 [build-dependencies]
-neon-build = "0.3.3"
+neon-build = "0.4.0"
 
 [dependencies]
 hyperbuild = "0.1.12"
-neon = "0.3.3"
+neon = "0.4.0"

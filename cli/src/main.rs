@@ -3,7 +3,7 @@ use std::io::{Read, stdin, stdout, Write};
 
 use structopt::StructOpt;
 
-use hyperbuild::{FriendlyError, hyperbuild_friendly_error};
+use hyperbuild::{Cfg, FriendlyError, hyperbuild_friendly_error};
 
 #[derive(StructOpt)]
 struct Cli {
@@ -11,6 +11,8 @@ struct Cli {
     src: Option<std::path::PathBuf>,
     #[structopt(short, long, parse(from_os_str))]
     out: Option<std::path::PathBuf>,
+    #[structopt(long)]
+    js: bool,
 }
 
 macro_rules! io_expect {
@@ -34,7 +36,9 @@ fn main() {
         None => Box::new(stdin()),
     };
     io_expect!(src_file.read_to_end(&mut code), "could not load source code");
-    match hyperbuild_friendly_error(&mut code) {
+    match hyperbuild_friendly_error(&mut code, &Cfg {
+        minify_js: args.js,
+    }) {
         Ok(out_len) => {
             let mut out_file: Box<dyn Write> = match args.out {
                 Some(p) => Box::new(io_expect!(File::create(p), "could not open output file")),

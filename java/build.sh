@@ -44,6 +44,7 @@ else
 fi
 cargo build $rust_build_arg
 mv Cargo.toml.orig Cargo.toml
+mkdir -p src/main/resources/
 cp target/rust/$rust_build_dir/libhyperbuild_java.$ext src/main/resources/$os_name-x86_64.nativelib
 
 mvn clean package

@@ -15,6 +15,7 @@ use crate::unit::style::process_style;
 use crate::gen::attrs::{ATTRS, AttributeMinification};
 use crate::spec::tag::ns::Namespace;
 use crate::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use crate::cfg::Cfg;
 
 lazy_static! {
     pub static ref JAVASCRIPT_MIME_TYPES: HashSet<&'static [u8]> = {
@@ -91,7 +92,7 @@ impl MaybeClosingTag {
 }
 
 // TODO Comment param `prev_sibling_closing_tag`.
-pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing_tag: MaybeClosingTag) -> ProcessingResult<MaybeClosingTag> {
+pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibling_closing_tag: MaybeClosingTag) -> ProcessingResult<MaybeClosingTag> {
     // Expect to be currently at an opening tag.
     proc.m(IsChar(b'<'), Discard).expect();
     // May not be valid tag name at current position, so require instead of expect.
@@ -202,9 +203,9 @@ pub fn process_tag(proc: &mut Processor, ns: Namespace, mut prev_sibling_closing
     };
 
     match tag_type {
-        TagType::Script => process_script(proc)?,
+        TagType::Script => process_script(proc, cfg)?,
         TagType::Style => process_style(proc)?,
-        _ => process_content(proc, child_ns, Some(tag_name))?,
+        _ => process_content(proc, cfg, child_ns, Some(tag_name))?,
     };
 
     // Require closing tag for non-void.

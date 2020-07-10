@@ -12,6 +12,7 @@ use crate::unit::tag::{MaybeClosingTag, process_tag};
 use crate::spec::tag::ns::Namespace;
 use crate::proc::entity::maybe_normalise_entity;
 use crate::gen::codepoints::WHITESPACE;
+use crate::cfg::Cfg;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -44,7 +45,7 @@ impl ContentType {
     }
 }
 
-pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
+pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
     let &WhitespaceMinification { collapse, destroy_whole, trim } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]));
 
     let handle_ws = collapse || destroy_whole || trim;
@@ -113,7 +114,7 @@ pub fn process_content(proc: &mut Processor, ns: Namespace, parent: Option<Proce
         // Process and consume next character(s).
         match next_content_type {
             ContentType::Tag => {
-                let new_closing_tag = process_tag(proc, ns, prev_sibling_closing_tag)?;
+                let new_closing_tag = process_tag(proc, cfg, ns, prev_sibling_closing_tag)?;
                 prev_sibling_closing_tag.replace(new_closing_tag);
             }
             ContentType::End => {

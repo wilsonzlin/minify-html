@@ -2,6 +2,8 @@
 
 A fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling.
 
+Also supports JS minification by plugging into [esbuild](https://github.com/evanw/esbuild).
+
 Available as:
 - CLI for Windows, macOS, and Linux.
 - Rust library.
@@ -26,6 +28,8 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 Precompiled binaries are available for x86-64 Windows, macOS, and Linux.
 
+Building from source currently requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/evanw/esbuild).
+
 ##### Get
 
 [Windows](https://wilsonl.in/hyperbuild/bin/0.1.12-windows-x86_64.exe) |
@@ -33,6 +37,8 @@ Precompiled binaries are available for x86-64 Windows, macOS, and Linux.
 [Linux](https://wilsonl.in/hyperbuild/bin/0.1.12-linux-x86_64)
 
 ##### Use
+
+Use the `--help` argument for more details.
 
 ```bash
 hyperbuild --src /path/to/src.html --out /path/to/output.min.html
@@ -53,28 +59,31 @@ hyperbuild = "0.1.12"
 ##### Use
 
 ```rust
-use hyperbuild::{FriendlyError, hyperbuild};
+use hyperbuild::{Cfg, FriendlyError, hyperbuild, hyperbuild_copy, hyperbuild_friendly_error, hyperbuild_truncate};
 
 fn main() {
     let mut code = b"<p>  Hello, world!  </p>".to_vec();
+    let cfg = &Cfg {
+        minify_js: false,
+    };
 
     // Minifies a slice in-place and returns the new minified length,
     // but leaves any original code after the minified code intact.
-    match hyperbuild(&mut code) {
+    match hyperbuild(&mut code, cfg) {
         Ok(minified_len) => {}
         Err((error_type, error_position)) => {}
     };
 
     // Creates a vector copy containing only minified code
     // instead of minifying in-place.
-    match hyperbuild_copy(&code) {
+    match hyperbuild_copy(&code, cfg) {
         Ok(minified) => {}
         Err((error_type, error_position)) => {}
     };
 
     // Minifies a vector in-place, and then truncates the
     // vector to the new minified length.
-    match hyperbuild_truncate(&mut code) {
+    match hyperbuild_truncate(&mut code, cfg) {
         Ok(()) => {}
         Err((error_type, error_position)) => {}
     };
@@ -82,7 +91,7 @@ fn main() {
     // Identical to `hyperbuild` except with FriendlyError instead.
     // `code_context` is a string of a visual representation of the source,
     // with line numbers and position markers to aid in debugging syntax.
-    match hyperbuild_friendly_error(&mut code) {
+    match hyperbuild_friendly_error(&mut code, cfg) {
         Ok(minified_len) => {}
         Err(FriendlyError { position, message, code_context }) => {
             eprintln!("Failed at character {}:", position);
@@ -119,10 +128,11 @@ yarn add hyperbuild
 ```js
 const hyperbuild = require("hyperbuild");
 
-const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
+const cfg = { minifyJs: false };
+const minified = hyperbuild.minify("<p>  Hello, world!  </p>", cfg);
 
 // Alternatively, minify in place to avoid copying.
-const source = Buffer.from("<p>  Hello, world!  </p>");
+const source = Buffer.from("<p>  Hello, world!  </p>", cfg);
 hyperbuild.minifyInPlace(source);
 ```
 
@@ -132,8 +142,9 @@ hyperbuild is also available for TypeScript:
 import * as hyperbuild from "hyperbuild";
 import * as fs from "fs";
 
-const minified = hyperbuild.minify("<p>  Hello, world!  </p>");
-hyperbuild.minifyInPlace(fs.readFileSync("source.html"));
+const cfg = { minifyJs: false };
+const minified = hyperbuild.minify("<p>  Hello, world!  </p>", cfg);
+hyperbuild.minifyInPlace(fs.readFileSync("source.html"), cfg);
 ```
 
 </details>
@@ -160,15 +171,18 @@ Add as a Maven dependency:
 ```java
 import in.wilsonl.hyperbuild.Hyperbuild;
 
+Hyperbuild.Configuration cfg = new Hyperbuild.Configuration.Builder()
+    .setMinifyJs(false)
+    .build();
 try {
-    String minified = Hyperbuild.minify("<p>  Hello, world!  </p>");
+    String minified = Hyperbuild.minify("<p>  Hello, world!  </p>", cfg);
 } catch (Hyperbuild.SyntaxException e) {
     System.err.println(e.getMessage());
 }
 
 // Alternatively, minify in place:
 assert source instanceof ByteBuffer && source.isDirect();
-Hyperbuild.minifyInPlace(source);
+Hyperbuild.minifyInPlace(source, cfg);
 ```
 
 </details>
@@ -188,7 +202,7 @@ Add the PyPI project as a dependency and install it using `pip` or `pipenv`.
 import hyperbuild
 
 try:
-    minified = hyperbuild.minify("<p>  Hello, world!  </p>")
+    minified = hyperbuild.minify("<p>  Hello, world!  </p>", minify_js=False)
 except SyntaxError as e:
     print(e)
 ```
@@ -209,16 +223,12 @@ Add the library as a dependency to `Gemfile` or `*.gemspec`.
 ```ruby
 require 'hyperbuild'
 
-print Hyperbuild.minify "<p>  Hello, world!  </p>"
+print Hyperbuild.minify("<p>  Hello, world!  </p>", { :minify_js => false })
 ```
 
 </details>
 
 ## Minification
-
-### Configurability
-
-Configuration of minification is currently WIP across all languages. The behaviour mentioned below is the default.
 
 ### Whitespace
 
@@ -457,7 +467,7 @@ Bangs, [processing instructions](https://en.wikipedia.org/wiki/Processing_Instru
 
 Only UTF-8/ASCII-encoded HTML code is supported.
 
-hyperbuild simply does HTML minification, and almost does no syntax checking or standards enforcement for performance and code complexity reasons.
+hyperbuild does no syntax checking or standards enforcement for performance and code complexity reasons.
 
 For example, this means that it's not an error to have self-closing tags, declare multiple `<body>` elements, use incorrect attribute names and values, or write something like `<br>alert('');</br>`
 
