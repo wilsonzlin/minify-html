@@ -12,17 +12,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         python: [3.5, 3.6, 3.7, 3.8]
         include:
           - os: ubuntu-latest
             ARCH: linux-x86_64
             LIBFILE: 'libhyperbuild_python_lib.so'
             PYEXT: 'so'
-          - os: windows-latest
-            ARCH: windows-x86_64
-            LIBFILE: 'hyperbuild_python_lib.dll'
-            PYEXT: 'pyd'
           - os: macos-latest
             ARCH: macos-x86_64
             LIBFILE: 'libhyperbuild_python_lib.dylib'

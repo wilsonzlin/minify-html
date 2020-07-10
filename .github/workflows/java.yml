@@ -12,14 +12,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest]
         include:
           - os: ubuntu-latest
             ARCH: linux-x86_64
             FILE: 'libhyperbuild_java.so'
-          - os: windows-latest
-            ARCH: windows-x86_64
-            FILE: 'hyperbuild_java.dll'
           - os: macos-latest
             ARCH: macos-x86_64
             FILE: 'libhyperbuild_java.dylib'
