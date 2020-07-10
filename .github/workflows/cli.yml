@@ -36,22 +36,27 @@ jobs:
         id: file
         shell: bash
         run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}-${{ matrix.ARCH }}${{ matrix.EXT }}
-      - name: Set up Rust
+      - name: Set up Rust (macOS, Linux)
+        if: runner.os != 'Windows'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
           default: true
-      - uses: actions/setup-go@v2
+      - name: Set up Rust (Windows)
+        if: runner.os == 'Windows'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable-gnu
+          profile: minimal
+          default: true
+      - name: Set up Go
+        uses: actions/setup-go@v2
         with:
           go-version: '^1.14.0'
       - name: Set up GCC (Windows)
         if: runner.os == 'Windows'
-        run: |
-          Invoke-WebRequest 'https://wilsonl.in/TDM-GCC-64.7z' -OutFile C:\gcc.7z
-          7z x C:\gcc.7z -oC:\
-          $oldpath = (Get-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH).Path
-          Set-ItemProperty -Path 'Registry::HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Environment' -Name PATH -Value "C:\TDM-GCC-64\bin;$oldpath"
+        run: .\.github\workflows\gcc.ps1
       - name: Build CLI
         working-directory: ./cli
         run: cargo build --release -vvv
