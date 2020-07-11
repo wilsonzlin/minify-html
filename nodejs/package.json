@@ -8,6 +8,9 @@
     "install.js"
   ],
   "scripts": {
+    "build": "npm run clean && tsc",
+    "build-binary": "neon build --release && mv native/index.node dist/native.node",
+    "clean": "rm -rf dist",
     "postinstall": "node install.js"
   },
   "repository": {

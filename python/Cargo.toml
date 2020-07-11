@@ -10,7 +10,7 @@ name = "hyperbuild_python_lib"
 crate-type = ["cdylib"]
 
 [dependencies]
-hyperbuild = "0.2.3"
+hyperbuild = { path = "..", features = ["js-esbuild"] }
 [dependencies.pyo3]
 version = "0.11.1"
 features = ["extension-module"]

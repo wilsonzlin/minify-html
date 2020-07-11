@@ -66,7 +66,7 @@ const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFi
 if (cmd('git', 'status', '--porcelain', {throwOnStderr: true, captureStdio: true}).stdout) {
   throw new Error('Working directory not clean');
 }
-cmd('bash', './gen.sh', {workingDir: join(__dirname, 'gen')});
+cmd('bash', './prebuild.sh');
 // This will also build.
 cmd('cargo', 'test');
 
@@ -74,24 +74,8 @@ for (const f of ['Cargo.toml', 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'ja
   replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
 }
 
-for (const f of ['python/setup.py']) {
-  replaceInFile(f, /^(\s*version=)"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
-}
-
-for (const f of ['README.md', 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.toml', 'ruby/Cargo.toml']) {
-  replaceInFile(f, /^hyperbuild = "\d+\.\d+\.\d+"\s*$/m, `hyperbuild = "${NEW_VERSION}"`);
-}
-
-for (const f of ['nodejs/package.json']) {
-  replaceInFile(f, /^(\s*"version": )"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
-}
-
-for (const f of ['ruby/hyperbuild.gemspec']) {
-  replaceInFile(f, /^(\s*spec\.version\s*=\s*)"\d+\.\d+\.\d+"\s*$/m, `$1"${NEW_VERSION}"`);
-}
-
-for (const f of ['java/pom.xml', 'README.md']) {
-  replaceInFile(f, /(<artifactId>hyperbuild<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/, `$1${NEW_VERSION}$2`);
+for (const f of ['README.md']) {
+  replaceInFile(f, /^(hyperbuild = \{ version = )"\d+\.\d+\.\d+"/m, `$1"${NEW_VERSION}"`);
 }
 
 for (const f of ['README.md']) {
@@ -100,6 +84,22 @@ for (const f of ['README.md']) {
 
 for (const f of ['README.md', 'bench/README.md']) {
   replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bench\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
+}
+
+for (const f of ['java/pom.xml', 'README.md']) {
+  replaceInFile(f, /(<artifactId>hyperbuild<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/, `$1${NEW_VERSION}$2`);
+}
+
+for (const f of ['nodejs/package.json']) {
+  replaceInFile(f, /^(\s*"version": )"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
+}
+
+for (const f of ['python/setup.py']) {
+  replaceInFile(f, /^(\s*version=)"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
+}
+
+for (const f of ['ruby/hyperbuild.gemspec']) {
+  replaceInFile(f, /^(\s*spec\.version\s*=\s*)"\d+\.\d+\.\d+"\s*$/m, `$1"${NEW_VERSION}"`);
 }
 
 cmd('cargo', 'generate-lockfile');

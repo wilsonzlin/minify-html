@@ -50,11 +50,15 @@ jobs:
       - name: Set up GCC (Windows)
         if: runner.os == 'Windows'
         run: .\.github\workflows\gcc.ps1
+      - name: Run prebuild steps
+        shell: bash
+        run: bash ./prebuild.sh
       - name: Build native module
         working-directory: ./nodejs
+        shell: bash
         run: |
           npm install
-          node node_modules/neon-cli/bin/cli.js build --release
+          npm run build-binary
       - name: Install B2 CLI (macOS, Linux)
         if: runner.os != 'Windows'
         run: |
@@ -69,7 +73,7 @@ jobs:
         run: |
           binary_name="$(node -e 'console.log([process.platform, process.arch, process.versions.modules].join("__"))')"
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/native/index.node "hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/$binary_name.node"
+          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/dist/native.node "hyperbuild/bin/nodejs/${{ steps.version.outputs.VERSION }}/$binary_name.node"
   package:
     runs-on: ubuntu-latest
     needs: build
@@ -91,8 +95,7 @@ jobs:
           //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
           EOF
           npm install
-          rm -rf dist
-          node node_modules/typescript/bin/tsc
+          npm run build
           cp ../README.md .
           if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
             npm publish

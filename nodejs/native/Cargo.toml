@@ -16,5 +16,5 @@ crate-type = ["cdylib"]
 neon-build = "0.4.0"
 
 [dependencies]
-hyperbuild = { path = "../.." }
+hyperbuild = { path = "../..", features = ["js-esbuild"] }
 neon = "0.4.0"

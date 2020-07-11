@@ -10,5 +10,5 @@ name = "hyperbuild_ruby_lib"
 crate-type = ["cdylib"]
 
 [dependencies]
-hyperbuild = "0.2.3"
+hyperbuild = { path = "..", features = ["js-esbuild"] }
 rutie = "0.7.0"

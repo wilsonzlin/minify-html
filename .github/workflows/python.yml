@@ -62,6 +62,9 @@ jobs:
       - name: Set up GCC (Windows)
         if: runner.os == 'Windows'
         run: .\.github\workflows\gcc.ps1
+      - name: Run prebuild steps
+        shell: bash
+        run: bash ./prebuild.sh
       - name: Build native module
         working-directory: ./python
         run: cargo build --release

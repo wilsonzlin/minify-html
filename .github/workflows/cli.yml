@@ -53,6 +53,9 @@ jobs:
       - name: Set up GCC (Windows)
         if: runner.os == 'Windows'
         run: .\.github\workflows\gcc.ps1
+      - name: Run prebuild steps
+        shell: bash
+        run: bash ./prebuild.sh
       - name: Build CLI
         working-directory: ./cli
         run: cargo build --release -vvv

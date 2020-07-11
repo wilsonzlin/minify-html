@@ -30,11 +30,9 @@ jobs:
         uses: actions/setup-node@master
         with:
           node-version: 14.x
-      - name: Build generated code
-        working-directory: ./gen
-        run: |
-          npm install
-          bash ./gen.sh
+      - name: Run prebuild steps
+        shell: bash
+        run: bash ./prebuild.sh
       - name: Set up Node.js for benching
         uses: actions/setup-node@master
         with:

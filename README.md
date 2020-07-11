@@ -28,8 +28,6 @@ Speed and effectiveness of Node.js version compared to [html-minfier](https://gi
 
 Precompiled binaries are available for x86-64 macOS and Linux.
 
-Building from source currently requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/evanw/esbuild).
-
 ##### Get
 
 [macOS](https://wilsonl.in/hyperbuild/bin/0.2.3-macos-x86_64) |
@@ -52,8 +50,12 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = "0.2.3"
+hyperbuild = { version = "0.2.3", features = ["js-esbuild"] }
 ```
+
+Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/evanw/esbuild).
+
+If the `js-esbuild` feature is not enabled, `cfg.minify_js` will have no effect.
 
 ##### Use
 
