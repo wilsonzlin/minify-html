@@ -3,7 +3,6 @@ use pyo3::prelude::*;
 use pyo3::exceptions::SyntaxError;
 use pyo3::wrap_pyfunction;
 use std::str::from_utf8_unchecked;
-use pyo3::types::PyTuple;
 
 #[pyfunction(py_args="*", minify_js="false")]
 fn minify(code: String, minify_js: bool) -> PyResult<String> {
@@ -17,7 +16,7 @@ fn minify(code: String, minify_js: bool) -> PyResult<String> {
 }
 
 #[pymodule]
-fn hyperbuild(py: Python, m: &PyModule) -> PyResult<()> {
+fn hyperbuild(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(minify))?;
 
     Ok(())
