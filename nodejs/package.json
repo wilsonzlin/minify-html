@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "npm run clean && tsc",
-    "build-binary": "neon build --release && mv native/index.node dist/native.node",
+    "build-binary": "neon build --release && mkdir -p dist && mv native/index.node dist/native.node",
     "clean": "rm -rf dist",
     "postinstall": "node postinstall.js"
   },
