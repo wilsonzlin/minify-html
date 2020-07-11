@@ -4,9 +4,7 @@ use crate::err::ProcessingResult;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
-use esbuild_rs::esbuild;
 use crate::cfg::Cfg;
-use std::string::String;
 
 static SCRIPT_END_STR: &'static str = "</script";
 
@@ -17,9 +15,10 @@ lazy_static! {
 pub fn process_script(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
     // `process_tag` will require closing tag.
     let code = proc.m(WhileNotPat(&SCRIPT_END, SCRIPT_END_STR.len()), Discard);
+    #[cfg(feature = "js-esbuild")]
     if cfg.minify_js {
-        let code_str = unsafe { String::from_utf8_unchecked(proc[code].to_vec()) };
-        let min = esbuild(&code_str).trim().as_bytes();
+        let code_str = unsafe { std::string::String::from_utf8_unchecked(proc[code].to_vec()) };
+        let min = esbuild_rs::esbuild(&code_str).trim().as_bytes();
         if min.len() < code.len() {
             proc.write_slice(min);
             return Ok(());
