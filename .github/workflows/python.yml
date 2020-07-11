@@ -74,6 +74,4 @@ jobs:
           maturin build --release --strip -i "$(which python)"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             twine upload target/wheels/*
-          else
-            twine upload --repository testpypi target/wheels/*
           fi
