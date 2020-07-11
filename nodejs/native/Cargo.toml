@@ -16,5 +16,5 @@ crate-type = ["cdylib"]
 neon-build = "0.4.0"
 
 [dependencies]
-hyperbuild = "0.2.3"
+hyperbuild = { path = "../.." }
 neon = "0.4.0"

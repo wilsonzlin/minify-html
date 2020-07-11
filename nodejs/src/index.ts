@@ -1,6 +1,4 @@
-const binaryName = [process.platform, process.arch, process.versions.modules].join('__');
-
-const hyperbuild = require(`./${binaryName}.node`);
+const hyperbuild = require(`./native.node`);
 
 export type Configuration = {
   minifyJs: boolean;

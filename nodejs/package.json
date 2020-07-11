@@ -4,14 +4,15 @@
   "description": "Fast allocation-less HTML minifier with smart whitespace handling",
   "main": "dist/index.js",
   "files": [
-    "dist/**"
+    "dist/**",
+    "install.js"
   ],
+  "scripts": {
+    "postinstall": "node install.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wilsonzlin/hyperbuild.git"
-  },
-  "engines": {
-    "node": ">=8 <=14"
   },
   "author": {
     "email": "npm@wilsonl.in",
@@ -24,9 +25,9 @@
   },
   "homepage": "https://github.com/wilsonzlin/hyperbuild#readme",
   "devDependencies": {
-    "@types/node": "^13.1.8",
-    "neon-cli": "^0.3.3",
-    "typescript": "^3.7.5"
+    "@types/node": "^14.0.22",
+    "neon-cli": "^0.4.0",
+    "typescript": "^3.9.6"
   },
   "keywords": [
     "build",
