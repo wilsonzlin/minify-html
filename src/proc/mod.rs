@@ -6,7 +6,6 @@ use crate::err::{ErrorType, ProcessingResult};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
-use regex::bytes::Regex;
 use memchr::memchr;
 use crate::gen::codepoints::{WHITESPACE, Lookup};
 
@@ -19,6 +18,8 @@ pub enum MatchMode {
     IsNotChar(u8),
     WhileChar(u8),
     WhileNotChar(u8),
+    // Through is like WhileNot followed by Is, but matches zero if Is is zero.
+    ThroughChar(u8),
 
     IsPred(fn(u8) -> bool),
     IsNotPred(fn(u8) -> bool),
@@ -30,12 +31,6 @@ pub enum MatchMode {
     WhileNotInLookup(&'static Lookup),
 
     IsSeq(&'static [u8]),
-
-    // Provide the length of the pattern as the second element.
-    WhileNotPat(&'static Regex, usize),
-    // Through is like WhileNot followed by Is, but matches zero if Is is zero.
-    // Useful for matching delimiter patterns. For example, matching Through "</script>" match everything up to and including the next "</script>", but would match zero if there is no "</script>".
-    ThroughPat(&'static Regex),
 }
 
 pub enum MatchAction {
@@ -141,13 +136,18 @@ impl<'d> Processor<'d> {
         count
     }
 
+    fn _remaining(&self) -> usize {
+        self.code.len() - self.read_next
+    }
+
     #[inline(always)]
     pub fn m(&mut self, mode: MatchMode, action: MatchAction) -> ProcessorRange {
         let count = match mode {
             IsChar(c) => self._one(|n| n == c),
             IsNotChar(c) => self._one(|n| n != c),
             WhileChar(c) => self._many(|n| n == c),
-            WhileNotChar(c) => memchr(c, &self.code[self.read_next..]).unwrap_or(0),
+            WhileNotChar(c) => memchr(c, &self.code[self.read_next..]).unwrap_or(self._remaining()),
+            ThroughChar(c) => memchr(c, &self.code[self.read_next..]).map_or(0, |p| p + 1),
 
             IsInLookup(lookup) => self._one(|n| lookup[n]),
             WhileInLookup(lookup) => self._many(|n| lookup[n]),
@@ -158,11 +158,7 @@ impl<'d> Processor<'d> {
             WhilePred(p) => self._many(|n| p(n)),
             WhileNotPred(p) => self._many(|n| !p(n)),
 
-            // Sequence matching is slow. If using in a loop, use Pat or Trie instead.
             IsSeq(seq) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src == seq).map_or(0, |_| seq.len()),
-
-            WhileNotPat(pat, len) => pat.shortest_match(&self.code[self.read_next..]).map_or(self.code.len() - self.read_next, |p| p - len),
-            ThroughPat(pat) => pat.shortest_match(&self.code[self.read_next..]).unwrap_or(0),
         };
         // If keeping, match will be available in written range (which is better as source might eventually get overwritten).
         // If discarding, then only option is source range.
@@ -183,6 +179,14 @@ impl<'d> Processor<'d> {
     // Bounds checking
     pub fn at_end(&self) -> bool {
         !self._in_bounds(0)
+    }
+
+    pub fn require_not_at_end(&self) -> ProcessingResult<()> {
+        if self.at_end() {
+            Err(ErrorType::UnexpectedEnd)
+        } else {
+            Ok(())
+        }
     }
 
     /// Get how many characters have been consumed from source.

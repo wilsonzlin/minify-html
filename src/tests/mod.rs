@@ -274,6 +274,20 @@ fn test_left_chevron_entities_in_content() {
 }
 
 #[test]
+fn test_comments_removal() {
+    eval(b"<pre>a <!-- akd--sj\n <!-- \t\0f--ajk--df->lafj -->  b</pre>", b"<pre>a   b</pre>");
+    eval(b"&a<!-- akd--sj\n <!-- \t\0f--ajk--df->lafj -->mp", b"&amp");
+    eval(b"<script><!-- akd--sj\n <!-- \t\0f--ajk--df->lafj --></script>", b"<script><!-- akd--sj\n <!-- \t\0f--ajk--df->lafj --></script>");
+}
+
+#[test]
+fn test_processing_instructions() {
+    eval(b"<?php hello??? >>  ?>", b"<?php hello??? >>  ?>");
+    eval(b"av<?xml 1.0 ?>g", b"av<?xml 1.0 ?>g");
+}
+
+#[cfg(feature = "js-esbuild")]
+#[test]
 fn test_js_minification() {
     eval_with_js_min(b"<script>let a = 1;</script>", b"<script>let a=1;</script>");
 }
