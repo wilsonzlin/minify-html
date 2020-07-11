@@ -71,7 +71,7 @@ jobs:
           username = __token__
           password = ${{ secrets.PYPI_API_TOKEN }}
           EOF
-          maturin build --release --strip
+          maturin build --release --strip -i "$(which python)"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             python -m twine upload target/wheels/*
           fi
