@@ -155,7 +155,7 @@ minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
 <details>
 <summary><strong>Java</strong></summary>
 
-Package: [in.wilsonl.minify_html](https://search.maven.org/artifact/in.wilsonl.minify_html/minify-html)
+Package: [in.wilsonl.minifyhtml](https://search.maven.org/artifact/in.wilsonl.minifyhtml/minify-html)
 Binding: [JNI](https://github.com/jni-rs/jni-rs)
 Platforms: macOS, Linux; Java 7 and higher
 
@@ -165,7 +165,7 @@ Add as a Maven dependency:
 
 ```xml
 <dependency>
-  <groupId>in.wilsonl.minify_html</groupId>
+  <groupId>in.wilsonl.minifyhtml</groupId>
   <artifactId>minify-html</artifactId>
   <version>0.2.4</version>
 </dependency>

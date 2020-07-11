@@ -87,15 +87,11 @@ for (const f of ['README.md', 'bench/README.md']) {
 }
 
 for (const f of ['java/pom.xml', 'README.md']) {
-  replaceInFile(f, /(<artifactId>minify_html<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/, `$1${NEW_VERSION}$2`);
+  replaceInFile(f, /(<artifactId>minify-html<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/, `$1${NEW_VERSION}$2`);
 }
 
 for (const f of ['nodejs/package.json']) {
   replaceInFile(f, /^(\s*"version": )"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
-}
-
-for (const f of ['python/setup.py']) {
-  replaceInFile(f, /^(\s*version=)"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
 }
 
 for (const f of ['ruby/minify_html.gemspec']) {
