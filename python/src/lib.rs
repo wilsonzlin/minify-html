@@ -16,7 +16,7 @@ fn minify(code: String, minify_js: bool) -> PyResult<String> {
 }
 
 #[pymodule]
-fn hyperbuild(_py: Python, m: &PyModule) -> PyResult<()> {
+fn minify_html(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(minify))?;
 
     Ok(())
