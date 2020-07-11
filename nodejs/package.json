@@ -1,6 +1,6 @@
 {
   "name": "@minify-html/js-esbuild",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Fast allocation-less HTML minifier with smart whitespace handling",
   "main": "dist/index.js",
   "files": [
