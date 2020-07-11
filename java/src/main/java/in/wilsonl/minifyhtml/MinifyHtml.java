@@ -1,4 +1,4 @@
-package in.wilsonl.minify_html;
+package in.wilsonl.minifyhtml;
 
 import java.io.File;
 import java.io.InputStream;

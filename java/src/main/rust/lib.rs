@@ -14,7 +14,7 @@ fn build_cfg(
 }
 
 #[no_mangle]
-pub extern "system" fn Java_in_wilsonl_minify_1html_MinifyHtml_minifyInPlace(
+pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minifyInPlace(
     env: JNIEnv,
     _class: JClass,
     input: JByteBuffer,
@@ -33,7 +33,7 @@ pub extern "system" fn Java_in_wilsonl_minify_1html_MinifyHtml_minifyInPlace(
         Ok(out_len) => out_len,
         Err((err, pos)) => {
             env.throw_new(
-                "in/wilsonl/minify_html/MinifyHtml$SyntaxException",
+                "in/wilsonl/minifyhtml/MinifyHtml$SyntaxException",
                 format!("{} [Character {}]", err.message(), pos),
             ).unwrap();
             0
@@ -42,7 +42,7 @@ pub extern "system" fn Java_in_wilsonl_minify_1html_MinifyHtml_minifyInPlace(
 }
 
 #[no_mangle]
-pub extern "system" fn Java_in_wilsonl_minify_1html_MinifyHtml_minify(
+pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minify(
     env: JNIEnv,
     _class: JClass,
     input: JString,
@@ -56,7 +56,7 @@ pub extern "system" fn Java_in_wilsonl_minify_1html_MinifyHtml_minify(
         Ok(out_len) => env.new_string(unsafe { from_utf8_unchecked(&code[0..out_len]) }).unwrap().into_inner(),
         Err((err, pos)) => {
             env.throw_new(
-                "in/wilsonl/minify_html/MinifyHtml$SyntaxException",
+                "in/wilsonl/minifyhtml/MinifyHtml$SyntaxException",
                 format!("{} [Character {}]", err.message(), pos),
             ).unwrap();
             JObject::null().into_inner()
