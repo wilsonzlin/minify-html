@@ -20,7 +20,7 @@ Available as:
 
 Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on popular already-minified web pages. See [bench](./bench) folder for more details.
 
-<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.2.3/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.2.3/average-sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.2.4/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.2.4/average-sizes.png">
 
 ## Usage
 
@@ -30,8 +30,8 @@ Precompiled binaries are available for x86-64 macOS and Linux.
 
 ##### Get
 
-[macOS](https://wilsonl.in/hyperbuild/bin/0.2.3-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.2.3-linux-x86_64)
+[macOS](https://wilsonl.in/hyperbuild/bin/0.2.4-macos-x86_64) |
+[Linux](https://wilsonl.in/hyperbuild/bin/0.2.4-linux-x86_64)
 
 ##### Use
 
@@ -50,7 +50,7 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = { version = "0.2.3", features = ["js-esbuild"] }
+hyperbuild = { version = "0.2.4", features = ["js-esbuild"] }
 ```
 
 Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/evanw/esbuild).
@@ -163,7 +163,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.hyperbuild</groupId>
   <artifactId>hyperbuild</artifactId>
-  <version>0.2.3</version>
+  <version>0.2.4</version>
 </dependency>
 ```
 
