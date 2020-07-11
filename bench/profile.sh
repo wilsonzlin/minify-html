@@ -8,5 +8,5 @@ for i in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
 done
 
 rm -f perf.data
-sudo perf record -g nice -n -20 taskset -c 1 hyperbuild-bench/target/release/hyperbuild-bench --tests tests --iterations 512
+sudo perf record -g nice -n -20 taskset -c 1 minify-html-bench/target/release/minify-html-bench --tests tests --iterations 512
 sudo chown "$USER:$USER" perf.data

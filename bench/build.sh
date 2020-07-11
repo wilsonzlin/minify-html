@@ -9,7 +9,7 @@ npm run build
 npm run build-binary
 popd
 
-pushd hyperbuild-bench
+pushd minify-html-bench
 cargo build --release
 popd
 

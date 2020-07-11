@@ -14,7 +14,7 @@ mod spec;
 mod tests;
 mod unit;
 
-pub fn hyperbuild(code: &mut [u8], cfg: &Cfg) -> Result<usize, (ErrorType, usize)> {
+pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, (ErrorType, usize)> {
     let mut proc = Processor::new(code);
     match process_content(&mut proc, cfg, Namespace::Html, None) {
         Ok(()) => Ok(proc.written_len()),
@@ -22,8 +22,8 @@ pub fn hyperbuild(code: &mut [u8], cfg: &Cfg) -> Result<usize, (ErrorType, usize
     }
 }
 
-pub fn hyperbuild_truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), (ErrorType, usize)> {
-    match hyperbuild(code, cfg) {
+pub fn truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), (ErrorType, usize)> {
+    match in_place(code, cfg) {
         Ok(written_len) => {
             code.truncate(written_len);
             Ok(())
@@ -32,9 +32,9 @@ pub fn hyperbuild_truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), (ErrorTy
     }
 }
 
-pub fn hyperbuild_copy(code: &[u8], cfg: &Cfg) -> Result<Vec<u8>, (ErrorType, usize)> {
+pub fn copy(code: &[u8], cfg: &Cfg) -> Result<Vec<u8>, (ErrorType, usize)> {
     let mut copy = code.to_vec();
-    match hyperbuild_truncate(&mut copy, cfg) {
+    match truncate(&mut copy, cfg) {
         Ok(()) => Ok(copy),
         Err(e) => Err(e),
     }
@@ -47,7 +47,7 @@ pub struct FriendlyError {
     pub code_context: String,
 }
 
-pub fn hyperbuild_friendly_error(code: &mut [u8], cfg: &Cfg) -> Result<usize, FriendlyError> {
+pub fn with_friendly_error(code: &mut [u8], cfg: &Cfg) -> Result<usize, FriendlyError> {
     let mut proc = Processor::new(code);
     match process_content(&mut proc, cfg, Namespace::Html, None) {
         Ok(()) => Ok(proc.written_len()),

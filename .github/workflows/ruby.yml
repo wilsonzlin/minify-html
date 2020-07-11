@@ -17,10 +17,10 @@ jobs:
         include:
           - os: ubuntu-latest
             NAME: linux
-            FILE: 'libhyperbuild_ruby_lib.so'
+            FILE: 'libminify_html_ruby_lib.so'
           - os: macos-latest
             NAME: macos
-            FILE: 'libhyperbuild_ruby_lib.dylib'
+            FILE: 'libminify_html_ruby_lib.dylib'
     steps:
       - uses: actions/checkout@v1
       - name: Get version
@@ -102,7 +102,7 @@ jobs:
       - name: Upload to B2
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./ruby/target/release/${{ matrix.FILE }} hyperbuild/bin/ruby/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
+          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./ruby/target/release/${{ matrix.FILE }} minify-html/bin/ruby/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
   package:
     runs-on: ubuntu-latest
     needs: build
@@ -125,8 +125,8 @@ jobs:
         run: |
           cp ../README.md .
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 sync b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/hyperbuild/bin/ruby/${{ steps.version.outputs.VERSION }}/ ./lib/.
-          gem build hyperbuild.gemspec
+          b2 sync b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bin/ruby/${{ steps.version.outputs.VERSION }}/ ./lib/.
+          gem build minify_html.gemspec
           mkdir -p "$HOME/.gem"
           cat << 'EOF' > "$HOME/.gem/credentials"
           ---
@@ -134,5 +134,5 @@ jobs:
           EOF
           chmod 0600 "$HOME/.gem/credentials"
           if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
-            gem push hyperbuild-${{ steps.version.outputs.VERSION }}.gem
+            gem push minify_html-${{ steps.version.outputs.VERSION }}.gem
           fi

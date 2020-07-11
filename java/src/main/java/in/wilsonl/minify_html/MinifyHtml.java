@@ -1,4 +1,4 @@
-package in.wilsonl.hyperbuild;
+package in.wilsonl.minify_html;
 
 import java.io.File;
 import java.io.InputStream;
@@ -13,7 +13,7 @@ import static java.lang.String.format;
  * Methods call to native compiled Rust code using JNI.
  * When this class is loaded, a static initialiser will attempt to load a prebuilt native library for the running operating system and architecture from the JAR. If it cannot, a {@link RuntimeException} will be thrown.
  */
-public class Hyperbuild {
+public class MinifyHtml {
   static {
     String osName = System.getProperty("os.name").toLowerCase();
     String osArch = System.getProperty("os.arch").toLowerCase();
@@ -33,8 +33,8 @@ public class Hyperbuild {
 
     String nativeLibFile = format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
 
-    try (InputStream is = Hyperbuild.class.getResourceAsStream(nativeLibFile)) {
-      File temp = File.createTempFile("hyperbuild-java-nativelib", nativeLibFile.substring(1));
+    try (InputStream is = MinifyHtml.class.getResourceAsStream(nativeLibFile)) {
+      File temp = File.createTempFile("minify-html-java-nativelib", nativeLibFile.substring(1));
       temp.deleteOnExit();
       Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.load(temp.getAbsolutePath());
@@ -43,7 +43,7 @@ public class Hyperbuild {
     }
   }
 
-  private Hyperbuild() {
+  private MinifyHtml() {
   }
 
   /**

@@ -14,15 +14,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python: [3.5, 3.6, 3.7, 3.8]
-        include:
-          - os: ubuntu-latest
-            ARCH: linux-x86_64
-            LIBFILE: 'libhyperbuild_python_lib.so'
-            PYEXT: 'so'
-          - os: macos-latest
-            ARCH: macos-x86_64
-            LIBFILE: 'libhyperbuild_python_lib.dylib'
-            PYEXT: 'so'
     steps:
       - uses: actions/checkout@v1
       - name: Set up Python

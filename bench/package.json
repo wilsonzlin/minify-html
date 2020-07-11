@@ -1,11 +1,11 @@
 {
   "private": true,
   "dependencies": {
+    "@minify-html/js-esbuild": "file:../nodejs",
     "benchmark": "2.1.4",
     "chart.js": "^2.9.3",
     "chartjs-node": "^1.7.1",
     "html-minifier": "4.0.0",
-    "hyperbuild": "file:../nodejs",
     "minimize": "2.2.0",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",

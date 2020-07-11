@@ -3,7 +3,7 @@ use std::io::{Read, stdin, stdout, Write};
 
 use structopt::StructOpt;
 
-use hyperbuild::{Cfg, FriendlyError, hyperbuild_friendly_error};
+use minify_html::{Cfg, FriendlyError, with_friendly_error};
 
 #[derive(StructOpt)]
 struct Cli {
@@ -36,7 +36,7 @@ fn main() {
         None => Box::new(stdin()),
     };
     io_expect!(src_file.read_to_end(&mut code), "could not load source code");
-    match hyperbuild_friendly_error(&mut code, &Cfg {
+    match with_friendly_error(&mut code, &Cfg {
         minify_js: args.js,
     }) {
         Ok(out_len) => {

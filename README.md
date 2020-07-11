@@ -1,4 +1,4 @@
-# hyperbuild
+# minify-html
 
 A fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling.
 
@@ -20,7 +20,7 @@ Available as:
 
 Speed and effectiveness of Node.js version compared to [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on popular already-minified web pages. See [bench](./bench) folder for more details.
 
-<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.2.4/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/hyperbuild/bench/0.2.4/average-sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.2.4/average-speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.2.4/average-sizes.png">
 
 ## Usage
 
@@ -30,15 +30,15 @@ Precompiled binaries are available for x86-64 macOS and Linux.
 
 ##### Get
 
-[macOS](https://wilsonl.in/hyperbuild/bin/0.2.4-macos-x86_64) |
-[Linux](https://wilsonl.in/hyperbuild/bin/0.2.4-linux-x86_64)
+[macOS](https://wilsonl.in/minify-html/bin/0.2.4-macos-x86_64) |
+[Linux](https://wilsonl.in/minify-html/bin/0.2.4-linux-x86_64)
 
 ##### Use
 
 Use the `--help` argument for more details.
 
 ```bash
-hyperbuild --src /path/to/src.html --out /path/to/output.min.html
+minify-html --src /path/to/src.html --out /path/to/output.min.html
 ```
 
 ### API
@@ -50,7 +50,7 @@ hyperbuild --src /path/to/src.html --out /path/to/output.min.html
 
 ```toml
 [dependencies]
-hyperbuild = { version = "0.2.4", features = ["js-esbuild"] }
+minify-html = { version = "0.2.4", features = ["js-esbuild"] }
 ```
 
 Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/evanw/esbuild).
@@ -60,7 +60,7 @@ If the `js-esbuild` feature is not enabled, `cfg.minify_js` will have no effect.
 ##### Use
 
 ```rust
-use hyperbuild::{Cfg, FriendlyError, hyperbuild, hyperbuild_copy, hyperbuild_friendly_error, hyperbuild_truncate};
+use minify_html::{Cfg, FriendlyError, in_place, copy, with_friendly_error, truncate};
 
 fn main() {
     let mut code = b"<p>  Hello, world!  </p>".to_vec();
@@ -70,29 +70,29 @@ fn main() {
 
     // Minifies a slice in-place and returns the new minified length,
     // but leaves any original code after the minified code intact.
-    match hyperbuild(&mut code, cfg) {
+    match in_place(&mut code, cfg) {
         Ok(minified_len) => {}
         Err((error_type, error_position)) => {}
     };
 
     // Creates a vector copy containing only minified code
     // instead of minifying in-place.
-    match hyperbuild_copy(&code, cfg) {
+    match copy(&code, cfg) {
         Ok(minified) => {}
         Err((error_type, error_position)) => {}
     };
 
     // Minifies a vector in-place, and then truncates the
     // vector to the new minified length.
-    match hyperbuild_truncate(&mut code, cfg) {
+    match truncate(&mut code, cfg) {
         Ok(()) => {}
         Err((error_type, error_position)) => {}
     };
 
-    // Identical to `hyperbuild` except with FriendlyError instead.
+    // Identical to `in_place` except with FriendlyError instead.
     // `code_context` is a string of a visual representation of the source,
     // with line numbers and position markers to aid in debugging syntax.
-    match hyperbuild_friendly_error(&mut code, cfg) {
+    match with_friendly_error(&mut code, cfg) {
         Ok(minified_len) => {}
         Err(FriendlyError { position, message, code_context }) => {
             eprintln!("Failed at character {}:", position);
@@ -108,44 +108,46 @@ fn main() {
 <details>
 <summary><strong>Node.js</strong></summary>
 
-hyperbuild is [on npm](https://www.npmjs.com/package/hyperbuild), available as a [Node.js native module](https://neon-bindings.com/), and supports Node.js versions 8 and higher.
+Package: [@minify-html/js-esbuild](https://www.npmjs.com/package/@minify-html/js-esbuild),
+Binding: [Neon](https://neon-bindings.com/)
+Platforms: macOS, Linux; Node.js 8 and higher
 
 ##### Get
 
 Using npm:
 
 ```bash
-npm i hyperbuild
+npm i @minify-html/js-esbuild
 ```
 
 Using Yarn:
 
 ```bash
-yarn add hyperbuild
+yarn add @minify-html/js-esbuild
 ```
 
 ##### Use
 
 ```js
-const hyperbuild = require("hyperbuild");
+const minifyHtml = require("@minify-html/js-esbuild");
 
 const cfg = { minifyJs: false };
-const minified = hyperbuild.minify("<p>  Hello, world!  </p>", cfg);
+const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 
 // Alternatively, minify in place to avoid copying.
 const source = Buffer.from("<p>  Hello, world!  </p>", cfg);
-hyperbuild.minifyInPlace(source);
+minifyHtml.minifyInPlace(source);
 ```
 
-hyperbuild is also available for TypeScript:
+minify-html is also available for TypeScript:
 
 ```ts
-import * as hyperbuild from "hyperbuild";
+import * as minifyHtml from "@minify-html/js-esbuild";
 import * as fs from "fs";
 
 const cfg = { minifyJs: false };
-const minified = hyperbuild.minify("<p>  Hello, world!  </p>", cfg);
-hyperbuild.minifyInPlace(fs.readFileSync("source.html"), cfg);
+const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
+minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
 ```
 
 </details>
@@ -153,7 +155,9 @@ hyperbuild.minifyInPlace(fs.readFileSync("source.html"), cfg);
 <details>
 <summary><strong>Java</strong></summary>
 
-hyperbuild is available via [JNI](https://github.com/jni-rs/jni-rs), and supports Java versions 7 and higher.
+Package: [in.wilsonl.minify_html](https://search.maven.org/artifact/in.wilsonl.minify_html/minify-html)
+Binding: [JNI](https://github.com/jni-rs/jni-rs)
+Platforms: macOS, Linux; Java 7 and higher
 
 ##### Get
 
@@ -161,8 +165,8 @@ Add as a Maven dependency:
 
 ```xml
 <dependency>
-  <groupId>in.wilsonl.hyperbuild</groupId>
-  <artifactId>hyperbuild</artifactId>
+  <groupId>in.wilsonl.minify_html</groupId>
+  <artifactId>minify-html</artifactId>
   <version>0.2.4</version>
 </dependency>
 ```
@@ -170,20 +174,20 @@ Add as a Maven dependency:
 ##### Use
 
 ```java
-import in.wilsonl.hyperbuild.Hyperbuild;
+import in.wilsonl.minify_html.MinifyHtml;
 
-Hyperbuild.Configuration cfg = new Hyperbuild.Configuration.Builder()
+MinifyHtml.Configuration cfg = new MinifyHtml.Configuration.Builder()
     .setMinifyJs(false)
     .build();
 try {
-    String minified = Hyperbuild.minify("<p>  Hello, world!  </p>", cfg);
-} catch (Hyperbuild.SyntaxException e) {
+    String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
+} catch (MinifyHtml.SyntaxException e) {
     System.err.println(e.getMessage());
 }
 
 // Alternatively, minify in place:
 assert source instanceof ByteBuffer && source.isDirect();
-Hyperbuild.minifyInPlace(source, cfg);
+MinifyHtml.minifyInPlace(source, cfg);
 ```
 
 </details>
@@ -191,7 +195,9 @@ Hyperbuild.minifyInPlace(source, cfg);
 <details>
 <summary><strong>Python</strong></summary>
 
-hyperbuild is [on PyPI](https://pypi.org/project/hyperbuild), available as a [native module](https://github.com/PyO3/pyo3), and supports CPython (the default Python interpreter) versions 3.5 and higher.
+Package: [minify_html](https://pypi.org/project/minify_html)
+Binding: [PyO3](https://github.com/PyO3/pyo3)
+Platforms: macOS, Linux; CPython 3.5 and higher
 
 ##### Get
 
@@ -200,10 +206,10 @@ Add the PyPI project as a dependency and install it using `pip` or `pipenv`.
 ##### Use
 
 ```python
-import hyperbuild
+import minify_html
 
 try:
-    minified = hyperbuild.minify("<p>  Hello, world!  </p>", minify_js=False)
+    minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=False)
 except SyntaxError as e:
     print(e)
 ```
@@ -213,7 +219,9 @@ except SyntaxError as e:
 <details>
 <summary><strong>Ruby</strong></summary>
 
-hyperbuild is published on [RubyGems](https://rubygems.org/gems/hyperbuild), available as a [native module](https://github.com/danielpclark/rutie) for macOS and Linux, and supports Ruby versions 2.5 and higher.
+Package: [minify_html](https://rubygems.org/gems/minify_html)
+Binding: [Rutie](https://github.com/danielpclark/rutie)
+Platforms: macOS, Linux; Ruby 2.5 and higher
 
 ##### Get
 
@@ -222,9 +230,9 @@ Add the library as a dependency to `Gemfile` or `*.gemspec`.
 ##### Use
 
 ```ruby
-require 'hyperbuild'
+require 'minify_html'
 
-print Hyperbuild.minify("<p>  Hello, world!  </p>", { :minify_js => false })
+print MinifyHtml.minify("<p>  Hello, world!  </p>", { :minify_js => false })
 ```
 
 </details>
@@ -233,7 +241,7 @@ print Hyperbuild.minify("<p>  Hello, world!  </p>", { :minify_js => false })
 
 ### Whitespace
 
-hyperbuild has advanced context-aware whitespace minification that does things such as:
+minify-html has advanced context-aware whitespace minification that does things such as:
 
 - Leave whitespace untouched in `pre` and `code`, which are whitespace sensitive.
 - Trim and collapse whitespace in content tags, as whitespace is collapsed anyway when rendered.
@@ -241,7 +249,7 @@ hyperbuild has advanced context-aware whitespace minification that does things s
 
 #### Methods
 
-There are three whitespace minification methods. When processing text content, hyperbuild chooses which ones to use depending on the containing element.
+There are three whitespace minification methods. When processing text content, minify-html chooses which ones to use depending on the containing element.
 
 <details>
 <summary><strong>Collapse whitespace</strong></summary>
@@ -327,7 +335,7 @@ Remove any leading/trailing whitespace from any leading/trailing text nodes of a
 
 #### Element types
 
-hyperbuild recognises elements based on one of a few ways it assumes they are used. By making these assumptions, it can apply optimal whitespace minification strategies.
+minify-html recognises elements based on one of a few ways it assumes they are used. By making these assumptions, it can apply optimal whitespace minification strategies.
 
 |Group|Elements|Expected children|
 |---|---|---|
@@ -468,7 +476,7 @@ Bangs, [processing instructions](https://en.wikipedia.org/wiki/Processing_Instru
 
 Only UTF-8/ASCII-encoded HTML code is supported.
 
-hyperbuild does no syntax checking or standards enforcement for performance and code complexity reasons.
+minify-html does no syntax checking or standards enforcement for performance and code complexity reasons.
 
 For example, this means that it's not an error to have self-closing tags, declare multiple `<body>` elements, use incorrect attribute names and values, or write something like `<br>alert('');</br>`
 
@@ -503,10 +511,10 @@ Special handling of some attributes require case sensitive names and values. For
 
 `script` and `style` tags must be closed with `</script>` and `</style>` respectively (case sensitive).
 
-hyperbuild does **not** handle [escaped and double-escaped](./notes/Script%20data.md) script content.
+minify-html does **not** handle [escaped and double-escaped](./notes/Script%20data.md) script content.
 
 ## Issues and contributions
 
 Pull requests and any contributions welcome!
 
-If hyperbuild did something unexpected, misunderstood some syntax, or incorrectly kept/removed some code, [raise an issue](https://github.com/wilsonzlin/hyperbuild/issues) with some relevant code that can be used to reproduce and investigate the issue.
+If minify-html did something unexpected, misunderstood some syntax, or incorrectly kept/removed some code, [raise an issue](https://github.com/wilsonzlin/minify-html/issues) with some relevant code that can be used to reproduce and investigate the issue.

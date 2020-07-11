@@ -1,7 +1,7 @@
 #[cfg(test)]
 fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
     let mut code = src.to_vec();
-    match super::hyperbuild_friendly_error(&mut code, cfg) {
+    match super::with_friendly_error(&mut code, cfg) {
         Ok(len) => {
             assert_eq!(std::str::from_utf8(&code[..len]).unwrap(), std::str::from_utf8(expected).unwrap());
         }
@@ -21,6 +21,7 @@ fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
 }
 
 #[cfg(test)]
+#[cfg(feature = "js-esbuild")]
 fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
     _eval(src, expected, &super::Cfg {
         minify_js: true,

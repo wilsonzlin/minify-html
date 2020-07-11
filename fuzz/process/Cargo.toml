@@ -1,8 +1,8 @@
 [package]
-name = "hyperbuild-fuzz-process"
+name = "minify-html-fuzz-process"
 version = "0.0.1"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-hyperbuild = { path = "../.." }
+minify-html = { path = "../.." }

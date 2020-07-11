@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>in.wilsonl.hyperbuild</groupId>
-    <artifactId>hyperbuild</artifactId>
+    <groupId>in.wilsonl.minify_html</groupId>
+    <artifactId>minify-html</artifactId>
     <version>0.2.4</version>
 
-    <name>hyperbuild</name>
+    <name>minify-html</name>
     <description>Fast allocation-less HTML minifier with smart whitespace handling</description>
-    <url>https://github.com/wilsonzlin/hyperbuild</url>
+    <url>https://github.com/wilsonzlin/minify-html</url>
     <developers>
         <developer>
             <name>Wilson Lin</name>
@@ -28,9 +28,9 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/wilsonzlin/hyperbuild</url>
-        <connection>scm:git:git@github.com:wilsonzlin/hyperbuild.git</connection>
-        <developerConnection>scm:git:git@github.com:wilsonzlin/hyperbuild.git</developerConnection>
+        <url>https://github.com/wilsonzlin/minify-html</url>
+        <connection>scm:git:git@github.com:wilsonzlin/minify-html.git</connection>
+        <developerConnection>scm:git:git@github.com:wilsonzlin/minify-html.git</developerConnection>
     </scm>
 
     <distributionManagement>

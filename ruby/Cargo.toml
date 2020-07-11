@@ -1,14 +1,14 @@
 [package]
-name = "hyperbuild-ruby"
 publish = false
+name = "minify-html-ruby"
 version = "0.2.4"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [lib]
-name = "hyperbuild_ruby_lib"
+name = "minify_html_ruby_lib"
 crate-type = ["cdylib"]
 
 [dependencies]
-hyperbuild = { path = "..", features = ["js-esbuild"] }
+minify-html = { path = "..", features = ["js-esbuild"] }
 rutie = "0.7.0"

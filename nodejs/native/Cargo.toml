@@ -1,6 +1,6 @@
 [package]
-name = "hyperbuild-nodejs"
 publish = false
+name = "minify-html-nodejs"
 version = "0.2.4"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 license = "MIT"
@@ -9,12 +9,12 @@ exclude = ["artifacts.json", "index.node"]
 edition = "2018"
 
 [lib]
-name = "hyperbuild_nodejs_lib"
+name = "minify_html_nodejs_lib"
 crate-type = ["cdylib"]
 
 [build-dependencies]
 neon-build = "0.4.0"
 
 [dependencies]
-hyperbuild = { path = "../..", features = ["js-esbuild"] }
+minify-html = { path = "../..", features = ["js-esbuild"] }
 neon = "0.4.0"

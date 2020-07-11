@@ -75,19 +75,19 @@ for (const f of ['Cargo.toml', 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'ja
 }
 
 for (const f of ['README.md']) {
-  replaceInFile(f, /^(hyperbuild = \{ version = )"\d+\.\d+\.\d+"/m, `$1"${NEW_VERSION}"`);
+  replaceInFile(f, /^(minify-html = \{ version = )"\d+\.\d+\.\d+"/m, `$1"${NEW_VERSION}"`);
 }
 
 for (const f of ['README.md']) {
-  replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bin\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
+  replaceInFile(f, /(wilsonl\.in\/minify-html\/bin\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
 }
 
 for (const f of ['README.md', 'bench/README.md']) {
-  replaceInFile(f, /(wilsonl\.in\/hyperbuild\/bench\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
+  replaceInFile(f, /(wilsonl\.in\/minify-html\/bench\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
 }
 
 for (const f of ['java/pom.xml', 'README.md']) {
-  replaceInFile(f, /(<artifactId>hyperbuild<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/, `$1${NEW_VERSION}$2`);
+  replaceInFile(f, /(<artifactId>minify_html<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/, `$1${NEW_VERSION}$2`);
 }
 
 for (const f of ['nodejs/package.json']) {
@@ -98,7 +98,7 @@ for (const f of ['python/setup.py']) {
   replaceInFile(f, /^(\s*version=)"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
 }
 
-for (const f of ['ruby/hyperbuild.gemspec']) {
+for (const f of ['ruby/minify_html.gemspec']) {
   replaceInFile(f, /^(\s*spec\.version\s*=\s*)"\d+\.\d+\.\d+"\s*$/m, `$1"${NEW_VERSION}"`);
 }
 

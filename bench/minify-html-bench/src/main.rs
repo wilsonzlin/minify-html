@@ -1,4 +1,4 @@
-use hyperbuild::{Cfg, hyperbuild};
+use minify_html::{Cfg, in_place};
 use std::fs;
 use std::io::{stdout};
 use std::time::Instant;
@@ -23,7 +23,7 @@ fn main() {
         let start = Instant::now();
         for _ in 0..args.iterations {
             let mut data = source.to_vec();
-            hyperbuild(&mut data, &Cfg {
+            in_place(&mut data, &Cfg {
                 minify_js: false,
             }).unwrap();
         };

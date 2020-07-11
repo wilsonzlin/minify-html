@@ -61,11 +61,11 @@ const runTest = test => new Promise((resolve, reject) => {
   // Run Rust library.
   if (shouldRunRust) {
     for (const [testName, testOps] of JSON.parse(cmd(
-      path.join(__dirname, 'hyperbuild-bench', 'target', 'release', 'hyperbuild-bench'),
+      path.join(__dirname, 'minify-html-bench', 'target', 'release', 'minify-html-bench'),
       '--iterations', 512,
       '--tests', path.join(__dirname, 'tests'),
     ))) {
-      Object.assign(speeds[testName], {hyperbuild: testOps});
+      Object.assign(speeds[testName], {['minify-html']: testOps});
     }
   }
 

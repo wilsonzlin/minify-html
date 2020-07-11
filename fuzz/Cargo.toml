@@ -1,10 +1,10 @@
 [package]
-name = "hyperbuild-fuzz-target"
 publish = false
+name = "minify-html-fuzz-target"
 version = "0.0.1"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
 afl = "0.5.2"
-hyperbuild = { path = ".." }
+minify-html = { path = ".." }

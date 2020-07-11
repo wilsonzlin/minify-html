@@ -88,7 +88,7 @@ struct Metrics {
 
 impl Metrics {
     fn unquoted_len(&self, raw_val: &[u8]) -> usize {
-        // TODO VERIFY (including control characters and Unicode noncharacters) Browsers seem to simply consider any characters until whitespace part of an unquoted attribute value, despite the spec (and hyperbuild) having more restrictions on allowed characters.
+        // TODO VERIFY (including control characters and Unicode noncharacters) Browsers seem to simply consider any characters until whitespace part of an unquoted attribute value, despite the spec (and minify-html) having more restrictions on allowed characters.
         // Costs for encoding first and last characters if going with unquoted attribute value.
         // NOTE: Don't need to consider whitespace for either as all whitespace will be encoded and counts as part of `total_whitespace_encoded_length`.
         // Need to consider semicolon in any encoded entity in case first char is followed by semicolon or digit.
@@ -326,7 +326,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
             // Numeric entities simply need to check if the following character is a base 10 digit.
             // The last character encoded as an entity never needs a semicolon:
             // - For quoted values, it's always a quote and will never be encoded.
-            // - Unquoted attribute values are only ever followed by a space (written by hyperbuild) or the opening tag delimiter ('>').
+            // - Unquoted attribute values are only ever followed by a space (written by minify-html) or the opening tag delimiter ('>').
             // '&gt' is always safe as it's only used for any '>' as the last character of an unquoted value.
             let should_add_semicolon = !is_last && entity_requires_semicolon(optimal_slice[write + 1]);
             let encoded = ENCODED[&c];

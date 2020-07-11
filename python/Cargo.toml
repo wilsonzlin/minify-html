@@ -1,11 +1,11 @@
 [package]
 publish = false
-name = "minify-html"
+name = "minify_html"
 description = "Fast allocation-less HTML minifier with smart whitespace handling"
 license = "MIT"
-homepage = "https://github.com/wilsonzlin/hyperbuild"
+homepage = "https://github.com/wilsonzlin/minify-html"
 readme = "README.md"
-repository = "https://github.com/wilsonzlin/hyperbuild.git"
+repository = "https://github.com/wilsonzlin/minify-html.git"
 version = "0.2.4"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
@@ -15,7 +15,7 @@ name = "minify_html"
 crate-type = ["cdylib"]
 
 [dependencies]
-hyperbuild = { path = "..", features = ["js-esbuild"] }
+minify-html = { path = "..", features = ["js-esbuild"] }
 [dependencies.pyo3]
 version = "0.11.1"
 features = ["extension-module"]

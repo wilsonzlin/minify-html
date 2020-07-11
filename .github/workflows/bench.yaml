@@ -56,4 +56,4 @@ jobs:
       - name: Upload to B2
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 sync ./bench/results/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/hyperbuild/bench/${{ steps.version.outputs.VERSION }}/
+          b2 sync ./bench/results/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bench/${{ steps.version.outputs.VERSION }}/

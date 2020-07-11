@@ -1,5 +1,5 @@
-/hyperbuild-bench/Cargo.lock
-/hyperbuild-bench/target/
+/minify-html-bench/Cargo.lock
+/minify-html-bench/target/
 /min/
 /results*/
 node_modules/

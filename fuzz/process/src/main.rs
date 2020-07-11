@@ -1,7 +1,7 @@
 use std::fs;
 use std::io::{self, Write};
 use std::panic;
-use hyperbuild;
+use minify_html;
 
 fn main() {
     for dirent in fs::read_dir("../out/crashes").unwrap() {
@@ -9,7 +9,7 @@ fn main() {
         let path_in_catch = path.clone();
         let res = panic::catch_unwind(|| {
             let mut contents = fs::read(path_in_catch).unwrap();
-            let _ = hyperbuild::hyperbuild(&mut contents, &hyperbuild::Cfg {
+            let _ = minify_html::in_place(&mut contents, &minify_html::Cfg {
                 minify_js: false,
             });
         });

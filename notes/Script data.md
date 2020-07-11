@@ -4,11 +4,11 @@
 
 For legacy reasons, HTML comments can appear within a script tag, and if there is a `<script` in it, the first following `</script>` within the comment does **not** close the main script tag.
 
-hyperbuild does **not** do this special handling, as it adds complexity and slows down performance dramatically, for a legacy feature that is not recommended to be (and almost never) used.
+minify-html does **not** do this special handling, as it adds complexity and slows down performance dramatically, for a legacy feature that is not recommended to be (and almost never) used.
 
 See https://www.w3.org/TR/html52/syntax.html#script-data-state for more details.
 
-Commit [20c59769](https://github.com/wilsonzlin/hyperbuild/commit/20c59769fea6bfb8a9d5ecea47d979dc9b1dcda5) removed support.
+Commit [20c59769](https://github.com/wilsonzlin/minify-html/commit/20c59769fea6bfb8a9d5ecea47d979dc9b1dcda5) removed support.
 
 ## States and transitions
 

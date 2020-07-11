@@ -71,4 +71,4 @@ jobs:
       - name: Upload to B2
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file --contentType ${{ matrix.MIME }} ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./cli/target/release/hyperbuild-cli${{ matrix.EXT }} hyperbuild/bin/${{ steps.file.outputs.FILE }}
+          b2 upload-file --contentType ${{ matrix.MIME }} ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./cli/target/release/minify-html-cli${{ matrix.EXT }} minify-html/bin/${{ steps.file.outputs.FILE }}

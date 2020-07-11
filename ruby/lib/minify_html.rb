@@ -1,6 +1,6 @@
 require 'fiddle'
 
-class HyperbuildLoader
+class MinifyHtmlLoader
   def self.operating_system
     case RbConfig::CONFIG['host_os'].downcase
     when /linux|bsd|solaris/ then 'linux'
@@ -15,4 +15,4 @@ class HyperbuildLoader
   end
 end
 
-Fiddle::Function.new(Fiddle.dlopen(HyperbuildLoader.lib_path)['Init_hyperbuild'], [], Fiddle::TYPE_VOIDP).call
+Fiddle::Function.new(Fiddle.dlopen(MinifyHtmlLoader.lib_path)['Init_minify_html'], [], Fiddle::TYPE_VOIDP).call

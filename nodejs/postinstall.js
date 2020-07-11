@@ -33,7 +33,7 @@ const downloadNativeBinary = async () => {
   for (let attempt = 0; ; attempt++) {
     let binary;
     try {
-      binary = await fetch(`https://wilsonl.in/hyperbuild/bin/nodejs/${pkg.version}/${binaryName}.node`);
+      binary = await fetch(`https://wilsonl.in/minify-html/bin/nodejs/${pkg.version}/${binaryName}.node`);
     } catch (e) {
       if (e instanceof StatusError && attempt < MAX_DOWNLOAD_ATTEMPTS) {
         await wait(Math.random() * 2500 + 500);

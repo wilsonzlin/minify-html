@@ -1,5 +1,5 @@
 {
-  "name": "hyperbuild",
+  "name": "@minify-html/js-esbuild",
   "version": "0.2.4",
   "description": "Fast allocation-less HTML minifier with smart whitespace handling",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wilsonzlin/hyperbuild.git"
+    "url": "git+https://github.com/wilsonzlin/minify-html.git"
   },
   "author": {
     "email": "npm@wilsonl.in",
@@ -24,9 +24,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wilsonzlin/hyperbuild/issues"
+    "url": "https://github.com/wilsonzlin/minify-html/issues"
   },
-  "homepage": "https://github.com/wilsonzlin/hyperbuild#readme",
+  "homepage": "https://github.com/wilsonzlin/minify-html#readme",
   "devDependencies": {
     "@types/node": "^14.0.22",
     "neon-cli": "^0.4.0",

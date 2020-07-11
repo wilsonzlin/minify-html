@@ -2,8 +2,8 @@ const chartjs = require('chartjs-node');
 const results = require('./results');
 
 const colours = {
-  'hyperbuild': '#041f60',
-  'hyperbuild-nodejs': '#1f77b4',
+  'minify-html': '#041f60',
+  'minify-html-nodejs': '#1f77b4',
   'minimize': '#ff7f0e',
   'html-minifier': '#2ca02c',
 };
@@ -56,7 +56,7 @@ const renderChart = async (cfg) => {
 };
 
 (async () => {
-  const averageSpeeds = results.getSpeedResults().getAverageRelativeSpeedPerMinifier('hyperbuild-nodejs');
+  const averageSpeeds = results.getSpeedResults().getAverageRelativeSpeedPerMinifier('minify-html-nodejs');
   results.writeAverageSpeedsGraph(await renderChart({
     type: 'bar',
     data: {
@@ -70,7 +70,7 @@ const renderChart = async (cfg) => {
     ...chartOptions('Average operations per second (higher is better)', false, percentageTick),
   }));
 
-  const speeds = results.getSpeedResults().getRelativeFileSpeedsPerMinifier('hyperbuild-nodejs');
+  const speeds = results.getSpeedResults().getRelativeFileSpeedsPerMinifier('minify-html-nodejs');
   results.writeSpeedsGraph(await renderChart({
     type: 'bar',
     data: {
