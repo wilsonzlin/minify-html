@@ -47,7 +47,7 @@ const downloadNativeBinary = async () => {
   }
 };
 
-if (!fs.existsSync(binaryPath)) {
+if (!fs.existsSync(path.join(__dirname, '.no-postinstall')) && !fs.existsSync(binaryPath)) {
   downloadNativeBinary()
     .then(
       () => console.log(`Downloaded ${pkg.name}`),
