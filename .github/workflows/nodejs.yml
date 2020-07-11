@@ -98,5 +98,5 @@ jobs:
           npm run build
           cp ../README.md .
           if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
-            npm publish
+            npm publish --access public
           fi
