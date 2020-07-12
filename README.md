@@ -12,7 +12,7 @@ Uncompromisingly fast and smart HTML + JS minifier, available for Rust, Node.js,
 **Fast**
 
 - Does all of the above in one pass, in place, with zero memory allocations, and works on bytes directly.
-- Uses SIMD-accelerated memchr, direct tries, and lookup tables.
+- Uses SIMD-accelerated [memchr](https://github.com/BurntSushi/rust-memchr), direct tries, and lookup tables.
 - Written fully in Rust, and natively binds to [esbuild](https://github.com/evanw/esbuild) for super fast JS minification.
 - Natively binds to Node.js, Python, Java, and Ruby, for speed from the comfort of your favourite language.
 
