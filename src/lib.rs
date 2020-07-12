@@ -22,6 +22,14 @@ pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, (ErrorType, usize)>
     }
 }
 
+pub fn in_place_str<'s>(code: &'s mut str, cfg: &Cfg) -> Result<&'s str, (ErrorType, usize)> {
+    let bytes = unsafe { code.as_bytes_mut() };
+    match in_place(bytes, cfg) {
+        Ok(min_len) => Ok(unsafe { std::str::from_utf8_unchecked(&bytes[..min_len]) }),
+        Err(e) => Err(e),
+    }
+}
+
 pub fn truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), (ErrorType, usize)> {
     match in_place(code, cfg) {
         Ok(written_len) => {
