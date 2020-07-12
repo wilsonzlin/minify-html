@@ -1,6 +1,6 @@
 # minify-html
 
-Uncompromisingly fast and smart HTML + JS minifier, available for Rust, Node.js, Python, Java, and Ruby.
+An HTML minifier meticulously optimised for both speed and effectiveness, available for Rust, Node.js, Python, Java, and Ruby.
 
 **Smart**
 
@@ -16,7 +16,7 @@ Uncompromisingly fast and smart HTML + JS minifier, available for Rust, Node.js,
 - Written fully in Rust, and natively binds to [esbuild](https://github.com/evanw/esbuild) for super fast JS minification.
 - Natively binds to Node.js, Python, Java, and Ruby, for speed from the comfort of your favourite language.
 
-**Soundness**
+**Sound**
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
 - Guaranteed to return an equal or shorter amount of bytes.
 

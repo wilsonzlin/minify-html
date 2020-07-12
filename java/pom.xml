@@ -9,7 +9,7 @@
     <version>0.2.6</version>
 
     <name>minify-html</name>
-    <description>Uncompromisingly fast and smart HTML + JS minifier</description>
+    <description>Fast and smart HTML + JS minifier</description>
     <url>https://github.com/wilsonzlin/minify-html</url>
     <developers>
         <developer>
