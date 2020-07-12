@@ -4,10 +4,10 @@ An HTML minifier meticulously optimised for both speed and effectiveness, availa
 
 **Smart**
 
-- Transforms `&am&a&#109;p;` to `&am&ampamp;` which saves 2 bytes but leaves meaning intact, and leaves `&nGt;` encoded because it's longer decoded.
-- Trims and collapses whitespace in `<p>` because it contains text, and removes contiguous whitespace in `<ul>` to allow for inline block layouts.
-- Tries all three attribute value delimiters (`'`, `"`, and none) and picks the shortest, and removes them if they're the default value based on the spec.
-- References the entire official [entities list](./gen/data/entities.json) and [HTML/SVG namespace](./gen/data/react.d.ts) for maximum minification leverage.
+- Transforms `&amp&l&#116;;` to `&&amplt;`, and leaves `&nGt;` encoded.
+- Trims and collapses whitespace in `<p>`, and removes contiguous whitespace in `<ul>`.
+- Removes `</p>` before an `<h1>`, `shape="rect"` from `<area>`, and `="hidden"` from `hidden` attributes.
+- Calculates the delimiter that gives the shortest attribute value (`'`, `"`, and none).
 
 **Fast**
 
@@ -18,6 +18,7 @@ An HTML minifier meticulously optimised for both speed and effectiveness, availa
 
 **Sound**
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
+- References the entire official [entities list](./gen/data/entities.json) and [HTML/SVG namespace](./gen/data/react.d.ts).
 - Guaranteed to return an equal or shorter amount of bytes.
 
 ## Performance
