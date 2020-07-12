@@ -112,9 +112,9 @@ fn main() {
 <details>
 <summary><strong>Node.js</strong></summary>
 
-Package: [@minify-html/js-esbuild](https://www.npmjs.com/package/@minify-html/js-esbuild),
-Binding: [Neon](https://neon-bindings.com/)
-Platforms: macOS, Linux; Node.js 8 and higher
+- Package: [@minify-html/js-esbuild](https://www.npmjs.com/package/@minify-html/js-esbuild)
+- Binding: [Neon](https://neon-bindings.com/)
+- Platforms: macOS, Linux; Node.js 8 and higher
 
 ##### Get
 
@@ -159,9 +159,9 @@ minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
 <details>
 <summary><strong>Java</strong></summary>
 
-Package: [in.wilsonl.minifyhtml](https://search.maven.org/artifact/in.wilsonl.minifyhtml/minify-html)
-Binding: [JNI](https://github.com/jni-rs/jni-rs)
-Platforms: macOS, Linux; Java 7 and higher
+- Package: [in.wilsonl.minifyhtml](https://search.maven.org/artifact/in.wilsonl.minifyhtml/minify-html)
+- Binding: [JNI](https://github.com/jni-rs/jni-rs)
+- Platforms: macOS, Linux; Java 7 and higher
 
 ##### Get
 
@@ -199,9 +199,9 @@ MinifyHtml.minifyInPlace(source, cfg);
 <details>
 <summary><strong>Python</strong></summary>
 
-Package: [minify_html](https://pypi.org/project/minify_html)
-Binding: [PyO3](https://github.com/PyO3/pyo3)
-Platforms: macOS, Linux; CPython 3.5 and higher
+- Package: [minify_html](https://pypi.org/project/minify_html)
+- Binding: [PyO3](https://github.com/PyO3/pyo3)
+- Platforms: macOS, Linux; Python 3.5 and higher
 
 ##### Get
 
@@ -223,9 +223,9 @@ except SyntaxError as e:
 <details>
 <summary><strong>Ruby</strong></summary>
 
-Package: [minify_html](https://rubygems.org/gems/minify_html)
-Binding: [Rutie](https://github.com/danielpclark/rutie)
-Platforms: macOS, Linux; Ruby 2.5 and higher
+- Package: [minify_html](https://rubygems.org/gems/minify_html)
+- Binding: [Rutie](https://github.com/danielpclark/rutie)
+- Platforms: macOS, Linux; Ruby 2.5 and higher
 
 ##### Get
 
