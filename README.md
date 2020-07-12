@@ -11,10 +11,10 @@ An HTML minifier meticulously optimised for both speed and effectiveness, availa
 
 **Fast**
 
-- Does all of the above in one pass, in place, with zero memory allocations, and works on bytes directly.
+- Does all of the above in one pass, in place, with zero memory allocations, and directly on bytes.
 - Uses SIMD-accelerated [memchr](https://github.com/BurntSushi/rust-memchr), direct tries, and lookup tables.
 - Written fully in Rust, and natively binds to [esbuild](https://github.com/evanw/esbuild) for super fast JS minification.
-- Natively binds to Node.js, Python, Java, and Ruby, for speed from the comfort of your favourite language.
+- Binds to Node.js, Python, Java, and Ruby, for speed from the comfort of your favourite language.
 
 **Sound**
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
