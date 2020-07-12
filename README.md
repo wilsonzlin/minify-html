@@ -1,19 +1,22 @@
 # minify-html
 
-A fast one-pass in-place HTML minifier written in Rust with context-aware whitespace handling.
+Uncompromisingly fast and smart HTML + JS minifier, available for Rust, Node.js, Python, Java, and Ruby.
 
-Also supports JS minification by plugging into [esbuild](https://github.com/evanw/esbuild).
+**Smart**
 
-Available as:
-- CLI for macOS and Linux.
-- Rust library.
-- Native library for Node.js, Python, Java, and Ruby.
+- Transforms `&am&a&#109;p;` to `&am&ampamp;` which saves 2 bytes but leaves meaning intact, and leaves `&nGt;` encoded because it's longer decoded.
+- Trims and collapses whitespace in `<p>` because it contains text, and removes contiguous whitespace in `<ul>` to allow for inline-block.
+- Tries all three attribute value delimiters (`'`, `"`, and none) and picks the shortest, and then removes them if they're the default value based on the spec.
+- References the entire official [entities list](./gen/data/entities.json) and [HTML namespace](./gen/data/react.d.ts) for maximum minification leverage.
 
-## Features
+**Fast**
 
-- Minification is done in one pass with no backtracking or DOM/AST building.
-- No extra heap memory is allocated during processing, which increases performance.
-- Context-aware whitespace handling allows maximum minification while retaining desired spaces.
+- Does all of the above in one pass, with zero memory allocations, and works on bytes directly.
+- Uses Rust, SIMD-accelerated memchr, direct tries, and lookup tables.
+- Written fully in Rust, and natively binds to [esbuild](https://github.com/evanw/esbuild) for super fast JS minification.
+- Natively binds to Node.js, Python, Java, and Ruby, for fast speed from the comfort of your favourite language.
+
+**Support**
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
 
 ## Performance

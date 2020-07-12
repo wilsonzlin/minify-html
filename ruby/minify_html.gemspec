@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["code@wilsonl.in"]
   spec.license       = "MIT"
   spec.files         = FileList["lib/*", "README.md"].to_a
-  spec.summary       = "Fast allocation-less HTML minifier with smart whitespace handling"
+  spec.summary       = "Uncompromisingly fast and smart HTML + JS minifier"
   spec.homepage      = "https://github.com/wilsonzlin/minify_html"
 
   spec.require_paths = ["lib"]
