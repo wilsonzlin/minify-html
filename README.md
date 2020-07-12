@@ -5,19 +5,20 @@ Uncompromisingly fast and smart HTML + JS minifier, available for Rust, Node.js,
 **Smart**
 
 - Transforms `&am&a&#109;p;` to `&am&ampamp;` which saves 2 bytes but leaves meaning intact, and leaves `&nGt;` encoded because it's longer decoded.
-- Trims and collapses whitespace in `<p>` because it contains text, and removes contiguous whitespace in `<ul>` to allow for inline-block.
-- Tries all three attribute value delimiters (`'`, `"`, and none) and picks the shortest, and then removes them if they're the default value based on the spec.
-- References the entire official [entities list](./gen/data/entities.json) and [HTML namespace](./gen/data/react.d.ts) for maximum minification leverage.
+- Trims and collapses whitespace in `<p>` because it contains text, and removes contiguous whitespace in `<ul>` to allow for inline block layouts.
+- Tries all three attribute value delimiters (`'`, `"`, and none) and picks the shortest, and removes them if they're the default value based on the spec.
+- References the entire official [entities list](./gen/data/entities.json) and [HTML/SVG namespace](./gen/data/react.d.ts) for maximum minification leverage.
 
 **Fast**
 
-- Does all of the above in one pass, with zero memory allocations, and works on bytes directly.
-- Uses Rust, SIMD-accelerated memchr, direct tries, and lookup tables.
+- Does all of the above in one pass, in place, with zero memory allocations, and works on bytes directly.
+- Uses SIMD-accelerated memchr, direct tries, and lookup tables.
 - Written fully in Rust, and natively binds to [esbuild](https://github.com/evanw/esbuild) for super fast JS minification.
-- Natively binds to Node.js, Python, Java, and Ruby, for fast speed from the comfort of your favourite language.
+- Natively binds to Node.js, Python, Java, and Ruby, for speed from the comfort of your favourite language.
 
-**Support**
+**Soundness**
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
+- Guaranteed to return an equal or shorter amount of bytes.
 
 ## Performance
 
