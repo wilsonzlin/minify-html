@@ -1,6 +1,7 @@
 const fs = require('fs');
 const https = require('https');
 const path = require('path');
+const zlib = require('zlib');
 const pkg = require('./package.json');
 
 const MAX_DOWNLOAD_ATTEMPTS = 4;
@@ -33,7 +34,7 @@ const downloadNativeBinary = async () => {
   for (let attempt = 0; ; attempt++) {
     let binary;
     try {
-      binary = await fetch(`https://wilsonl.in/minify-html/bin/nodejs/${pkg.version}/${binaryName}.node`);
+      binary = await fetch(`https://wilsonl.in/minify-html/bin/nodejs/${pkg.version}/${binaryName}.node.gz`);
     } catch (e) {
       if (e instanceof StatusError && attempt < MAX_DOWNLOAD_ATTEMPTS) {
         await wait(Math.random() * 2500 + 500);
@@ -42,7 +43,7 @@ const downloadNativeBinary = async () => {
       throw e;
     }
 
-    fs.writeFileSync(binaryPath, binary);
+    fs.writeFileSync(binaryPath, zlib.gunzipSync(binary));
     break;
   }
 };
