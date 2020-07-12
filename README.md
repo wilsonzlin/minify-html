@@ -178,7 +178,7 @@ Add as a Maven dependency:
 ##### Use
 
 ```java
-import in.wilsonl.minify_html.MinifyHtml;
+import in.wilsonl.minifyhtml.MinifyHtml;
 
 MinifyHtml.Configuration cfg = new MinifyHtml.Configuration.Builder()
     .setMinifyJs(false)
