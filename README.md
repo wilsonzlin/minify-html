@@ -9,7 +9,7 @@ An HTML minifier meticulously optimised for both speed and effectiveness, availa
 
 ## Performance
 
-Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See more here.](./bench).
+Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See more here.](./bench)
 
 <img width="415" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.2.6/average-speeds.png"> <img width="415" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.2.6/average-sizes.png">
 
