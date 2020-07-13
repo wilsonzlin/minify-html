@@ -2,24 +2,10 @@
 
 An HTML minifier meticulously optimised for both speed and effectiveness, available for Rust, Node.js, Python, Java, and Ruby.
 
-**Smart**
-
-- Transforms `&amp&l&#116;;` to `&&amplt;`, and leaves `&nGt;` encoded.
-- Trims and collapses whitespace in `<p>`, and removes contiguous whitespace in `<ul>`.
-- Removes `</p>` before an `<h1>`, `shape="rect"` from `<area>`, and `="hidden"` from `hidden` attributes.
-- Calculates the delimiter that gives the shortest attribute value (`'`, `"`, and none).
-
-**Fast**
-
-- Does all of the above in one pass, in place, with zero memory allocations, and directly on bytes.
-- Uses SIMD-accelerated [memchr](https://github.com/BurntSushi/rust-memchr), direct tries, and lookup tables.
-- Written fully in Rust, and natively binds to [esbuild](https://github.com/evanw/esbuild) for super fast JS minification.
-- Binds to Node.js, Python, Java, and Ruby, for speed from the comfort of your favourite language.
-
-**Sound**
+- Advanced minification strategy beats other minifiers with only one pass.
+- Uses zero memory allocations, SIMD searching, direct tries, and lookup tables.
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
-- References the entire official [entities list](./gen/data/entities.json) and [HTML/SVG namespace](./gen/data/react.d.ts).
-- Guaranteed to return an equal or shorter amount of bytes.
+- Natively binds to [esbuild](https://github.com/evanw/esbuild) for super fast JS minification.
 
 ## Performance
 
