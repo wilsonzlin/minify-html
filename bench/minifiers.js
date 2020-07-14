@@ -1,9 +1,10 @@
 const htmlMinifier = require("html-minifier");
 const minifyHtml = require("@minify-html/js-esbuild");
 const minimize = require("minimize");
+const terser = require('terser');
 
 module.exports = {
-  'minify-html-nodejs': (_, buffer) => minifyHtml.minifyInPlace(Buffer.from(buffer), {minifyJs: false}),
+  'minify-html-nodejs': (_, buffer) => minifyHtml.minifyInPlace(Buffer.from(buffer), {minifyJs: true}),
   'html-minifier': content => htmlMinifier.minify(content, {
     collapseBooleanAttributes: true,
     collapseInlineTagWhitespace: true,
@@ -16,6 +17,7 @@ module.exports = {
     decodeEntities: true,
     ignoreCustomComments: [],
     ignoreCustomFragments: [/<\?[\s\S]*?\?>/],
+    minifyJS: true,
     processConditionalComments: true,
     removeAttributeQuotes: true,
     removeComments: true,
@@ -27,5 +29,15 @@ module.exports = {
     removeTagWhitespace: true,
     useShortDoctype: true,
   }),
-  'minimize': content => new minimize().parse(content),
+  'minimize': content => new minimize({
+    plugins: [{
+      id: 'terser',
+      element: (node, next) => {
+        if (node.type === 'text' && node.parent && node.parent.type === 'script') {
+          node.data = terser.minify(node.data).code || node.data;
+        }
+        next();
+      },
+    }]
+  }).parse(content),
 };

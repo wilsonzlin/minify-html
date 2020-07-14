@@ -10,7 +10,8 @@
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.8"
+    "request-promise-native": "^1.0.8",
+    "terser": "^4.8.0"
   },
   "engines": {
     "node": "10.x"
