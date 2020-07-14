@@ -127,7 +127,8 @@ const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 
 // Alternatively, minify in place to avoid copying.
 const source = Buffer.from("<p>  Hello, world!  </p>");
-minifyHtml.minifyInPlace(source, cfg);
+// This is a Buffer representing a slice of `source`, not newly allocated memory.
+const minified = minifyHtml.minifyInPlace(source, cfg);
 ```
 
 minify-html is also available for TypeScript:
@@ -138,7 +139,8 @@ import * as fs from "fs";
 
 const cfg = { minifyJs: false };
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
-minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
+// Or alternatively:
+const minified = minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
 ```
 
 </details>
