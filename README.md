@@ -126,8 +126,8 @@ const cfg = { minifyJs: false };
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 
 // Alternatively, minify in place to avoid copying.
-const source = Buffer.from("<p>  Hello, world!  </p>", cfg);
-minifyHtml.minifyInPlace(source);
+const source = Buffer.from("<p>  Hello, world!  </p>");
+minifyHtml.minifyInPlace(source, cfg);
 ```
 
 minify-html is also available for TypeScript:
