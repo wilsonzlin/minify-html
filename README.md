@@ -99,7 +99,7 @@ fn main() {
 <details>
 <summary><strong>Node.js</strong></summary>
 
-- Package: [@minify-html/js-esbuild](https://www.npmjs.com/package/@minify-html/js-esbuild)
+- Package: [@minify-html/js](https://www.npmjs.com/package/@minify-html/js)
 - Binding: [Neon](https://neon-bindings.com/)
 - Platforms: macOS, Linux; Node.js 8 and higher
 
@@ -108,19 +108,19 @@ fn main() {
 Using npm:
 
 ```bash
-npm i @minify-html/js-esbuild
+npm i @minify-html/js
 ```
 
 Using Yarn:
 
 ```bash
-yarn add @minify-html/js-esbuild
+yarn add @minify-html/js
 ```
 
 ##### Use
 
 ```js
-const minifyHtml = require("@minify-html/js-esbuild");
+const minifyHtml = require("@minify-html/js");
 
 const cfg = { minifyJs: false };
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
@@ -134,7 +134,7 @@ const minified = minifyHtml.minifyInPlace(source, cfg);
 minify-html is also available for TypeScript:
 
 ```ts
-import * as minifyHtml from "@minify-html/js-esbuild";
+import * as minifyHtml from "@minify-html/js";
 import * as fs from "fs";
 
 const cfg = { minifyJs: false };

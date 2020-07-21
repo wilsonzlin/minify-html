@@ -8,6 +8,9 @@ use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
 use memchr::memchr;
 use crate::gen::codepoints::{WHITESPACE, Lookup};
+use std::sync::{Arc, Mutex};
+use esbuild_rs::TransformResult;
+use crossbeam::sync::WaitGroup;
 
 pub mod checkpoint;
 pub mod entity;
@@ -39,6 +42,11 @@ pub enum MatchAction {
     MatchOnly,
 }
 
+pub struct JsMinSection {
+    pub src_range: ProcessorRange,
+    pub result: TransformResult,
+}
+
 // Processing state of a file. Single use only; create one per processing.
 pub struct Processor<'d> {
     code: &'d mut [u8],
@@ -46,6 +54,10 @@ pub struct Processor<'d> {
     read_next: usize,
     // Index of the next unwritten space.
     write_next: usize,
+    #[cfg(feature = "js-esbuild")]
+    script_wg: WaitGroup,
+    #[cfg(feature = "js-esbuild")]
+    script_results: Arc<Mutex<Vec<JsMinSection>>>,
 }
 
 impl<'d> Index<ProcessorRange> for Processor<'d> {
@@ -66,7 +78,15 @@ impl<'d> IndexMut<ProcessorRange> for Processor<'d> {
 impl<'d> Processor<'d> {
     // Constructor.
     pub fn new(code: &mut [u8]) -> Processor {
-        Processor { write_next: 0, read_next: 0, code }
+        Processor {
+            write_next: 0,
+            read_next: 0,
+            code,
+            #[cfg(feature = "js-esbuild")]
+            script_wg: WaitGroup::new(),
+            #[cfg(feature = "js-esbuild")]
+            script_results: Arc::new(Mutex::new(Vec::new())),
+        }
     }
 
     // INTERNAL APIs.
@@ -194,11 +214,6 @@ impl<'d> Processor<'d> {
         self.read_next
     }
 
-    /// Get how many characters have been written to output.
-    pub fn written_len(&self) -> usize {
-        self.write_next
-    }
-
     pub fn reserve_output(&mut self, amount: usize) -> () {
         self.write_next += amount;
     }
@@ -287,6 +302,34 @@ impl<'d> Processor<'d> {
     pub fn accept_amount_expect(&mut self, count: usize) -> () {
         debug_assert!(self._in_bounds(count - 1));
         self._shift(count);
+    }
+
+    pub fn new_script_section(&self) -> (WaitGroup, Arc<Mutex<Vec<JsMinSection>>>) {
+        (self.script_wg.clone(), self.script_results.clone())
+    }
+
+    pub fn finish(self) -> usize {
+        debug_assert!(self.at_end());
+        self.script_wg.wait();
+        let mut results = Arc::try_unwrap(self.script_results)
+            .unwrap_or_else(|_| panic!("failed to acquire script results"))
+            .into_inner()
+            .unwrap();
+        if !results.is_empty() {
+            results.sort_unstable_by_key(|r| r.src_range.start);
+            let mut write_start = results[0].src_range.start;
+            for (i, res) in results.iter().enumerate() {
+                let min_code = res.result.js.trim();
+                if min_code.len() < res.src_range.len() {
+                    let write_end = write_start + min_code.len();
+                    self.code[write_start..write_end].copy_from_slice(min_code.as_bytes());
+                    let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src_range.start);
+                    self.code.copy_within(res.src_range.end..next_start, write_end);
+                    write_start = write_end + (next_start - res.src_range.end);
+                };
+            };
+        };
+        self.write_next
     }
 }
 

@@ -1,5 +1,5 @@
 const htmlMinifier = require("html-minifier");
-const minifyHtml = require("@minify-html/js-esbuild");
+const minifyHtml = require("@minify-html/js");
 const minimize = require("minimize");
 const terser = require('terser');
 

@@ -1,7 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "@minify-html/js-esbuild": "file:../nodejs",
+    "@minify-html/js": "file:../nodejs",
     "benchmark": "2.1.4",
     "chart.js": "^2.9.3",
     "chartjs-node": "^1.7.1",

@@ -17,10 +17,11 @@ maintenance = { status = "actively-developed" }
 
 [features]
 default = []
-js-esbuild = ["esbuild-rs"]
+js-esbuild = ["crossbeam", "esbuild-rs"]
 
 [dependencies]
-esbuild-rs = { version = "0.0.5", optional = true }
+crossbeam = { version = "0.7.3", optional = true }
+esbuild-rs = { version = "0.1.2", optional = true }
 lazy_static = "1.4.0"
 memchr = "2.3.3"
 
