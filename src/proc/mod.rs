@@ -8,8 +8,11 @@ use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
 use memchr::memchr;
 use crate::gen::codepoints::{WHITESPACE, Lookup};
+#[cfg(feature = "js-esbuild")]
 use std::sync::{Arc, Mutex};
+#[cfg(feature = "js-esbuild")]
 use esbuild_rs::TransformResult;
+#[cfg(feature = "js-esbuild")]
 use crossbeam::sync::WaitGroup;
 
 pub mod checkpoint;
@@ -42,6 +45,7 @@ pub enum MatchAction {
     MatchOnly,
 }
 
+#[cfg(feature = "js-esbuild")]
 pub struct JsMinSection {
     pub src_range: ProcessorRange,
     pub result: TransformResult,
@@ -304,28 +308,32 @@ impl<'d> Processor<'d> {
         self._shift(count);
     }
 
+    #[cfg(feature = "js-esbuild")]
     pub fn new_script_section(&self) -> (WaitGroup, Arc<Mutex<Vec<JsMinSection>>>) {
         (self.script_wg.clone(), self.script_results.clone())
     }
 
     pub fn finish(self) -> usize {
         debug_assert!(self.at_end());
-        self.script_wg.wait();
-        let mut results = Arc::try_unwrap(self.script_results)
-            .unwrap_or_else(|_| panic!("failed to acquire script results"))
-            .into_inner()
-            .unwrap();
-        if !results.is_empty() {
-            results.sort_unstable_by_key(|r| r.src_range.start);
-            let mut write_start = results[0].src_range.start;
-            for (i, res) in results.iter().enumerate() {
-                let min_code = res.result.js.trim();
-                if min_code.len() < res.src_range.len() {
-                    let write_end = write_start + min_code.len();
-                    self.code[write_start..write_end].copy_from_slice(min_code.as_bytes());
-                    let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src_range.start);
-                    self.code.copy_within(res.src_range.end..next_start, write_end);
-                    write_start = write_end + (next_start - res.src_range.end);
+        #[cfg(feature = "js-esbuild")]
+        {
+            self.script_wg.wait();
+            let mut results = Arc::try_unwrap(self.script_results)
+                .unwrap_or_else(|_| panic!("failed to acquire script results"))
+                .into_inner()
+                .unwrap();
+            if !results.is_empty() {
+                results.sort_unstable_by_key(|r| r.src_range.start);
+                let mut write_start = results[0].src_range.start;
+                for (i, res) in results.iter().enumerate() {
+                    let min_code = res.result.js.trim();
+                    if min_code.len() < res.src_range.len() {
+                        let write_end = write_start + min_code.len();
+                        self.code[write_start..write_end].copy_from_slice(min_code.as_bytes());
+                        let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src_range.start);
+                        self.code.copy_within(res.src_range.end..next_start, write_end);
+                        write_start = write_end + (next_start - res.src_range.end);
+                    };
                 };
             };
         };

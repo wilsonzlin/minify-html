@@ -1,14 +1,20 @@
 use crate::err::ProcessingResult;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
-use crate::proc::{Processor, JsMinSection};
+use crate::proc::Processor;
+#[cfg(feature = "js-esbuild")]
+use crate::proc::JsMinSection;
 use crate::cfg::Cfg;
 #[cfg(feature = "js-esbuild")]
 use crate::proc::checkpoint::Checkpoint;
+#[cfg(feature = "js-esbuild")]
 use esbuild_rs::{TransformOptionsBuilder, TransformOptions};
+#[cfg(feature = "js-esbuild")]
 use std::sync::Arc;
+#[cfg(feature = "js-esbuild")]
 use lazy_static::lazy_static;
 
+#[cfg(feature = "js-esbuild")]
 lazy_static! {
     static ref TRANSFORM_OPTIONS: Arc<TransformOptions> = {
         let mut builder = TransformOptionsBuilder::new();
