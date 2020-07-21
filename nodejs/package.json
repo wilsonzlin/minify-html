@@ -1,5 +1,5 @@
 {
-  "name": "@minify-html/js-esbuild",
+  "name": "@minify-html/js",
   "version": "0.2.6",
   "description": "Fast and smart HTML + JS minifier",
   "main": "dist/index.js",
