@@ -2,7 +2,7 @@ use core::fmt;
 use std::fmt::{Debug, Formatter};
 use std::ops::{Index, IndexMut};
 
-use crate::err::{ErrorType, ProcessingResult};
+use crate::err::{Error, ErrorType, ProcessingResult};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
@@ -47,7 +47,7 @@ pub enum MatchAction {
 
 #[cfg(feature = "js-esbuild")]
 pub struct JsMinSection {
-    pub src_range: ProcessorRange,
+    pub src: ProcessorRange,
     pub result: TransformResult,
 }
 
@@ -313,31 +313,43 @@ impl<'d> Processor<'d> {
         (self.script_wg.clone(), self.script_results.clone())
     }
 
-    pub fn finish(self) -> usize {
+    // Since we consume the Processor, we must provide a full Error with positions.
+    #[cfg(not(feature = "js-esbuild"))]
+    pub fn finish(self) -> Result<usize, Error> {
         debug_assert!(self.at_end());
-        #[cfg(feature = "js-esbuild")]
-        {
-            self.script_wg.wait();
-            let mut results = Arc::try_unwrap(self.script_results)
-                .unwrap_or_else(|_| panic!("failed to acquire script results"))
-                .into_inner()
-                .unwrap();
-            if !results.is_empty() {
-                results.sort_unstable_by_key(|r| r.src_range.start);
-                let mut write_start = results[0].src_range.start;
-                for (i, res) in results.iter().enumerate() {
-                    let min_code = res.result.js.trim();
-                    if min_code.len() < res.src_range.len() {
-                        let write_end = write_start + min_code.len();
-                        self.code[write_start..write_end].copy_from_slice(min_code.as_bytes());
-                        let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src_range.start);
-                        self.code.copy_within(res.src_range.end..next_start, write_end);
-                        write_start = write_end + (next_start - res.src_range.end);
-                    };
-                };
+        Ok(self.write_next)
+    }
+
+    // Since we consume the Processor, we must provide a full Error with positions.
+    #[cfg(feature = "js-esbuild")]
+    pub fn finish(self) -> Result<usize, Error> {
+        debug_assert!(self.at_end());
+        self.script_wg.wait();
+        let mut results = Arc::try_unwrap(self.script_results)
+            .unwrap_or_else(|_| panic!("failed to acquire script results"))
+            .into_inner()
+            .unwrap();
+        results.sort_unstable_by_key(|r| r.src.start);
+        // As we write minified JS code for sections from left to right, we will be shifting code
+        // towards the left as previous source JS code sections shrink. We need to keep track of
+        // the write pointer after previous compaction.
+        // If there are no script sections, then we get self.write_next which will be returned.
+        let mut write_next = results.get(0).map_or(self.write_next, |r| r.src.start);
+        for (i, JsMinSection { result, src }) in results.iter().enumerate() {
+            // Resulting minified JS to write.
+            let mut js = result.js.trim().as_bytes();
+            // If minified result is actually longer than source, then write source instead.
+            // NOTE: We still need to write source as previous iterations may have shifted code down.
+            if js.len() >= src.len() {
+                js = &self[src];
             };
+            let write_end = write_next + js.len();
+            self.code[write_next..write_end].copy_from_slice(js.as_bytes());
+            let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src.start);
+            self.code.copy_within(src.end..next_start, write_end);
+            write_next = write_end + (next_start - src.end);
         };
-        self.write_next
+        Ok(write_next)
     }
 }
 

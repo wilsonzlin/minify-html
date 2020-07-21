@@ -37,12 +37,12 @@ pub fn process_script(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
             #[cfg(feature = "js-esbuild")]
             if cfg.minify_js {
                 let (wg, results) = proc.new_script_section();
-                let src_range = start.written_range(proc);
+                let src = start.written_range(proc);
                 // TODO Optimise: Avoid copying to new Vec.
-                let src = Arc::new(proc[src_range].to_vec());
+                let src = Arc::new(proc[src].to_vec());
                 esbuild_rs::transform(src, TRANSFORM_OPTIONS.clone(), move |result| {
                     results.lock().unwrap().push(JsMinSection {
-                        src_range,
+                        src,
                         result,
                     });
                     drop(wg);
