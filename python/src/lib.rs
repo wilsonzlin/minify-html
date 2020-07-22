@@ -1,4 +1,4 @@
-use minify_html::{Cfg, in_place as minify_html_native};
+use minify_html::{Cfg, Error, in_place as minify_html_native};
 use pyo3::prelude::*;
 use pyo3::exceptions::SyntaxError;
 use pyo3::wrap_pyfunction;
@@ -11,7 +11,7 @@ fn minify(code: String, minify_js: bool) -> PyResult<String> {
         minify_js,
     }) {
         Ok(out_len) => Ok(unsafe { from_utf8_unchecked(&code[0..out_len]).to_string() }),
-        Err((err, pos)) => Err(SyntaxError::py_err(format!("{} [Character {}]", err.message(), pos))),
+        Err(Error { error_type, position }) => Err(SyntaxError::py_err(format!("{} [Character {}]", error_type.message(), position))),
     }
 }
 

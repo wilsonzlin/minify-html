@@ -1,5 +1,5 @@
 use neon::prelude::*;
-use minify_html::{Cfg, in_place};
+use minify_html::{Cfg, Error, in_place};
 
 fn minify(mut cx: FunctionContext) -> JsResult<JsNumber> {
     let mut buffer = cx.argument::<JsBuffer>(0)?;
@@ -9,7 +9,7 @@ fn minify(mut cx: FunctionContext) -> JsResult<JsNumber> {
     };
     match cx.borrow_mut(&mut buffer, |code| in_place(code.as_mut_slice::<u8>(), &cfg)) {
         Ok(out_len) => Ok(cx.number(out_len as f64)),
-        Err((err, pos)) => cx.throw_error(format!("{} [Character {}]", err.message(), pos)),
+        Err(Error { error_type, position }) => cx.throw_error(format!("{} [Character {}]", error_type.message(), position)),
     }
 }
 

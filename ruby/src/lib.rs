@@ -1,4 +1,4 @@
-use minify_html::{Cfg, in_place as minify_html_native};
+use minify_html::{Cfg, Error, in_place as minify_html_native};
 use rutie::{Boolean, Class, class, Hash, methods, Object, RString, Symbol, VM};
 use std::str::from_utf8_unchecked;
 
@@ -23,7 +23,7 @@ methods! {
         };
 
         minify_html_native(&mut code, cfg)
-            .map_err(|(err, pos)| VM::raise(Class::from_existing("SyntaxError"), format!("{} [Character {}]", err.message(), pos).as_str()))
+            .map_err(|Error { error_type, position }| VM::raise(Class::from_existing("SyntaxError"), format!("{} [Character {}]", error_type.message(), position).as_str()))
             .map(|out_len| RString::new_utf8(unsafe { from_utf8_unchecked(&code[0..out_len]) }))
             .unwrap()
     }

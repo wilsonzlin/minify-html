@@ -1,4 +1,4 @@
-use minify_html::{in_place as minify_html_native, Cfg};
+use minify_html::{in_place as minify_html_native, Cfg, Error};
 use jni::JNIEnv;
 use jni::objects::{JByteBuffer, JClass, JObject, JString};
 use jni::sys::{jint, jstring};
@@ -31,10 +31,10 @@ pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minifyInPlace(
 
     (match minify_html_native(source, &build_cfg(&env, &cfg)) {
         Ok(out_len) => out_len,
-        Err((err, pos)) => {
+        Err(Error { error_type, position }) => {
             env.throw_new(
                 "in/wilsonl/minifyhtml/MinifyHtml$SyntaxException",
-                format!("{} [Character {}]", err.message(), pos),
+                format!("{} [Character {}]", error_type.message(), position),
             ).unwrap();
             0
         }
@@ -54,10 +54,10 @@ pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minify(
 
     match minify_html_native(&mut code, &build_cfg(&env, &cfg)) {
         Ok(out_len) => env.new_string(unsafe { from_utf8_unchecked(&code[0..out_len]) }).unwrap().into_inner(),
-        Err((err, pos)) => {
+        Err(Error { error_type, position }) => {
             env.throw_new(
                 "in/wilsonl/minifyhtml/MinifyHtml$SyntaxException",
-                format!("{} [Character {}]", err.message(), pos),
+                format!("{} [Character {}]", error_type.message(), position),
             ).unwrap();
             JObject::null().into_inner()
         }
