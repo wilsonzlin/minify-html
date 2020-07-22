@@ -2,15 +2,12 @@
   "name": "@minify-html/js",
   "version": "0.2.6",
   "description": "Fast and smart HTML + JS minifier",
-  "main": "dist/index.js",
+  "main": "dist/index.node",
   "files": [
-    "dist/**",
     "postinstall.js"
   ],
   "scripts": {
-    "build": "npm run clean && tsc",
-    "build-binary": "neon build --release && mkdir -p dist && mv native/index.node dist/native.node",
-    "clean": "rm -rf dist",
+    "build": "neon build --release && mkdir -p dist && mv native/index.node dist/index.node",
     "postinstall": "node postinstall.js"
   },
   "repository": {
@@ -28,9 +25,7 @@
   },
   "homepage": "https://github.com/wilsonzlin/minify-html#readme",
   "devDependencies": {
-    "@types/node": "^14.0.22",
-    "neon-cli": "^0.4.0",
-    "typescript": "^3.9.6"
+    "neon-cli": "^0.4.0"
   },
   "keywords": [
     "build",

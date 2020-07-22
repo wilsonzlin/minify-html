@@ -74,7 +74,7 @@ jobs:
         run: |
           binary_name="$(node -e 'console.log([process.platform, process.arch, process.versions.modules].join("__"))')"
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/dist/native.node.gz "minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/$binary_name.node.gz"
+          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/dist/index.node.gz "minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/$binary_name.node.gz"
   package:
     runs-on: ubuntu-latest
     needs: build
