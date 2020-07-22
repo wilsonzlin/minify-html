@@ -2,12 +2,12 @@
   "name": "@minify-html/js",
   "version": "0.2.6",
   "description": "Fast and smart HTML + JS minifier",
-  "main": "dist/index.node",
+  "main": "index.node",
   "files": [
     "postinstall.js"
   ],
   "scripts": {
-    "build": "neon build --release && mkdir -p dist && mv native/index.node dist/index.node",
+    "build": "neon build --release && mv native/index.node index.node",
     "postinstall": "node postinstall.js"
   },
   "repository": {

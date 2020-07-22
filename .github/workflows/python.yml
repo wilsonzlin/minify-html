@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
         python: [3.5, 3.6, 3.7, 3.8]
     steps:
       - uses: actions/checkout@v1
@@ -22,19 +22,10 @@ jobs:
           python-version: ${{ matrix.python }}
           architecture: 'x64'
 
-      - name: Set up Rust (macOS, Linux)
-        if: runner.os != 'Windows'
+      - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          profile: minimal
-          default: true
-
-      - name: Set up Rust (Windows)
-        if: runner.os == 'Windows'
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable-gnu
           profile: minimal
           default: true
 
@@ -42,10 +33,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: '^1.14.0'
-
-      - name: Set up GCC (Windows)
-        if: runner.os == 'Windows'
-        run: .\.github\workflows\gcc.ps1
 
       - name: Run prebuild steps
         shell: bash

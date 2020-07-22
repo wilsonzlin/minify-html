@@ -17,12 +17,13 @@ Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [min
 
 ### CLI
 
-Precompiled binaries are available for x86-64 macOS and Linux.
+Precompiled binaries are available for x86-64 Linux, macOS, and Windows.
 
 ##### Get
 
+[Linux](https://wilsonl.in/minify-html/bin/0.2.6-linux-x86_64) |
 [macOS](https://wilsonl.in/minify-html/bin/0.2.6-macos-x86_64) |
-[Linux](https://wilsonl.in/minify-html/bin/0.2.6-linux-x86_64)
+[Windows](https://wilsonl.in/minify-html/bin/0.2.6-windows-x86_64)
 
 ##### Use
 
@@ -101,7 +102,7 @@ fn main() {
 
 - Package: [@minify-html/js](https://www.npmjs.com/package/@minify-html/js)
 - Binding: [Neon](https://neon-bindings.com/)
-- Platforms: macOS, Linux; Node.js 8 and higher
+- Platforms: Linux, macOS, Windows; Node.js 8 and higher
 
 ##### Get
 
@@ -150,7 +151,7 @@ const minified = minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
 
 - Package: [in.wilsonl.minifyhtml](https://search.maven.org/artifact/in.wilsonl.minifyhtml/minify-html)
 - Binding: [JNI](https://github.com/jni-rs/jni-rs)
-- Platforms: macOS, Linux; Java 7 and higher
+- Platforms: Linux, macOS, Windows; Java 7 and higher
 
 ##### Get
 
@@ -190,7 +191,7 @@ MinifyHtml.minifyInPlace(source, cfg);
 
 - Package: [minify-html](https://pypi.org/project/minify-html)
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
-- Platforms: macOS, Linux; Python 3.5 and higher
+- Platforms: Linux, macOS, Windows; Python 3.5 and higher
 
 ##### Get
 
@@ -214,7 +215,7 @@ except SyntaxError as e:
 
 - Package: [minify_html](https://rubygems.org/gems/minify_html)
 - Binding: [Rutie](https://github.com/danielpclark/rutie)
-- Platforms: macOS, Linux; Ruby 2.5 and higher
+- Platforms: Linux, macOS; Ruby 2.5 and higher
 
 ##### Get
 

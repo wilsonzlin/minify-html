@@ -12,13 +12,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [macos-latest, ubuntu-latest, windows-latest]
         node: [8, 9, 10, 11, 12, 13, 14]
         include:
-          - os: ubuntu-latest
-            ARCH: linux-x86_64
           - os: macos-latest
             ARCH: macos-x86_64
+          - os: ubuntu-latest
+            ARCH: linux-x86_64
+          - os: windows-latest
+            ARCH: windows-x86_64
     steps:
       - uses: actions/checkout@v1
       - name: Get version
@@ -29,27 +31,16 @@ jobs:
         uses: actions/setup-node@master
         with:
           node-version: ${{ matrix.node }}.x
-      - name: Set up Rust (macOS, Linux)
-        if: runner.os != 'Windows'
+      - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          profile: minimal
-          default: true
-      - name: Set up Rust (Windows)
-        if: runner.os == 'Windows'
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable-gnu
           profile: minimal
           default: true
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: '^1.14.0'
-      - name: Set up GCC (Windows)
-        if: runner.os == 'Windows'
-        run: .\.github\workflows\gcc.ps1
       - name: Run prebuild steps
         shell: bash
         run: bash ./prebuild.sh
@@ -58,7 +49,7 @@ jobs:
         shell: bash
         run: |
           npm install
-          npm run build-binary
+          npm run build
           node compress.js
       - name: Install B2 CLI (macOS, Linux)
         if: runner.os != 'Windows'
@@ -74,7 +65,7 @@ jobs:
         run: |
           binary_name="$(node -e 'console.log([process.platform, process.arch, process.versions.modules].join("__"))')"
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/dist/index.node.gz "minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/$binary_name.node.gz"
+          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/index.node.gz "minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/$binary_name.node.gz"
   package:
     runs-on: ubuntu-latest
     needs: build
