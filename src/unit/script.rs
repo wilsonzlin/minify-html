@@ -39,8 +39,7 @@ pub fn process_script(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
                 let (wg, results) = proc.new_script_section();
                 let src = start.written_range(proc);
                 // TODO Optimise: Avoid copying to new Vec.
-                let src = Arc::new(proc[src].to_vec());
-                esbuild_rs::transform(src, TRANSFORM_OPTIONS.clone(), move |result| {
+                esbuild_rs::transform(Arc::new(proc[src].to_vec()), TRANSFORM_OPTIONS.clone(), move |result| {
                     results.lock().unwrap().push(JsMinSection {
                         src,
                         result,

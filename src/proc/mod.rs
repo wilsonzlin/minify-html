@@ -341,10 +341,10 @@ impl<'d> Processor<'d> {
             // If minified result is actually longer than source, then write source instead.
             // NOTE: We still need to write source as previous iterations may have shifted code down.
             if js.len() >= src.len() {
-                js = &self[src];
+                js = &self.code[src.start..src.end];
             };
             let write_end = write_next + js.len();
-            self.code[write_next..write_end].copy_from_slice(js.as_bytes());
+            self.code[write_next..write_end].copy_from_slice(js);
             let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src.start);
             self.code.copy_within(src.end..next_start, write_end);
             write_next = write_end + (next_start - src.end);
