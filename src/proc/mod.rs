@@ -337,9 +337,11 @@ impl<'d> Processor<'d> {
         let mut write_next = results.get(0).map_or(self.write_next, |r| r.src.start);
         for (i, JsMinSection { result, src }) in results.iter().enumerate() {
             // Resulting minified JS to write.
-            let min_js = result.js.trim().as_bytes();
+            // TODO Verify.
+            // TODO Rewrite these in esbuild fork so we don't have to do a memcpy and search+replace.
+            let min_js = result.js.trim().replace("</script", "<\\/script");
             let js_len = if min_js.len() < src.len() {
-                self.code[write_next..write_next + min_js.len()].copy_from_slice(min_js);
+                self.code[write_next..write_next + min_js.len()].copy_from_slice(min_js.as_bytes());
                 min_js.len()
             } else {
                 // If minified result is actually longer than source, then write source instead.
