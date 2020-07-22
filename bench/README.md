@@ -41,7 +41,7 @@ Since speed depends on the input, speed charts show performance relative to the 
 
 The settings used for each minifier can be found in [minifiers.js](./minifiers.js). Some settings to note:
 
-- JS and CSS minification is disabled for all, as minify-html is an HTML minifier and there are existing separate tools for [such](https://github.com/terser/terser) [tasks](https://github.com/jakubpawlowicz/clean-css).
+- CSS minification is disabled for all, as minify-html currently does not support CSS minification (coming soon).
 - `conservativeCollapse` is enabled for html-minifier as otherwise some whitespace would be unsafely removed with side affects. minify-html can safely remove whitespace with context if configured properly.
 
 ## Running
