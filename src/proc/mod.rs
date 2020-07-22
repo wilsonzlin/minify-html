@@ -2,12 +2,12 @@ use core::fmt;
 use std::fmt::{Debug, Formatter};
 use std::ops::{Index, IndexMut};
 
-use crate::err::{Error, ErrorType, ProcessingResult};
+use crate::err::{Error, ErrorType, ProcessingResult, debug_repr};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
 use memchr::memchr;
-use crate::gen::codepoints::{WHITESPACE, Lookup};
+use crate::gen::codepoints::Lookup;
 #[cfg(feature = "js-esbuild")]
 use std::sync::{Arc, Mutex};
 #[cfg(feature = "js-esbuild")]
@@ -337,14 +337,17 @@ impl<'d> Processor<'d> {
         let mut write_next = results.get(0).map_or(self.write_next, |r| r.src.start);
         for (i, JsMinSection { result, src }) in results.iter().enumerate() {
             // Resulting minified JS to write.
-            let mut js = result.js.trim().as_bytes();
-            // If minified result is actually longer than source, then write source instead.
-            // NOTE: We still need to write source as previous iterations may have shifted code down.
-            if js.len() >= src.len() {
-                js = &self.code[src.start..src.end];
+            let min_js = result.js.trim().as_bytes();
+            let js_len = if min_js.len() < src.len() {
+                self.code[write_next..write_next + min_js.len()].copy_from_slice(min_js);
+                min_js.len()
+            } else {
+                // If minified result is actually longer than source, then write source instead.
+                // NOTE: We still need to write source as previous iterations may have shifted code down.
+                self.code.copy_within(src.start..src.end, write_next);
+                src.len()
             };
-            let write_end = write_next + js.len();
-            self.code[write_next..write_end].copy_from_slice(js);
+            let write_end = write_next + js_len;
             let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src.start);
             self.code.copy_within(src.end..next_start, write_end);
             write_next = write_end + (next_start - src.end);
@@ -355,66 +358,7 @@ impl<'d> Processor<'d> {
 
 impl Debug for Processor<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        let mut lines = vec![(1, String::new())];
-        let mut line_idx = 0;
-        let mut indicator_line_idx_opt: Option<usize> = None;
-        let mut line_cols = 0;
-        let mut line_no = 1;
-        for (i, &c) in self.code.iter().enumerate() {
-            if i == self.read_next || i == self.write_next {
-                let indicator_line_idx = if indicator_line_idx_opt.is_none() {
-                    let indicator_line_idx = lines.len();
-                    lines.push((-1, String::new()));
-                    indicator_line_idx_opt = Some(indicator_line_idx);
-                    indicator_line_idx
-                } else if let Some(indicator_line_idx) = indicator_line_idx_opt {
-                    indicator_line_idx
-                } else {
-                    unreachable!();
-                };
-                // At this point, `line_cols` is how many characters are on this line BEFORE this character.
-                while line_cols > 0 && lines[indicator_line_idx].1.len() < line_cols {
-                    lines[indicator_line_idx].1.push(' ');
-                };
-                lines[indicator_line_idx].1.push(if i == self.read_next && i == self.write_next {
-                    'B'
-                } else if i == self.read_next {
-                    'R'
-                } else {
-                    'W'
-                })
-            };
-            match c {
-                b'\n' => {
-                    lines[line_idx].1.push_str("⏎");
-                    line_no += 1;
-                    line_cols = 0;
-                    line_idx = lines.len();
-                    lines.push((line_no, String::new()));
-                    indicator_line_idx_opt = None;
-                }
-                c => {
-                    match c {
-                        c if WHITESPACE[c] => lines[line_idx].1.push('·'),
-                        c if c >= b'!' && c <= b'~' => lines[line_idx].1.push(c as char),
-                        _ => lines[line_idx].1.push('�'),
-                    };
-                    line_cols += 1;
-                }
-            };
-        };
-        let max_line_no_width = (line_no as f64).log10().ceil() as usize;
-        // Don't use for_each as otherwise we can't return errors.
-        for l in lines
-            .iter()
-            .map(|(line_no, line)| if *line_no == -1 {
-                format!("{:>indent$}|{}\n", String::from_utf8(vec![b'>'; max_line_no_width]).unwrap(), line, indent = max_line_no_width)
-            } else {
-                format!("{:>indent$}|{}\n", line_no, line, indent = max_line_no_width)
-            })
-        {
-            f.write_str(l.as_str())?;
-        }
+        f.write_str(&debug_repr(self.code, self.read_next as isize, self.write_next as isize))?;
         Ok(())
     }
 }

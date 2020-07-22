@@ -3,6 +3,7 @@ use crate::proc::Processor;
 use crate::unit::content::process_content;
 use crate::spec::tag::ns::Namespace;
 pub use crate::cfg::Cfg;
+use crate::err::debug_repr;
 
 mod cfg;
 mod err;
@@ -48,4 +49,12 @@ pub fn copy(code: &[u8], cfg: &Cfg) -> Result<Vec<u8>, Error> {
         Ok(()) => Ok(copy),
         Err(e) => Err(e),
     }
+}
+
+pub fn with_friendly_error(code: &mut [u8], cfg: &Cfg) -> Result<usize, FriendlyError> {
+    in_place(code, cfg).map_err(|err| FriendlyError {
+        position: err.position,
+        message: err.error_type.message(),
+        code_context: debug_repr(code, err.position as isize, -1),
+    })
 }

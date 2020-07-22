@@ -291,4 +291,8 @@ fn test_processing_instructions() {
 #[test]
 fn test_js_minification() {
     eval_with_js_min(b"<script>let a = 1;</script>", b"<script>let a=1;</script>");
+    eval_with_js_min(br#"
+        <script>let a = 1;</script>
+        <script>let b = 2;</script>
+    "#, b"<script>let a=1;</script><script>let b=2;</script>");
 }
