@@ -100,8 +100,6 @@ jobs:
           package-lock=false
           //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
           EOF
-          npm install
-          npm run build
           cp ../README.md .
           if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
             npm publish --access public
