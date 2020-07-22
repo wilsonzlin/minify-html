@@ -23,27 +23,37 @@ jobs:
             ARCH: windows-x86_64
     steps:
       - uses: actions/checkout@v1
+
       - name: Get version
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+
       - name: Set up Node.js
         uses: actions/setup-node@master
         with:
           node-version: ${{ matrix.node }}.x
+
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
           default: true
+
+      - name: Set up GCC (Windows)
+        if: runner.os == 'Windows'
+        run: .\.github\workflows\gcc.ps1
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: '^1.14.0'
+
       - name: Run prebuild steps
         shell: bash
         run: bash ./prebuild.sh
+
       - name: Build native module
         working-directory: ./nodejs
         shell: bash
@@ -51,15 +61,18 @@ jobs:
           npm install
           npm run build
           node compress.js
+
       - name: Install B2 CLI (macOS, Linux)
         if: runner.os != 'Windows'
         run: |
           sudo pip install setuptools
           sudo pip install --upgrade b2
+
       - name: Install B2 CLI (Windows)
         if: runner.os == 'Windows'
         run: |
           pip install --upgrade b2
+
       - name: Upload to B2
         shell: bash
         run: |

@@ -29,6 +29,10 @@ jobs:
           profile: minimal
           default: true
 
+      - name: Set up GCC (Windows)
+        if: runner.os == 'Windows'
+        run: .\.github\workflows\gcc.ps1
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
