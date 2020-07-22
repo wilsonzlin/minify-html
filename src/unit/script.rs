@@ -40,10 +40,15 @@ pub fn process_script(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
                 let src = start.written_range(proc);
                 // TODO Optimise: Avoid copying to new Vec.
                 esbuild_rs::transform(Arc::new(proc[src].to_vec()), TRANSFORM_OPTIONS.clone(), move |result| {
-                    results.lock().unwrap().push(JsMinSection {
+                    let mut guard = results.lock().unwrap();
+                    guard.push(JsMinSection {
                         src,
                         result,
                     });
+                    // Drop Arc reference and Mutex guard before marking task as complete as it's possible proc::finish
+                    // waiting on WaitGroup will resume before Arc/Mutex is dropped after exiting this function.
+                    drop(guard);
+                    drop(results);
                     drop(wg);
                 });
                 return Ok(());
