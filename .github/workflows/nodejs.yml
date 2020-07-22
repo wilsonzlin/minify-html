@@ -12,14 +12,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        # Use windows-2016 as windows-2019 has LNK1181 error when building Neon module.
+        os: [macos-latest, ubuntu-latest, windows-2016]
         node: [8, 9, 10, 11, 12, 13, 14]
         include:
           - os: macos-latest
             ARCH: macos-x86_64
           - os: ubuntu-latest
             ARCH: linux-x86_64
-          - os: windows-latest
+          - os: windows-2016
             ARCH: windows-x86_64
     steps:
       - uses: actions/checkout@v1
