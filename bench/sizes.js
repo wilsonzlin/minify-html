@@ -22,20 +22,22 @@ const setSize = (program, test, result) => {
   };
 };
 
-for (const t of tests) {
-  for (const m of Object.keys(minifiers)) {
-    try {
-      const min = minifiers[m](t.contentAsString, t.contentAsBuffer);
-      // If `min` is a Buffer, convert to string (interpret as UTF-8) to get canonical length.
-      setSize(m, t.name, min.toString().length);
-      const minPath = path.join(__dirname, 'min', m, `${t.name}.html`);
-      mkdirp.sync(path.dirname(minPath));
-      fs.writeFileSync(minPath, min);
-    } catch (err) {
-      console.error(`Failed to run ${m} on test ${t.name}:`);
-      console.error(err);
-      process.exit(1);
+(async () => {
+  for (const t of tests) {
+    for (const m of Object.keys(minifiers)) {
+      try {
+        const min = await minifiers[m](t.contentAsString, t.contentAsBuffer);
+        // If `min` is a Buffer, convert to string (interpret as UTF-8) to get canonical length.
+        setSize(m, t.name, min.toString().length);
+        const minPath = path.join(__dirname, 'min', m, `${t.name}.html`);
+        mkdirp.sync(path.dirname(minPath));
+        fs.writeFileSync(minPath, min);
+      } catch (err) {
+        console.error(`Failed to run ${m} on test ${t.name}:`);
+        console.error(err);
+        process.exit(1);
+      }
     }
   }
-}
-results.writeSizeResults(sizes);
+  results.writeSizeResults(sizes);
+})();

@@ -44,8 +44,11 @@ const runTest = test => new Promise((resolve, reject) => {
   // Run JS libraries.
   const suite = new benchmark.Suite();
   for (const m of Object.keys(minifiers)) {
-    suite.add(m, () => {
-      minifiers[m](test.contentAsString, test.contentAsBuffer);
+    suite.add(m, {
+      defer: true,
+      fn (deferred) {
+        Promise.resolve(minifiers[m](test.contentAsString, test.contentAsBuffer)).then(() => deferred.resolve());
+      },
     });
   }
   suite
