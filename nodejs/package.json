@@ -7,7 +7,7 @@
     "postinstall.js"
   ],
   "scripts": {
-    "build": "node-gyp build && mv build/Release/index.node index.node",
+    "build": "node-gyp build && shx mv build/Release/index.node index.node",
     "postinstall": "node postinstall.js"
   },
   "repository": {
@@ -28,7 +28,8 @@
   },
   "homepage": "https://github.com/wilsonzlin/minify-html#readme",
   "devDependencies": {
-    "node-gyp": "^7.0.0"
+    "node-gyp": "^7.0.0",
+    "shx": "^0.3.2"
   },
   "keywords": [
     "build",
