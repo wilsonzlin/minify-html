@@ -246,13 +246,16 @@ rollback:
   return undefined;
 }
 
+static inline void define_method(napi_env env, napi_value exports, char const* name, napi_callback cb) {
+  napi_value js_fn;
+  assert_ok(napi_create_function(env, name, NAPI_AUTO_LENGTH, cb, NULL, &js_fn));
+  assert_ok(napi_set_named_property(env, exports, name, js_fn));
+}
+
 napi_value node_module_init(napi_env env, napi_value exports) {
-  napi_property_descriptor props[] = {
-      {"createConfiguration", NULL, node_method_create_configuration, NULL, NULL, NULL, napi_default, NULL},
-      {"minify", NULL, node_method_minify, NULL, NULL, NULL, napi_default, NULL},
-      {"minifyInPlace", NULL, node_method_minify_in_place, NULL, NULL, NULL, napi_default, NULL},
-  };
-  assert_ok(napi_define_properties(env, exports, 3, props));
+  define_method(env, exports, "createConfiguration", node_method_create_configuration);
+  define_method(env, exports, "minify", node_method_minify);
+  define_method(env, exports, "minifyInPlace", node_method_minify_in_place);
   return exports;
 }
 
