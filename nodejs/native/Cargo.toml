@@ -1,20 +1,18 @@
 [package]
 publish = false
-name = "minify-html-nodejs"
+name = "minify-html-ffi"
 version = "0.2.6"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 license = "MIT"
-build = "build.rs"
-exclude = ["artifacts.json", "index.node"]
 edition = "2018"
 
 [lib]
-name = "minify_html_nodejs_lib"
-crate-type = ["cdylib"]
+name = "minify_html_ffi"
+crate-type = ["staticlib"]
 
 [build-dependencies]
-neon-build = "0.4.0"
+cbindgen = "0.14"
 
 [dependencies]
+libc = "0.2"
 minify-html = { path = "../..", features = ["js-esbuild"] }
-neon = "0.4.0"

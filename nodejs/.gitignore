@@ -1,7 +1,6 @@
-/dist/*
-/native/target
-/native/index.node
-/native/artifacts.json
+/build/
+/index.node
 /native/Cargo.lock
+/native/target
 node_modules/
-package-lock.json
+/package-lock.json
