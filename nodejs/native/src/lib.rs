@@ -2,16 +2,16 @@ use std::{mem, ptr, slice};
 use minify_html::{Cfg, Error, in_place};
 
 #[no_mangle]
-pub extern "C" fn ffi_create_cfg(minify_js: bool) -> *mut Cfg {
+pub extern "C" fn ffi_create_cfg(minify_js: bool) -> *const Cfg {
     Box::into_raw(Box::new(Cfg {
         minify_js,
     }))
 }
 
 #[no_mangle]
-pub extern "C" fn ffi_drop_cfg(cfg: *mut Cfg) -> () {
+pub extern "C" fn ffi_drop_cfg(cfg: *const Cfg) -> () {
     unsafe {
-        Box::from_raw(cfg);
+        Box::from_raw(cfg as *mut Cfg);
     };
 }
 
@@ -23,9 +23,9 @@ pub struct ffi_error {
 }
 
 #[no_mangle]
-pub extern "C" fn ffi_drop_ffi_error(ffi_error_ptr: *mut ffi_error) -> () {
+pub extern "C" fn ffi_drop_ffi_error(ffi_error_ptr: *const ffi_error) -> () {
     unsafe {
-        let ffi_error = Box::from_raw(ffi_error_ptr);
+        let ffi_error = Box::from_raw(ffi_error_ptr as *mut ffi_error);
         let _ = String::from_raw_parts(ffi_error.message, ffi_error.message_len, ffi_error.message_len);
     };
 }
