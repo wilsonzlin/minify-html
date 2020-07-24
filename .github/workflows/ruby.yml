@@ -34,21 +34,16 @@ jobs:
         shell: bash
         env:
           RUBY_VERSION: ${{ matrix.ruby }}
-        # PowerShell doesn't support `${...}` syntax.
         run: echo ::set-output name=NAME::${{ matrix.NAME }}-ruby${RUBY_VERSION%.*}
 
       # Install Ruby manually as actions/setup-ruby@v1 does not compile with `--enable-shared`.
       - name: Install rbenv dependencies (macOS)
         if: runner.os == 'macOS'
-        shell: bash -l {0}
-        run: |
-          brew install openssl libyaml libffi
+        run: brew install openssl libyaml libffi
 
       - name: Install rbenv dependencies (Linux)
         if: runner.os == 'Linux'
-        shell: bash -l {0}
-        run: |
-          sudo apt install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
+        run: sudo apt install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
 
       - name: Install rbenv
         # rbenv-installer now uses Linux brew to install Ruby, which we do not want.
