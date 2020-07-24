@@ -12,9 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # Use windows-2016 as windows-2019 has LNK1181 error when building Neon module.
-        os: [macos-latest, ubuntu-latest, windows-2016]
-        node: [8, 9, 10, 11, 12, 13, 14]
+        os: [macos-latest, ubuntu-latest, windows-latest]
         include:
           - os: macos-latest
             ARCH: macos-x86_64
@@ -77,7 +75,7 @@ jobs:
       - name: Upload to B2
         shell: bash
         run: |
-          binary_name="$(node -e 'console.log([process.platform, process.arch, process.versions.modules].join("__"))')"
+          binary_name="$(node -e 'console.log([process.platform, process.arch].join("__"))')"
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
           b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/index.node.gz "minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/$binary_name.node.gz"
   package:

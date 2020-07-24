@@ -6,7 +6,7 @@ const pkg = require('./package.json');
 
 const MAX_DOWNLOAD_ATTEMPTS = 4;
 
-const binaryName = [process.platform, process.arch, process.versions.modules].join('__');
+const binaryName = [process.platform, process.arch].join('__');
 const binaryPath = path.join(__dirname, 'index.node');
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));

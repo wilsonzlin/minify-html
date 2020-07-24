@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define NAPI_VERSION 4
+#define NAPI_VERSION 1
 #include <node_api.h>
 
 typedef struct Cfg Cfg;
