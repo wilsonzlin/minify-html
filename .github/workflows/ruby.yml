@@ -23,10 +23,12 @@ jobs:
             FILE: 'libminify_html_ruby_lib.dylib'
     steps:
       - uses: actions/checkout@v1
+        -
       - name: Get version
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+
       # Install Ruby manually as actions/setup-ruby@v1 does not compile with `--enable-shared`.
       - name: Prepare for rbenv
         run: |
@@ -34,6 +36,7 @@ jobs:
           export PATH="$HOME/.rbenv/bin:$PATH"
           eval "$(rbenv init -)"
           EOF
+
       - name: Get native module file name
         id: native_file
         shell: bash
@@ -41,12 +44,14 @@ jobs:
           RUBY_VERSION: ${{ matrix.ruby }}
         # PowerShell doesn't support `${...}` syntax.
         run: echo ::set-output name=NAME::${{ matrix.NAME }}-ruby${RUBY_VERSION%.*}
+
       - name: Set up rbenv (macOS)
         if: runner.os == 'macOS'
         shell: bash -l {0}
         run: |
           brew install openssl libyaml libffi
           brew install rbenv
+
       - name: Set up rbenv (Linux)
         if: runner.os == 'Linux'
         shell: bash -l {0}
@@ -57,48 +62,49 @@ jobs:
           echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
           mkdir -p "$HOME/.rbenv/plugins"
           git clone https://github.com/rbenv/ruby-build.git "$HOME/.rbenv/plugins/ruby-build"
+
       - name: Set up Ruby
         shell: bash -l {0}
         run: |
           rbenv install ${{ matrix.ruby }}
           rbenv global ${{ matrix.ruby }}
+
       - name: Set up Rust (macOS, Linux)
-        if: runner.os != 'Windows'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
           default: true
-      - name: Set up Rust (Windows)
-        if: runner.os == 'Windows'
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable-gnu
-          profile: minimal
-          default: true
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: '^1.14.0'
+
       - name: Set up GCC (Windows)
         if: runner.os == 'Windows'
         run: .\.github\workflows\gcc.ps1
+
       - name: Run prebuild steps
         shell: bash
         run: bash ./prebuild.sh
+
       - name: Build Ruby native library
         shell: bash -l {0}
-        run: cargo build --release
+        run: cargo build -vvv --release
         working-directory: ./ruby
+
       - name: Install B2 CLI (macOS, Linux)
         if: runner.os != 'Windows'
         run: |
           sudo pip install setuptools
           sudo pip install --upgrade b2
+
       - name: Install B2 CLI (Windows)
         if: runner.os == 'Windows'
         run: |
           pip install --upgrade b2
+
       - name: Upload to B2
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
