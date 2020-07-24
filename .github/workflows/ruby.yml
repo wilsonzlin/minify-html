@@ -29,14 +29,6 @@ jobs:
         shell: bash
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
 
-      # Install Ruby manually as actions/setup-ruby@v1 does not compile with `--enable-shared`.
-      - name: Prepare for rbenv
-        run: |
-          cat << 'EOF' >> "$HOME/.bash_profile"
-          export PATH="$HOME/.rbenv/bin:$PATH"
-          eval "$(rbenv init -)"
-          EOF
-
       - name: Get native module file name
         id: native_file
         shell: bash
@@ -45,23 +37,30 @@ jobs:
         # PowerShell doesn't support `${...}` syntax.
         run: echo ::set-output name=NAME::${{ matrix.NAME }}-ruby${RUBY_VERSION%.*}
 
-      - name: Set up rbenv (macOS)
+      # Install Ruby manually as actions/setup-ruby@v1 does not compile with `--enable-shared`.
+      - name: Install rbenv dependencies (macOS)
         if: runner.os == 'macOS'
         shell: bash -l {0}
         run: |
           brew install openssl libyaml libffi
-          brew install rbenv
 
-      - name: Set up rbenv (Linux)
+      - name: Install rbenv dependencies (Linux)
         if: runner.os == 'Linux'
         shell: bash -l {0}
-        # rbenv-installer now uses Linux brew to install Ruby, which we do not want.
         run: |
           sudo apt install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
+
+      - name: Install rbenv
+        # rbenv-installer now uses Linux brew to install Ruby, which we do not want.
+        run: |
           git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-          echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
           mkdir -p "$HOME/.rbenv/plugins"
           git clone https://github.com/rbenv/ruby-build.git "$HOME/.rbenv/plugins/ruby-build"
+
+          cat << 'EOF' >> "$HOME/.bash_profile"
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+          EOF
 
       - name: Set up Ruby
         shell: bash -l {0}
@@ -69,7 +68,7 @@ jobs:
           rbenv install ${{ matrix.ruby }}
           rbenv global ${{ matrix.ruby }}
 
-      - name: Set up Rust (macOS, Linux)
+      - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -109,6 +108,7 @@ jobs:
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
           b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./ruby/target/release/${{ matrix.FILE }} minify-html/bin/ruby/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
+
   package:
     runs-on: ubuntu-latest
     needs: build
