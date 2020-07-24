@@ -23,7 +23,7 @@ jobs:
             FILE: 'libminify_html_ruby_lib.dylib'
     steps:
       - uses: actions/checkout@v1
-        -
+
       - name: Get version
         id: version
         shell: bash
