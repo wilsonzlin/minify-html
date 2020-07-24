@@ -101,8 +101,8 @@ fn main() {
 <summary><strong>Node.js</strong></summary>
 
 - Package: [@minify-html/js](https://www.npmjs.com/package/@minify-html/js)
-- Binding: [Neon](https://neon-bindings.com/)
-- Platforms: Linux, macOS, Windows; Node.js 8 and higher
+- Binding: [N-API](https://nodejs.org/api/n-api.html)
+- Platforms: Linux, macOS, Windows; Node.js 8.6.0 and higher
 
 ##### Get
 
