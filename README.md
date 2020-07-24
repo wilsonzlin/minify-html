@@ -52,7 +52,7 @@ If the `js-esbuild` feature is not enabled, `cfg.minify_js` will have no effect.
 ##### Use
 
 ```rust
-use minify_html::{Cfg, FriendlyError, in_place, copy, with_friendly_error, truncate};
+use minify_html::{Cfg, Error, FriendlyError, in_place, copy, with_friendly_error, truncate};
 
 fn main() {
     let mut code = b"<p>  Hello, world!  </p>".to_vec();
@@ -64,21 +64,21 @@ fn main() {
     // but leaves any original code after the minified code intact.
     match in_place(&mut code, cfg) {
         Ok(minified_len) => {}
-        Err((error_type, error_position)) => {}
+        Err(Error { error_type, position }) => {}
     };
 
     // Creates a vector copy containing only minified code
     // instead of minifying in-place.
     match copy(&code, cfg) {
         Ok(minified) => {}
-        Err((error_type, error_position)) => {}
+        Err(Error { error_type, position }) => {}
     };
 
     // Minifies a vector in-place, and then truncates the
     // vector to the new minified length.
     match truncate(&mut code, cfg) {
         Ok(()) => {}
-        Err((error_type, error_position)) => {}
+        Err(Error { error_type, position }) => {}
     };
 
     // Identical to `in_place` except with FriendlyError instead.
