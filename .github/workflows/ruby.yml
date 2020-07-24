@@ -52,14 +52,10 @@ jobs:
           mkdir -p "$HOME/.rbenv/plugins"
           git clone https://github.com/rbenv/ruby-build.git "$HOME/.rbenv/plugins/ruby-build"
 
-          cat << 'EOF' >> "$HOME/.bash_profile"
+      - name: Set up Ruby
+        run: |
           export PATH="$HOME/.rbenv/bin:$PATH"
           eval "$(rbenv init -)"
-          EOF
-
-      - name: Set up Ruby
-        shell: bash -l {0}
-        run: |
           rbenv install ${{ matrix.ruby }}
           rbenv global ${{ matrix.ruby }}
 
@@ -84,8 +80,10 @@ jobs:
         run: bash ./prebuild.sh
 
       - name: Build Ruby native library
-        shell: bash -l {0}
-        run: cargo build -vvv --release
+        run: |
+          export PATH="$HOME/.rbenv/bin:$PATH"
+          eval "$(rbenv init -)"
+          cargo build -vvv --release
         working-directory: ./ruby
 
       - name: Install B2 CLI (macOS, Linux)
