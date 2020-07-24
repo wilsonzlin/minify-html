@@ -22,7 +22,7 @@ jobs:
             FILE: 'libminify_html_java.so'
           - os: windows-latest
             ARCH: windows-x86_64
-            FILE: 'hyperbuild_java.dll'
+            FILE: 'minify_html_java.dll'
     steps:
       - uses: actions/checkout@v1
 
