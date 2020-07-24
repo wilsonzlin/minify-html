@@ -23,7 +23,7 @@ Precompiled binaries are available for x86-64 Linux, macOS, and Windows.
 
 [Linux](https://wilsonl.in/minify-html/bin/0.3.0-linux-x86_64) |
 [macOS](https://wilsonl.in/minify-html/bin/0.3.0-macos-x86_64) |
-[Windows](https://wilsonl.in/minify-html/bin/0.3.0-windows-x86_64)
+[Windows](https://wilsonl.in/minify-html/bin/0.3.0-windows-x86_64.exe)
 
 ##### Use
 
