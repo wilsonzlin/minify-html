@@ -18,7 +18,7 @@ jobs:
             ARCH: macos-x86_64
           - os: ubuntu-latest
             ARCH: linux-x86_64
-          - os: windows-2016
+          - os: windows-latest
             ARCH: windows-x86_64
     steps:
       - uses: actions/checkout@v1
@@ -31,7 +31,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@master
         with:
-          node-version: ${{ matrix.node }}.x
+          node-version: 14.x
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
