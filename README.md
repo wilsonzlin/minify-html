@@ -123,7 +123,7 @@ yarn add @minify-html/js
 ```js
 const minifyHtml = require("@minify-html/js");
 
-const cfg = { minifyJs: false };
+const cfg = minifyHtml.createConfiguration({ minifyJs: false });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 
 // Alternatively, minify in place to avoid copying.
@@ -138,7 +138,7 @@ minify-html is also available for TypeScript:
 import * as minifyHtml from "@minify-html/js";
 import * as fs from "fs";
 
-const cfg = { minifyJs: false };
+const cfg = minifyHtml.createConfiguration({ minifyJs: false });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 // Or alternatively:
 const minified = minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
