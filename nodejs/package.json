@@ -24,7 +24,7 @@
     "url": "https://github.com/wilsonzlin/minify-html/issues"
   },
   "engines": {
-    "node": "^8.6.0"
+    "node": ">= 8.6.0"
   },
   "homepage": "https://github.com/wilsonzlin/minify-html#readme",
   "devDependencies": {
