@@ -69,6 +69,15 @@ fn test_removal_of_optional_tags() {
     eval(b"<rt></rt>", b"<rt>");
     eval(b"<rt></rt><rp>1</rp><div></div>", b"<rt><rp>1</rp><div></div>");
     eval(b"<div><rt></rt></div>", b"<div><rt></div>");
+    eval(br#"
+        <html>
+            <head>
+            </head>
+
+            <body>
+            </body>
+        </html>
+    "#, b"<html><head><body>");
 }
 
 #[test]

@@ -2,7 +2,6 @@ use lazy_static::lazy_static;
 use std::collections::{HashSet, HashMap};
 
 // Rules sourced from https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission.
-// TODO html, head, body
 // TODO Opening tags
 
 pub enum ClosingTagOmissionRuleIfLast {
@@ -36,6 +35,31 @@ impl ClosingTagOmissionRule {
     pub fn can_omit_as_before(&self, after: &[u8]) -> bool {
         self.followed_by.contains(after)
     }
+}
+
+lazy_static! {
+    static ref HTML_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
+        followed_by: HashSet::new(),
+        is_last: ClosingTagOmissionRuleIfLast::Always,
+    };
+}
+
+lazy_static! {
+    static ref HEAD_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
+        followed_by: {
+            let mut s = HashSet::<&'static [u8]>::new();
+            s.insert(b"body");
+            s
+        },
+        is_last: ClosingTagOmissionRuleIfLast::Always,
+    };
+}
+
+lazy_static! {
+    static ref BODY_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
+        followed_by: HashSet::new(),
+        is_last: ClosingTagOmissionRuleIfLast::Always,
+    };
 }
 
 lazy_static! {
@@ -116,7 +140,10 @@ lazy_static! {
         is_last_tags.insert(b"noscript");
         is_last_tags.insert(b"video");
 
-        ClosingTagOmissionRule { followed_by, is_last: ClosingTagOmissionRuleIfLast::ParentIsNot(is_last_tags) }
+        ClosingTagOmissionRule {
+            followed_by,
+            is_last: ClosingTagOmissionRuleIfLast::ParentIsNot(is_last_tags),
+        }
     };
 }
 
@@ -236,6 +263,9 @@ lazy_static! {
 lazy_static! {
     pub static ref CLOSING_TAG_OMISSION_RULES: HashMap<&'static [u8], &'static ClosingTagOmissionRule> = {
         let mut m = HashMap::<&'static [u8], &'static ClosingTagOmissionRule>::new();
+        m.insert(b"html", &HTML_CLOSING_TAG_OMISSION_RULE);
+        m.insert(b"head", &HEAD_CLOSING_TAG_OMISSION_RULE);
+        m.insert(b"body", &BODY_CLOSING_TAG_OMISSION_RULE);
         m.insert(b"li", &LI_CLOSING_TAG_OMISSION_RULE);
         m.insert(b"dt", &DT_CLOSING_TAG_OMISSION_RULE);
         m.insert(b"dd", &DD_CLOSING_TAG_OMISSION_RULE);
