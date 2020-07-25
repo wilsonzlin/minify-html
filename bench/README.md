@@ -35,7 +35,7 @@ For more information on how the tests are fetched, see [fetch.js](./fetch.js).
 
 On this [project's README](../README.md), average graphs are shown. Graphs showing per-test results are shown below:
 
-<img width="435" alt="Chart showing speed of HTML minifiers per test" src="https://wilsonl.in/minify-html/bench/0.3.0/js/speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers per test" src="https://wilsonl.in/minify-html/bench/0.3.0/js/sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers per test" src="https://wilsonl.in/minify-html/bench/0.3.1/js/speeds.png"> <img width="435" alt="Chart showing effectiveness of HTML minifiers per test" src="https://wilsonl.in/minify-html/bench/0.3.1/js/sizes.png">
 
 Since speed depends on the input, speed charts show performance relative to the Node.js minify-html as a percentage.
 
