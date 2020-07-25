@@ -12,48 +12,59 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+
       - name: Get version
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
           default: true
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: '^1.14.0'
+
       - name: Set up Node.js for generating code
         uses: actions/setup-node@master
         with:
           node-version: 14.x
+
       - name: Run prebuild steps
         shell: bash
         run: bash ./prebuild.sh
+
       - name: Set up Node.js for benching
         uses: actions/setup-node@master
         with:
           node-version: 10.x
+
       - name: Set up Node.js module
         working-directory: ./nodejs
         run: npm install
+
       - name: Build bench
         working-directory: ./bench
         run: |
           sudo apt install -y build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
           npm install
           ./build.sh
-      - name: Run bench and graph results
-        working-directory: ./bench
-        run: ./bench.sh
+
       - name: Install B2 CLI
         run: |
           sudo pip install setuptools
           sudo pip install --upgrade b2
-      - name: Upload to B2
+
+      - name: Run bench and upload results
+        working-directory: ./bench
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 sync ./bench/results/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bench/${{ steps.version.outputs.VERSION }}/
+          ./bench.sh
+          b2 sync ./bench/results/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bench/${{ steps.version.outputs.VERSION }}/js/
+          HTML_ONLY=1 ./bench.sh
+          b2 sync ./bench/results/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bench/${{ steps.version.outputs.VERSION }}/core/
