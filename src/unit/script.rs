@@ -25,7 +25,7 @@ lazy_static! {
     };
 }
 
-pub fn process_script(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
+pub fn process_script(proc: &mut Processor, cfg: &Cfg, js: bool) -> ProcessingResult<()> {
     #[cfg(feature = "js-esbuild")]
     let start = Checkpoint::new(proc);
     loop {
@@ -35,7 +35,7 @@ pub fn process_script(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
         // `process_tag` will require closing tag.
         if proc.m(IsSeq(b"</script"), MatchOnly).nonempty() {
             #[cfg(feature = "js-esbuild")]
-            if cfg.minify_js {
+            if js && cfg.minify_js {
                 let (wg, results) = proc.new_script_section();
                 let src = start.written_range(proc);
                 // TODO Optimise: Avoid copying to new Vec.

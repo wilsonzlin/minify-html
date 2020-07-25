@@ -42,7 +42,8 @@ lazy_static! {
 
 #[derive(Copy, Clone)]
 enum TagType {
-    Script,
+    ScriptJs,
+    ScriptData,
     Style,
     Other,
 }
@@ -110,8 +111,9 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibl
     // Write previously skipped name and use written code as range (otherwise source code will eventually be overwritten).
     let tag_name = proc.write_range(source_tag_name);
 
-    let tag_type = match &proc[tag_name] {
-        b"script" => TagType::Script,
+    let mut tag_type = match &proc[tag_name] {
+        // Unless non-JS MIME `type` is provided, `script` tags contain JS.
+        b"script" => TagType::ScriptJs,
         b"style" => TagType::Style,
         _ => TagType::Other,
     };
@@ -153,13 +155,17 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibl
 
         let ProcessedAttr { name, typ, value } = process_attr(proc, ns, tag_name)?;
         match (tag_type, &proc[name]) {
-            (TagType::Script, b"type") => {
+            // NOTE: We don't support multiple `type` attributes, so can't go from ScriptData => ScriptJs.
+            (TagType::ScriptJs, b"type") => {
                 // It's JS if the value is empty or one of `JAVASCRIPT_MIME_TYPES`.
                 let script_tag_type_is_js = value
                     .filter(|v| !JAVASCRIPT_MIME_TYPES.contains(&proc[*v]))
                     .is_none();
                 if script_tag_type_is_js {
                     erase_attr = true;
+                } else {
+                    // Tag does not contain JS, don't minify JS.
+                    tag_type = TagType::ScriptData;
                 };
             }
             (_, name) => {
@@ -203,7 +209,8 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibl
     };
 
     match tag_type {
-        TagType::Script => process_script(proc, cfg)?,
+        TagType::ScriptData => process_script(proc, cfg, false)?,
+        TagType::ScriptJs => process_script(proc, cfg, true)?,
         TagType::Style => process_style(proc)?,
         _ => process_content(proc, cfg, child_ns, Some(tag_name))?,
     };

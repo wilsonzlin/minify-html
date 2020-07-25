@@ -168,6 +168,7 @@ fn test_script_type_attr_value_removal() {
     eval(b"<script type=\"application/ecmascript\"></script>", b"<script></script>");
     eval(b"<script type=\"application/javascript\"></script>", b"<script></script>");
     eval(b"<script type=\"text/jscript\"></script>", b"<script></script>");
+    eval(b"<script type=\"text/plain\"></script>", b"<script type=text/plain></script>");
 }
 
 #[test]
@@ -304,4 +305,5 @@ fn test_js_minification() {
         <script>let a = 1;</script>
         <script>let b = 2;</script>
     "#, b"<script>let a=1;</script><script>let b=2;</script>");
+    eval_with_js_min(b"<script type=text/plain>   alert(1.00000);   </script>", b"<script type=text/plain>   alert(1.00000);   </script>");
 }
