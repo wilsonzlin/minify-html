@@ -55,6 +55,17 @@ void js_copy_min_buf_finalizer(napi_env env, void* _finalize_data, void* finaliz
   free(finalize_hint);
 }
 
+static inline void throw_js_ffi_error(napi_env env, ffi_error const* min_err) {
+  napi_value js_min_err_msg;
+  assert_ok(napi_create_string_utf8(env, (char const*) min_err->message, min_err->message_len, &js_min_err_msg));
+  napi_value js_min_err;
+  assert_ok(napi_create_error(env, NULL, js_min_err_msg, &js_min_err));
+  napi_value js_min_err_pos;
+  assert_ok(napi_create_int64(env, min_err->position, &js_min_err_pos));
+  assert_ok(napi_set_named_property(env, js_min_err, "position", js_min_err_pos));
+  assert_ok(napi_throw(env, js_min_err));
+}
+
 napi_value node_method_create_configuration(napi_env env, napi_callback_info info) {
   napi_value undefined = get_undefined(env);
 
@@ -110,6 +121,7 @@ napi_value node_method_minify_in_place(napi_env env, napi_callback_info info) {
     assert_ok(napi_throw_error(env, NULL, "Failed to get callback info"));
     goto rollback;
   }
+  napi_value min_buf_rv = undefined;
   napi_value buffer_arg = argv[0];
   napi_value js_cfg_arg = argv[1];
 
@@ -140,32 +152,33 @@ napi_value node_method_minify_in_place(napi_env env, napi_callback_info info) {
   size_t min_len;
   min_err = ffi_in_place(buffer_data, buffer_len, cfg, &min_len);
   if (min_err != NULL) {
-    // TODO
-    assert_ok(napi_throw_error(env, NULL, "Failed to run minifier"));
+    throw_js_ffi_error(env, min_err);
     goto rollback;
   }
 
   // Create minified buffer with underlying source memory but minified length.
   min_buf_meta = assert_malloc(sizeof(js_min_buf_metadata));
   min_buf_meta->src_buf_ref = buffer_arg_ref;
-  napi_value min_buf;
-  if (napi_create_external_buffer(env, min_len, buffer_data, js_min_buf_finalizer, min_buf_meta, &min_buf) != napi_ok) {
+  if (napi_create_external_buffer(env, min_len, buffer_data, js_min_buf_finalizer, min_buf_meta, &min_buf_rv) != napi_ok) {
     assert_ok(napi_throw_error(env, NULL, "Failed to create minified buffer"));
     goto rollback;
   }
 
-  return min_buf;
+  goto cleanup;
 
 rollback:
   if (buffer_arg_ref_set) {
     // Release source buffer.
     assert_ok(napi_delete_reference(env, buffer_arg_ref));
   }
+  free(min_buf_meta);
+
+cleanup:
   if (min_err != NULL) {
     ffi_drop_ffi_error(min_err);
   }
-  free(min_buf_meta);
-  return undefined;
+
+  return min_buf_rv;
 }
 
 napi_value node_method_minify(napi_env env, napi_callback_info info) {
@@ -184,6 +197,7 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
     assert_ok(napi_throw_error(env, NULL, "Failed to get callback info"));
     goto rollback;
   }
+  napi_value min_buf_rv = undefined;
   napi_value src_arg = argv[0];
   napi_value js_cfg_arg = argv[1];
 
@@ -224,26 +238,27 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
   size_t min_len;
   min_err = ffi_in_place(src_data_copy, src_data_len, cfg, &min_len);
   if (min_err != NULL) {
-    // TODO
-    assert_ok(napi_throw_error(env, NULL, "Failed to run minifier"));
+    throw_js_ffi_error(env, min_err);
     goto rollback;
   }
 
   // Create minified buffer with copied memory.
-  napi_value min_buf;
-  if (napi_create_external_buffer(env, min_len, src_data_copy, js_copy_min_buf_finalizer, src_data_copy, &min_buf) != napi_ok) {
+  if (napi_create_external_buffer(env, min_len, src_data_copy, js_copy_min_buf_finalizer, src_data_copy, &min_buf_rv) != napi_ok) {
     assert_ok(napi_throw_error(env, NULL, "Failed to create minified buffer"));
     goto rollback;
   }
 
-  return min_buf;
+  goto cleanup;
 
 rollback:
   free(src_data_copy);
+
+cleanup:
   if (min_err != NULL) {
     ffi_drop_ffi_error(min_err);
   }
-  return undefined;
+
+  return min_buf_rv;
 }
 
 static inline void define_method(napi_env env, napi_value exports, char const* name, napi_callback cb) {
