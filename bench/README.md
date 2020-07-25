@@ -49,7 +49,7 @@ The settings used for each minifier can be found in [minifiers.js](./minifiers.j
 
 Make sure to install the dependencies listed in [package.json](./package.json) by running `npm i` or `yarn`. Node.js 10 is required, and system dependencies for building [canvas](https://www.npmjs.com/package/canvas), used for rendering graphs, may need to be installed. See the [npm package](https://www.npmjs.com/package/canvas) for more details.
 
-Run [build.sh](./build.sh) to build minify-html-nodejs with the local minify-html.
+Run [build.sh](./build.sh) to build @minify-html/js with the local minify-html.
 
 Run [sizes.js](sizes.js) to run each HTML minifier against each test and record the minified size results. This will also output the minified files in `min` if inspection of minified outputs is necessary. [compare.sh](./compare.sh) is a useful script for viewing a character-by-character diff between the minified outputs of minify-html and html-minifier for a specific test. Pass the test's file name as the first argument.
 

@@ -3,7 +3,7 @@ const results = require('./results');
 
 const colours = {
   'minify-html': '#041f60',
-  'minify-html-nodejs': '#1f77b4',
+  '@minify-html/js': '#1f77b4',
   'minimize': '#ff7f0e',
   'html-minifier': '#2ca02c',
 };
@@ -56,7 +56,7 @@ const renderChart = async (cfg) => {
 };
 
 (async () => {
-  const averageSpeeds = results.getSpeedResults().getAverageRelativeSpeedPerMinifier('minify-html-nodejs');
+  const averageSpeeds = results.getSpeedResults().getAverageRelativeSpeedPerMinifier('@minify-html/js');
   results.writeAverageSpeedsGraph(await renderChart({
     type: 'bar',
     data: {
@@ -70,7 +70,7 @@ const renderChart = async (cfg) => {
     ...chartOptions('Average operations per second (higher is better)', false, percentageTick),
   }));
 
-  const speeds = results.getSpeedResults().getRelativeFileSpeedsPerMinifier('minify-html-nodejs');
+  const speeds = results.getSpeedResults().getRelativeFileSpeedsPerMinifier('@minify-html/js');
   results.writeSpeedsGraph(await renderChart({
     type: 'bar',
     data: {

@@ -3,7 +3,7 @@ const htmlMinifier = require('html-minifier');
 const minifyHtml = require('@minify-html/js');
 const minimize = require('minimize');
 
-const minifyHtmlCfg = minifyHtml.createConfiguration({minifyJs: true});
+const testJsMinification = process.env.HTML_ONLY !== '1';
 
 const jsMime = new Set([
   undefined,
@@ -46,49 +46,62 @@ class EsbuildAsync {
   }
 }
 
+const minifyHtmlCfg = minifyHtml.createConfiguration({minifyJs: testJsMinification});
+const htmlMinifierCfg = {
+  collapseBooleanAttributes: true,
+  collapseInlineTagWhitespace: true,
+  collapseWhitespace: true,
+  // minify-html can do context-aware whitespace removal, which is safe when configured correctly to match how whitespace is used in the document.
+  // html-minifier cannot, so whitespace must be collapsed conservatively.
+  // Alternatively, minify-html can also be made to remove whitespace regardless of context.
+  conservativeCollapse: true,
+  customEventAttributes: [],
+  decodeEntities: true,
+  ignoreCustomComments: [],
+  ignoreCustomFragments: [/<\?[\s\S]*?\?>/],
+  // This will be set to a function if `testJsMinification` is true.
+  minifyJS: false,
+  processConditionalComments: true,
+  removeAttributeQuotes: true,
+  removeComments: true,
+  removeEmptyAttributes: true,
+  removeOptionalTags: true,
+  removeRedundantAttributes: true,
+  removeScriptTypeAttributes: true,
+  removeStyleLinkTypeAttributes: true,
+  removeTagWhitespace: true,
+  useShortDoctype: true,
+};
+
 module.exports = {
-  'minify-html-nodejs': (_, buffer) => minifyHtml.minifyInPlace(Buffer.from(buffer), minifyHtmlCfg),
-  'html-minifier': async (content) => {
-    const js = new EsbuildAsync();
-    const res = htmlMinifier.minify(content, {
-      collapseBooleanAttributes: true,
-      collapseInlineTagWhitespace: true,
-      collapseWhitespace: true,
-      // minify-html can do context-aware whitespace removal, which is safe when configured correctly to match how whitespace is used in the document.
-      // html-minifier cannot, so whitespace must be collapsed conservatively.
-      // Alternatively, minify-html can also be made to remove whitespace regardless of context.
-      conservativeCollapse: true,
-      customEventAttributes: [],
-      decodeEntities: true,
-      ignoreCustomComments: [],
-      ignoreCustomFragments: [/<\?[\s\S]*?\?>/],
-      minifyJS: code => js.queue(code),
-      processConditionalComments: true,
-      removeAttributeQuotes: true,
-      removeComments: true,
-      removeEmptyAttributes: true,
-      removeOptionalTags: true,
-      removeRedundantAttributes: true,
-      removeScriptTypeAttributes: true,
-      removeStyleLinkTypeAttributes: true,
-      removeTagWhitespace: true,
-      useShortDoctype: true,
-    });
-    return js.finalise(res);
-  },
-  'minimize': async (content) => {
-    const js = new EsbuildAsync();
-    const res = new minimize({
-      plugins: [{
-        id: 'esbuild',
-        element: (node, next) => {
-          if (node.type === 'text' && node.parent && node.parent.type === 'script' && jsMime.has(node.parent.attribs.type)) {
-            node.data = js.queue(node.data);
-          }
-          next();
-        },
-      }],
-    }).parse(content);
-    return js.finalise(res);
-  },
+  '@minify-html/js': (_, buffer) => minifyHtml.minifyInPlace(Buffer.from(buffer), minifyHtmlCfg),
+  'html-minifier': testJsMinification
+    ? async (content) => {
+      const js = new EsbuildAsync();
+      const res = htmlMinifier.minify(content, {
+        ...htmlMinifierCfg,
+        minifyJS: code => js.queue(code),
+      });
+      return js.finalise(res);
+    }
+    : content => htmlMinifier.minify(content, htmlMinifierCfg),
+  'minimize': testJsMinification
+    ? async (content) => {
+      const js = new EsbuildAsync();
+      const plugins = [];
+      if (testJsMinification) {
+        plugins.push({
+          id: 'esbuild',
+          element: (node, next) => {
+            if (node.type === 'text' && node.parent && node.parent.type === 'script' && jsMime.has(node.parent.attribs.type)) {
+              node.data = js.queue(node.data);
+            }
+            next();
+          },
+        });
+      }
+      const res = new minimize({plugins}).parse(content);
+      return js.finalise(res);
+    }
+    : content => new minimize().parse(content),
 };
