@@ -339,7 +339,7 @@ impl<'d> Processor<'d> {
             // Resulting minified JS to write.
             // TODO Verify.
             // TODO Rewrite these in esbuild fork so we don't have to do a memcpy and search+replace.
-            let min_js = result.js.trim().replace("</script", "<\\/script");
+            let min_js = result.js.as_str().trim().replace("</script", "<\\/script");
             let js_len = if min_js.len() < src.len() {
                 self.code[write_next..write_next + min_js.len()].copy_from_slice(min_js.as_bytes());
                 min_js.len()

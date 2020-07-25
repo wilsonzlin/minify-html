@@ -38,19 +38,20 @@ pub fn process_script(proc: &mut Processor, cfg: &Cfg, js: bool) -> ProcessingRe
             if js && cfg.minify_js {
                 let (wg, results) = proc.new_script_section();
                 let src = start.written_range(proc);
-                // TODO Optimise: Avoid copying to new Vec.
-                esbuild_rs::transform(Arc::new(proc[src].to_vec()), TRANSFORM_OPTIONS.clone(), move |result| {
-                    let mut guard = results.lock().unwrap();
-                    guard.push(JsMinSection {
-                        src,
-                        result,
+                unsafe {
+                    esbuild_rs::transform_direct_unmanaged(&proc[src], &TRANSFORM_OPTIONS.clone(), move |result| {
+                        let mut guard = results.lock().unwrap();
+                        guard.push(JsMinSection {
+                            src,
+                            result,
+                        });
+                        // Drop Arc reference and Mutex guard before marking task as complete as it's possible proc::finish
+                        // waiting on WaitGroup will resume before Arc/Mutex is dropped after exiting this function.
+                        drop(guard);
+                        drop(results);
+                        drop(wg);
                     });
-                    // Drop Arc reference and Mutex guard before marking task as complete as it's possible proc::finish
-                    // waiting on WaitGroup will resume before Arc/Mutex is dropped after exiting this function.
-                    drop(guard);
-                    drop(results);
-                    drop(wg);
-                });
+                };
                 return Ok(());
             };
             break;

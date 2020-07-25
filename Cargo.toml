@@ -21,6 +21,6 @@ js-esbuild = ["crossbeam", "esbuild-rs"]
 
 [dependencies]
 crossbeam = { version = "0.7", optional = true }
-esbuild-rs = { version = "0.1.3", optional = true }
+esbuild-rs = { version = "0.2.1", optional = true }
 lazy_static = "1.4"
 memchr = "2"
