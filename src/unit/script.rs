@@ -1,18 +1,17 @@
+use lazy_static::lazy_static;
+use aho_corasick::AhoCorasick;
+use crate::cfg::Cfg;
 use crate::err::ProcessingResult;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 #[cfg(feature = "js-esbuild")]
-use crate::proc::JsMinSection;
-use crate::cfg::Cfg;
-#[cfg(feature = "js-esbuild")]
-use crate::proc::checkpoint::Checkpoint;
-#[cfg(feature = "js-esbuild")]
-use esbuild_rs::{TransformOptionsBuilder, TransformOptions};
-#[cfg(feature = "js-esbuild")]
-use std::sync::Arc;
-#[cfg(feature = "js-esbuild")]
-use lazy_static::lazy_static;
+use {
+    std::sync::Arc,
+    esbuild_rs::{TransformOptionsBuilder, TransformOptions},
+    crate::proc::JsMinSection,
+    crate::proc::checkpoint::Checkpoint,
+};
 
 #[cfg(feature = "js-esbuild")]
 lazy_static! {
@@ -25,39 +24,36 @@ lazy_static! {
     };
 }
 
+lazy_static! {
+    static ref SCRIPT_END: AhoCorasick = AhoCorasick::new(&["</script"]);
+}
+
 pub fn process_script(proc: &mut Processor, cfg: &Cfg, js: bool) -> ProcessingResult<()> {
     #[cfg(feature = "js-esbuild")]
     let start = Checkpoint::new(proc);
-    loop {
-        proc.require_not_at_end()?;
-        // Use fast memchr. Unfortunately all characters in "</script>" are common in JS code.
-        proc.m(WhileNotChar(b'<'), Keep);
-        // `process_tag` will require closing tag.
-        if proc.m(IsSeq(b"</script"), MatchOnly).nonempty() {
-            #[cfg(feature = "js-esbuild")]
-            if js && cfg.minify_js {
-                let (wg, results) = proc.new_script_section();
-                let src = start.written_range(proc);
-                unsafe {
-                    esbuild_rs::transform_direct_unmanaged(&proc[src], &TRANSFORM_OPTIONS.clone(), move |result| {
-                        let mut guard = results.lock().unwrap();
-                        guard.push(JsMinSection {
-                            src,
-                            result,
-                        });
-                        // Drop Arc reference and Mutex guard before marking task as complete as it's possible proc::finish
-                        // waiting on WaitGroup will resume before Arc/Mutex is dropped after exiting this function.
-                        drop(guard);
-                        drop(results);
-                        drop(wg);
-                    });
-                };
-                return Ok(());
-            };
-            break;
+    proc.require_not_at_end()?;
+    proc.m(WhileNotSeq(&SCRIPT_END), Keep);
+    // `process_tag` will require closing tag.
+
+    #[cfg(feature = "js-esbuild")]
+    if js && cfg.minify_js {
+        let (wg, results) = proc.new_script_section();
+        let src = start.written_range(proc);
+        unsafe {
+            esbuild_rs::transform_direct_unmanaged(&proc[src], &TRANSFORM_OPTIONS.clone(), move |result| {
+                let mut guard = results.lock().unwrap();
+                guard.push(JsMinSection {
+                    src,
+                    result,
+                });
+                // Drop Arc reference and Mutex guard before marking task as complete as it's possible proc::finish
+                // waiting on WaitGroup will resume before Arc/Mutex is dropped after exiting this function.
+                drop(guard);
+                drop(results);
+                drop(wg);
+            });
         };
-        // Consume '<'.
-        proc.accept_expect();
     };
+
     Ok(())
 }

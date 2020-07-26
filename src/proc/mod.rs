@@ -2,18 +2,21 @@ use core::fmt;
 use std::fmt::{Debug, Formatter};
 use std::ops::{Index, IndexMut};
 
+use aho_corasick::AhoCorasick;
+
 use crate::err::{Error, ErrorType, ProcessingResult, debug_repr};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::range::ProcessorRange;
 use memchr::memchr;
 use crate::gen::codepoints::Lookup;
+
 #[cfg(feature = "js-esbuild")]
-use std::sync::{Arc, Mutex};
-#[cfg(feature = "js-esbuild")]
-use esbuild_rs::TransformResult;
-#[cfg(feature = "js-esbuild")]
-use crossbeam::sync::WaitGroup;
+use {
+    std::sync::{Arc, Mutex},
+    crossbeam::sync::WaitGroup,
+    esbuild_rs::TransformResult,
+};
 
 pub mod checkpoint;
 pub mod entity;
@@ -37,6 +40,7 @@ pub enum MatchMode {
     WhileNotInLookup(&'static Lookup),
 
     IsSeq(&'static [u8]),
+    WhileNotSeq(&'static AhoCorasick),
 }
 
 pub enum MatchAction {
@@ -183,6 +187,7 @@ impl<'d> Processor<'d> {
             WhileNotPred(p) => self._many(|n| !p(n)),
 
             IsSeq(seq) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src == seq).map_or(0, |_| seq.len()),
+            WhileNotSeq(seq) => seq.find(&self.code[self.read_next..]).map_or(self._remaining(), |m| m.start()),
         };
         // If keeping, match will be available in written range (which is better as source might eventually get overwritten).
         // If discarding, then only option is source range.
