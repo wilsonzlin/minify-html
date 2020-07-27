@@ -449,6 +449,7 @@ Spaces are removed between attributes if possible.
 ### Entities
 
 Entities are decoded if valid (see relevant parsing section) and their decoded characters as UTF-8 is shorter or equal in length.
+Some entities are longer decoded than encoded, so they're left encoded.
 
 Numeric entities that do not refer to a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are replaced with the [replacement character](https://en.wikipedia.org/wiki/Specials_(Unicode_block)#Replacement_character).
 

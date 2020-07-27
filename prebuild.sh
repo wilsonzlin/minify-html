@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# Actions to take before initial or release build of main Rust library.
-
 set -e
 
 pushd "$(dirname "$0")"
