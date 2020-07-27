@@ -10,6 +10,7 @@ pub struct Checkpoint {
 }
 
 impl Checkpoint {
+    #[inline(always)]
     pub fn get_written_range_since(&self, amount: usize) -> ProcessorRange {
         ProcessorRange {
             start: self.write_next,
@@ -17,12 +18,14 @@ impl Checkpoint {
         }
     }
 
+    #[inline(always)]
     pub fn new(proc: &Processor) -> Checkpoint {
         Checkpoint {
             write_next: proc.write_next,
         }
     }
 
+    #[inline(always)]
     pub fn last_written(&self, proc: &mut Processor) -> Option<u8> {
         if proc.write_next <= self.write_next {
             None
@@ -32,16 +35,19 @@ impl Checkpoint {
     }
 
     /// Discard characters written since checkpoint but keep source position.
+    #[inline(always)]
     pub fn erase_written(&self, proc: &mut Processor) -> () {
         proc.write_next = self.write_next;
     }
 
     /// Get written characters since checkpoint as range.
+    #[inline(always)]
     pub fn written_range(&self, proc: &mut Processor) -> ProcessorRange {
         ProcessorRange { start: self.write_next, end: proc.write_next }
     }
 
     /// Get amount of output characters written since self.
+    #[inline(always)]
     pub fn written_count(&self, proc: &mut Processor) -> usize {
         proc.write_next - self.write_next
     }

@@ -52,6 +52,7 @@ enum TagType {
 pub struct MaybeClosingTag(Option<ProcessorRange>);
 
 impl MaybeClosingTag {
+    #[inline(always)]
     pub fn none() -> MaybeClosingTag {
         MaybeClosingTag(None)
     }

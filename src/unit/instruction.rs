@@ -1,16 +1,17 @@
+use aho_corasick::AhoCorasick;
+use lazy_static::lazy_static;
 use crate::err::ProcessingResult;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 
+lazy_static! {
+    static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(&["?>"]);
+}
+
+#[inline(always)]
 pub fn process_instruction(proc: &mut Processor) -> ProcessingResult<()> {
     proc.m(IsSeq(b"<?"), Keep).expect();
-    loop {
-        // Use fast memchr.
-        let possible = proc.m(ThroughChar(b'>'), Keep).require("instruction end")?;
-        if proc[possible].ends_with(b"?>") {
-            break;
-        };
-    };
+    proc.m(ThroughSeq(&INSTRUCTION_END), Keep).require("instruction end")?;
     Ok(())
 }

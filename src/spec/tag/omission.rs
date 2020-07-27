@@ -21,6 +21,7 @@ pub struct ClosingTagOmissionRule {
 }
 
 impl ClosingTagOmissionRule {
+    #[inline(always)]
     pub fn can_omit_as_last_node(&self, parent: Option<&[u8]>) -> bool {
         match &self.is_last {
             ClosingTagOmissionRuleIfLast::Always => true,
@@ -32,6 +33,7 @@ impl ClosingTagOmissionRule {
         }
     }
 
+    #[inline(always)]
     pub fn can_omit_as_before(&self, after: &[u8]) -> bool {
         self.followed_by.contains(after)
     }

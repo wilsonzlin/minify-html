@@ -1,5 +1,5 @@
-use lazy_static::lazy_static;
 use aho_corasick::AhoCorasick;
+use lazy_static::lazy_static;
 use crate::cfg::Cfg;
 use crate::err::ProcessingResult;
 use crate::proc::MatchAction::*;
@@ -28,6 +28,7 @@ lazy_static! {
     static ref SCRIPT_END: AhoCorasick = AhoCorasick::new(&["</script"]);
 }
 
+#[inline(always)]
 pub fn process_script(proc: &mut Processor, cfg: &Cfg, js: bool) -> ProcessingResult<()> {
     #[cfg(feature = "js-esbuild")]
     let start = Checkpoint::new(proc);

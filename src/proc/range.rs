@@ -9,18 +9,22 @@ pub struct ProcessorRange {
 }
 
 impl ProcessorRange {
+    #[inline(always)]
     pub fn len(&self) -> usize {
         self.end - self.start
     }
 
+    #[inline(always)]
     pub fn empty(&self) -> bool {
         self.start >= self.end
     }
 
+    #[inline(always)]
     pub fn nonempty(&self) -> bool {
         !self.empty()
     }
 
+    #[inline(always)]
     pub fn first(&self, proc: &Processor) -> Option<u8> {
         if self.empty() {
             None
@@ -29,6 +33,7 @@ impl ProcessorRange {
         }
     }
 
+    #[inline(always)]
     pub fn require(&self, reason: &'static str) -> ProcessingResult<Self> {
         if self.empty() {
             Err(ErrorType::NotFound(reason))
@@ -37,6 +42,7 @@ impl ProcessorRange {
         }
     }
 
+    #[inline(always)]
     pub fn expect(&self) -> () {
         debug_assert!(self.nonempty());
     }

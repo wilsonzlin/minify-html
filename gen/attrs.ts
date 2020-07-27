@@ -145,6 +145,7 @@ pub struct ByNamespace {
 }
 
 impl ByNamespace {
+    #[inline(always)]
     fn get(&self, ns: Namespace) -> Option<&AttrMapEntry> {
         match ns {
             Namespace::Html => self.html.as_ref(),
@@ -156,10 +157,12 @@ impl ByNamespace {
 pub struct AttrMap(HashMap<&'static [u8], ByNamespace>);
 
 impl AttrMap {
+    #[inline(always)]
     pub const fn new(map: HashMap<&'static [u8], ByNamespace>) -> AttrMap {
         AttrMap(map)
     }
 
+    #[inline(always)]
     pub fn get(&self, ns: Namespace, tag: &[u8], attr: &[u8]) -> Option<&AttributeMinification> {
         self.0.get(attr).and_then(|namespaces| namespaces.get(ns)).and_then(|entry| match entry {
             AttrMapEntry::AllNamespaceElements(min) => Some(min),

@@ -49,6 +49,7 @@ pub struct Lookup {
 impl std::ops::Index<u8> for Lookup {
   type Output = bool;
   
+  #[inline(always)]
   fn index(&self, c: u8) -> &Self::Output {
     // \`c\` is definitely below 256 so it's always safe to directly index table without checking.
     unsafe {

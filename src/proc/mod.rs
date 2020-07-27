@@ -41,6 +41,7 @@ pub enum MatchMode {
 
     IsSeq(&'static [u8]),
     WhileNotSeq(&'static AhoCorasick),
+    ThroughSeq(&'static AhoCorasick),
 }
 
 pub enum MatchAction {
@@ -71,12 +72,14 @@ pub struct Processor<'d> {
 impl<'d> Index<ProcessorRange> for Processor<'d> {
     type Output = [u8];
 
+    #[inline(always)]
     fn index(&self, index: ProcessorRange) -> &Self::Output {
         &self.code[index.start..index.end]
     }
 }
 
 impl<'d> IndexMut<ProcessorRange> for Processor<'d> {
+    #[inline(always)]
     fn index_mut(&mut self, index: ProcessorRange) -> &mut Self::Output {
         debug_assert!(index.end <= self.write_next);
         &mut self.code[index.start..index.end]
@@ -85,6 +88,7 @@ impl<'d> IndexMut<ProcessorRange> for Processor<'d> {
 
 impl<'d> Processor<'d> {
     // Constructor.
+    #[inline(always)]
     pub fn new(code: &mut [u8]) -> Processor {
         Processor {
             write_next: 0,
@@ -99,6 +103,7 @@ impl<'d> Processor<'d> {
 
     // INTERNAL APIs.
     // Bounds checking.
+    #[inline(always)]
     fn _in_bounds(&self, offset: usize) -> bool {
         self.read_next + offset < self.code.len()
     }
@@ -107,14 +112,17 @@ impl<'d> Processor<'d> {
     /// Get the `offset` character from next.
     /// When `offset` is 0, the next character is returned.
     /// Panics. Does not check bounds for performance (e.g. already checked).
+    #[inline(always)]
     fn _read_offset(&self, offset: usize) -> u8 {
         self.code[self.read_next + offset]
     }
 
+    #[inline(always)]
     fn _maybe_read_offset(&self, offset: usize) -> Option<u8> {
         self.code.get(self.read_next + offset).map(|c| *c)
     }
 
+    #[inline(always)]
     fn _maybe_read_slice_offset(&self, offset: usize, count: usize) -> Option<&[u8]> {
         self.code.get(self.read_next + offset..self.read_next + offset + count)
     }
@@ -164,6 +172,7 @@ impl<'d> Processor<'d> {
         count
     }
 
+    #[inline(always)]
     fn _remaining(&self) -> usize {
         self.code.len() - self.read_next
     }
@@ -188,6 +197,8 @@ impl<'d> Processor<'d> {
 
             IsSeq(seq) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src == seq).map_or(0, |_| seq.len()),
             WhileNotSeq(seq) => seq.find(&self.code[self.read_next..]).map_or(self._remaining(), |m| m.start()),
+            // Match.end is exclusive, so do not add one.
+            ThroughSeq(seq) => seq.find(&self.code[self.read_next..]).map_or(0, |m| m.end()),
         };
         // If keeping, match will be available in written range (which is better as source might eventually get overwritten).
         // If discarding, then only option is source range.
@@ -206,10 +217,12 @@ impl<'d> Processor<'d> {
 
     // PUBLIC APIs.
     // Bounds checking
+    #[inline(always)]
     pub fn at_end(&self) -> bool {
         !self._in_bounds(0)
     }
 
+    #[inline(always)]
     pub fn require_not_at_end(&self) -> ProcessingResult<()> {
         if self.at_end() {
             Err(ErrorType::UnexpectedEnd)
@@ -219,10 +232,12 @@ impl<'d> Processor<'d> {
     }
 
     /// Get how many characters have been consumed from source.
+    #[inline(always)]
     pub fn read_len(&self) -> usize {
         self.read_next
     }
 
+    #[inline(always)]
     pub fn reserve_output(&mut self, amount: usize) -> () {
         self.write_next += amount;
     }
@@ -230,15 +245,18 @@ impl<'d> Processor<'d> {
     // Looking ahead.
     /// Get the `offset` character from next.
     /// When `offset` is 0, the next character is returned.
+    #[inline(always)]
     pub fn peek(&self, offset: usize) -> Option<u8> {
         self._maybe_read_offset(offset)
     }
 
+    #[inline(always)]
     pub fn peek_many(&self, offset: usize, count: usize) -> Option<&[u8]> {
         self._maybe_read_slice_offset(offset, count)
     }
 
     // Looking behind.
+    #[inline(always)]
     pub fn last(&self, count: usize) -> Option<&[u8]> {
         if count > self.write_next {
             None
@@ -250,6 +268,7 @@ impl<'d> Processor<'d> {
     // Consuming source characters.
     /// Skip and return the next character.
     /// Will result in an error if exceeds bounds.
+    #[inline(always)]
     pub fn skip(&mut self) -> ProcessingResult<u8> {
         self._maybe_read_offset(0).map(|c| {
             self.read_next += 1;
@@ -257,11 +276,13 @@ impl<'d> Processor<'d> {
         }).ok_or(ErrorType::UnexpectedEnd)
     }
 
+    #[inline(always)]
     pub fn skip_amount_expect(&mut self, amount: usize) -> () {
         debug_assert!(!self.at_end(), "skip known characters");
         self.read_next += amount;
     }
 
+    #[inline(always)]
     pub fn skip_expect(&mut self) -> () {
         debug_assert!(!self.at_end(), "skip known character");
         self.read_next += 1;
@@ -269,11 +290,13 @@ impl<'d> Processor<'d> {
 
     // Writing characters directly.
     /// Write `c` to output. Will panic if exceeds bounds.
+    #[inline(always)]
     pub fn write(&mut self, c: u8) -> () {
         self.code[self.write_next] = c;
         self.write_next += 1;
     }
 
+    #[inline(always)]
     pub fn write_range(&mut self, s: ProcessorRange) -> ProcessorRange {
         let dest_start = self.write_next;
         let dest_end = dest_start + s.len();
@@ -283,17 +306,20 @@ impl<'d> Processor<'d> {
     }
 
     /// Write `s` to output. Will panic if exceeds bounds.
+    #[inline(always)]
     pub fn write_slice(&mut self, s: &[u8]) -> () {
         self.code[self.write_next..self.write_next + s.len()].copy_from_slice(s);
         self.write_next += s.len();
     }
 
+    #[inline(always)]
     pub fn write_utf8(&mut self, c: char) -> () {
         let mut encoded = [0u8; 4];
         self.write_slice(c.encode_utf8(&mut encoded).as_bytes());
     }
 
     // Shifting characters.
+    #[inline(always)]
     pub fn accept(&mut self) -> ProcessingResult<u8> {
         self._maybe_read_offset(0).map(|c| {
             self.code[self.write_next] = c;
@@ -303,6 +329,7 @@ impl<'d> Processor<'d> {
         }).ok_or(ErrorType::UnexpectedEnd)
     }
 
+    #[inline(always)]
     pub fn accept_expect(&mut self) -> u8 {
         debug_assert!(!self.at_end());
         let c = self._read_offset(0);
@@ -312,18 +339,21 @@ impl<'d> Processor<'d> {
         c
     }
 
+    #[inline(always)]
     pub fn accept_amount_expect(&mut self, count: usize) -> () {
         debug_assert!(self._in_bounds(count - 1));
         self._shift(count);
     }
 
     #[cfg(feature = "js-esbuild")]
+    #[inline(always)]
     pub fn new_script_section(&self) -> (WaitGroup, Arc<Mutex<Vec<JsMinSection>>>) {
         (self.script_wg.clone(), self.script_results.clone())
     }
 
     // Since we consume the Processor, we must provide a full Error with positions.
     #[cfg(not(feature = "js-esbuild"))]
+    #[inline(always)]
     pub fn finish(self) -> Result<usize, Error> {
         // NOTE: Do not assert that we are at the end, as invalid HTML can end prematurely e.g.
         // `<html>hello</html>outside`.
@@ -332,6 +362,7 @@ impl<'d> Processor<'d> {
 
     // Since we consume the Processor, we must provide a full Error with positions.
     #[cfg(feature = "js-esbuild")]
+    #[inline(always)]
     pub fn finish(self) -> Result<usize, Error> {
         // NOTE: Do not assert that we are at the end, as invalid HTML can end prematurely e.g.
         // `<html>hello</html>outside`.
