@@ -34,7 +34,7 @@ enum Parsed {
 }
 
 #[inline(always)]
-fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, write_pos: usize, digit_lookup: &'static Lookup, on_digit: fn(u32, u8) -> u32, max_digits: u8) -> Parsed {
+fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, write_pos: usize, digit_lookup: &'static Lookup, on_digit: fn(u32, u8) -> u32, max_digits: usize) -> Parsed {
     let mut value = 0u32;
     let mut digits = 0;
     let mut read_next = read_start + prefix_len;
