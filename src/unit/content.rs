@@ -139,7 +139,8 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
                         // Problem: semicolon after encoded '<' will cause '&LT;', making it part of the entity.
                         // Solution: insert another semicolon.
                         // NOTE: We can't just peek at the time of inserting '&LT', as the semicolon might be encoded.
-                        if proc.last(3) == b"&LT" {
+                        // TODO Optimise, maybe using last written flag.
+                        if let Some(b"&LT") = proc.last(3) {
                             proc.write(b';');
                         };
                         proc.accept_expect();

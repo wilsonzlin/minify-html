@@ -239,8 +239,12 @@ impl<'d> Processor<'d> {
     }
 
     // Looking behind.
-    pub fn last(&self, count: usize) -> &[u8] {
-        self.code.get(self.write_next - count..self.write_next).unwrap()
+    pub fn last(&self, count: usize) -> Option<&[u8]> {
+        if count > self.write_next {
+            None
+        } else {
+            self.code.get(self.write_next - count..self.write_next)
+        }
     }
 
     // Consuming source characters.
@@ -321,14 +325,16 @@ impl<'d> Processor<'d> {
     // Since we consume the Processor, we must provide a full Error with positions.
     #[cfg(not(feature = "js-esbuild"))]
     pub fn finish(self) -> Result<usize, Error> {
-        debug_assert!(self.at_end());
+        // NOTE: Do not assert that we are at the end, as invalid HTML can end prematurely e.g.
+        // `<html>hello</html>outside`.
         Ok(self.write_next)
     }
 
     // Since we consume the Processor, we must provide a full Error with positions.
     #[cfg(feature = "js-esbuild")]
     pub fn finish(self) -> Result<usize, Error> {
-        debug_assert!(self.at_end());
+        // NOTE: Do not assert that we are at the end, as invalid HTML can end prematurely e.g.
+        // `<html>hello</html>outside`.
         self.script_wg.wait();
         let mut results = Arc::try_unwrap(self.script_results)
             .unwrap_or_else(|_| panic!("failed to acquire script results"))
