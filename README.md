@@ -5,7 +5,7 @@ An HTML minifier meticulously optimised for both speed and effectiveness, availa
 - Advanced minification strategy beats other minifiers with only one pass.
 - Uses zero memory allocations, SIMD searching, direct tries, and lookup tables.
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
-- Natively binds to [esbuild](https://github.com/evanw/esbuild) for super fast JS minification.
+- Natively binds to [esbuild](https://github.com/wilsonzlin/esbuild-rs) for super fast JS minification.
 
 ## Performance
 
