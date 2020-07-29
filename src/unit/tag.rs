@@ -221,7 +221,10 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibl
     let closing_tag = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name")?;
     // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.
     if !proc[closing_tag].eq(&proc[tag_name]) {
-        return Err(ErrorType::ClosingTagMismatch);
+        return Err(ErrorType::ClosingTagMismatch {
+            expected: unsafe { String::from_utf8_unchecked(proc[tag_name].to_vec()) },
+            got: unsafe { String::from_utf8_unchecked(proc[closing_tag].to_vec()) },
+        });
     };
     proc.m(WhileInLookup(WHITESPACE), Discard);
     proc.m(IsChar(b'>'), Discard).require("closing tag end")?;
