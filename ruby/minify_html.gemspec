@@ -2,7 +2,7 @@ require 'rake'
 
 Gem::Specification.new do |spec|
   spec.name          = "minify_html"
-  spec.version       = "0.3.3"
+  spec.version       = "0.3.4"
   spec.authors       = ["Wilson Lin"]
   spec.email         = ["code@wilsonl.in"]
   spec.license       = "MIT"
