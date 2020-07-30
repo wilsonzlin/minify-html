@@ -285,12 +285,6 @@ impl<'d> Processor<'d> {
     }
 
     #[inline(always)]
-    pub fn undo_skip_expect(&mut self) -> () {
-        debug_assert!(!self.at_end(), "revert skip known character");
-        self.read_next -= 1;
-    }
-
-    #[inline(always)]
     pub fn skip_expect(&mut self) -> () {
         debug_assert!(!self.at_end(), "skip known character");
         self.read_next += 1;
