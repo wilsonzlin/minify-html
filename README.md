@@ -479,7 +479,7 @@ However, there are some syntax requirements for speed and sanity.
 
 ### Tags
 
-Tags must not be [omitted](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission). Void tags must not have a separate closing tag e.g. `</input>`.
+Opening tags must not be [omitted](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission).
 
 ### Entities
 
@@ -494,8 +494,6 @@ If a named entity is an invalid reference as per the [specification](https://htm
 Numeric character references that do not reference a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are considered malformed.
 
 ### Script and style
-
-`script` and `style` tags must be closed with `</script` and `</style` respectively (case sensitive).
 
 minify-html does **not** handle [escaped and double-escaped](./notes/Script%20data.md) script content.
 

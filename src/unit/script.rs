@@ -1,4 +1,4 @@
-use aho_corasick::AhoCorasick;
+use aho_corasick::{AhoCorasick, AhoCorasickBuilder};
 use lazy_static::lazy_static;
 use crate::cfg::Cfg;
 use crate::err::ProcessingResult;
@@ -25,7 +25,7 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref SCRIPT_END: AhoCorasick = AhoCorasick::new(&["</script"]);
+    static ref SCRIPT_END: AhoCorasick = AhoCorasickBuilder::new().ascii_case_insensitive(true).build(&["</script"]);
 }
 
 #[inline(always)]

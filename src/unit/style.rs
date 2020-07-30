@@ -1,4 +1,4 @@
-use aho_corasick::AhoCorasick;
+use aho_corasick::{AhoCorasick, AhoCorasickBuilder};
 use lazy_static::lazy_static;
 use crate::err::ProcessingResult;
 use crate::proc::MatchAction::*;
@@ -6,7 +6,7 @@ use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 
 lazy_static! {
-    static ref STYLE_END: AhoCorasick = AhoCorasick::new(&["</style"]);
+    static ref STYLE_END: AhoCorasick = AhoCorasickBuilder::new().ascii_case_insensitive(true).build(&["</style"]);
 }
 
 #[inline(always)]
