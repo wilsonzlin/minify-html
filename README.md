@@ -479,8 +479,6 @@ However, there are some syntax requirements for speed and sanity.
 
 ### Tags
 
-Tag names are case sensitive. For example, this means that `P` won't be recognised as a content element, `bR` won't be considered as a void tag, and the contents of `Script` won't be parsed as JavaScript.
-
 Tags must not be [omitted](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission). Void tags must not have a separate closing tag e.g. `</input>`.
 
 ### Entities
@@ -495,16 +493,9 @@ If a named entity is an invalid reference as per the [specification](https://htm
 
 Numeric character references that do not reference a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are considered malformed.
 
-### Attributes
-
-Backticks (`` ` ``) are not valid quote marks and not interpreted as such.
-However, backticks are valid attribute value quotes in Internet Explorer.
-
-Special handling of some attributes require case sensitive names and values. For example, `CLASS` won't be recognised as an attribute to minify, and `type="Text/JavaScript"` on a `<script>` will not be removed.
-
 ### Script and style
 
-`script` and `style` tags must be closed with `</script>` and `</style>` respectively (case sensitive).
+`script` and `style` tags must be closed with `</script` and `</style` respectively (case sensitive).
 
 minify-html does **not** handle [escaped and double-escaped](./notes/Script%20data.md) script content.
 

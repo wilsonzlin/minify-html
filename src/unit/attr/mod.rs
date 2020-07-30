@@ -28,6 +28,7 @@ pub fn process_attr(proc: &mut Processor, ns: Namespace, element: ProcessorRange
     // It's possible to expect attribute name but not be called at an attribute, e.g. due to whitespace between name and
     // value, which causes name to be considered boolean attribute and `=` to be start of new (invalid) attribute name.
     let name = proc.m(WhileInLookup(ATTR_NAME_CHAR), Keep).require("attribute name")?;
+    proc.make_lowercase(name);
     let attr_cfg = ATTRS.get(ns, &proc[element], &proc[name]);
     let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
     let after_name = Checkpoint::new(proc);

@@ -297,6 +297,11 @@ impl<'d> Processor<'d> {
     }
 
     #[inline(always)]
+    pub fn make_lowercase(&mut self, range: ProcessorRange) -> () {
+        self.code[range.start..range.end].make_ascii_lowercase();
+    }
+
+    #[inline(always)]
     pub fn write_range(&mut self, s: ProcessorRange) -> ProcessorRange {
         let dest_start = self.write_next;
         let dest_end = dest_start + s.len();

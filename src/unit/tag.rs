@@ -99,6 +99,7 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibl
     proc.m(IsChar(b'<'), Discard).expect();
     // May not be valid tag name at current position, so require instead of expect.
     let source_tag_name = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("tag name")?;
+    proc.make_lowercase(source_tag_name);
     if prev_sibling_closing_tag.exists_and(|prev_tag|
         CLOSING_TAG_OMISSION_RULES
             .get(&proc[prev_tag])
@@ -219,6 +220,7 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibl
     // Require closing tag for non-void.
     proc.m(IsSeq(b"</"), Discard).require("closing tag")?;
     let closing_tag = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name")?;
+    proc.make_lowercase(closing_tag);
     // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.
     if !proc[closing_tag].eq(&proc[tag_name]) {
         return Err(ErrorType::ClosingTagMismatch {

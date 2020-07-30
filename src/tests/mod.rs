@@ -31,6 +31,9 @@ fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
 #[test]
 fn test_collapse_whitespace() {
     eval(b"<a>   \n&#32;   </a>", b"<a> </a>");
+    // Tag names should be case insensitive.
+    eval(b"<A>   \n&#32;   </a>", b"<a> </a>");
+    eval(b"<a>   \n&#32;   </A>", b"<a> </a>");
 }
 
 #[test]
@@ -38,6 +41,8 @@ fn test_collapse_and_trim_whitespace() {
     eval(b"<label>   \n&#32;   </label>", b"<label></label>");
     eval(b"<label>   \n&#32;a   </label>", b"<label>a</label>");
     eval(b"<label>   \n&#32;a   b   </label>", b"<label>a b</label>");
+    // Tag names should be case insensitive.
+    eval(b"<lAbEL>   \n&#32;a   b   </LABel>", b"<label>a b</label>");
 }
 
 #[test]
@@ -46,11 +51,15 @@ fn test_collapse_destroy_whole_and_trim_whitespace() {
     eval(b"<ul>   \n&#32;a   </ul>", b"<ul>a</ul>");
     eval(b"<ul>   \n&#32;a   b   </ul>", b"<ul>a b</ul>");
     eval(b"<ul>   \n&#32;a<pre></pre>   <pre></pre>b   </ul>", b"<ul>a<pre></pre><pre></pre>b</ul>");
+    // Tag names should be case insensitive.
+    eval(b"<uL>   \n&#32;a   b   </UL>", b"<ul>a b</ul>");
 }
 
 #[test]
 fn test_no_whitespace_minification() {
     eval(b"<pre>   \n&#32; \t   </pre>", b"<pre>   \n  \t   </pre>");
+    // Tag names should be case insensitive.
+    eval(b"<pRe>   \n&#32; \t   </PRE>", b"<pre>   \n  \t   </pre>");
 }
 
 #[test]
@@ -78,6 +87,8 @@ fn test_removal_of_optional_tags() {
             </body>
         </html>
     "#, b"<html><head><body>");
+    // Tag names should be case insensitive.
+    eval(b"<RT></rt>", b"<rt>");
 }
 
 #[test]
@@ -121,6 +132,8 @@ fn test_class_attr_value_minification() {
     eval(b"<a class='  c\n \n  '></a>", b"<a class=c></a>");
     eval(b"<a class='  c\n \nd  '></a>", b"<a class=\"c d\"></a>");
     eval(b"<a class='  \n \n  '></a>", b"<a></a>");
+    // Attribute names should be case insensitive.
+    eval(b"<a CLasS='  \n \n  '></a>", b"<a></a>");
 }
 
 #[test]
@@ -134,6 +147,8 @@ fn test_d_attr_value_minification() {
     eval(b"<svg><path d='  c\n \n  ' /></svg>", b"<svg><path d=c /></svg>");
     eval(b"<svg><path d='  c\n \nd  ' /></svg>", b"<svg><path d=\"c d\"/></svg>");
     eval(b"<svg><path d='  \n \n  ' /></svg>", b"<svg><path/></svg>");
+    // Attribute names should be case insensitive.
+    eval(b"<svg><path D='  \n \n  ' /></svg>", b"<svg><path/></svg>");
 }
 
 #[test]
@@ -145,6 +160,8 @@ fn test_boolean_attr_value_removal() {
     eval(b"<div hidden=\"abc\"></div>", b"<div hidden></div>");
     eval(b"<div hidden=\"\"></div>", b"<div hidden></div>");
     eval(b"<div hidden></div>", b"<div hidden></div>");
+    // Attribute names should be case insensitive.
+    eval(b"<div HIDden=\"true\"></div>", b"<div hidden></div>");
 }
 
 #[test]
@@ -161,6 +178,8 @@ fn test_default_attr_value_removal() {
     eval(b"<a target=\"_self\"></a>", b"<a></a>");
     eval(b"<a target='_self'></a>", b"<a></a>");
     eval(b"<a target=_self></a>", b"<a></a>");
+    // Attribute names should be case insensitive.
+    eval(b"<a taRGET='_self'></a>", b"<a></a>");
 }
 
 #[test]
@@ -169,6 +188,8 @@ fn test_script_type_attr_value_removal() {
     eval(b"<script type=\"application/javascript\"></script>", b"<script></script>");
     eval(b"<script type=\"text/jscript\"></script>", b"<script></script>");
     eval(b"<script type=\"text/plain\"></script>", b"<script type=text/plain></script>");
+    // Tag and attribute names should be case insensitive.
+    eval(b"<SCRipt TYPE=\"application/ecmascript\"></script>", b"<script></script>");
 }
 
 #[test]
