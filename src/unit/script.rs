@@ -10,7 +10,7 @@ use {
     std::sync::Arc,
     esbuild_rs::{TransformOptionsBuilder, TransformOptions},
     crate::proc::JsMinSection,
-    crate::proc::checkpoint::Checkpoint,
+    crate::proc::checkpoint::WriteCheckpoint,
 };
 
 #[cfg(feature = "js-esbuild")]
@@ -31,7 +31,7 @@ lazy_static! {
 #[inline(always)]
 pub fn process_script(proc: &mut Processor, cfg: &Cfg, js: bool) -> ProcessingResult<()> {
     #[cfg(feature = "js-esbuild")]
-    let start = Checkpoint::new(proc);
+    let start = WriteCheckpoint::new(proc);
     proc.require_not_at_end()?;
     proc.m(WhileNotSeq(&SCRIPT_END), Keep);
     // `process_tag` will require closing tag.

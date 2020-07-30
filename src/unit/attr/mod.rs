@@ -1,5 +1,5 @@
 use crate::err::ProcessingResult;
-use crate::proc::checkpoint::Checkpoint;
+use crate::proc::checkpoint::WriteCheckpoint;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
@@ -31,7 +31,7 @@ pub fn process_attr(proc: &mut Processor, ns: Namespace, element: ProcessorRange
     proc.make_lowercase(name);
     let attr_cfg = ATTRS.get(ns, &proc[element], &proc[name]);
     let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
-    let after_name = Checkpoint::new(proc);
+    let after_name = WriteCheckpoint::new(proc);
 
     let should_collapse_and_trim_value_ws = attr_cfg.filter(|attr| attr.collapse_and_trim).is_some();
     proc.m(WhileInLookup(WHITESPACE), Discard);

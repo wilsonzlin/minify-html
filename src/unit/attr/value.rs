@@ -1,7 +1,7 @@
 use lazy_static::lazy_static;
 use std::collections::HashMap;
 use crate::err::ProcessingResult;
-use crate::proc::checkpoint::Checkpoint;
+use crate::proc::checkpoint::WriteCheckpoint;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
@@ -189,7 +189,7 @@ fn handle_whitespace_char_type(c: u8, proc: &mut Processor, metrics: &mut Metric
 // The resulting written value would have the minimum possible value length.
 // Since the actual processed value would have a length equal or greater to it (e.g. it might be quoted, or some characters might get encoded), we can then read minimum value right to left and start writing from actual processed value length (which is calculated), quoting/encoding as necessary.
 pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
-    let start = Checkpoint::new(proc);
+    let start = WriteCheckpoint::new(proc);
     let src_delimiter = proc.m(IsInLookup(ATTR_QUOTE), Discard).first(proc);
     let delim_lookup = match src_delimiter {
         Some(b'"') => DOUBLE_QUOTE,

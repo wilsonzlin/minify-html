@@ -1,7 +1,7 @@
 use lazy_static::lazy_static;
 use std::collections::HashSet;
 use crate::err::{ErrorType, ProcessingResult};
-use crate::proc::checkpoint::{Checkpoint, ReadCheckpoint};
+use crate::proc::checkpoint::{WriteCheckpoint, ReadCheckpoint};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
@@ -130,7 +130,7 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Optio
         }
 
         // Mark attribute start in case we want to erase it completely.
-        let attr_checkpoint = Checkpoint::new(proc);
+        let attr_checkpoint = WriteCheckpoint::new(proc);
         let mut erase_attr = false;
 
         // Write space after tag name or unquoted/valueless attribute.
@@ -213,25 +213,25 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Optio
         return Ok(MaybeClosingTag(None));
     };
 
-    // Require closing tag for non-void.
     let closing_tag_checkpoint = ReadCheckpoint::new(proc);
     proc.m(IsSeq(b"</"), Discard).require("closing tag")?;
     let closing_tag = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name")?;
     proc.make_lowercase(closing_tag);
 
-    if parent.filter(|p| proc[*p] == proc[closing_tag]).is_some() && can_omit_closing_tag {
-        closing_tag_checkpoint.restore(proc);
-        return Ok(MaybeClosingTag(None));
-    };
-
     // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.
-    if !proc[closing_tag].eq(&proc[tag_name]) {
-        return Err(ErrorType::ClosingTagMismatch {
-            expected: unsafe { String::from_utf8_unchecked(proc[tag_name].to_vec()) },
-            got: unsafe { String::from_utf8_unchecked(proc[closing_tag].to_vec()) },
-        });
-    };
-    proc.m(WhileInLookup(WHITESPACE), Discard);
-    proc.m(IsChar(b'>'), Discard).require("closing tag end")?;
-    Ok(MaybeClosingTag(Some(tag_name)))
+    if proc[closing_tag] != proc[tag_name] {
+        if can_omit_closing_tag {
+            closing_tag_checkpoint.restore(proc);
+            Ok(MaybeClosingTag(None))
+        } else {
+            Err(ErrorType::ClosingTagMismatch {
+                expected: unsafe { String::from_utf8_unchecked(proc[tag_name].to_vec()) },
+                got: unsafe { String::from_utf8_unchecked(proc[closing_tag].to_vec()) },
+            })
+        }
+    } else {
+        proc.m(WhileInLookup(WHITESPACE), Discard);
+        proc.m(IsChar(b'>'), Discard).require("closing tag end")?;
+        Ok(MaybeClosingTag(Some(tag_name)))
+    }
 }

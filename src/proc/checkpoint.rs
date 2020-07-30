@@ -2,11 +2,11 @@ use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
 
 #[derive(Copy, Clone)]
-pub struct Checkpoint {
+pub struct WriteCheckpoint {
     write_next: usize,
 }
 
-impl Checkpoint {
+impl WriteCheckpoint {
     #[inline(always)]
     pub fn get_written_range_since(&self, amount: usize) -> ProcessorRange {
         ProcessorRange {
@@ -16,8 +16,8 @@ impl Checkpoint {
     }
 
     #[inline(always)]
-    pub fn new(proc: &Processor) -> Checkpoint {
-        Checkpoint {
+    pub fn new(proc: &Processor) -> WriteCheckpoint {
+        WriteCheckpoint {
             write_next: proc.write_next,
         }
     }
