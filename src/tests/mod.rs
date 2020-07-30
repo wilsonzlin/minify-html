@@ -1,4 +1,9 @@
 #[cfg(test)]
+use {
+    crate::ErrorType
+};
+
+#[cfg(test)]
 fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
     let mut code = src.to_vec();
     match super::with_friendly_error(&mut code, cfg) {
@@ -14,8 +19,21 @@ fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
 }
 
 #[cfg(test)]
+fn _eval_error(src: &'static [u8], expected: ErrorType, cfg: &super::Cfg) -> () {
+    let mut code = src.to_vec();
+    assert_eq!(super::in_place(&mut code, cfg).unwrap_err().error_type, expected);
+}
+
+#[cfg(test)]
 fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
     _eval(src, expected, &super::Cfg {
+        minify_js: false,
+    });
+}
+
+#[cfg(test)]
+fn eval_error(src: &'static [u8], expected: ErrorType) -> () {
+    _eval_error(src, expected, &super::Cfg {
         minify_js: false,
     });
 }
@@ -79,8 +97,19 @@ fn test_parsing_with_omitted_tags() {
     eval(b"<rt><rp>1</rp><div></div>", b"<rt><rp>1</rp><div></div>");
     eval(b"<div><rt></div>", b"<div><rt></div>");
     eval(b"<html><head><body>", b"<html><head><body>");
+    eval(b"<html><head><body>", b"<html><head><body>");
     // Tag names should be case insensitive.
     eval(b"<rt>", b"<rt>");
+}
+
+#[test]
+fn test_unmatched_closing_tag() {
+    eval_error(b"Hello</p>Goodbye", ErrorType::UnexpectedClosingTag);
+    eval_error(b"Hello<br></br>Goodbye", ErrorType::UnexpectedClosingTag);
+    eval_error(b"<div>Hello</p>Goodbye", ErrorType::ClosingTagMismatch { expected: "div".to_string(), got: "p".to_string() });
+    eval_error(b"<ul><li>a</p>", ErrorType::ClosingTagMismatch { expected: "ul".to_string(), got: "p".to_string() });
+    eval_error(b"<ul><li><rt>a</p>", ErrorType::ClosingTagMismatch { expected: "ul".to_string(), got: "p".to_string() });
+    eval_error(b"<html><head><body><ul><li><rt>a</p>", ErrorType::ClosingTagMismatch { expected: "ul".to_string(), got: "p".to_string() });
 }
 
 #[test]

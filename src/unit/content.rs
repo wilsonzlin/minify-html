@@ -47,7 +47,7 @@ impl ContentType {
 }
 
 pub struct ProcessedContent {
-    pub(crate) closing_tag_omitted: bool,
+    pub closing_tag_omitted: bool,
 }
 
 pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>) -> ProcessingResult<ProcessedContent> {

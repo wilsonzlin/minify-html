@@ -18,6 +18,11 @@ mod unit;
 pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, Error> {
     let mut proc = Processor::new(code);
     process_content(&mut proc, cfg, Namespace::Html, None)
+        .and_then(|_| if !proc.at_end() {
+            Err(ErrorType::UnexpectedClosingTag)
+        } else {
+            Ok(())
+        })
         .map_err(|error_type| Error {
             error_type,
             position: proc.read_len(),

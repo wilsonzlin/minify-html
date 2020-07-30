@@ -1,9 +1,10 @@
 // Implement debug to allow .unwrap().
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum ErrorType {
     ClosingTagMismatch { expected: String, got: String },
     NotFound(&'static str),
     UnexpectedEnd,
+    UnexpectedClosingTag,
 }
 
 impl ErrorType {
@@ -17,6 +18,9 @@ impl ErrorType {
             }
             ErrorType::UnexpectedEnd => {
                 format!("Unexpected end of source code.")
+            }
+            ErrorType::UnexpectedClosingTag => {
+                format!("Unexpected closing tag.")
             }
         }
     }

@@ -362,8 +362,7 @@ impl<'d> Processor<'d> {
     #[cfg(not(feature = "js-esbuild"))]
     #[inline(always)]
     pub fn finish(self) -> Result<usize, Error> {
-        // NOTE: Do not assert that we are at the end, as invalid HTML can end prematurely e.g.
-        // `<html>hello</html>outside`.
+        debug_assert!(self.at_end());
         Ok(self.write_next)
     }
 
@@ -371,8 +370,7 @@ impl<'d> Processor<'d> {
     #[cfg(feature = "js-esbuild")]
     #[inline(always)]
     pub fn finish(self) -> Result<usize, Error> {
-        // NOTE: Do not assert that we are at the end, as invalid HTML can end prematurely e.g.
-        // `<html>hello</html>outside`.
+        debug_assert!(self.at_end());
         self.script_wg.wait();
         let mut results = Arc::try_unwrap(self.script_results)
             .unwrap_or_else(|_| panic!("failed to acquire script results"))
