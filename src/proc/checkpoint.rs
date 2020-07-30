@@ -3,9 +3,6 @@ use crate::proc::range::ProcessorRange;
 
 #[derive(Copy, Clone)]
 pub struct Checkpoint {
-    // Avoid implementing a read position checkpoint, as source code does get modified (e.g. normalising entities), and
-    // there's no check to see if source has since been overwritten (e.g. writing over source and then restoring earlier
-    // write position).
     write_next: usize,
 }
 
@@ -50,5 +47,23 @@ impl Checkpoint {
     #[inline(always)]
     pub fn written_count(&self, proc: &mut Processor) -> usize {
         proc.write_next - self.write_next
+    }
+}
+
+pub struct ReadCheckpoint {
+    read_next: usize,
+}
+
+impl ReadCheckpoint {
+    #[inline(always)]
+    pub fn new(proc: &Processor) -> ReadCheckpoint {
+        ReadCheckpoint {
+            read_next: proc.read_next,
+        }
+    }
+
+    #[inline(always)]
+    pub fn restore(&self, proc: &mut Processor) -> () {
+        proc.read_next = self.read_next;
     }
 }

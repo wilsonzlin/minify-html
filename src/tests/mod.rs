@@ -73,6 +73,17 @@ fn test_self_closing_svg_tag_whitespace_removal() {
 }
 
 #[test]
+fn test_parsing_with_omitted_tags() {
+    eval(b"<ul><li>1<li>2<li>3</ul>", b"<ul><li>1<li>2<li>3</ul>");
+    eval(b"<rt>", b"<rt>");
+    eval(b"<rt><rp>1</rp><div></div>", b"<rt><rp>1</rp><div></div>");
+    eval(b"<div><rt></div>", b"<div><rt></div>");
+    eval(b"<html><head><body>", b"<html><head><body>");
+    // Tag names should be case insensitive.
+    eval(b"<rt>", b"<rt>");
+}
+
+#[test]
 fn test_removal_of_optional_tags() {
     eval(b"<ul><li>1</li><li>2</li><li>3</li></ul>", b"<ul><li>1<li>2<li>3</ul>");
     eval(b"<rt></rt>", b"<rt>");

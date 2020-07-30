@@ -1,12 +1,11 @@
 use lazy_static::lazy_static;
 use std::collections::HashSet;
 use crate::err::{ErrorType, ProcessingResult};
-use crate::proc::checkpoint::Checkpoint;
+use crate::proc::checkpoint::{Checkpoint, ReadCheckpoint};
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
-use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
 use crate::spec::tag::void::VOID_TAGS;
 use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
 use crate::unit::content::process_content;
@@ -16,6 +15,7 @@ use crate::gen::attrs::{ATTRS, AttributeMinification};
 use crate::spec::tag::ns::Namespace;
 use crate::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
 use crate::cfg::Cfg;
+use crate::spec::tag::omission::{can_omit_as_last_node, can_omit_as_before};
 
 lazy_static! {
     pub static ref JAVASCRIPT_MIME_TYPES: HashSet<&'static [u8]> = {
@@ -94,18 +94,8 @@ impl MaybeClosingTag {
 }
 
 // TODO Comment param `prev_sibling_closing_tag`.
-pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibling_closing_tag: MaybeClosingTag) -> ProcessingResult<MaybeClosingTag> {
-    // Expect to be currently at an opening tag.
-    proc.m(IsChar(b'<'), Discard).expect();
-    // May not be valid tag name at current position, so require instead of expect.
-    let source_tag_name = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("tag name")?;
-    proc.make_lowercase(source_tag_name);
-    if prev_sibling_closing_tag.exists_and(|prev_tag|
-        CLOSING_TAG_OMISSION_RULES
-            .get(&proc[prev_tag])
-            .filter(|rule| rule.can_omit_as_before(&proc[source_tag_name]))
-            .is_none()
-    ) {
+pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>, mut prev_sibling_closing_tag: MaybeClosingTag, source_tag_name: ProcessorRange) -> ProcessingResult<MaybeClosingTag> {
+    if prev_sibling_closing_tag.exists_and(|prev_tag| !can_omit_as_before(proc, Some(prev_tag), source_tag_name)) {
         prev_sibling_closing_tag.write(proc);
     };
     // Write initially skipped left chevron.
@@ -210,17 +200,30 @@ pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, mut prev_sibl
         ns
     };
 
+    let mut closing_tag_omitted = false;
     match tag_type {
         TagType::ScriptData => process_script(proc, cfg, false)?,
         TagType::ScriptJs => process_script(proc, cfg, true)?,
         TagType::Style => process_style(proc)?,
-        _ => process_content(proc, cfg, child_ns, Some(tag_name))?,
+        _ => closing_tag_omitted = process_content(proc, cfg, child_ns, Some(tag_name))?.closing_tag_omitted,
+    };
+
+    let can_omit_closing_tag = can_omit_as_last_node(proc, parent, source_tag_name);
+    if closing_tag_omitted || proc.at_end() && can_omit_closing_tag {
+        return Ok(MaybeClosingTag(None));
     };
 
     // Require closing tag for non-void.
+    let closing_tag_checkpoint = ReadCheckpoint::new(proc);
     proc.m(IsSeq(b"</"), Discard).require("closing tag")?;
     let closing_tag = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name")?;
     proc.make_lowercase(closing_tag);
+
+    if parent.filter(|p| proc[*p] == proc[closing_tag]).is_some() && can_omit_closing_tag {
+        closing_tag_checkpoint.restore(proc);
+        return Ok(MaybeClosingTag(None));
+    };
+
     // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.
     if !proc[closing_tag].eq(&proc[tag_name]) {
         return Err(ErrorType::ClosingTagMismatch {

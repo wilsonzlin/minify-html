@@ -448,8 +448,7 @@ Spaces are removed between attributes if possible.
 
 ### Entities
 
-Entities are decoded if valid (see relevant parsing section) and their decoded characters as UTF-8 is shorter or equal in length.
-Some entities are longer decoded than encoded, so they're left encoded.
+Entities are decoded if they're valid and shorter or equal in length when decoded.
 
 Numeric entities that do not refer to a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are replaced with the [replacement character](https://en.wikipedia.org/wiki/Specials_(Unicode_block)#Replacement_character).
 
@@ -480,18 +479,6 @@ However, there are some syntax requirements for speed and sanity.
 ### Tags
 
 Opening tags must not be [omitted](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission).
-
-### Entities
-
-Well-formed entities are decoded, including in attribute values.
-
-They are interpreted as characters representing their decoded value. This means that `&#9;` is considered a whitespace character and could be minified.
-
-Malformed entities are interpreted literally as a sequence of characters.
-
-If a named entity is an invalid reference as per the [specification](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references), it is considered malformed.
-
-Numeric character references that do not reference a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are considered malformed.
 
 ### Script and style
 

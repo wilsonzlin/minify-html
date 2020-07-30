@@ -22,6 +22,7 @@ pub mod checkpoint;
 pub mod entity;
 pub mod range;
 
+#[allow(dead_code)]
 pub enum MatchMode {
     IsChar(u8),
     IsNotChar(u8),
@@ -86,6 +87,7 @@ impl<'d> IndexMut<ProcessorRange> for Processor<'d> {
     }
 }
 
+#[allow(dead_code)]
 impl<'d> Processor<'d> {
     // Constructor.
     #[inline(always)]
@@ -280,6 +282,12 @@ impl<'d> Processor<'d> {
     pub fn skip_amount_expect(&mut self, amount: usize) -> () {
         debug_assert!(!self.at_end(), "skip known characters");
         self.read_next += amount;
+    }
+
+    #[inline(always)]
+    pub fn undo_skip_expect(&mut self) -> () {
+        debug_assert!(!self.at_end(), "revert skip known character");
+        self.read_next -= 1;
     }
 
     #[inline(always)]

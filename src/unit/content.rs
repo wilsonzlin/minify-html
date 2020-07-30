@@ -3,7 +3,7 @@ use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
-use crate::spec::tag::omission::CLOSING_TAG_OMISSION_RULES;
+use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
@@ -11,8 +11,9 @@ use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{MaybeClosingTag, process_tag};
 use crate::spec::tag::ns::Namespace;
 use crate::proc::entity::maybe_normalise_entity;
-use crate::gen::codepoints::WHITESPACE;
+use crate::gen::codepoints::{WHITESPACE, TAG_NAME_CHAR};
 use crate::cfg::Cfg;
+use crate::proc::checkpoint::ReadCheckpoint;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -45,7 +46,11 @@ impl ContentType {
     }
 }
 
-pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>) -> ProcessingResult<()> {
+pub struct ProcessedContent {
+    pub(crate) closing_tag_omitted: bool,
+}
+
+pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>) -> ProcessingResult<ProcessedContent> {
     let &WhitespaceMinification { collapse, destroy_whole, trim } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]));
 
     let handle_ws = collapse || destroy_whole || trim;
@@ -114,16 +119,25 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
         // Process and consume next character(s).
         match next_content_type {
             ContentType::Tag => {
-                let new_closing_tag = process_tag(proc, cfg, ns, prev_sibling_closing_tag)?;
+                let tag_checkpoint = ReadCheckpoint::new(proc);
+                proc.skip_expect();
+                let tag_name = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("tag name")?;
+                proc.make_lowercase(tag_name);
+
+                if can_omit_as_before(proc, parent, tag_name) {
+                    // TODO Is this necessary? Can a previous closing tag even exist?
+                    prev_sibling_closing_tag.write_if_exists(proc);
+                    tag_checkpoint.restore(proc);
+                    return Ok(ProcessedContent {
+                        closing_tag_omitted: true,
+                    });
+                };
+
+                let new_closing_tag = process_tag(proc, cfg, ns, parent, prev_sibling_closing_tag, tag_name)?;
                 prev_sibling_closing_tag.replace(new_closing_tag);
             }
             ContentType::End => {
-                if prev_sibling_closing_tag.exists_and(|prev_tag|
-                    CLOSING_TAG_OMISSION_RULES
-                        .get(&proc[prev_tag])
-                        .filter(|rule| rule.can_omit_as_last_node(parent.map(|p| &proc[p])))
-                        .is_none()
-                ) {
+                if prev_sibling_closing_tag.exists_and(|prev_tag| !can_omit_as_last_node(proc, parent, prev_tag)) {
                     prev_sibling_closing_tag.write(proc);
                 };
                 break;
@@ -162,5 +176,7 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
         last_written = next_content_type;
     };
 
-    Ok(())
+    Ok(ProcessedContent {
+        closing_tag_omitted: false,
+    })
 }
