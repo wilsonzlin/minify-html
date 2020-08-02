@@ -468,21 +468,9 @@ Bangs, [processing instructions](https://en.wikipedia.org/wiki/Processing_Instru
 
 ## Parsing
 
-Only UTF-8/ASCII-encoded HTML code is supported.
-
-minify-html does no syntax checking or standards enforcement for performance and code complexity reasons.
-
-For example, this means that it's not an error to have self-closing tags, declare multiple `<body>` elements, use incorrect attribute names and values, or write something like `<br>alert('');</br>`
-
-However, there are some syntax requirements for speed and sanity.
-
-### Tags
-
-Opening tags must not be [omitted](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission).
-
-### Script and style
-
-minify-html does **not** handle [escaped and double-escaped](./notes/Script%20data.md) script content.
+- Input must be UTF-8.
+- Opening tags must not be [omitted](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission).
+- [Escaped and double-escaped](./notes/Script%20data.md) script content are not supported.
 
 ## Issues and contributions
 
