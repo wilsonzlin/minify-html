@@ -17,7 +17,7 @@ use crate::gen::entities::{ENTITY, EntityType};
 use crate::pattern::TrieNodeMatch;
 use std::char::from_u32;
 use crate::proc::Processor;
-use crate::gen::codepoints::{DIGIT, HEX_DIGIT, LOWER_HEX_DIGIT, UPPER_HEX_DIGIT, Lookup};
+use crate::gen::codepoints::{DIGIT, HEX_DIGIT, LOWER_HEX_ALPHA, UPPER_HEX_ALPHA, Lookup};
 
 enum Parsed {
     // This includes numeric entities that were invalid and decoded to 0xFFFD.
@@ -93,8 +93,8 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> Parsed {
                 HEX_DIGIT,
                 |value, c| value.wrapping_mul(16).wrapping_add(match c {
                     c if DIGIT[c] => (c - b'0') as u32,
-                    c if LOWER_HEX_DIGIT[c] => (c - b'a') as u32,
-                    c if UPPER_HEX_DIGIT[c] => (c - b'A') as u32,
+                    c if LOWER_HEX_ALPHA[c] => 10 + (c - b'a') as u32,
+                    c if UPPER_HEX_ALPHA[c] => 10 + (c - b'A') as u32,
                     _ => unreachable!(),
                 }),
                 6,

@@ -260,6 +260,10 @@ fn test_attr_value_backtick() {
 
 #[test]
 fn test_hexadecimal_entity_decoding() {
+    eval(b"&#x2E", b".");
+    eval(b"&#x2F", b"/");
+    eval(b"&#x2f", b"/");
+    eval(b"&#x00", b"\0");
     eval(b"&#x30", b"0");
     eval(b"&#x0030", b"0");
     eval(b"&#x000000000000000000000000000000000000000000030", b"0");

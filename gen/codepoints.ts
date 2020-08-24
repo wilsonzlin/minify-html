@@ -14,9 +14,9 @@ const WHITESPACE = [0x09, 0x0a, 0x0c, 0x0d, 0x20];
 const C0_CONTROL = rangeInclusive(0, 0x1f);
 const CONTROL = [...C0_CONTROL, ...rangeInclusive(0x7f, 0x9f)];
 const DIGIT = rangeInclusive(c('0'), c('9'));
-const UPPER_HEX_DIGIT = [...DIGIT, ...rangeInclusive(c('A'), c('F'))];
-const LOWER_HEX_DIGIT = [...DIGIT, ...rangeInclusive(c('a'), c('f'))];
-const HEX_DIGIT = [...UPPER_HEX_DIGIT, ...LOWER_HEX_DIGIT];
+const UPPER_HEX_ALPHA = [...rangeInclusive(c('A'), c('F'))];
+const LOWER_HEX_ALPHA = [...rangeInclusive(c('a'), c('f'))];
+const HEX_DIGIT = [...DIGIT, ...UPPER_HEX_ALPHA, ...LOWER_HEX_ALPHA];
 const UPPER_ALPHA = rangeInclusive(c('A'), c('Z'));
 const LOWER_ALPHA = rangeInclusive(c('a'), c('z'));
 const ALPHA = [...UPPER_ALPHA, ...LOWER_ALPHA];
@@ -61,8 +61,8 @@ impl std::ops::Index<u8> for Lookup {
 ` + Object.entries({
   WHITESPACE,
   DIGIT,
-  UPPER_HEX_DIGIT,
-  LOWER_HEX_DIGIT,
+  UPPER_HEX_ALPHA,
+  LOWER_HEX_ALPHA,
   HEX_DIGIT,
 
   ATTR_NAME_CHAR,
