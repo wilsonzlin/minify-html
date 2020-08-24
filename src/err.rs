@@ -1,4 +1,4 @@
-// Implement debug to allow .unwrap().
+/// Represents the type of minification error.
 #[derive(Debug, Eq, PartialEq)]
 pub enum ErrorType {
     ClosingTagMismatch { expected: String, got: String },
@@ -8,6 +8,7 @@ pub enum ErrorType {
 }
 
 impl ErrorType {
+    /// Generates an English message describing the error with any additional context.
     pub fn message(self) -> String {
         match self {
             ErrorType::ClosingTagMismatch { expected, got } => {
@@ -26,12 +27,17 @@ impl ErrorType {
     }
 }
 
+/// Details about a minification failure, including where it occurred and why.
 #[derive(Debug)]
 pub struct Error {
     pub error_type: ErrorType,
     pub position: usize,
 }
 
+
+/// User-friendly details about a minification failure, including an English message description of
+/// the reason, and generated printable contextual representation of the code where the error
+/// occurred.
 #[derive(Debug)]
 pub struct FriendlyError {
     pub position: usize,
@@ -64,7 +70,7 @@ pub fn debug_repr(code: &[u8], read_pos: isize, write_pos: isize) -> String {
         // Include '\n'. Note that the last line might not have '\n' but that's OK for these calculations.
         let len = line.len() + 1;
         let line_as_string = unsafe { String::from_utf8_unchecked(line.to_vec()) };
-        lines.push((line_no as isize, line_as_string));
+        lines.push(((line_no + 1) as isize, line_as_string));
         let new_pos = cur_pos + len;
 
         // Rust does lazy allocation by default, so this is not wasteful.

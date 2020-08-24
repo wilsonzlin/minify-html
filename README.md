@@ -51,49 +51,7 @@ If the `js-esbuild` feature is not enabled, `cfg.minify_js` will have no effect.
 
 ##### Use
 
-```rust
-use minify_html::{Cfg, Error, FriendlyError, in_place, copy, with_friendly_error, truncate};
-
-fn main() {
-    let mut code = b"<p>  Hello, world!  </p>".to_vec();
-    let cfg = &Cfg {
-        minify_js: false,
-    };
-
-    // Minifies a slice in-place and returns the new minified length,
-    // but leaves any original code after the minified code intact.
-    match in_place(&mut code, cfg) {
-        Ok(minified_len) => {}
-        Err(Error { error_type, position }) => {}
-    };
-
-    // Creates a vector copy containing only minified code
-    // instead of minifying in-place.
-    match copy(&code, cfg) {
-        Ok(minified) => {}
-        Err(Error { error_type, position }) => {}
-    };
-
-    // Minifies a vector in-place, and then truncates the
-    // vector to the new minified length.
-    match truncate(&mut code, cfg) {
-        Ok(()) => {}
-        Err(Error { error_type, position }) => {}
-    };
-
-    // Identical to `in_place` except with FriendlyError instead.
-    // `code_context` is a string of a visual representation of the source,
-    // with line numbers and position markers to aid in debugging syntax.
-    match with_friendly_error(&mut code, cfg) {
-        Ok(minified_len) => {}
-        Err(FriendlyError { position, message, code_context }) => {
-            eprintln!("Failed at character {}:", position);
-            eprintln!("{}", message);
-            eprintln!("{}", code_context);
-        }
-    };
-}
-```
+Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 
 </details>
 
