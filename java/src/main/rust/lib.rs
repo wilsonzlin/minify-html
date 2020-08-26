@@ -4,6 +4,8 @@ use jni::objects::{JByteBuffer, JClass, JObject, JString};
 use jni::sys::{jint, jstring};
 use std::str::from_utf8_unchecked;
 
+const SYNTAX_EXCEPTION_CLASS: &str = "in/wilsonl/minifyhtml/SyntaxException";
+
 fn build_cfg(
     env: &JNIEnv,
     obj: &JObject,
@@ -33,7 +35,7 @@ pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minifyInPlace(
         Ok(out_len) => out_len,
         Err(Error { error_type, position }) => {
             env.throw_new(
-                "in/wilsonl/minifyhtml/MinifyHtml$SyntaxException",
+                SYNTAX_EXCEPTION_CLASS,
                 format!("{} [Character {}]", error_type.message(), position),
             ).unwrap();
             0
@@ -56,7 +58,7 @@ pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minify(
         Ok(out_len) => env.new_string(unsafe { from_utf8_unchecked(&code[0..out_len]) }).unwrap().into_inner(),
         Err(Error { error_type, position }) => {
             env.throw_new(
-                "in/wilsonl/minifyhtml/MinifyHtml$SyntaxException",
+                SYNTAX_EXCEPTION_CLASS,
                 format!("{} [Character {}]", error_type.message(), position),
             ).unwrap();
             JObject::null().into_inner()

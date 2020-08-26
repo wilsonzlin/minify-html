@@ -53,7 +53,7 @@ public class MinifyHtml {
    * If the code fails to be minified, a {@link SyntaxException} will be thrown with a descriptive English message and position in code where the error occurred.
    *
    * @param code {@link ByteBuffer} containing HTML code to minify
-   * @param cfg {@link Configuration} minification settings to use
+   * @param cfg  {@link Configuration} minification settings to use
    * @return length of the written minified code in the {@link ByteBuffer}
    */
   public static native int minifyInPlace(ByteBuffer code, Configuration cfg);
@@ -64,44 +64,8 @@ public class MinifyHtml {
    * If the code fails to be minified, a {@link SyntaxException} will be thrown with a descriptive English message and position in code where the error occurred.
    *
    * @param code HTML code to minify
-   * @param cfg {@link Configuration} minification settings to use
+   * @param cfg  {@link Configuration} minification settings to use
    * @return minified HTML code
    */
   public static native String minify(String code, Configuration cfg);
-
-  /**
-   * Basic exception class representing minification errors.
-   */
-  public static class SyntaxException extends RuntimeException {
-    private SyntaxException(String message) {
-      super(message);
-    }
-  }
-
-  /**
-   * Class representing minification configuration.
-   */
-  public static class Configuration {
-    private final boolean minifyJs;
-
-    public Configuration(boolean minifyJs) {
-      this.minifyJs = minifyJs;
-    }
-
-    /**
-     * Builder to help create configuration.
-     */
-    public static class Builder {
-      private boolean minifyJs = false;
-
-      public Builder setMinifyJs(boolean minifyJs) {
-        this.minifyJs = minifyJs;
-        return this;
-      }
-
-      public Configuration build() {
-        return new Configuration(this.minifyJs);
-      }
-    }
-  }
 }
