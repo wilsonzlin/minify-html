@@ -126,13 +126,13 @@ pub fn truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), Error> {
 /// ```
 /// use minify_html::{Cfg, Error, copy};
 ///
-/// let mut code = b"<p>  Hello, world!  </p>".to_vec();
+/// let mut code: &[u8] = b"<p>  Hello, world!  </p>";
 /// let cfg = &Cfg {
 ///     minify_js: false,
 /// };
 /// match copy(&code, cfg) {
 ///     Ok(minified) => {
-///         assert_eq!(code, b"<p>  Hello, world!  </p>".to_vec());
+///         assert_eq!(code, b"<p>  Hello, world!  </p>");
 ///         assert_eq!(minified, b"<p>Hello, world!".to_vec());
 ///     }
 ///     Err(Error { error_type, position }) => {}
