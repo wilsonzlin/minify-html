@@ -126,14 +126,17 @@ Add as a Maven dependency:
 ##### Use
 
 ```java
+import in.wilsonl.minifyhtml.Configuration;
 import in.wilsonl.minifyhtml.MinifyHtml;
+import in.wilsonl.minifyhtml.SyntaxException;
 
-MinifyHtml.Configuration cfg = new MinifyHtml.Configuration.Builder()
+Configuration cfg = new Configuration.Builder()
     .setMinifyJs(false)
     .build();
+
 try {
     String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
-} catch (MinifyHtml.SyntaxException e) {
+} catch (SyntaxException e) {
     System.err.println(e.getMessage());
 }
 
