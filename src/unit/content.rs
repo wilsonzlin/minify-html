@@ -1,19 +1,19 @@
+use crate::cfg::Cfg;
 use crate::err::ProcessingResult;
+use crate::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use crate::proc::checkpoint::ReadCheckpoint;
+use crate::proc::entity::maybe_normalise_entity;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
+use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{MaybeClosingTag, process_tag};
-use crate::spec::tag::ns::Namespace;
-use crate::proc::entity::maybe_normalise_entity;
-use crate::gen::codepoints::{WHITESPACE, TAG_NAME_CHAR};
-use crate::cfg::Cfg;
-use crate::proc::checkpoint::ReadCheckpoint;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -39,7 +39,8 @@ impl ContentType {
                     Some(b"--") => ContentType::Comment,
                     _ => ContentType::Bang,
                 },
-                _ => ContentType::Tag
+                Some(c) if TAG_NAME_CHAR[c] => ContentType::Tag,
+                _ => ContentType::Text,
             },
             Some(_) => ContentType::Text,
         }
@@ -148,26 +149,26 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
                     prev_sibling_closing_tag.write(proc);
                 };
 
-                match proc.peek(0).unwrap() {
-                    b';' => {
-                        // Problem: semicolon after encoded '<' will cause '&LT;', making it part of the entity.
-                        // Solution: insert another semicolon.
-                        // NOTE: We can't just peek at the time of inserting '&LT', as the semicolon might be encoded.
-                        // TODO Optimise, maybe using last written flag.
-                        if let Some(b"&LT") = proc.last(3) {
-                            proc.write(b';');
-                        };
-                        proc.accept_expect();
-                    }
-                    b'<' => {
-                        // The only way the next character is `<` but the state is `Text` is if it was decoded from an entity.
-                        proc.write_slice(b"&LT");
-                        proc.skip_expect();
-                    }
-                    _ => {
-                        proc.accept_expect();
-                    }
+                let c = proc.peek(0).unwrap();
+
+                // From the spec: https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
+                // After a `<`, a valid character is an ASCII alpha, `/`, `!`, or `?`. Anything
+                // else, and the `<` is treated as content.
+                if proc.last_is(b'<') && (
+                    TAG_NAME_CHAR[c] || c == b'?' || c == b'!' || c == b'/'
+                ) {
+                    // If this is a tag name char and we just wrote `<` (decoded or original),
+                    // we need to encode the `<`.
+                    // NOTE: This conditional should mean that we never have to worry about a
+                    // semicolon after encoded `<` becoming `&LT;` and part of the entity, as the
+                    // only time `&LT` appears is when we write it here; every other time we always
+                    // decode any encoded `<`.
+                    // TODO Optimise, maybe using last written flag.
+                    proc.undo_write(1);
+                    proc.write_slice(b"&LT");
                 };
+
+                proc.accept_expect();
             }
             _ => unreachable!(),
         };

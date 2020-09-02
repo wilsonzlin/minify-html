@@ -336,17 +336,37 @@ fn test_unintentional_entity_prevention() {
 }
 
 #[test]
-fn test_left_chevron_entities_in_content() {
-    eval(b"&LT", b"&LT");
-    eval(b"&LT;", b"&LT");
-    eval(b"&LT;;", b"&LT;;");
-    eval(b"&LT;&#59", b"&LT;;");
-    eval(b"&LT;&#59;", b"&LT;;");
-    eval(b"&lt", b"&LT");
-    eval(b"&lt;", b"&LT");
-    eval(b"&lt;;", b"&LT;;");
-    eval(b"&lt;&#59", b"&LT;;");
-    eval(b"&lt;&#59;", b"&LT;;");
+fn test_left_chevron_in_content() {
+    eval(b"<pre><</pre>", b"<pre><</pre>");
+    eval(b"<pre>< </pre>", b"<pre>< </pre>");
+    eval(b"<pre> < </pre>", b"<pre> < </pre>");
+    eval(b"<pre> &lt;a </pre>", b"<pre> &LTa </pre>");
+    eval(b"<pre> &lt;? </pre>", b"<pre> &LT? </pre>");
+    eval(b"<pre> &lt;/ </pre>", b"<pre> &LT/ </pre>");
+
+    eval(b"&LT", b"<");
+    eval(b"&LT;", b"<");
+    eval(b"&LT;;", b"<;");
+    eval(b"&LT;&#59", b"<;");
+    eval(b"&LT;&#59;", b"<;");
+    eval(b"&lt", b"<");
+    eval(b"&lt;", b"<");
+    eval(b"&lt;;", b"<;");
+    eval(b"&lt;&#59", b"<;");
+    eval(b"&lt;&#59;", b"<;");
+
+    eval(b"&LTa", b"&LTa");
+    eval(b"&LT;a", b"&LTa");
+    eval(b"&LT;a;", b"&LTa;");
+    eval(b"&LT;a&#59", b"&LTa;");
+    eval(b"&LT;a&#59;", b"&LTa;");
+    eval(b"&LT;a;&#59;", b"&LTa;;");
+
+    eval(b"&lt;&#33", b"&LT!");
+    eval(b"&lt;&#38", b"<&");
+    eval(b"&lt;&#47", b"&LT/");
+    eval(b"&lt;&#63", b"&LT?");
+    eval(b"&lt;&#64", b"<@");
 }
 
 #[test]

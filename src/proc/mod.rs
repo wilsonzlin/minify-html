@@ -258,13 +258,8 @@ impl<'d> Processor<'d> {
     }
 
     // Looking behind.
-    #[inline(always)]
-    pub fn last(&self, count: usize) -> Option<&[u8]> {
-        if count > self.write_next {
-            None
-        } else {
-            self.code.get(self.write_next - count..self.write_next)
-        }
+    pub fn last_is(&self, c: u8) -> bool {
+        self.write_next > 0 && self.code[self.write_next - 1] == c
     }
 
     // Consuming source characters.
@@ -301,6 +296,10 @@ impl<'d> Processor<'d> {
     #[inline(always)]
     pub fn make_lowercase(&mut self, range: ProcessorRange) -> () {
         self.code[range.start..range.end].make_ascii_lowercase();
+    }
+
+    pub fn undo_write(&mut self, len: usize) -> () {
+        self.write_next -= len;
     }
 
     #[inline(always)]
