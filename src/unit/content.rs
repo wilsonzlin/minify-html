@@ -165,6 +165,8 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
                     // decode any encoded `<`.
                     // TODO Optimise, maybe using last written flag.
                     proc.undo_write(1);
+                    // We use `LT` because no other named entity starts with it so it can't be
+                    // misinterpreted as another entity or require a semicolon.
                     proc.write_slice(b"&LT");
                 };
 

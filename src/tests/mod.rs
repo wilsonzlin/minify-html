@@ -340,9 +340,19 @@ fn test_left_chevron_in_content() {
     eval(b"<pre><</pre>", b"<pre><</pre>");
     eval(b"<pre>< </pre>", b"<pre>< </pre>");
     eval(b"<pre> < </pre>", b"<pre> < </pre>");
+
+    eval(b"<pre> &lta </pre>", b"<pre> &LTa </pre>");
     eval(b"<pre> &lt;a </pre>", b"<pre> &LTa </pre>");
+    eval(b"<pre> &LTa </pre>", b"<pre> &LTa </pre>");
+    eval(b"<pre> &LT;a </pre>", b"<pre> &LTa </pre>");
+
+    eval(b"<pre> &lt? </pre>", b"<pre> &LT? </pre>");
     eval(b"<pre> &lt;? </pre>", b"<pre> &LT? </pre>");
+    eval(b"<pre> &LT? </pre>", b"<pre> &LT? </pre>");
+    eval(b"<pre> &LT;? </pre>", b"<pre> &LT? </pre>");
+
     eval(b"<pre> &lt;/ </pre>", b"<pre> &LT/ </pre>");
+    eval(b"<pre> &lt;! </pre>", b"<pre> &LT! </pre>");
 
     eval(b"&LT", b"<");
     eval(b"&LT;", b"<");
