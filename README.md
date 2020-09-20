@@ -1,6 +1,7 @@
 # minify-html
 
-An HTML minifier meticulously optimised for both speed and effectiveness, available for Rust, Node.js, Python, Java, and Ruby.
+An HTML minifier meticulously optimised for both speed and effectiveness written in Rust.
+Comes with native bindings to Node.js, Python, Java, and Ruby.
 
 - Advanced minification strategy beats other minifiers with only one pass.
 - Uses zero memory allocations, SIMD searching, direct tries, and lookup tables.
@@ -45,7 +46,7 @@ minify-html --src /path/to/src.html --out /path/to/output.min.html
 minify-html = { version = "0.3.8", features = ["js-esbuild"] }
 ```
 
-Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/evanw/esbuild).
+Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/wilsonzlin/esbuild-rs).
 
 If the `js-esbuild` feature is not enabled, `cfg.minify_js` will have no effect.
 
@@ -415,9 +416,7 @@ Numeric entities that do not refer to a valid [Unicode Scalar Value](https://www
 
 If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity representations of characters part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
 
-It's possible to get an unintentional entity after removing comments, e.g. `&am<!-- -->p`.
-
-Left chevrons after any decoding in text are encoded to `&LT` if possible or `&LT;` otherwise.
+Note that it's possible to get an unintentional entity after removing comments, e.g. `&am<!-- -->p`; minify-html will **not** encode the leading ampersand.
 
 ### Comments
 

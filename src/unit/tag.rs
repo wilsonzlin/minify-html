@@ -94,7 +94,14 @@ impl MaybeClosingTag {
 }
 
 // TODO Comment param `prev_sibling_closing_tag`.
-pub fn process_tag(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>, mut prev_sibling_closing_tag: MaybeClosingTag, source_tag_name: ProcessorRange) -> ProcessingResult<MaybeClosingTag> {
+pub fn process_tag(
+    proc: &mut Processor,
+    cfg: &Cfg,
+    ns: Namespace,
+    parent: Option<ProcessorRange>,
+    mut prev_sibling_closing_tag: MaybeClosingTag,
+    source_tag_name: ProcessorRange,
+) -> ProcessingResult<MaybeClosingTag> {
     if prev_sibling_closing_tag.exists_and(|prev_tag| !can_omit_as_before(proc, Some(prev_tag), source_tag_name)) {
         prev_sibling_closing_tag.write(proc);
     };

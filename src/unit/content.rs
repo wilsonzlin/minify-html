@@ -157,8 +157,8 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
                 if proc.last_is(b'<') && (
                     TAG_NAME_CHAR[c] || c == b'?' || c == b'!' || c == b'/'
                 ) {
-                    // If this is a tag name char and we just wrote `<` (decoded or original),
-                    // we need to encode the `<`.
+                    // We need to encode the `<` that we just wrote as otherwise this char will
+                    // cause it to be interpreted as something else (e.g. opening tag).
                     // NOTE: This conditional should mean that we never have to worry about a
                     // semicolon after encoded `<` becoming `&LT;` and part of the entity, as the
                     // only time `&LT` appears is when we write it here; every other time we always
