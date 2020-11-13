@@ -61,16 +61,8 @@ jobs:
           npm run build
           node compress.js
 
-      - name: Install B2 CLI (macOS, Linux)
-        if: runner.os != 'Windows'
-        run: |
-          sudo pip install setuptools
-          sudo pip install --upgrade b2
-
-      - name: Install B2 CLI (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          pip install --upgrade b2
+      - name: Set up Backblaze B2 CLI
+        uses: wilsonzlin/setup-b2@v3
 
       - name: Upload to B2
         shell: bash

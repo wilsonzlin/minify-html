@@ -86,16 +86,8 @@ jobs:
           cargo build -vvv --release
         working-directory: ./ruby
 
-      - name: Install B2 CLI (macOS, Linux)
-        if: runner.os != 'Windows'
-        run: |
-          sudo pip install setuptools
-          sudo pip install --upgrade b2
-
-      - name: Install B2 CLI (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          pip install --upgrade b2
+      - name: Set up Backblaze B2 CLI
+        uses: wilsonzlin/setup-b2@v3
 
       - name: Upload to B2
         run: |
@@ -115,10 +107,8 @@ jobs:
         uses: actions/setup-ruby@v1
         with:
           ruby-version: '2.5'
-      - name: Install B2 CLI
-        run: |
-          sudo pip install setuptools
-          sudo pip install --upgrade b2
+      - name: Set up Backblaze B2 CLI
+        uses: wilsonzlin/setup-b2@v3
       - name: Pack and publish gem
         working-directory: ./ruby
         run: |
