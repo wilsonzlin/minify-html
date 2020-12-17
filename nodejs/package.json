@@ -5,7 +5,8 @@
   "main": "index.node",
   "types": "index.d.ts",
   "files": [
-    "postinstall.js"
+    "postinstall.js",
+    "index.d.ts"
   ],
   "scripts": {
     "build": "node-gyp build && shx mv build/Release/index.node index.node",
