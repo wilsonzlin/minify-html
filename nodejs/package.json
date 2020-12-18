@@ -1,6 +1,6 @@
 {
   "name": "@minify-html/js",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Fast and smart HTML + JS minifier",
   "main": "index.node",
   "types": "index.d.ts",
