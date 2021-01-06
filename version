@@ -66,6 +66,7 @@ const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFi
 if (cmd('git', 'status', '--porcelain', {throwOnStderr: true, captureStdio: true}).stdout) {
   throw new Error('Working directory not clean');
 }
+cmd('git', 'pull');
 cmd('bash', './prebuild.sh');
 cmd('cargo', 'test', '--features', 'js-esbuild');
 
