@@ -12,9 +12,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-11.0, ubuntu-latest, windows-latest]
         include:
-          - os: macos-latest
+          - os: macos-11.0
             ARCH: macos-x86_64
           - os: ubuntu-latest
             ARCH: linux-x86_64

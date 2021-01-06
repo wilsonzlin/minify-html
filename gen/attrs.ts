@@ -83,9 +83,10 @@ ${(['html', 'svg'] as const).map(ns => `      ${ns}: ` + (() => {
   if (globalAttr) {
     return `Some(AttrMapEntry::AllNamespaceElements(${rsTagAttr(globalAttr)}))`;
   }
+  const entries = Object.entries(tagsMap);
   return `Some({
-        let mut m = HashMap::<&'static [u8], AttributeMinification>::new();
-${Object.entries(tagsMap).map(([tagName, tagAttr]) => `        m.insert(b\"${tagName}\", ${rsTagAttr(tagAttr)});`).join('\n')}
+        let ${entries.length ? 'mut' : ''} m = HashMap::<&'static [u8], AttributeMinification>::new();
+${entries.map(([tagName, tagAttr]) => `        m.insert(b\"${tagName}\", ${rsTagAttr(tagAttr)});`).join('\n')}
         AttrMapEntry::SpecificNamespaceElements(m)
       })`;
 })() + ',').join('\n')}
