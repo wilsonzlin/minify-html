@@ -12,14 +12,16 @@ typedef struct Cfg Cfg;
 static inline void* assert_malloc(size_t bytes) {
   void* ptr = malloc(bytes);
   if (ptr == NULL) {
-    // TODO
+    fprintf(stderr, "[Node.js minify-html] Internal assertion error: failed to allocate memory\n");
+    exit(67);
   }
   return ptr;
 }
 
 static inline void assert_ok(napi_status status) {
   if (status != napi_ok) {
-    // TODO
+    fprintf(stderr, "[Node.js minify-html] Internal assertion error: N-API status not OK\n");
+    exit(67);
   }
 }
 
