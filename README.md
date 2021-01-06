@@ -153,7 +153,7 @@ MinifyHtml.minifyInPlace(source, cfg);
 
 - Package: [minify-html](https://pypi.org/project/minify-html)
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
-- Platforms: Linux, macOS, Windows; Python 3.5 and higher
+- Platforms: Linux, macOS, Windows; Python 3.7 and higher
 
 ##### Get
 
