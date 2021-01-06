@@ -9,6 +9,11 @@
         "native/target/release/",
       ],
       "conditions": [
+        ["OS=='mac'", {
+          "libraries": [
+            "Security.framework",
+          ],
+        }],
         ["OS!='win'", {
           "actions": [
             {

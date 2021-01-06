@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -107,6 +108,7 @@ napi_value node_method_create_configuration(napi_env env, napi_callback_info inf
 
 napi_value node_method_minify_in_place(napi_env env, napi_callback_info info) {
   napi_value undefined = get_undefined(env);
+  napi_value min_buf_rv = undefined;
 
   bool buffer_arg_ref_set = false;
   napi_ref buffer_arg_ref;
@@ -123,7 +125,6 @@ napi_value node_method_minify_in_place(napi_env env, napi_callback_info info) {
     assert_ok(napi_throw_error(env, NULL, "Failed to get callback info"));
     goto rollback;
   }
-  napi_value min_buf_rv = undefined;
   napi_value buffer_arg = argv[0];
   napi_value js_cfg_arg = argv[1];
 
@@ -185,6 +186,7 @@ cleanup:
 
 napi_value node_method_minify(napi_env env, napi_callback_info info) {
   napi_value undefined = get_undefined(env);
+  napi_value min_buf_rv = undefined;
 
   void* src_data_copy = NULL;
   ffi_error const* min_err = NULL;
@@ -199,7 +201,6 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
     assert_ok(napi_throw_error(env, NULL, "Failed to get callback info"));
     goto rollback;
   }
-  napi_value min_buf_rv = undefined;
   napi_value src_arg = argv[0];
   napi_value js_cfg_arg = argv[1];
 
