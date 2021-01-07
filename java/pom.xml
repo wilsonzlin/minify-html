@@ -6,7 +6,7 @@
 
     <groupId>in.wilsonl.minifyhtml</groupId>
     <artifactId>minify-html</artifactId>
-    <version>0.3.12</version>
+    <version>0.4.0</version>
 
     <name>minify-html</name>
     <description>Extremely fast and smart HTML + JS + CSS minifier</description>
