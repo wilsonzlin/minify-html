@@ -43,7 +43,7 @@ The settings used for each minifier can be found in [minifiers.js](./minifiers.j
 
 - CSS minification is disabled for all, as minify-html currently does not support CSS minification (coming soon).
 - All minifiers are configured to use esbuild for JS minification asynchronously and in parallel, similar to how minify-html works.
-- `conservativeCollapse` is enabled for html-minifier as otherwise some whitespace would be unsafely removed with side affects. minify-html can safely remove whitespace with context if configured properly.
+- `conservativeCollapse` is enabled for html-minifier as otherwise some whitespace would be unsafely removed with side effects. minify-html can safely remove whitespace with context if configured properly.
 
 ## Running
 
