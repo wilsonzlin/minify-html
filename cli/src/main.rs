@@ -6,13 +6,18 @@ use structopt::StructOpt;
 use minify_html::{Cfg, FriendlyError, with_friendly_error};
 
 #[derive(StructOpt)]
+#[structopt(name = "minify-html", about = "Extremely fast and smart HTML + JS + CSS minifier")]
 struct Cli {
+    /// File to minify; omit for stdin.
     #[structopt(short, long, parse(from_os_str))]
     src: Option<std::path::PathBuf>,
+    /// Output destination; omit for stdout.
     #[structopt(short, long, parse(from_os_str))]
     out: Option<std::path::PathBuf>,
+    /// Enables JS minification.
     #[structopt(long)]
     js: bool,
+    /// Enables CSS minification.
     #[structopt(long)]
     css: bool,
 }

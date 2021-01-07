@@ -15,14 +15,18 @@ methods! {
             .to_string()
             .into_bytes();
 
+        let cfg_hash = cfg_hash
+            .map_err(|e| VM::raise_ex(e) )
+            .unwrap();
+
         let cfg = &Cfg {
             minify_js: cfg_hash
-                .map(|h| h.at(&Symbol::new("minify_js")))
-                .and_then(|e| e.try_convert_to::<Boolean>())
+                .at(&Symbol::new("minify_js"))
+                .try_convert_to::<Boolean>()
                 .map_or(false, |v| v.to_bool()),
             minify_css: cfg_hash
-                .map(|h| h.at(&Symbol::new("minify_css")))
-                .and_then(|e| e.try_convert_to::<Boolean>())
+                .at(&Symbol::new("minify_css"))
+                .try_convert_to::<Boolean>()
                 .map_or(false, |v| v.to_bool()),
         };
 

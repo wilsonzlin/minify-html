@@ -31,7 +31,7 @@ Precompiled binaries are available for x86-64 Linux, macOS, and Windows.
 Use the `--help` argument for more details.
 
 ```bash
-minify-html --src /path/to/src.html --out /path/to/output.min.html
+minify-html --src /path/to/src.html --out /path/to/output.min.html --css --js
 ```
 
 ### API
