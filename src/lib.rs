@@ -31,6 +31,7 @@ mod unit;
 /// let mut code = b"<p>  Hello, world!  </p>".to_vec();
 /// let cfg = &Cfg {
 ///     minify_js: false,
+///     minify_css: false,
 /// };
 /// match in_place(&mut code, cfg) {
 ///     Ok(minified_len) => assert_eq!(&code, b"<p>Hello, world!d!  </p>"),
@@ -68,6 +69,7 @@ pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, Error> {
 /// let mut code = "<p>  Hello, world!  </p>".to_string();
 /// let cfg = &Cfg {
 ///     minify_js: false,
+///     minify_css: false,
 /// };
 /// match in_place_str(&mut code, cfg) {
 ///     Ok(minified_len) => assert_eq!(&code, "<p>Hello, world!d!  </p>"),
@@ -97,6 +99,7 @@ pub fn in_place_str<'s>(code: &'s mut str, cfg: &Cfg) -> Result<&'s str, Error> 
 /// let mut code = b"<p>  Hello, world!  </p>".to_vec();
 /// let cfg = &Cfg {
 ///     minify_js: false,
+///     minify_css: false,
 /// };
 /// match truncate(&mut code, cfg) {
 ///     Ok(()) => assert_eq!(code, b"<p>Hello, world!".to_vec()),
@@ -129,6 +132,7 @@ pub fn truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), Error> {
 /// let mut code: &[u8] = b"<p>  Hello, world!  </p>";
 /// let cfg = &Cfg {
 ///     minify_js: false,
+///     minify_css: false,
 /// };
 /// match copy(&code, cfg) {
 ///     Ok(minified) => {
@@ -167,6 +171,7 @@ pub fn copy(code: &[u8], cfg: &Cfg) -> Result<Vec<u8>, Error> {
 /// let mut code = b"<p></div>".to_vec();
 /// let cfg = &Cfg {
 ///     minify_js: false,
+///     minify_css: false,
 /// };
 /// match with_friendly_error(&mut code, cfg) {
 ///     Ok(minified_len) => {}

@@ -6,6 +6,7 @@ fn main() {
         let mut mut_data: Vec<u8> = data.iter().map(|x| *x).collect();
         let _ = in_place(&mut mut_data, &Cfg {
             minify_js: false,
+            minify_css: false,
         });
     });
 }

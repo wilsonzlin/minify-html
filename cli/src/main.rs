@@ -13,6 +13,8 @@ struct Cli {
     out: Option<std::path::PathBuf>,
     #[structopt(long)]
     js: bool,
+    #[structopt(long)]
+    css: bool,
 }
 
 macro_rules! io_expect {
@@ -38,6 +40,7 @@ fn main() {
     io_expect!(src_file.read_to_end(&mut code), "could not load source code");
     match with_friendly_error(&mut code, &Cfg {
         minify_js: args.js,
+        minify_css: args.css,
     }) {
         Ok(out_len) => {
             let mut out_file: Box<dyn Write> = match args.out {

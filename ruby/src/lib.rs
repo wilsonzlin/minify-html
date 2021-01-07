@@ -20,6 +20,10 @@ methods! {
                 .map(|h| h.at(&Symbol::new("minify_js")))
                 .and_then(|e| e.try_convert_to::<Boolean>())
                 .map_or(false, |v| v.to_bool()),
+            minify_css: cfg_hash
+                .map(|h| h.at(&Symbol::new("minify_css")))
+                .and_then(|e| e.try_convert_to::<Boolean>())
+                .map_or(false, |v| v.to_bool()),
         };
 
         minify_html_native(&mut code, cfg)

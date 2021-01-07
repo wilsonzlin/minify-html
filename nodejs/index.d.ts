@@ -11,7 +11,11 @@ export function createConfiguration (options: {
   /**
    * If enabled, content in `<script>` tags with a JS or no [MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) will be minified using [esbuild-rs](https://github.com/wilsonzlin/esbuild-rs).
    */
-  minifyJs: false;
+  minifyJs: boolean;
+  /**
+   * If enabled, CSS in `<style>` tags will be minified using [esbuild-rs](https://github.com/wilsonzlin/esbuild-rs).
+   */
+  minifyCss: boolean;
 }): Cfg;
 
 /**

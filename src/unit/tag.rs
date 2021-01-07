@@ -211,7 +211,7 @@ pub fn process_tag(
     match tag_type {
         TagType::ScriptData => process_script(proc, cfg, false)?,
         TagType::ScriptJs => process_script(proc, cfg, true)?,
-        TagType::Style => process_style(proc)?,
+        TagType::Style => process_style(proc, cfg)?,
         _ => closing_tag_omitted = process_content(proc, cfg, child_ns, Some(tag_name))?.closing_tag_omitted,
     };
 

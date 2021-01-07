@@ -1,7 +1,7 @@
 [package]
 publish = false
 name = "minify_html"
-description = "Fast and smart HTML + JS minifier"
+description = "Extremely fast and smart HTML + JS + CSS minifier"
 license = "MIT"
 homepage = "https://github.com/wilsonzlin/minify-html"
 readme = "README.md"

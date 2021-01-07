@@ -5,9 +5,11 @@ package in.wilsonl.minifyhtml;
  */
 public class Configuration {
   private final boolean minifyJs;
+  private final boolean minifyCss;
 
-  public Configuration(boolean minifyJs) {
+  public Configuration(boolean minifyJs, boolean minifyCss) {
     this.minifyJs = minifyJs;
+    this.minifyCss = minifyCss;
   }
 
   /**
@@ -15,14 +17,20 @@ public class Configuration {
    */
   public static class Builder {
     private boolean minifyJs = false;
+    private boolean minifyCss = false;
 
     public Builder setMinifyJs(boolean minifyJs) {
       this.minifyJs = minifyJs;
       return this;
     }
 
+    public Builder setMinifyCss(boolean minifyCss) {
+      this.minifyCss = minifyCss;
+      return this;
+    }
+
     public Configuration build() {
-      return new Configuration(this.minifyJs);
+      return new Configuration(this.minifyJs, this.minifyCss);
     }
   }
 }

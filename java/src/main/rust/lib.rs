@@ -12,6 +12,7 @@ fn build_cfg(
 ) -> Cfg {
     Cfg {
         minify_js: env.get_field(*obj, "minifyJs", "Z").unwrap().z().unwrap(),
+        minify_css: env.get_field(*obj, "minifyCss", "Z").unwrap().z().unwrap(),
     }
 }
 

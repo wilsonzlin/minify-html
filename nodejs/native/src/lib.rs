@@ -2,9 +2,10 @@ use std::{mem, ptr, slice};
 use minify_html::{Cfg, Error, in_place};
 
 #[no_mangle]
-pub extern "C" fn ffi_create_cfg(minify_js: bool) -> *const Cfg {
+pub extern "C" fn ffi_create_cfg(minify_js: bool, minify_css: bool) -> *const Cfg {
     Box::into_raw(Box::new(Cfg {
         minify_js,
+        minify_css,
     }))
 }
 

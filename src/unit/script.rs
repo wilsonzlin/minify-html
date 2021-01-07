@@ -9,7 +9,7 @@ use crate::proc::Processor;
 use {
     std::sync::Arc,
     esbuild_rs::{TransformOptionsBuilder, TransformOptions},
-    crate::proc::JsMinSection,
+    crate::proc::EsbuildSection,
     crate::proc::checkpoint::WriteCheckpoint,
 };
 
@@ -36,14 +36,15 @@ pub fn process_script(proc: &mut Processor, cfg: &Cfg, js: bool) -> ProcessingRe
     proc.m(WhileNotSeq(&SCRIPT_END), Keep);
     // `process_tag` will require closing tag.
 
+    // TODO This is copied from style.rs.
     #[cfg(feature = "js-esbuild")]
     if js && cfg.minify_js {
-        let (wg, results) = proc.new_script_section();
+        let (wg, results) = proc.new_esbuild_section();
         let src = start.written_range(proc);
         unsafe {
             esbuild_rs::transform_direct_unmanaged(&proc[src], &TRANSFORM_OPTIONS.clone(), move |result| {
                 let mut guard = results.lock().unwrap();
-                guard.push(JsMinSection {
+                guard.push(EsbuildSection {
                     src,
                     result,
                 });

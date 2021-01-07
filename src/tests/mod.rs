@@ -28,6 +28,7 @@ fn _eval_error(src: &'static [u8], expected: ErrorType, cfg: &super::Cfg) -> () 
 fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
     _eval(src, expected, &super::Cfg {
         minify_js: false,
+        minify_css: false,
     });
 }
 
@@ -35,6 +36,7 @@ fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
 fn eval_error(src: &'static [u8], expected: ErrorType) -> () {
     _eval_error(src, expected, &super::Cfg {
         minify_js: false,
+        minify_css: false,
     });
 }
 
@@ -43,6 +45,16 @@ fn eval_error(src: &'static [u8], expected: ErrorType) -> () {
 fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
     _eval(src, expected, &super::Cfg {
         minify_js: true,
+        minify_css: false,
+    });
+}
+
+#[cfg(test)]
+#[cfg(feature = "js-esbuild")]
+fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
+    _eval(src, expected, &super::Cfg {
+        minify_js: false,
+        minify_css: true,
     });
 }
 
@@ -401,4 +413,10 @@ fn test_js_minification() {
         <script>let b = 2;</script>
     "#, b"<script>let a=1;</script><script>let b=2;</script>");
     eval_with_js_min(b"<scRIPt type=text/plain>   alert(1.00000);   </scripT>", b"<script type=text/plain>   alert(1.00000);   </script>");
+}
+
+#[cfg(feature = "js-esbuild")]
+#[test]
+fn test_css_minification() {
+    eval_with_css_min(b"<style>div { color: yellow }</style>", b"<style>div{color:#ff0}</style>");
 }

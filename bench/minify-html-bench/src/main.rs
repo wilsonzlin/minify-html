@@ -25,6 +25,7 @@ fn main() {
             let mut data = source.to_vec();
             in_place(&mut data, &Cfg {
                 minify_js: false,
+                minify_css: false,
             }).unwrap();
         };
         let elapsed = start.elapsed().as_secs_f64();

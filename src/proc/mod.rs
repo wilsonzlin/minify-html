@@ -52,7 +52,7 @@ pub enum MatchAction {
 }
 
 #[cfg(feature = "js-esbuild")]
-pub struct JsMinSection {
+pub struct EsbuildSection {
     pub src: ProcessorRange,
     pub result: TransformResult,
 }
@@ -65,9 +65,9 @@ pub struct Processor<'d> {
     // Index of the next unwritten space.
     write_next: usize,
     #[cfg(feature = "js-esbuild")]
-    script_wg: WaitGroup,
+    esbuild_wg: WaitGroup,
     #[cfg(feature = "js-esbuild")]
-    script_results: Arc<Mutex<Vec<JsMinSection>>>,
+    esbuild_results: Arc<Mutex<Vec<EsbuildSection>>>,
 }
 
 impl<'d> Index<ProcessorRange> for Processor<'d> {
@@ -97,9 +97,9 @@ impl<'d> Processor<'d> {
             read_next: 0,
             code,
             #[cfg(feature = "js-esbuild")]
-            script_wg: WaitGroup::new(),
+            esbuild_wg: WaitGroup::new(),
             #[cfg(feature = "js-esbuild")]
-            script_results: Arc::new(Mutex::new(Vec::new())),
+            esbuild_results: Arc::new(Mutex::new(Vec::new())),
         }
     }
 
@@ -353,8 +353,8 @@ impl<'d> Processor<'d> {
 
     #[cfg(feature = "js-esbuild")]
     #[inline(always)]
-    pub fn new_script_section(&self) -> (WaitGroup, Arc<Mutex<Vec<JsMinSection>>>) {
-        (self.script_wg.clone(), self.script_results.clone())
+    pub fn new_esbuild_section(&self) -> (WaitGroup, Arc<Mutex<Vec<EsbuildSection>>>) {
+        (self.esbuild_wg.clone(), self.esbuild_results.clone())
     }
 
     // Since we consume the Processor, we must provide a full Error with positions.
@@ -370,32 +370,32 @@ impl<'d> Processor<'d> {
     #[inline(always)]
     pub fn finish(self) -> Result<usize, Error> {
         debug_assert!(self.at_end());
-        self.script_wg.wait();
-        let mut results = Arc::try_unwrap(self.script_results)
-            .unwrap_or_else(|_| panic!("failed to acquire script results"))
+        self.esbuild_wg.wait();
+        let mut results = Arc::try_unwrap(self.esbuild_results)
+            .unwrap_or_else(|_| panic!("failed to acquire esbuild results"))
             .into_inner()
             .unwrap();
         results.sort_unstable_by_key(|r| r.src.start);
-        // As we write minified JS code for sections from left to right, we will be shifting code
-        // towards the left as previous source JS code sections shrink. We need to keep track of
+        // As we write minified JS/CSS code for sections from left to right, we will be shifting code
+        // towards the left as previous source JS/CSS code sections shrink. We need to keep track of
         // the write pointer after previous compaction.
         // If there are no script sections, then we get self.write_next which will be returned.
         let mut write_next = results.get(0).map_or(self.write_next, |r| r.src.start);
-        for (i, JsMinSection { result, src }) in results.iter().enumerate() {
-            // Resulting minified JS to write.
+        for (i, EsbuildSection { result, src }) in results.iter().enumerate() {
+            // Resulting minified JS/CSS to write.
             // TODO Verify.
             // TODO Rewrite these in esbuild fork so we don't have to do a memcpy and search+replace.
-            let min_js = result.js.as_str().trim().replace("</script", "<\\/script");
-            let js_len = if min_js.len() < src.len() {
-                self.code[write_next..write_next + min_js.len()].copy_from_slice(min_js.as_bytes());
-                min_js.len()
+            let min_code = result.code.as_str().trim().replace("</script", "<\\/script");
+            let min_len = if min_code.len() < src.len() {
+                self.code[write_next..write_next + min_code.len()].copy_from_slice(min_code.as_bytes());
+                min_code.len()
             } else {
                 // If minified result is actually longer than source, then write source instead.
                 // NOTE: We still need to write source as previous iterations may have shifted code down.
                 self.code.copy_within(src.start..src.end, write_next);
                 src.len()
             };
-            let write_end = write_next + js_len;
+            let write_end = write_next + min_len;
             let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src.start);
             self.code.copy_within(src.end..next_start, write_end);
             write_next = write_end + (next_start - src.end);

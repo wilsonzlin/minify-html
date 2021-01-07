@@ -5,6 +5,7 @@
     "benchmark": "2.1.4",
     "chart.js": "^2.9.3",
     "chartjs-node": "^1.7.1",
+    "clean-css": "^4.2.3",
     "esbuild": "^0.6.5",
     "html-minifier": "4.0.0",
     "minimize": "2.2.0",

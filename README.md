@@ -6,7 +6,7 @@ Comes with native bindings to Node.js, Python, Java, and Ruby.
 - Advanced minification strategy beats other minifiers with only one pass.
 - Uses zero memory allocations, SIMD searching, direct tries, and lookup tables.
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
-- Natively binds to [esbuild](https://github.com/wilsonzlin/esbuild-rs) for super fast JS minification.
+- Natively binds to [esbuild](https://github.com/wilsonzlin/esbuild-rs) for super fast JS and CSS minification.
 
 ## Performance
 
@@ -46,9 +46,9 @@ minify-html --src /path/to/src.html --out /path/to/output.min.html
 minify-html = { version = "0.3.12", features = ["js-esbuild"] }
 ```
 
-Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS minifier](https://github.com/wilsonzlin/esbuild-rs).
+Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS and CSS minifier](https://github.com/wilsonzlin/esbuild-rs).
 
-If the `js-esbuild` feature is not enabled, `cfg.minify_js` will have no effect.
+If the `js-esbuild` feature is not enabled, `cfg.minify_js` and `cfg.minify_css` will have no effect.
 
 ##### Use
 
@@ -82,7 +82,7 @@ yarn add @minify-html/js
 ```js
 const minifyHtml = require("@minify-html/js");
 
-const cfg = minifyHtml.createConfiguration({ minifyJs: false });
+const cfg = minifyHtml.createConfiguration({ minifyJs: false, minifyCss: false });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 
 // Alternatively, minify in place to avoid copying.
@@ -97,7 +97,7 @@ minify-html is also available for TypeScript:
 import * as minifyHtml from "@minify-html/js";
 import * as fs from "fs";
 
-const cfg = minifyHtml.createConfiguration({ minifyJs: false });
+const cfg = minifyHtml.createConfiguration({ minifyJs: false, minifyCss: false });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 // Or alternatively:
 const minified = minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
@@ -133,6 +133,7 @@ import in.wilsonl.minifyhtml.SyntaxException;
 
 Configuration cfg = new Configuration.Builder()
     .setMinifyJs(false)
+    .setMinifyCss(false)
     .build();
 
 try {
@@ -165,7 +166,7 @@ Add the PyPI project as a dependency and install it using `pip` or `pipenv`.
 import minify_html
 
 try:
-    minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=False)
+    minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=False, minify_css=False)
 except SyntaxError as e:
     print(e)
 ```
@@ -188,7 +189,7 @@ Add the library as a dependency to `Gemfile` or `*.gemspec`.
 ```ruby
 require 'minify_html'
 
-print MinifyHtml.minify("<p>  Hello, world!  </p>", { :minify_js => false })
+print MinifyHtml.minify("<p>  Hello, world!  </p>", { :minify_js => false, :minify_css => false })
 ```
 
 </details>

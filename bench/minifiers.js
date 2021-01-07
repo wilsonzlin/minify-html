@@ -1,9 +1,10 @@
+const cleanCss = require('clean-css');
 const esbuild = require('esbuild');
 const htmlMinifier = require('html-minifier');
 const minifyHtml = require('@minify-html/js');
 const minimize = require('minimize');
 
-const testJsMinification = process.env.HTML_ONLY !== '1';
+const testJsAndCssMinification = process.env.HTML_ONLY !== '1';
 
 const jsMime = new Set([
   undefined,
@@ -46,7 +47,10 @@ class EsbuildAsync {
   }
 }
 
-const minifyHtmlCfg = minifyHtml.createConfiguration({minifyJs: testJsMinification});
+const minifyHtmlCfg = minifyHtml.createConfiguration({
+  minifyJs: testJsAndCssMinification,
+  minifyCss: testJsAndCssMinification,
+});
 const htmlMinifierCfg = {
   collapseBooleanAttributes: true,
   collapseInlineTagWhitespace: true,
@@ -59,7 +63,8 @@ const htmlMinifierCfg = {
   decodeEntities: true,
   ignoreCustomComments: [],
   ignoreCustomFragments: [/<\?[\s\S]*?\?>/],
-  // This will be set to a function if `testJsMinification` is true.
+  // These will be set later if `testJsAndCssMinification` is true.
+  minifyCSS: false,
   minifyJS: false,
   processConditionalComments: true,
   removeAttributeQuotes: true,
@@ -75,32 +80,42 @@ const htmlMinifierCfg = {
 
 module.exports = {
   '@minify-html/js': (_, buffer) => minifyHtml.minifyInPlace(Buffer.from(buffer), minifyHtmlCfg),
-  'html-minifier': testJsMinification
+  'html-minifier': testJsAndCssMinification
     ? async (content) => {
       const js = new EsbuildAsync();
       const res = htmlMinifier.minify(content, {
         ...htmlMinifierCfg,
+        minifyCSS: true,
         minifyJS: code => js.queue(code),
       });
       return js.finalise(res);
     }
     : content => htmlMinifier.minify(content, htmlMinifierCfg),
-  'minimize': testJsMinification
+  'minimize': testJsAndCssMinification
     ? async (content) => {
       const js = new EsbuildAsync();
-      const plugins = [];
-      if (testJsMinification) {
-        plugins.push({
-          id: 'esbuild',
-          element: (node, next) => {
-            if (node.type === 'text' && node.parent && node.parent.type === 'script' && jsMime.has(node.parent.attribs.type)) {
-              node.data = js.queue(node.data);
-            }
-            next();
+      const css = new cleanCss({
+        level: 2,
+        inline: false,
+        rebase: false,
+      });
+      const res = new minimize({
+        plugins: [
+          {
+            id: 'esbuild',
+            element: (node, next) => {
+              if (node.type === 'text' && node.parent) {
+                if (node.parent.type === 'script' && jsMime.has(node.parent.attribs.type)) {
+                  node.data = js.queue(node.data);
+                } else if (node.parent.type === 'style') {
+                  node.data = css.minify(node.data).styles;
+                }
+              }
+              next();
+            },
           },
-        });
-      }
-      const res = new minimize({plugins}).parse(content);
+        ],
+      }).parse(content);
       return js.finalise(res);
     }
     : content => new minimize().parse(content),

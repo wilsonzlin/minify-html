@@ -1,7 +1,7 @@
 {
   "name": "@minify-html/js",
   "version": "0.3.12",
-  "description": "Fast and smart HTML + JS minifier",
+  "description": "Extremely fast and smart HTML + JS + CSS minifier",
   "main": "index.node",
   "types": "index.d.ts",
   "files": [
