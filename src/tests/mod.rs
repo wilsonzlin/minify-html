@@ -413,6 +413,12 @@ fn test_js_minification() {
         <script>let b = 2;</script>
     "#, b"<script>let a=1;</script><script>let b=2;</script>");
     eval_with_js_min(b"<scRIPt type=text/plain>   alert(1.00000);   </scripT>", b"<script type=text/plain>   alert(1.00000);   </script>");
+    eval_with_js_min(br#"
+        <script>
+            // This is a comment.
+            let a = 1;
+        </script>
+    "#, b"<script>let a=1;</script>");
 }
 
 #[cfg(feature = "js-esbuild")]
