@@ -99,6 +99,7 @@ pub fn process_tag(
     cfg: &Cfg,
     ns: Namespace,
     parent: Option<ProcessorRange>,
+    descendant_of_pre: bool,
     mut prev_sibling_closing_tag: MaybeClosingTag,
     source_tag_name: ProcessorRange,
 ) -> ProcessingResult<MaybeClosingTag> {
@@ -212,7 +213,7 @@ pub fn process_tag(
         TagType::ScriptData => process_script(proc, cfg, false)?,
         TagType::ScriptJs => process_script(proc, cfg, true)?,
         TagType::Style => process_style(proc, cfg)?,
-        _ => closing_tag_omitted = process_content(proc, cfg, child_ns, Some(tag_name))?.closing_tag_omitted,
+        _ => closing_tag_omitted = process_content(proc, cfg, child_ns, Some(tag_name), descendant_of_pre)?.closing_tag_omitted,
     };
 
     let can_omit_closing_tag = can_omit_as_last_node(proc, parent, source_tag_name);

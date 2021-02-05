@@ -166,9 +166,13 @@ lazy_static! {
 }
 
 #[inline(always)]
-pub fn get_whitespace_minification_for_tag(tag_name: Option<&[u8]>) -> &'static WhitespaceMinification {
-    match tag_name {
-        Some(n) => TAG_WHITESPACE_MINIFICATION.get(n).unwrap_or(&DEFAULT),
-        None => ROOT,
+pub fn get_whitespace_minification_for_tag(tag_name: Option<&[u8]>, descendant_of_pre: bool) -> &'static WhitespaceMinification {
+    if descendant_of_pre {
+        WHITESPACE_SENSITIVE
+    } else {
+        match tag_name {
+            Some(n) => TAG_WHITESPACE_MINIFICATION.get(n).unwrap_or(&DEFAULT),
+            None => ROOT,
+        }
     }
 }

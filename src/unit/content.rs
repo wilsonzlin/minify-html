@@ -51,8 +51,8 @@ pub struct ProcessedContent {
     pub closing_tag_omitted: bool,
 }
 
-pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>) -> ProcessingResult<ProcessedContent> {
-    let &WhitespaceMinification { collapse, destroy_whole, trim } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]));
+pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>, descendant_of_pre: bool) -> ProcessingResult<ProcessedContent> {
+    let &WhitespaceMinification { collapse, destroy_whole, trim } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]), descendant_of_pre);
 
     let handle_ws = collapse || destroy_whole || trim;
 
@@ -134,7 +134,7 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
                     });
                 };
 
-                let new_closing_tag = process_tag(proc, cfg, ns, parent, prev_sibling_closing_tag, tag_name)?;
+                let new_closing_tag = process_tag(proc, cfg, ns, parent, ns == Namespace::Html && parent.filter(|p| &proc[*p] == b"pre").is_some(), prev_sibling_closing_tag, tag_name)?;
                 prev_sibling_closing_tag.replace(new_closing_tag);
             }
             ContentType::End => {

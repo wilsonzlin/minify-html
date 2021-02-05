@@ -40,7 +40,7 @@ mod unit;
 /// ```
 pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, Error> {
     let mut proc = Processor::new(code);
-    process_content(&mut proc, cfg, Namespace::Html, None)
+    process_content(&mut proc, cfg, Namespace::Html, None, false)
         .and_then(|_| if !proc.at_end() {
             Err(ErrorType::UnexpectedClosingTag)
         } else {
