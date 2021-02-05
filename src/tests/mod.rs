@@ -93,6 +93,19 @@ fn test_no_whitespace_minification() {
     eval(b"<pre>  <span>  1    2   </span>  </pre>", b"<pre>  <span>  1    2   </span>  </pre>");
     eval(b"<pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>", b"<pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>");
     eval(b"<div>  <pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>  </div>", b"<div><pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre></div>");
+    eval(br#"<pre><code>fn main() {
+  println!("Hello, world!");
+  <span>loop {
+    println!("Hello, world!");
+  }</span>
+}
+</code></pre>"#, br#"<pre><code>fn main() {
+  println!("Hello, world!");
+  <span>loop {
+    println!("Hello, world!");
+  }</span>
+}
+</code></pre>"#);
 }
 
 #[test]

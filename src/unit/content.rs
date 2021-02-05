@@ -134,7 +134,7 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
                     });
                 };
 
-                let new_closing_tag = process_tag(proc, cfg, ns, parent, ns == Namespace::Html && parent.filter(|p| &proc[*p] == b"pre").is_some(), prev_sibling_closing_tag, tag_name)?;
+                let new_closing_tag = process_tag(proc, cfg, ns, parent, descendant_of_pre || ns == Namespace::Html && parent.filter(|p| &proc[*p] == b"pre").is_some(), prev_sibling_closing_tag, tag_name)?;
                 prev_sibling_closing_tag.replace(new_closing_tag);
             }
             ContentType::End => {
