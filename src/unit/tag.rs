@@ -216,7 +216,7 @@ pub fn process_tag(
         _ => closing_tag_omitted = process_content(proc, cfg, child_ns, Some(tag_name), descendant_of_pre)?.closing_tag_omitted,
     };
 
-    let can_omit_closing_tag = can_omit_as_last_node(proc, parent, source_tag_name);
+    let can_omit_closing_tag = can_omit_as_last_node(proc, parent, tag_name);
     if closing_tag_omitted || proc.at_end() && can_omit_closing_tag {
         return Ok(MaybeClosingTag(None));
     };

@@ -64,6 +64,9 @@ fn maybe_mark_indicator(line: &mut Vec<u8>, marker: u8, maybe_pos: isize, lower:
 
 // Pass -1 for read_pos or write_pos to prevent them from being represented.
 pub fn debug_repr(code: &[u8], read_pos: isize, write_pos: isize) -> String {
+    let only_one_pos = read_pos == -1 || write_pos == -1;
+    let read_marker = if only_one_pos { b'^' } else { b'R' };
+    let write_marker = if only_one_pos { b'^' } else { b'W' };
     let mut lines = Vec::<(isize, String)>::new();
     let mut cur_pos = 0;
     for (line_no, line) in code.split(|c| *c == b'\n').enumerate() {
@@ -75,8 +78,8 @@ pub fn debug_repr(code: &[u8], read_pos: isize, write_pos: isize) -> String {
 
         // Rust does lazy allocation by default, so this is not wasteful.
         let mut indicator_line = Vec::new();
-        maybe_mark_indicator(&mut indicator_line, b'W', write_pos, cur_pos, new_pos);
-        let marked_read = maybe_mark_indicator(&mut indicator_line, b'R', read_pos, cur_pos, new_pos);
+        maybe_mark_indicator(&mut indicator_line, write_marker, write_pos, cur_pos, new_pos);
+        let marked_read = maybe_mark_indicator(&mut indicator_line, read_marker, read_pos, cur_pos, new_pos);
         if !indicator_line.is_empty() {
             lines.push((-1, unsafe { String::from_utf8_unchecked(indicator_line) }));
         };

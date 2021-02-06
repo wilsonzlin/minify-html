@@ -109,6 +109,16 @@ fn test_no_whitespace_minification() {
 }
 
 #[test]
+fn test_root_closing_tag_omission() {
+    eval(b"<html></html>", b"<html>");
+    eval(b"<html>\n</html>", b"<html>");
+    eval(b" <html>\n</html>", b"<html>");
+    eval(b"<html>", b"<html>");
+    eval(b" <html>\n", b"<html>");
+    eval(b" <!doctype html> <html>\n", b"<!doctype html><html>");
+}
+
+#[test]
 fn test_self_closing_svg_tag_whitespace_removal() {
     eval(b"<svg><path d=a /></svg>", b"<svg><path d=a /></svg>");
     eval(b"<svg><path d=a/ /></svg>", b"<svg><path d=a/ /></svg>");
