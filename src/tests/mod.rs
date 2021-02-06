@@ -109,13 +109,11 @@ fn test_no_whitespace_minification() {
 }
 
 #[test]
-fn test_root_closing_tag_omission() {
-    eval(b"<html></html>", b"<html>");
-    eval(b"<html>\n</html>", b"<html>");
-    eval(b" <html>\n</html>", b"<html>");
+fn test_parsing_omitted_closing_tag() {
     eval(b"<html>", b"<html>");
     eval(b" <html>\n", b"<html>");
     eval(b" <!doctype html> <html>\n", b"<!doctype html><html>");
+    eval(b"<!doctype html><html><div> <p>Foo</div></html>", b"<!doctype html><html><div><p>Foo</div>");
 }
 
 #[test]
