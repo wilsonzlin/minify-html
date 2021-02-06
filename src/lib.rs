@@ -180,7 +180,7 @@ pub fn copy(code: &[u8], cfg: &Cfg) -> Result<Vec<u8>, Error> {
 ///         assert_eq!(message, "Unexpected closing tag.");
 ///         assert_eq!(code_context, concat!(
 ///             "1|<p></div>\n",
-///             ">|   R \n",
+///             ">|   ^ \n",
 ///         ));
 ///     }
 /// };
