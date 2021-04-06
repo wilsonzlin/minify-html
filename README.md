@@ -196,6 +196,8 @@ print MinifyHtml.minify("<p>  Hello, world!  </p>", { :minify_js => false, :mini
 
 ## Minification
 
+Note that many of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification.
+
 ### Whitespace
 
 minify-html has advanced context-aware whitespace minification that does things such as:
