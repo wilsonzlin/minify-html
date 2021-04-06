@@ -9,11 +9,12 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        feature: [core, js]
         os: [macos-11.0, ubuntu-latest, windows-latest]
         python: [3.7, 3.8, 3.9]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
       - name: Set up Python
@@ -44,7 +45,9 @@ jobs:
 
       - name: Build native module
         working-directory: ./python
-        run: cargo build --release
+        run: |
+          cp Cargo.${{ matrix.feature }}.toml Cargo.toml
+          cargo build --release
 
       - name: Install Python build tools (macOS)
         if: runner.os == 'macOS'

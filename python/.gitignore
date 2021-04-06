@@ -1,4 +1,5 @@
 /Cargo.lock
+/Cargo.toml
 /target/
 
 __pycache__/

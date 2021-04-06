@@ -69,7 +69,7 @@ cmd('git', 'pull');
 cmd('bash', './prebuild.sh');
 cmd('cargo', 'test', '--features', 'js-esbuild');
 
-for (const f of ['Cargo.toml', 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.toml', 'ruby/Cargo.toml']) {
+for (const f of ['Cargo.toml', 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.core.toml', 'python/Cargo.js.toml', 'ruby/Cargo.toml']) {
   replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
 }
 
