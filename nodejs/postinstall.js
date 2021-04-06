@@ -36,9 +36,9 @@ const downloadNativeBinary = async () => {
     let binary;
     try {
       binary = await fetch(
-        `https://wilsonl.in/minify-html/bin/nodejs/${
-          pkg.version
-        }/${pkg.name.split("/")[1]}/${binaryName}.node.gz`
+        `https://wilsonl.in/minify-html/bin/nodejs/${pkg.version}/${
+          pkg.name.split("/")[1]
+        }/${binaryName}.node.gz`
       );
     } catch (e) {
       if (e instanceof StatusError && attempt < MAX_DOWNLOAD_ATTEMPTS) {

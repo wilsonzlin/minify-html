@@ -6,8 +6,7 @@ const common = {
   types: "index.d.ts",
   files: ["postinstall.js", "index.d.ts"],
   scripts: {
-    build:
-      "node buildnative.js && node-gyp build && shx mv build/Release/index.node index.node",
+    build: "node-gyp build && shx mv build/Release/index.node index.node",
     clean:
       "cd native && cargo clean && cd .. && node-gyp clean && node-gyp configure && shx rm -f index.node",
     postinstall: "node postinstall.js",
