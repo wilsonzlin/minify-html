@@ -11,8 +11,8 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [macos-11.0, ubuntu-latest, windows-latest]
         feature: [core, js]
+        os: [macos-11.0, ubuntu-latest, windows-latest]
         include:
           - os: macos-11.0
             ARCH: macos-x86_64
@@ -73,6 +73,9 @@ jobs:
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
           b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/index.node.gz "minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ matrix.feature }}/$binary_name.node.gz"
   package:
+    strategy:
+      matrix:
+        feature: [core, js]
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -93,6 +96,7 @@ jobs:
           //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
           EOF
           cp ../README.md .
+          node package.json.gen.js ${{ matrix.feature }}
           if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
             npm publish --access public
           fi
