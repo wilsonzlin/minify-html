@@ -58,7 +58,7 @@ jobs:
         working-directory: ./nodejs
         shell: bash
         run: |
-          node buildnative.js ${{ matrix.feature }}
+          node package.json.gen.js ${{ matrix.feature }}
           npm install
           npm run build
           node compress.js
