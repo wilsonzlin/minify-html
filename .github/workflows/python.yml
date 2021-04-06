@@ -51,10 +51,10 @@ jobs:
 
       - name: Install Python build tools (macOS)
         if: runner.os == 'macOS'
-        run: sudo pip install --upgrade maturin setuptools wheel twine
+        run: sudo pip install --upgrade maturin==0.9.4 setuptools wheel twine
       - name: Install Python build tools (Linux, Windows)
         if: runner.os != 'macOS'
-        run: pip install --upgrade maturin setuptools wheel twine
+        run: pip install --upgrade maturin==0.9.4 setuptools wheel twine
 
       - name: Pack and publish package
         shell: bash
