@@ -46,7 +46,9 @@ jobs:
 
       - name: Set up Node.js module
         working-directory: ./nodejs
-        run: npm install
+        run: |
+          node package.json.gen.js js
+          npm install
 
       - name: Build bench
         working-directory: ./bench
