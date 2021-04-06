@@ -2,5 +2,6 @@
 /index.node
 /native/Cargo.lock
 /native/target
-node_modules/
 /package-lock.json
+/package.json
+node_modules/

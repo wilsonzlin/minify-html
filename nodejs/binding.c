@@ -85,27 +85,19 @@ napi_value node_method_create_configuration(napi_env env, napi_callback_info inf
   napi_value obj_arg = argv[0];
 
   // Get `minifyJs` property.
+  bool minify_js = false;
   napi_value minify_js_value;
-  if (napi_get_named_property(env, obj_arg, "minifyJs", &minify_js_value) != napi_ok) {
-    assert_ok(napi_throw_type_error(env, NULL, "Failed to get minifyJs property"));
-    return undefined;
-  }
-  bool minify_js;
-  if (napi_get_value_bool(env, minify_js_value, &minify_js) != napi_ok) {
-    assert_ok(napi_throw_type_error(env, NULL, "Failed to get minifyJs boolean property"));
-    return undefined;
+  if (napi_get_named_property(env, obj_arg, "minifyJs", &minify_js_value) == napi_ok) {
+    // It's OK if this fails.
+    napi_get_value_bool(env, minify_js_value, &minify_js);
   }
 
   // Get `minifyCss` property.
+  bool minify_css = false;
   napi_value minify_css_value;
-  if (napi_get_named_property(env, obj_arg, "minifyCss", &minify_css_value) != napi_ok) {
-    assert_ok(napi_throw_type_error(env, NULL, "Failed to get minifyCss property"));
-    return undefined;
-  }
-  bool minify_css;
-  if (napi_get_value_bool(env, minify_css_value, &minify_css) != napi_ok) {
-    assert_ok(napi_throw_type_error(env, NULL, "Failed to get minifyCss boolean property"));
-    return undefined;
+  if (napi_get_named_property(env, obj_arg, "minifyCss", &minify_css_value) == napi_ok) {
+    // It's OK if this fails.
+    napi_get_value_bool(env, minify_css_value, &minify_css);
   }
 
   Cfg const* cfg = ffi_create_cfg(minify_js, minify_css);
