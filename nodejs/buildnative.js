@@ -1,4 +1,5 @@
 const cp = require("child_process");
+const path = require("path");
 const pkg = require("./package.json");
 
 cp.spawnSync(
@@ -6,7 +7,7 @@ cp.spawnSync(
   [
     "build",
     "--manifest-path",
-    "native/Cargo.toml",
+    path.join(__dirname, "native", "Cargo.toml"),
     "--release",
     "--features",
     pkg.name.split("/")[1],
