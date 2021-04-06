@@ -12,15 +12,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [macos-11.0, ubuntu-18.04, windows-2019]
         include:
-          - os: macos-latest
+          - os: macos-11.0
             ARCH: macos-x86_64
             FILE: 'libminify_html_java.dylib'
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             ARCH: linux-x86_64
             FILE: 'libminify_html_java.so'
-          - os: windows-latest
+          - os: windows-2019
             ARCH: windows-x86_64
             FILE: 'minify_html_java.dll'
     steps:
@@ -56,7 +56,7 @@ jobs:
           name: ${{ matrix.ARCH }}
           path: ./java/target/rust/release/${{ matrix.FILE }}
   package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs: build
     steps:
       - uses: actions/checkout@v1

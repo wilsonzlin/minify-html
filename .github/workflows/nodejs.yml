@@ -12,13 +12,13 @@ jobs:
     strategy:
       matrix:
         feature: [core, js]
-        os: [macos-11.0, ubuntu-latest, windows-latest]
+        os: [macos-11.0, ubuntu-18.04, windows-2019]
         include:
           - os: macos-11.0
             ARCH: macos-x86_64
-          - os: ubuntu-latest
+          - os: ubuntu-18.04
             ARCH: linux-x86_64
-          - os: windows-latest
+          - os: windows-2019
             ARCH: windows-x86_64
     runs-on: ${{ matrix.os }}
     steps:
@@ -76,7 +76,7 @@ jobs:
     strategy:
       matrix:
         feature: [core, js]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs: build
     steps:
       - uses: actions/checkout@v1

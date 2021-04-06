@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         feature: [core, js]
-        os: [macos-11.0, ubuntu-latest, windows-latest]
+        os: [macos-11.0, ubuntu-20.04, windows-2019]
         python: [3.7, 3.8, 3.9]
     runs-on: ${{ matrix.os }}
     steps:
