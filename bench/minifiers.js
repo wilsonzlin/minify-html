@@ -1,4 +1,3 @@
-const cleanCss = require('clean-css');
 const esbuild = require('esbuild');
 const htmlMinifier = require('html-minifier');
 const minifyHtml = require('@minify-html/js');
@@ -31,8 +30,9 @@ class EsbuildAsync {
     this.promises = [];
   }
 
-  queue (code) {
+  queue (code, type) {
     const id = this.promises.push(esbuild.transform(code, {
+      loader: type,
       minify: true,
       minifyWhitespace: true,
       minifyIdentifiers: true,
@@ -85,8 +85,8 @@ module.exports = {
       const js = new EsbuildAsync();
       const res = htmlMinifier.minify(content, {
         ...htmlMinifierCfg,
-        minifyCSS: true,
-        minifyJS: code => js.queue(code),
+        minifyCSS: code => js.queue(code, 'css'),
+        minifyJS: code => js.queue(code, 'js'),
       });
       return js.finalise(res);
     }
@@ -94,11 +94,6 @@ module.exports = {
   'minimize': testJsAndCssMinification
     ? async (content) => {
       const js = new EsbuildAsync();
-      const css = new cleanCss({
-        level: 2,
-        inline: false,
-        rebase: false,
-      });
       const res = new minimize({
         plugins: [
           {
@@ -106,9 +101,9 @@ module.exports = {
             element: (node, next) => {
               if (node.type === 'text' && node.parent) {
                 if (node.parent.type === 'script' && jsMime.has(node.parent.attribs.type)) {
-                  node.data = js.queue(node.data);
+                  node.data = js.queue(node.data, 'js');
                 } else if (node.parent.type === 'style') {
-                  node.data = css.minify(node.data).styles;
+                  node.data = js.queue(node.data, 'css');
                 }
               }
               next();
