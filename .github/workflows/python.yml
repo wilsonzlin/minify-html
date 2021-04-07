@@ -46,7 +46,7 @@ jobs:
       - name: Build native module
         working-directory: ./python
         run: |
-          cp Cargo.${{ matrix.feature }}.toml Cargo.toml
+          python prepare.py ${{ matrix.feature }}
           cargo build --release
 
       - name: Install Python build tools (macOS)

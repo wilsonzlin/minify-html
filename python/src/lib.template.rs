@@ -17,7 +17,7 @@ fn minify(code: String, minify_js: bool, minify_css: bool) -> PyResult<String> {
 }
 
 #[pymodule]
-fn minify_html(_py: Python, m: &PyModule) -> PyResult<()> {
+fn REPLACE_WITH_MODULE_NAME(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(minify))?;
 
     Ok(())
