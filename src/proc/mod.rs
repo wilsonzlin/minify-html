@@ -384,8 +384,8 @@ impl<'d> Processor<'d> {
         for (i, EsbuildSection { result, src }) in results.iter().enumerate() {
             // Resulting minified JS/CSS to write.
             // TODO Verify.
-            // TODO Rewrite these in esbuild fork so we don't have to do a memcpy and search+replace.
-            let min_code = result.code.as_str().trim().replace("</script", "<\\/script");
+            // TODO Handle potential `</script>` in output code, which could be in string (e.g. orig. "</" + "script>"), comment, or expression (e.g. orig. `a < /script>/.exec(b)?.length`).
+            let min_code = result.code.as_str().trim();
             let min_len = if min_code.len() < src.len() {
                 self.code[write_next..write_next + min_code.len()].copy_from_slice(min_code.as_bytes());
                 min_code.len()
