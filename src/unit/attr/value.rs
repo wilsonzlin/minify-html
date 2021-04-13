@@ -1,17 +1,15 @@
-use lazy_static::lazy_static;
 use std::collections::HashMap;
+
+use lazy_static::lazy_static;
+
 use crate::err::ProcessingResult;
+use crate::gen::codepoints::{ATTR_QUOTE, DIGIT, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, WHITESPACE};
 use crate::proc::checkpoint::WriteCheckpoint;
+use crate::proc::entity::maybe_normalise_entity;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
-use crate::proc::entity::maybe_normalise_entity;
-use crate::gen::codepoints::{DIGIT, WHITESPACE, ATTR_QUOTE, DOUBLE_QUOTE, SINGLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR};
-
-fn entity_requires_semicolon(next_char: u8) -> bool {
-    DIGIT[next_char] || next_char == b';'
-}
 
 // See comment in `process_attr_value` for full description of why these intentionally do not have semicolons.
 lazy_static! {
@@ -40,6 +38,7 @@ enum CharType {
     Whitespace(u8),
     SingleQuote,
     DoubleQuote,
+    Gt,
 }
 
 impl CharType {
@@ -47,6 +46,7 @@ impl CharType {
         match c {
             b'"' => CharType::DoubleQuote,
             b'\'' => CharType::SingleQuote,
+            b'>' => CharType::Gt,
             c => if WHITESPACE[c] { CharType::Whitespace(c) } else { CharType::Normal(c) },
         }
     }
@@ -80,6 +80,9 @@ struct Metrics {
     count_single_quotation: usize,
     // Some encoded double quotes may require semicolons, so lengths vary.
     total_single_quote_encoded_length: usize,
+    count_gt: usize,
+    // Some encoded `>` may require semicolons, so lengths vary.
+    total_gt_encoded_length: usize,
     // NOTE: This count is amount after any trimming and collapsing of whitespace.
     count_whitespace: usize,
     // Since whitespace characters have varying encoded lengths, also calculate total length if all of them had to be encoded.
@@ -92,23 +95,19 @@ impl Metrics {
         // Costs for encoding first and last characters if going with unquoted attribute value.
         // NOTE: Don't need to consider whitespace for either as all whitespace will be encoded and counts as part of `total_whitespace_encoded_length`.
         // Need to consider semicolon in any encoded entity in case first char is followed by semicolon or digit.
-        let first_char_encoded_semicolon = raw_val.get(1).filter(|&&c| entity_requires_semicolon(c)).is_some() as usize;
+        let first_char_encoded_semicolon = raw_val.get(1).filter(|&&c| DIGIT[c] || c == b';').is_some() as usize;
         let first_char_encoding_cost = match raw_val.first() {
             Some(b'"') => ENCODED[&b'"'].len() + first_char_encoded_semicolon,
             Some(b'\'') => ENCODED[&b'\''].len() + first_char_encoded_semicolon,
             _ => 0,
         };
-        let last_char_encoding_cost = match raw_val.last() {
-            Some(b'>') => ENCODED[&b'>'].len(),
-            _ => 0,
-        };
 
         // Replace all whitespace chars with encoded versions.
         let raw_len = raw_val.len() - self.count_whitespace + self.total_whitespace_encoded_length;
+        // Replace all `>` chars with encoded versions.
+        let raw_len = raw_len - self.count_gt + self.total_gt_encoded_length;
         // Replace first char with encoded version if necessary.
         let raw_len = raw_len - (first_char_encoding_cost > 0) as usize + first_char_encoding_cost;
-        // Replace last char with encoded version if necessary.
-        let raw_len = raw_len - (last_char_encoding_cost > 0) as usize + last_char_encoding_cost;
         raw_len
     }
 
@@ -204,6 +203,8 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         total_double_quote_encoded_length: 0,
         count_single_quotation: 0,
         total_single_quote_encoded_length: 0,
+        count_gt: 0,
+        total_gt_encoded_length: 0,
         count_whitespace: 0,
         total_whitespace_encoded_length: 0,
     };
@@ -259,16 +260,20 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
                 metrics.count_double_quotation += 1;
                 metrics.total_double_quote_encoded_length += ENCODED[&b'"'].len();
             }
+            CharType::Gt => {
+                proc.write(b'>');
+                metrics.count_gt += 1;
+                metrics.total_gt_encoded_length += ENCODED[&b'>'].len();
+            }
             CharType::Normal(c) => {
                 proc.write(c);
                 // If the last char written was a quote or whitespace, and this character would require the previous character, encoded as an entity, to have a semicolon, then add one more character to encoded length in metrics.
-                if entity_requires_semicolon(c) {
-                    match last_char_type {
-                        CharType::SingleQuote => metrics.total_single_quote_encoded_length += 1,
-                        CharType::DoubleQuote => metrics.total_double_quote_encoded_length += 1,
-                        CharType::Whitespace(_) => metrics.total_whitespace_encoded_length += 1,
-                        _ => {}
-                    };
+                match last_char_type {
+                    CharType::SingleQuote if c == b';' || DIGIT[c] => metrics.total_single_quote_encoded_length += 1,
+                    CharType::DoubleQuote if c == b';' || DIGIT[c] => metrics.total_double_quote_encoded_length += 1,
+                    CharType::Gt if c == b';' => metrics.total_gt_encoded_length += 1,
+                    CharType::Whitespace(_) if c == b';' || DIGIT[c] => metrics.total_whitespace_encoded_length += 1,
+                    _ => {}
                 };
             }
         };
@@ -312,7 +317,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         let c = optimal_slice[read];
         // TODO Comment is_first and is_last could both be true,
         let should_encode = match (c, optimal_delimiter, is_first, is_last) {
-            (b'>', DelimiterType::Unquoted, _, true) => true,
+            (b'>', DelimiterType::Unquoted, _, _) => true,
             (c, DelimiterType::Unquoted, true, _) => ATTR_QUOTE[c],
             (c, DelimiterType::Unquoted, _, _) => WHITESPACE[c],
             (b'\'', DelimiterType::Single, _, _) => true,
@@ -323,13 +328,16 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
             // Encoded entities do not have a semicolon by default, and a `;` is only added if required to prevent any following characters from unintentionally being part of an entity.
             // This is done to save space, and to prevent overwriting source code. Why? Because it's possible for a entity without a semicolon to decode to a character that would later be encoded. If the output entity always has a semicolon, this might cause written code to be longer than source code.
             // For example, consider `<div class=&gt>`.
-            // Numeric entities simply need to check if the following character is a base 10 digit.
+            // Numeric entities also need to check if the following character is a base 10 digit.
             // The last character encoded as an entity never needs a semicolon:
             // - For quoted values, it's always a quote and will never be encoded.
             // - Unquoted attribute values are only ever followed by a space (written by minify-html) or the opening tag delimiter ('>').
-            // '&gt' is always safe as it's only used for any '>' as the last character of an unquoted value.
-            let should_add_semicolon = !is_last && entity_requires_semicolon(optimal_slice[write + 1]);
+            let next_char = optimal_slice[write + 1];
             let encoded = ENCODED[&c];
+            let should_add_semicolon = !is_last && (
+                next_char == b';'
+                    || DIGIT[next_char] && encoded.last().unwrap().is_ascii_digit()
+            );
             // Make extra room for entity (only have room for 1 char currently).
             write -= encoded.len() + should_add_semicolon as usize - 1;
             optimal_slice[write..write + encoded.len()].copy_from_slice(encoded);

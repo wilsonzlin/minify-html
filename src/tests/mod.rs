@@ -179,6 +179,8 @@ fn test_removal_of_optional_closing_p_tag() {
 fn test_attr_double_quoted_value_minification() {
     eval(b"<a b=\" hello \"></a>", b"<a b=\" hello \"></a>");
     eval(b"<a b=' hello '></a>", b"<a b=\" hello \"></a>");
+    eval(br#"<a b="/>aaaa"></a>"#, br#"<a b="/>aaaa"></a>"#);
+    eval(br#"<a b="</a>a"></a>"#, br#"<a b="</a>a"></a>"#);
     eval(b"<a b=&#x20;hello&#x20;></a>", b"<a b=\" hello \"></a>");
     eval(b"<a b=&#x20hello&#x20></a>", b"<a b=\" hello \"></a>");
 }
@@ -187,6 +189,7 @@ fn test_attr_double_quoted_value_minification() {
 fn test_attr_single_quoted_value_minification() {
     eval(b"<a b=\"&quot;hello\"></a>", b"<a b='\"hello'></a>");
     eval(b"<a b='\"hello'></a>", b"<a b='\"hello'></a>");
+    eval(b"<a b='/>a'></a>", b"<a b=\"/>a\"></a>");
     eval(b"<a b=&#x20;he&quotllo&#x20;></a>", b"<a b=' he\"llo '></a>");
 }
 
@@ -194,6 +197,8 @@ fn test_attr_single_quoted_value_minification() {
 fn test_attr_unquoted_value_minification() {
     eval(b"<a b=\"hello\"></a>", b"<a b=hello></a>");
     eval(b"<a b='hello'></a>", b"<a b=hello></a>");
+    eval(b"<a b=/&gt></a>", br#"<a b="/>"></a>"#);
+    eval(b"<a b=/&gt&lta></a>", br#"<a b="/><a"></a>"#);
     eval(b"<a b=hello></a>", b"<a b=hello></a>");
 }
 

@@ -398,7 +398,7 @@ Any entities in attribute values are decoded, and then the shortest representati
 
 - Double quoted, with any `"` encoded.
 - Single quoted, with any `'` encoded.
-- Unquoted, with `"`/`'` first character (if applicable), `>` last character (if applicable), and any whitespace encoded.
+- Unquoted, with `"`/`'` first character (if applicable), any `>`, and any whitespace encoded.
 
 `class` and `d` attributes have their whitespace (after any decoding) trimmed and collapsed.
 
