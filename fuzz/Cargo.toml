@@ -6,5 +6,5 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-afl = "0.5.2"
+afl = "0.10.0"
 minify-html = { path = ".." }

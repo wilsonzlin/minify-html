@@ -38,7 +38,8 @@ jobs:
       - name: Run fuzz
         working-directory: ./fuzz
         run: |
-          cargo afl fuzz -i in -o out target/debug/minify-html-fuzz-target &> output.log
+          echo core | sudo tee /proc/sys/kernel/core_pattern
+          cargo afl fuzz -i in -o out target/debug/minify-html-fuzz-target
 
       - name: Set up Backblaze B2 CLI
         uses: wilsonzlin/setup-b2@v3
@@ -47,5 +48,4 @@ jobs:
         working-directory: ./fuzz
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./output.log minify-html/fuzz/$(git rev-parse --short HEAD)/output-$(date +%s).log
-          b2 sync ./out/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/fuzz/$(git rev-parse --short HEAD)/out/
+          b2 sync ./out/creashes/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/fuzz/$(git rev-parse --short HEAD)/crashes/
