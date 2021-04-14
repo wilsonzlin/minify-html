@@ -454,7 +454,9 @@ fn test_js_minification() {
 #[test]
 fn test_js_minification_unintentional_closing_tag() {
     eval_with_js_min(br#"<script>let a = "</" + "script>";</script>"#, br#"<script>let a="<\/script>";</script>"#);
+    eval_with_js_min(br#"<script>let a = "</S" + "cRiPT>";</script>"#, br#"<script>let a="<\/ScRiPT>";</script>"#);
     eval_with_js_min(br#"<script>let a = "\u003c/script>";</script>"#, br#"<script>let a="<\/script>";</script>"#);
+    eval_with_js_min(br#"<script>let a = "\u003c/scrIPt>";</script>"#, br#"<script>let a="<\/scrIPt>";</script>"#);
 }
 
 #[cfg(feature = "js-esbuild")]

@@ -8,7 +8,6 @@ use memchr::memchr;
 #[cfg(feature = "js-esbuild")]
 use {
     crossbeam::sync::WaitGroup,
-    esbuild_rs::TransformResult,
     std::sync::{Arc, Mutex},
 };
 
@@ -54,7 +53,7 @@ pub enum MatchAction {
 #[cfg(feature = "js-esbuild")]
 pub struct EsbuildSection {
     pub src: ProcessorRange,
-    pub result: TransformResult,
+    pub escaped: Vec<u8>,
 }
 
 // Processing state of a file. Single use only; create one per processing.
@@ -381,21 +380,10 @@ impl<'d> Processor<'d> {
         // the write pointer after previous compaction.
         // If there are no script sections, then we get self.write_next which will be returned.
         let mut write_next = results.get(0).map_or(self.write_next, |r| r.src.start);
-        for (i, EsbuildSection { result, src }) in results.iter().enumerate() {
+        for (i, EsbuildSection { escaped: min_code, src }) in results.iter().enumerate() {
             // Resulting minified JS/CSS to write.
-            // TODO Handle other forms:
-            // 1 < /script/.exec(a).length
-            // `  ${`  ${a</script/}  `}  `
-            // // </script>
-            // /* </script>
-            // Considerations:
-            // - Need to parse strings (e.g. "", '', ``) so syntax within strings aren't mistakenly interpreted as code.
-            // - Need to be able to parse regex literals to determine string delimiters aren't actually characters in the regex.
-            // - Determining whether a slash is division or regex requires a full-blown JS parser to handle all cases (this is a well-known JS parsing problem).
-            // - `/</script` or `/</ script` are not valid JS so don't need to be handled.
-            let min_code = result.code.as_str().trim().replace("</script", "<\\/script");
             let min_len = if min_code.len() < src.len() {
-                self.code[write_next..write_next + min_code.len()].copy_from_slice(min_code.as_bytes());
+                self.code[write_next..write_next + min_code.len()].copy_from_slice(min_code);
                 min_code.len()
             } else {
                 // If minified result is actually longer than source, then write source instead.
