@@ -3,20 +3,20 @@ use std::fmt::{Debug, Formatter};
 use std::ops::{Index, IndexMut};
 
 use aho_corasick::AhoCorasick;
-
-use crate::err::{Error, ErrorType, ProcessingResult, debug_repr};
-use crate::proc::MatchAction::*;
-use crate::proc::MatchMode::*;
-use crate::proc::range::ProcessorRange;
 use memchr::memchr;
-use crate::gen::codepoints::Lookup;
 
 #[cfg(feature = "js-esbuild")]
 use {
-    std::sync::{Arc, Mutex},
     crossbeam::sync::WaitGroup,
     esbuild_rs::TransformResult,
+    std::sync::{Arc, Mutex},
 };
+
+use crate::err::{debug_repr, Error, ErrorType, ProcessingResult};
+use crate::gen::codepoints::Lookup;
+use crate::proc::MatchAction::*;
+use crate::proc::MatchMode::*;
+use crate::proc::range::ProcessorRange;
 
 pub mod checkpoint;
 pub mod entity;
@@ -383,9 +383,17 @@ impl<'d> Processor<'d> {
         let mut write_next = results.get(0).map_or(self.write_next, |r| r.src.start);
         for (i, EsbuildSection { result, src }) in results.iter().enumerate() {
             // Resulting minified JS/CSS to write.
-            // TODO Verify.
-            // TODO Handle potential `</script>` in output code, which could be in string (e.g. orig. "</" + "script>"), comment, or expression (e.g. orig. `a < /script>/.exec(b)?.length`).
-            let min_code = result.code.as_str().trim();
+            // TODO Handle other forms:
+            // 1 < /script/.exec(a).length
+            // `  ${`  ${a</script/}  `}  `
+            // // </script>
+            // /* </script>
+            // Considerations:
+            // - Need to parse strings (e.g. "", '', ``) so syntax within strings aren't mistakenly interpreted as code.
+            // - Need to be able to parse regex literals to determine string delimiters aren't actually characters in the regex.
+            // - Determining whether a slash is division or regex requires a full-blown JS parser to handle all cases (this is a well-known JS parsing problem).
+            // - `/</script` or `/</ script` are not valid JS so don't need to be handled.
+            let min_code = result.code.as_str().trim().replace("</script", "<\\/script");
             let min_len = if min_code.len() < src.len() {
                 self.code[write_next..write_next + min_code.len()].copy_from_slice(min_code.as_bytes());
                 min_code.len()

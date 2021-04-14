@@ -43,7 +43,7 @@ class EsbuildAsync {
 
   async finalise (html) {
     const jsTransformResults = await Promise.all(this.promises);
-    return html.replace(/_____ESBUILD_ASYNC_PLACEHOLDER_([0-9]+)_____/g, (_, id) => jsTransformResults[id].code);
+    return html.replace(/_____ESBUILD_ASYNC_PLACEHOLDER_([0-9]+)_____/g, (_, id) => jsTransformResults[id].code.replace(/<\/script/g, "<\\/script"));
   }
 }
 

@@ -1,17 +1,19 @@
 use aho_corasick::{AhoCorasick, AhoCorasickBuilder};
 use lazy_static::lazy_static;
+
+#[cfg(feature = "js-esbuild")]
+use {
+    crate::proc::checkpoint::WriteCheckpoint,
+    crate::proc::EsbuildSection,
+    esbuild_rs::{TransformOptions, TransformOptionsBuilder},
+    std::sync::Arc,
+};
+
 use crate::cfg::Cfg;
 use crate::err::ProcessingResult;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
-#[cfg(feature = "js-esbuild")]
-use {
-    std::sync::Arc,
-    esbuild_rs::{TransformOptionsBuilder, TransformOptions},
-    crate::proc::EsbuildSection,
-    crate::proc::checkpoint::WriteCheckpoint,
-};
 
 #[cfg(feature = "js-esbuild")]
 lazy_static! {
@@ -31,7 +33,7 @@ lazy_static! {
 #[inline(always)]
 pub fn process_script(proc: &mut Processor, cfg: &Cfg, js: bool) -> ProcessingResult<()> {
     #[cfg(feature = "js-esbuild")]
-    let start = WriteCheckpoint::new(proc);
+        let start = WriteCheckpoint::new(proc);
     proc.require_not_at_end()?;
     proc.m(WhileNotSeq(&SCRIPT_END), Keep);
     // `process_tag` will require closing tag.
