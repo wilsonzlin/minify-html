@@ -1,0 +1,50 @@
+name: Fuzz
+
+on:
+  create:
+    tags:
+      - 'v*'
+  repository_dispatch:
+    types: [wf-fuzz]
+
+jobs:
+  bench:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.14.0'
+
+      - name: Run prebuild steps
+        shell: bash
+        run: bash ./prebuild.sh
+
+      - name: Build fuzz target
+        working-directory: ./fuzz
+        run: |
+          cargo afl build
+
+      - name: Run fuzz
+        working-directory: ./fuzz
+        run: |
+          cargo afl fuzz -i in -o out target/debug/minify-html-fuzz-target &> output.log
+
+      - name: Set up Backblaze B2 CLI
+        uses: wilsonzlin/setup-b2@v3
+
+      - name: Upload log and output files
+        working-directory: ./fuzz
+        run: |
+          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
+          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./output.log minify-html/fuzz/$(git rev-parse --short HEAD)/output-$(date +%s).log
+          b2 sync ./out/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/fuzz/$(git rev-parse --short HEAD)/out/

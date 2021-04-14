@@ -30,11 +30,6 @@ jobs:
         with:
           go-version: '^1.14.0'
 
-      - name: Set up Node.js for generating code
-        uses: actions/setup-node@master
-        with:
-          node-version: 14.x
-
       - name: Run prebuild steps
         shell: bash
         run: bash ./prebuild.sh
