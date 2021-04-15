@@ -39,7 +39,8 @@ jobs:
         working-directory: ./fuzz
         run: |
           echo core | sudo tee /proc/sys/kernel/core_pattern
-          cargo afl fuzz -i in -o out target/debug/minify-html-fuzz-target
+          # Hide verbose stdout (not stderr) logging.
+          timeout 5h cargo afl fuzz -i in -o out target/debug/minify-html-fuzz-target > /dev/null || true
 
       - name: Set up Backblaze B2 CLI
         uses: wilsonzlin/setup-b2@v3
