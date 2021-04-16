@@ -214,7 +214,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
 
     let mut last_char_type: CharType = CharType::Start;
     loop {
-        let char_type = if maybe_normalise_entity(proc) && proc.peek(0).filter(|c| delim_lookup[*c]).is_some() {
+        let char_type = if maybe_normalise_entity(proc, true) && proc.peek(0).filter(|c| delim_lookup[*c]).is_some() {
             CharType::from_char(proc.skip()?)
         } else if proc.m(IsInLookup(delim_lookup), MatchOnly).nonempty() {
             // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.

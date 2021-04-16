@@ -49,5 +49,7 @@ jobs:
       - name: Upload log and output files
         working-directory: ./fuzz
         run: |
-          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 sync --allowEmptySource ./out/crashes/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/fuzz/$(git rev-parse --short HEAD)/crashes/
+          if [ -d ./out/crashes ]; then
+            b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
+            b2 sync --allowEmptySource ./out/crashes/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/fuzz/$(git rev-parse --short HEAD)/crashes/
+          fi

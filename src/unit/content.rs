@@ -83,7 +83,7 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
             _ => {}
         };
 
-        maybe_normalise_entity(proc);
+        maybe_normalise_entity(proc, false);
 
         if handle_ws {
             if next_content_type == ContentType::Text && proc.m(IsInLookup(WHITESPACE), Discard).nonempty() {

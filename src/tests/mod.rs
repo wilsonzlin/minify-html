@@ -190,7 +190,7 @@ fn test_attr_single_quoted_value_minification() {
     eval(b"<a b=\"&quot;hello\"></a>", b"<a b='\"hello'></a>");
     eval(b"<a b='\"hello'></a>", b"<a b='\"hello'></a>");
     eval(b"<a b='/>a'></a>", b"<a b=\"/>a\"></a>");
-    eval(b"<a b=&#x20;he&quotllo&#x20;></a>", b"<a b=' he\"llo '></a>");
+    eval(b"<a b=&#x20;he&quot;llo&#x20;></a>", b"<a b=' he\"llo '></a>");
 }
 
 #[test]
@@ -198,7 +198,7 @@ fn test_attr_unquoted_value_minification() {
     eval(b"<a b=\"hello\"></a>", b"<a b=hello></a>");
     eval(b"<a b='hello'></a>", b"<a b=hello></a>");
     eval(b"<a b=/&gt></a>", br#"<a b="/>"></a>"#);
-    eval(b"<a b=/&gt&lta></a>", br#"<a b="/><a"></a>"#);
+    eval(b"<a b=/&gt&lt;a></a>", br#"<a b="/><a"></a>"#);
     eval(b"<a b=hello></a>", b"<a b=hello></a>");
 }
 
@@ -343,6 +343,12 @@ fn test_named_entity_decoding() {
     eval(b"&nLt;", b"&nLt;");
     eval(b"&nLt;abc", b"&nLt;abc");
     eval(b"&nGt;", b"&nGt;");
+
+    // Named entities not ending with ';' in attr values are not decoded if immediately
+    // followed by an alphanumeric or `=` character. (See parser for more details.)
+    eval(br#"<a href="exam ple?&gta=5"></a>"#, br#"<a href="exam ple?&gta=5"></a>"#);
+    eval(br#"<a href="exam ple?&gt=5"></a>"#, br#"<a href="exam ple?&gt=5"></a>"#);
+    eval(br#"<a href="exam ple?&gt~5"></a>"#, br#"<a href="exam ple?>~5"></a>"#);
 }
 
 #[test]

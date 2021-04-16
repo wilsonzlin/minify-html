@@ -13,11 +13,12 @@
 // - For a numeric entity, browsers actually consume an unlimited amount of digits, but decode to 0xFFFD if not a valid
 //   Unicode Scalar Value.
 
+use std::char::from_u32;
+
+use crate::gen::codepoints::{ALPHANUMERIC_OR_EQUALS, DIGIT, HEX_DIGIT, Lookup, LOWER_HEX_ALPHA, UPPER_HEX_ALPHA};
 use crate::gen::entities::{ENTITY, EntityType};
 use crate::pattern::TrieNodeMatch;
-use std::char::from_u32;
 use crate::proc::Processor;
-use crate::gen::codepoints::{DIGIT, HEX_DIGIT, LOWER_HEX_ALPHA, UPPER_HEX_ALPHA, Lookup};
 
 enum Parsed {
     // This includes numeric entities that were invalid and decoded to 0xFFFD.
@@ -26,11 +27,13 @@ enum Parsed {
         write_len: usize,
     },
     // Some entities are shorter than their decoded UTF-8 sequence. As such, we leave them encoded.
+    // Also, named entities that don't end in ';' but are followed by an alphanumeric or `=` char
+    // in attribute values are also not decoded due to the spec. (See parser below for more details.)
     LeftEncoded,
     // This is for any entity-like sequence that couldn't match the `ENTITY` trie.
     Invalid {
         len: usize,
-    }
+    },
 }
 
 #[inline(always)]
@@ -71,7 +74,7 @@ fn parse_numeric_entity(code: &mut [u8], read_start: usize, prefix_len: usize, w
 
 // Parse the entity and write its decoded value at {@param write_pos}.
 // If malformed, returns the longest matching entity prefix length, and does not write/decode anything.
-fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> Parsed {
+fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize, in_attr_val: bool) -> Parsed {
     match ENTITY.longest_matching_prefix(&code[read_pos..]) {
         TrieNodeMatch::Found { len: match_len, value } => match value {
             EntityType::Dec => parse_numeric_entity(
@@ -100,7 +103,9 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> Parsed {
                 6,
             ),
             EntityType::Named(decoded) => {
-                if decoded[0] == b'&' && decoded.len() > 1 {
+                // https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state.
+                if decoded[0] == b'&' && decoded.len() > 1
+                    || in_attr_val && *code.get(read_pos + match_len - 1).unwrap() != b';' && code.get(read_pos + match_len).filter(|c| ALPHANUMERIC_OR_EQUALS[**c]).is_some() {
                     Parsed::LeftEncoded
                 } else {
                     code[write_pos..write_pos + decoded.len()].copy_from_slice(decoded);
@@ -120,7 +125,7 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize) -> Parsed {
 
 // Normalise entity such that "&lt; hello" becomes "___< hello".
 // For something like "&a&#109;&#112; hello", it becomes "_______&ampamp hello".
-pub fn maybe_normalise_entity(proc: &mut Processor) -> bool {
+pub fn maybe_normalise_entity(proc: &mut Processor, in_attr_val: bool) -> bool {
     if proc.peek(0).filter(|c| *c == b'&').is_none() {
         return false;
     };
@@ -138,7 +143,7 @@ pub fn maybe_normalise_entity(proc: &mut Processor) -> bool {
             None => break,
             Some(b'&') => {
                 // Decode before checking to see if it continues current entity.
-                let (read_len, write_len) = match parse_entity(proc.code, read_next, write_next) {
+                let (read_len, write_len) = match parse_entity(proc.code, read_next, write_next, in_attr_val) {
                     Parsed::LeftEncoded => {
                         // Don't mistake an intentionally undecoded entity for an unintentional entity.
                         break;

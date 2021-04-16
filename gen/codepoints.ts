@@ -21,6 +21,7 @@ const UPPER_ALPHA = rangeInclusive(c('A'), c('Z'));
 const LOWER_ALPHA = rangeInclusive(c('a'), c('z'));
 const ALPHA = [...UPPER_ALPHA, ...LOWER_ALPHA];
 const ALPHANUMERIC = [...DIGIT, ...ALPHA];
+const ALPHANUMERIC_OR_EQUALS = [...DIGIT, ...ALPHA, c('=')];
 
 // Characters allowed in an attribute name.
 // NOTE: Unicode noncharacters not tested.
@@ -64,6 +65,7 @@ impl std::ops::Index<u8> for Lookup {
   UPPER_HEX_ALPHA,
   LOWER_HEX_ALPHA,
   HEX_DIGIT,
+  ALPHANUMERIC_OR_EQUALS,
 
   ATTR_NAME_CHAR,
 
