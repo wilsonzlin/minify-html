@@ -195,6 +195,8 @@ fn test_attr_single_quoted_value_minification() {
 
 #[test]
 fn test_attr_unquoted_value_minification() {
+    eval(b"<a b==></a>", b"<a b==></a>");
+    eval(b"<a b=`'\"<<==/`/></a>", b"<a b=`'\"<<==/`/></a>");
     eval(b"<a b=\"hello\"></a>", b"<a b=hello></a>");
     eval(b"<a b='hello'></a>", b"<a b=hello></a>");
     eval(b"<a b=/&gt></a>", br#"<a b="/>"></a>"#);
@@ -290,13 +292,6 @@ fn test_space_between_attrs_minification() {
     eval(b"<div a=\"1\" b=\" \"></div>", b"<div a=1 b=\" \"></div>");
     eval(b"<div a='1' b=\" \"></div>", b"<div a=1 b=\" \"></div>");
     eval(b"<div a=\"a\"b=\"b\"></div>", b"<div a=a b=b></div>");
-}
-
-#[test]
-fn test_attr_value_backtick() {
-    // The backtick is not interpreted as a quote; as such, the "b" attribute is interpreted as having an empty value,
-    // and the "`hello`" attribute is a boolean attribute (also empty value).
-    eval(b"<a b=`hello`></a>", b"<a b `hello`></a>");
 }
 
 #[test]
