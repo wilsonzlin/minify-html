@@ -1,8 +1,8 @@
 import {EOL} from 'os';
 
 const customCharClasses = {
-  tagName: '[a-zA-Z-]',
-  attrName: '[a-zA-Z-]',
+  tagName: '[a-zA-Z-_]',
+  attrName: '[a-zA-Z-_]',
 };
 
 const whitespaceClass = [' ', '\r', '\n', '\t', '\v', '\f'];

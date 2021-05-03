@@ -39,7 +39,7 @@ const NOT_UNQUOTED_ATTR_VAL_CHAR = [...WHITESPACE, c('"'), c('\''), c('='), c('<
 
 // Tag names may only use ASCII alphanumerics. However, some people also use `:` and `-`.
 // See https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name for spec.
-const TAG_NAME_CHAR = [...ALPHANUMERIC, c(':'), c('-')];
+const TAG_NAME_CHAR = [...ALPHANUMERIC, c(':'), c('-'), c('_')];
 
 const output = `
 pub struct Lookup {
