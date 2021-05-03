@@ -90,7 +90,6 @@ lazy_static! {
         followed_by.insert(b"aside");
         followed_by.insert(b"blockquote");
         followed_by.insert(b"details");
-        followed_by.insert(b"div");
         followed_by.insert(b"dl");
         followed_by.insert(b"fieldset");
         followed_by.insert(b"figcaption");
