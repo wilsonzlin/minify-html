@@ -34,7 +34,7 @@ impl ProcessorRange {
     }
 
     #[inline(always)]
-    pub fn require(&self, reason: &'static str) -> ProcessingResult<Self> {
+    pub fn require(&self, reason: String) -> ProcessingResult<Self> {
         if self.empty() {
             Err(ErrorType::NotFound(reason))
         } else {

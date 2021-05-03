@@ -6,6 +6,6 @@ use crate::proc::Processor;
 #[inline(always)]
 pub fn process_bang(proc: &mut Processor) -> ProcessingResult<()> {
     proc.m(IsSeq(b"<!"), Keep).expect();
-    proc.m(ThroughChar(b'>'), Keep).require("bang close")?;
+    proc.m(ThroughChar(b'>'), Keep).require("bang close".to_string())?;
     Ok(())
 }

@@ -156,7 +156,7 @@ pub fn skip_attr_value(proc: &mut Processor) -> ProcessingResult<()> {
     };
     proc.m(WhileNotInLookup(delim_pred), Discard);
     if let Some(c) = src_delimiter {
-        proc.m(IsChar(c), Discard).require("attribute value closing quote")?;
+        proc.m(IsChar(c), Discard).require("attribute value closing quote".to_string())?;
     };
     Ok(())
 }
@@ -275,7 +275,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         last_char_type = char_type;
     };
     if let Some(c) = src_delimiter {
-        proc.m(IsChar(c), Discard).require("attribute value closing quote")?;
+        proc.m(IsChar(c), Discard).require("attribute value closing quote".to_string())?;
     };
     let minimum_value = start.written_range(proc);
     // If minimum value is empty, return now before trying to read out of range later.

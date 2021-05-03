@@ -12,6 +12,6 @@ lazy_static! {
 #[inline(always)]
 pub fn process_comment(proc: &mut Processor) -> ProcessingResult<()> {
     proc.m(IsSeq(b"<!--"), Discard).expect();
-    proc.m(ThroughSeq(&COMMENT_END), Discard).require("comment end")?;
+    proc.m(ThroughSeq(&COMMENT_END), Discard).require("comment end".to_string())?;
     Ok(())
 }

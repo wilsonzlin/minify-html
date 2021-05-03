@@ -12,6 +12,6 @@ lazy_static! {
 #[inline(always)]
 pub fn process_instruction(proc: &mut Processor) -> ProcessingResult<()> {
     proc.m(IsSeq(b"<?"), Keep).expect();
-    proc.m(ThroughSeq(&INSTRUCTION_END), Keep).require("instruction end")?;
+    proc.m(ThroughSeq(&INSTRUCTION_END), Keep).require("instruction end".to_string())?;
     Ok(())
 }

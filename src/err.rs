@@ -2,7 +2,7 @@
 #[derive(Debug, Eq, PartialEq)]
 pub enum ErrorType {
     ClosingTagMismatch { expected: String, got: String },
-    NotFound(&'static str),
+    NotFound(String),
     UnexpectedEnd,
     UnexpectedClosingTag,
 }

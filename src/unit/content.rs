@@ -122,7 +122,7 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
             ContentType::Tag => {
                 let tag_checkpoint = ReadCheckpoint::new(proc);
                 proc.skip_expect();
-                let tag_name = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("tag name")?;
+                let tag_name = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("tag name".to_string())?;
                 proc.make_lowercase(tag_name);
 
                 if can_omit_as_before(proc, parent, tag_name) {
