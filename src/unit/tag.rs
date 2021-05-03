@@ -199,6 +199,31 @@ pub fn process_tag(
                 proc.write_slice(b"/>");
             };
         };
+
+        if is_void_tag {
+            let closing_tag_checkpoint = ReadCheckpoint::new(proc);
+            let closing_tag = match proc.m(IsSeq(b"</"), Discard).require("closing tag name".to_string()) {
+                Ok(_) => 
+                    match proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name".to_string()){
+                        Ok(tag) => Some(tag),
+                        Err(_) => None,
+                    }
+                ,
+                Err(_) => None
+            };
+
+            return match closing_tag {
+                Some(tag) => {
+                    proc.make_lowercase(tag);
+                    if proc[tag] != proc[tag_name] {
+                        closing_tag_checkpoint.restore(proc);
+                    }
+                    Ok(MaybeClosingTag(None))
+                },
+                None => Ok(MaybeClosingTag(None))
+            }
+            
+        }
         return Ok(MaybeClosingTag(None));
     };
 
@@ -222,8 +247,8 @@ pub fn process_tag(
     };
 
     let closing_tag_checkpoint = ReadCheckpoint::new(proc);
-    proc.m(IsSeq(b"</"), Discard).require("closing tag")?;
-    let closing_tag = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name")?;
+    proc.m(IsSeq(b"</"), Discard).require("closing tag".to_string())?;
+    let closing_tag = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name".to_string())?;
     proc.make_lowercase(closing_tag);
 
     // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.
@@ -232,14 +257,18 @@ pub fn process_tag(
             closing_tag_checkpoint.restore(proc);
             Ok(MaybeClosingTag(None))
         } else {
+            //Ok(MaybeClosingTag(None))
             Err(ErrorType::ClosingTagMismatch {
                 expected: unsafe { String::from_utf8_unchecked(proc[tag_name].to_vec()) },
                 got: unsafe { String::from_utf8_unchecked(proc[closing_tag].to_vec()) },
             })
         }
     } else {
+        let tagname = unsafe { String::from_utf8_unchecked(proc[tag_name].to_vec()) };
+        let closingtagname = unsafe { String::from_utf8_unchecked(proc[closing_tag].to_vec()) };
+        let formated = format!("closing tag end {} {} ", tagname, closingtagname    );
         proc.m(WhileInLookup(WHITESPACE), Discard);
-        proc.m(IsChar(b'>'), Discard).require("closing tag end")?;
+        proc.m(IsChar(b'>'), Discard).require(formated)?;
         Ok(MaybeClosingTag(Some(tag_name)))
     }
 }
