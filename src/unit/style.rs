@@ -8,7 +8,7 @@ use crate::proc::Processor;
 use {
     std::sync::Arc,
     esbuild_rs::{Loader, TransformOptionsBuilder, TransformOptions},
-    crate::proc::EsbuildSection,
+    crate::proc::{EsbuildSection, ResultType},
     crate::proc::checkpoint::WriteCheckpoint,
 };
 use crate::Cfg;
@@ -53,7 +53,7 @@ pub fn process_style(proc: &mut Processor, cfg: &Cfg, as_script: bool) -> Proces
                 let mut guard = results.lock().unwrap();
                 guard.push(EsbuildSection {
                     src,
-                    result,
+                    result: ResultType::EsBuildResult(result),
                 });
                 // Drop Arc reference and Mutex guard before marking task as complete as it's possible proc::finish
                 // waiting on WaitGroup will resume before Arc/Mutex is dropped after exiting this function.

@@ -52,9 +52,15 @@ pub enum MatchAction {
 }
 
 #[cfg(feature = "js-esbuild")]
+pub enum ResultType{
+    EsBuildResult(TransformResult),
+    StringResult(String),
+}
+
+#[cfg(feature = "js-esbuild")]
 pub struct EsbuildSection {
     pub src: ProcessorRange,
-    pub result: TransformResult,
+    pub result: ResultType,
 }
 
 // Processing state of a file. Single use only; create one per processing.
@@ -385,7 +391,10 @@ impl<'d> Processor<'d> {
             // Resulting minified JS/CSS to write.
             // TODO Verify.
             // TODO Handle potential `</script>` in output code, which could be in string (e.g. orig. "</" + "script>"), comment, or expression (e.g. orig. `a < /script>/.exec(b)?.length`).
-            let min_code = result.code.as_str().trim();
+            let min_code = match result {
+                ResultType::EsBuildResult(es_result) => es_result.code.as_str().trim(),
+                ResultType::StringResult(string_result) => &string_result[..].trim()
+            };
             let min_len = if min_code.len() < src.len() {
                 self.code[write_next..write_next + min_code.len()].copy_from_slice(min_code.as_bytes());
                 min_code.len()
