@@ -27,14 +27,20 @@ lazy_static! {
 
 lazy_static! {
     static ref STYLE_END: AhoCorasick = AhoCorasickBuilder::new().ascii_case_insensitive(true).build(&["</style"]);
+    static ref SCRIPT_STYLE_END: AhoCorasick = AhoCorasickBuilder::new().ascii_case_insensitive(true).build(&["</script"]);
 }
 
 #[inline(always)]
-pub fn process_style(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
+pub fn process_style(proc: &mut Processor, cfg: &Cfg, as_script: bool) -> ProcessingResult<()> {
     #[cfg(feature = "js-esbuild")]
     let start = WriteCheckpoint::new(proc);
     proc.require_not_at_end()?;
-    proc.m(WhileNotSeq(&STYLE_END), Keep);
+
+    if as_script {
+        proc.m(WhileNotSeq( &SCRIPT_STYLE_END ), Keep);
+    } else {
+        proc.m(WhileNotSeq( &STYLE_END ), Keep);
+    }
     // `process_tag` will require closing tag.
 
     // TODO This is copied from script.rs.

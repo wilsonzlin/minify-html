@@ -36,14 +36,22 @@ lazy_static! {
         s.insert(b"text/livescript");
         s.insert(b"text/x-ecmascript");
         s.insert(b"text/x-javascript");
+        s.insert(b"text/rmscript");
         s
     };
+
+    pub static ref SCRIPTSTYLES_MIME_TYPES: HashSet<&'static [u8]> = {
+        let mut s = HashSet::<&'static [u8]>::new();
+        s.insert(b"text/rmstyle");
+        s
+    }; 
 }
 
 #[derive(Copy, Clone)]
 enum TagType {
     ScriptJs,
     ScriptData,
+    ScriptStyle,
     Style,
     Other,
 }
@@ -161,11 +169,22 @@ pub fn process_tag(
                 let script_tag_type_is_js = value
                     .filter(|v| !JAVASCRIPT_MIME_TYPES.contains(&proc[*v]))
                     .is_none();
+
                 if script_tag_type_is_js {
                     erase_attr = true;
                 } else {
                     // Tag does not contain JS, don't minify JS.
-                    tag_type = TagType::ScriptData;
+
+                    let script_tag_type_is_style = value
+                       .filter(|v| !SCRIPTSTYLES_MIME_TYPES.contains(&proc[*v]))
+                        .is_none();
+                    
+                    if script_tag_type_is_style {
+                        tag_type = TagType::ScriptStyle;
+                        erase_attr = false;
+                    } else {
+                        tag_type = TagType::ScriptData;
+                    }
                 };
             }
             (_, name) => {
@@ -237,7 +256,8 @@ pub fn process_tag(
     match tag_type {
         TagType::ScriptData => process_script(proc, cfg, false)?,
         TagType::ScriptJs => process_script(proc, cfg, true)?,
-        TagType::Style => process_style(proc, cfg)?,
+        TagType::ScriptStyle => process_style(proc, cfg, true)?,
+        TagType::Style => process_style(proc, cfg, false)?,
         _ => closing_tag_omitted = process_content(proc, cfg, child_ns, Some(tag_name), descendant_of_pre)?.closing_tag_omitted,
     };
 
