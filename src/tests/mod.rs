@@ -88,6 +88,7 @@ fn test_collapse_destroy_whole_and_trim_whitespace() {
 #[test]
 fn test_no_whitespace_minification() {
     eval(b"<pre>   \n&#32; \t   </pre>", b"<pre>   \n  \t   </pre>");
+    eval(b"<textarea>   \n&#32; \t   </textarea>", b"<textarea>   \n  \t   </textarea>");
     // Tag names should be case insensitive.
     eval(b"<pRe>   \n&#32; \t   </PRE>", b"<pre>   \n  \t   </pre>");
     eval(b"<pre>  <span>  1    2   </span>  </pre>", b"<pre>  <span>  1    2   </span>  </pre>");

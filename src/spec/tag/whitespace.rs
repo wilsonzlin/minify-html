@@ -71,7 +71,6 @@ lazy_static! {
         m.insert(b"option", CONTENT);
         m.insert(b"p", CONTENT);
         m.insert(b"summary", CONTENT);
-        m.insert(b"textarea", CONTENT);
         m.insert(b"video", CONTENT);
 
         // Content-first tags.
@@ -158,6 +157,7 @@ lazy_static! {
         m.insert(b"ul", LAYOUT);
 
         // Whitespace-sensitive tags.
+        m.insert(b"textarea", WHITESPACE_SENSITIVE);
         m.insert(b"code", WHITESPACE_SENSITIVE);
         m.insert(b"pre", WHITESPACE_SENSITIVE);
 
