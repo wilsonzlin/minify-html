@@ -5,6 +5,9 @@ const common = {
   main: "index.node",
   types: "index.d.ts",
   files: ["postinstall.js", "index.d.ts"],
+  bin: {
+    "minify-html": "cli"
+  },
   scripts: {
     build: "node-gyp build && shx mv build/Release/index.node index.node",
     clean:
