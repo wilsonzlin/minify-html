@@ -4,22 +4,14 @@ on:
   create:
     tags:
       - 'v*'
-  repository_dispatch:
-    types: [wf-nodejs]
+  workflow_dispatch:
 
 jobs:
   build:
     strategy:
       matrix:
         feature: [core, js]
-        os: [macos-11.0, ubuntu-18.04, windows-2019]
-        include:
-          - os: macos-11.0
-            ARCH: macos-x86_64
-          - os: ubuntu-18.04
-            ARCH: linux-x86_64
-          - os: windows-2019
-            ARCH: windows-x86_64
+        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v1
