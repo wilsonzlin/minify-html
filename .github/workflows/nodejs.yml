@@ -60,8 +60,9 @@ jobs:
         run: |
           binary_name="$(node -e 'console.log([process.platform, process.arch].join("__"))')"
           file=nodejs/index.node.gz
-          # Use Node.js as sha1sum might not exist on macOS or Windows.
+          # Use Node.js as sha1sum and/or curl might not exist on macOS or Windows.
           sha1="$(node -e "h=crypto.createHash('sha1'); h.update(fs.readFileSync('$file')); console.log(h.digest('hex'));")"
+          # Use upload proxy as b2 CLI isn't available on ARM64.
           url="https://b2-upload.wlin.workers.dev/${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ matrix.feature }}/$binary_name.node.gz?sha1=$sha1"
           node << EOD
           const fs = require("fs");
