@@ -70,11 +70,20 @@ jobs:
             method: "POST",
             auth: "${{ secrets.CICD_CLI_B2_KEY_ID }}:${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}",
           });
-          req.on("error", err => console.error(err));
+          req.on("error", err => {
+            console.error(err);
+            process.exitCode = 1;
+          });
           req.on("response", res => {
-            console.log(`Upload responded with ${res.statusCode}:`);
+            console.log("Upload responded with", res.statusCode);
+            if (res.statusCode < 200 || res.statusCode > 299) {
+              process.exitCode = 1;
+            }
             res.on("data", chunk => process.stdout.write(chunk));
-            res.on("error", err => console.log("\nEncountered error during response:", err));
+            res.on("error", err => {
+              console.log("\nEncountered error during response:", err);
+              process.exitCode = 1;
+            });
           });
           req.end(fs.readFileSync("$file"));
           EOD
