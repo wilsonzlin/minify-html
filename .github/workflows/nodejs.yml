@@ -55,15 +55,26 @@ jobs:
           npm run build
           node compress.js
 
-      - name: Set up Backblaze B2 CLI
-        uses: wilsonzlin/setup-b2@v3
-
       - name: Upload to B2
         shell: bash
         run: |
           binary_name="$(node -e 'console.log([process.platform, process.arch].join("__"))')"
-          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./nodejs/index.node.gz "minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ matrix.feature }}/$binary_name.node.gz"
+          file=nodejs/index.node.gz
+          # Use Node.js as sha1sum might not exist on macOS or Windows.
+          sha1="$(node -e "h=crypto.createHash('sha1'); h.update(fs.readFileSync('$file')); console.log(h.digest('hex'));")"
+          url="https://b2-upload.wlin.workers.dev/${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ matrix.feature }}/$binary_name.node.gz?sha1=$sha1"
+          node << EOD
+          const fs = require("fs");
+          const https = require("https");
+          const req = https.request("$url", {
+            method: "POST",
+            auth: "${{ secrets.CICD_CLI_B2_KEY_ID }}:${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}",
+          });
+          req.on("response", res => {
+            console.log(res.statusCode);
+          });
+          req.end(fs.readFileSync("$file"));
+          EOD
   package:
     strategy:
       matrix:
