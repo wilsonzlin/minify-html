@@ -1,59 +1,28 @@
-#[cfg(test)]
 fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
     let mut code = src.to_vec();
-    match super::with_friendly_error(&mut code, cfg) {
-        Ok(len) => {
-            assert_eq!(
-                std::str::from_utf8(&code[..len]).unwrap(),
-                std::str::from_utf8(expected).unwrap()
-            );
-        }
-        Err(super::FriendlyError {
-            code_context,
-            message,
-            ..
-        }) => {
-            println!("{}", message);
-            println!("{}", code_context);
-            assert!(false);
-        }
-    };
-}
-
-#[cfg(test)]
-fn _eval_error(src: &'static [u8], expected: ErrorType, cfg: &super::Cfg) -> () {
-    let mut code = src.to_vec();
+    let min = super::minify(&mut code, cfg);
     assert_eq!(
-        super::in_place(&mut code, cfg).unwrap_err().error_type,
-        expected
+        std::str::from_utf8(expected).unwrap(),
+        std::str::from_utf8(&min).unwrap()
     );
 }
 
-#[cfg(test)]
 fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
     _eval(
         src,
         expected,
         &super::Cfg {
-            minify_js: false,
             minify_css: false,
+            minify_js: false,
+            omit_closing_tags: true,
+            remove_bangs: true,
+            remove_comments: true,
+            remove_processing_instructions: true,
+            remove_spaces_between_attributes: true,
         },
     );
 }
 
-#[cfg(test)]
-fn eval_error(src: &'static [u8], expected: ErrorType) -> () {
-    _eval_error(
-        src,
-        expected,
-        &super::Cfg {
-            minify_js: false,
-            minify_css: false,
-        },
-    );
-}
-
-#[cfg(test)]
 #[cfg(feature = "js-esbuild")]
 fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
     _eval(
@@ -62,11 +31,15 @@ fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
         &super::Cfg {
             minify_js: true,
             minify_css: false,
+            omit_closing_tags: true,
+            remove_bangs: true,
+            remove_comments: true,
+            remove_processing_instructions: true,
+            remove_spaces_between_attributes: true,
         },
     );
 }
 
-#[cfg(test)]
 #[cfg(feature = "js-esbuild")]
 fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
     _eval(
@@ -75,6 +48,11 @@ fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
         &super::Cfg {
             minify_js: false,
             minify_css: true,
+            omit_closing_tags: true,
+            remove_bangs: true,
+            remove_comments: true,
+            remove_processing_instructions: true,
+            remove_spaces_between_attributes: true,
         },
     );
 }
@@ -183,35 +161,14 @@ fn test_parsing_with_omitted_tags() {
 
 #[test]
 fn test_unmatched_closing_tag() {
-    eval_error(b"Hello</p>Goodbye", ErrorType::UnexpectedClosingTag);
-    eval_error(b"Hello<br></br>Goodbye", ErrorType::UnexpectedClosingTag);
-    eval_error(
-        b"<div>Hello</p>Goodbye",
-        ErrorType::ClosingTagMismatch {
-            expected: "div".to_string(),
-            got: "p".to_string(),
-        },
-    );
-    eval_error(
-        b"<ul><li>a</p>",
-        ErrorType::ClosingTagMismatch {
-            expected: "ul".to_string(),
-            got: "p".to_string(),
-        },
-    );
-    eval_error(
-        b"<ul><li><rt>a</p>",
-        ErrorType::ClosingTagMismatch {
-            expected: "ul".to_string(),
-            got: "p".to_string(),
-        },
-    );
-    eval_error(
+    eval(b"Hello</p>Goodbye", b"Hello<p>Goodbye");
+    eval(b"Hello<br></br>Goodbye", b"Hello<br>Goodbye");
+    eval(b"<div>Hello</p>Goodbye", b"<div>Hello</p>Goodbye");
+    eval(b"<ul><li>a</p>", b"<ul><li>a<p>");
+    eval(b"<ul><li><rt>a</p>", b"<ul><li><rt>a<p>");
+    eval(
         b"<html><head><body><ul><li><rt>a</p>",
-        ErrorType::ClosingTagMismatch {
-            expected: "ul".to_string(),
-            got: "p".to_string(),
-        },
+        b"<html><head><body><ul><li><rt>a<p>",
     );
 }
 

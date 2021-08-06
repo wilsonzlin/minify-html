@@ -124,10 +124,6 @@ impl<'c> Code<'c> {
         last
     }
 
-    pub fn get(&self, i: usize) -> Option<u8> {
-        self.code.get(self.next + i).map(|&c| c)
-    }
-
     pub fn rem(&self) -> usize {
         self.code.len() - self.next
     }

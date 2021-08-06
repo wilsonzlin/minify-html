@@ -1,9 +1,8 @@
 use crate::ast::NodeData;
 use crate::parse::Code;
-use crate::Cfg;
 use memchr::memchr;
 
-pub fn parse_bang(cfg: &Cfg, code: &mut Code) -> NodeData {
+pub fn parse_bang(code: &mut Code) -> NodeData {
     debug_assert!(code.str().starts_with(b"<!"));
     code.shift(2);
     let (len, matched) = match memchr(b'>', code.str()) {

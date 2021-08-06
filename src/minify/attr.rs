@@ -104,7 +104,7 @@ lazy_static! {
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 pub enum AttrType {
-    None,
+    NoValue,
     Quoted,
     Unquoted,
 }
@@ -169,13 +169,13 @@ pub fn minify_attr_val(val: &[u8]) -> AttrValMinified {
         suffix: b"'",
     };
     let unquoted = {
-        let mut res = UNQUOTED_QUOTED_REPLACER.replace_all(val);
-        let first_char_encoded: &'static [u8] = match res.get(0) {
-            Some(b'"') => match res.get(1) {
+        let data = UNQUOTED_QUOTED_REPLACER.replace_all(val);
+        let first_char_encoded: &'static [u8] = match data.get(0) {
+            Some(b'"') => match data.get(1) {
                 Some(&s) if DIGIT[s] || s == b';' => b"&#34;",
                 _ => b"&#34",
             },
-            Some(b'\'') => match res.get(1) {
+            Some(b'\'') => match data.get(1) {
                 Some(&s) if DIGIT[s] || s == b';' => b"&#39;",
                 _ => b"&#39",
             },
@@ -185,7 +185,7 @@ pub fn minify_attr_val(val: &[u8]) -> AttrValMinified {
         AttrValMinified {
             typ: AttrType::Unquoted,
             prefix: b"",
-            data: res,
+            data,
             start,
             suffix: b"",
         }

@@ -3,13 +3,12 @@ use lazy_static::lazy_static;
 
 use crate::ast::NodeData;
 use crate::parse::Code;
-use crate::Cfg;
 
 lazy_static! {
     static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(&["?>"]);
 }
 
-pub fn parse_instruction(cfg: &Cfg, code: &mut Code) -> NodeData {
+pub fn parse_instruction(code: &mut Code) -> NodeData {
     debug_assert!(code.str().starts_with(b"<?"));
     code.shift(2);
     let (len, matched) = match INSTRUCTION_END.find(code.str()) {

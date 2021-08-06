@@ -12,6 +12,7 @@ mod minify;
 mod parse;
 mod pattern;
 mod spec;
+#[cfg(test)]
 mod tests;
 
 /// Copies a slice into a new Vec and minifies it, returning the Vec.
@@ -37,13 +38,7 @@ mod tests;
 /// ```
 pub fn minify(src: &[u8], cfg: &Cfg) -> Vec<u8> {
     let mut code = Code::new(src);
-    let parsed = parse_content(
-        cfg,
-        &mut code,
-        Namespace::Html,
-        EMPTY_TAG_NAME,
-        EMPTY_TAG_NAME,
-    );
+    let parsed = parse_content(&mut code, Namespace::Html, EMPTY_TAG_NAME, EMPTY_TAG_NAME);
     let mut out = Vec::with_capacity(src.len());
     minify_content(cfg, &mut out, false, EMPTY_TAG_NAME, parsed.children);
     out

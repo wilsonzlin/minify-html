@@ -1,20 +1,12 @@
 use std::collections::HashMap;
 
-use crate::ast::{ElementClosingTag, NodeData, ScriptOrStyleLang};
+use crate::ast::{ElementClosingTag, NodeData};
 use crate::cfg::Cfg;
-use crate::gen::codepoints::TAG_NAME_CHAR;
-use crate::minify::attr::{minify_attr_val, AttrType, AttrValMinified};
-use crate::minify::bang::minify_bang;
-use crate::minify::comment::minify_comment;
+use crate::minify::attr::{minify_attr_val, AttrType};
 use crate::minify::content::minify_content;
-use crate::minify::css::minify_css;
-use crate::minify::instruction::minify_instruction;
-use crate::minify::js::minify_js;
-use crate::pattern::Replacer;
 use crate::spec::entity::encode::encode_ampersands;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
-use crate::spec::tag::EMPTY_TAG_NAME;
 
 pub fn minify_element(
     cfg: &Cfg,
@@ -38,13 +30,15 @@ pub fn minify_element(
 
     out.push(b'<');
     out.extend_from_slice(tag_name);
-    let mut last_attr = AttrType::None;
+    let mut last_attr = AttrType::NoValue;
     for (name, value) in attributes {
-        if !cfg.remove_spaces_between_attributes || last_attr == AttrType::Unquoted {
+        if !cfg.remove_spaces_between_attributes || last_attr != AttrType::Quoted {
             out.push(b' ');
         };
         out.extend_from_slice(&name);
-        if !value.is_empty() {
+        if value.is_empty() {
+            last_attr = AttrType::NoValue;
+        } else {
             let min = minify_attr_val(&encode_ampersands(&value, true));
             out.push(b'=');
             min.out(out);

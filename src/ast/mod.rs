@@ -49,12 +49,3 @@ pub enum NodeData {
         value: Vec<u8>,
     },
 }
-
-impl NodeData {
-    pub fn is_element(&self) -> bool {
-        match self {
-            NodeData::Element { .. } => true,
-            _ => false,
-        }
-    }
-}

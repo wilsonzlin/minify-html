@@ -6,7 +6,6 @@ use crate::ast::NodeData;
 use crate::parse::content::ParsedContent;
 use crate::parse::Code;
 use crate::spec::entity::decode::decode_entities;
-use crate::Cfg;
 
 lazy_static! {
     static ref END: AhoCorasick = AhoCorasickBuilder::new()
@@ -14,7 +13,7 @@ lazy_static! {
         .build(&["</textarea"]);
 }
 
-pub fn parse_textarea_content(cfg: &Cfg, code: &mut Code) -> ParsedContent {
+pub fn parse_textarea_content(code: &mut Code) -> ParsedContent {
     let (len, closing_tag_omitted) = match END.find(code.str()) {
         Some(m) => (m.start(), false),
         None => (code.rem(), true),

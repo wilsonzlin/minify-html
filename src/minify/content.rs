@@ -12,9 +12,7 @@ use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
 use crate::pattern::Replacer;
 use crate::spec::entity::encode::encode_ampersands;
-use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
-use crate::spec::tag::EMPTY_TAG_NAME;
 
 fn build_chevron_replacer() -> Replacer {
     let mut patterns = Vec::<Vec<u8>>::new();

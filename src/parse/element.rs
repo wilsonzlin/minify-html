@@ -14,7 +14,6 @@ use crate::spec::entity::decode::decode_entities;
 use crate::spec::script::JAVASCRIPT_MIME_TYPES;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::void::VOID_TAGS;
-use crate::Cfg;
 
 fn parse_tag_name(code: &mut Code) -> Vec<u8> {
     debug_assert!(code.str().starts_with(b"<"));
@@ -41,9 +40,9 @@ pub struct ParsedTag {
 // While not valid, attributes in closing tags still need to be parsed (and then discarded) as attributes e.g. `</div x=">">`, which is why this function is used for both opening and closing tags.
 // TODO Use generics to create version that doesn't create a HashMap.
 pub fn parse_tag(code: &mut Code) -> ParsedTag {
-    let mut elem_name = parse_tag_name(code);
+    let elem_name = parse_tag_name(code);
     let mut attributes = HashMap::<Vec<u8>, Vec<u8>>::new();
-    let mut self_closing = false;
+    let self_closing;
     loop {
         // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).
         let last = code.shift_while_in_lookup(WHITESPACE_OR_SLASH);
@@ -90,7 +89,7 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
 
 // `<` or `</` must be next. If `</` is next, tag is reinterpreted as opening tag (i.e. `/` is ignored).
 // `parent` should be an empty slice if it doesn't exist.
-pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData {
+pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData {
     let ParsedTag {
         name: elem_name,
         attributes,
@@ -126,19 +125,19 @@ pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -
     };
 
     let ParsedContent {
-        mut closing_tag_omitted,
+        closing_tag_omitted,
         children,
     } = match elem_name.as_slice() {
         // TODO to_vec call allocates every time?
         b"script" => match attributes.get(&b"type".to_vec()) {
             Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => {
-                parse_script_content(cfg, code, ScriptOrStyleLang::Data)
+                parse_script_content(code, ScriptOrStyleLang::Data)
             }
-            _ => parse_script_content(cfg, code, ScriptOrStyleLang::JS),
+            _ => parse_script_content(code, ScriptOrStyleLang::JS),
         },
-        b"style" => parse_style_content(cfg, code),
-        b"textarea" => parse_textarea_content(cfg, code),
-        _ => parse_content(cfg, code, child_ns, parent, &elem_name),
+        b"style" => parse_style_content(code),
+        b"textarea" => parse_textarea_content(code),
+        _ => parse_content(code, child_ns, parent, &elem_name),
     };
 
     if !closing_tag_omitted {

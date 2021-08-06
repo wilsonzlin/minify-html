@@ -13,7 +13,6 @@ use crate::spec::entity::decode::decode_entities;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 use crate::spec::tag::void::VOID_TAGS;
-use crate::Cfg;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum ContentType {
@@ -53,7 +52,6 @@ pub struct ParsedContent {
 
 // Use empty slice for `grandparent` or `parent` if none.
 pub fn parse_content(
-    cfg: &Cfg,
     code: &mut Code,
     ns: Namespace,
     grandparent: &[u8],
@@ -110,14 +108,14 @@ pub fn parse_content(
         };
         match typ {
             Text => break,
-            OpeningTag => nodes.push(parse_element(cfg, code, ns, parent)),
+            OpeningTag => nodes.push(parse_element(code, ns, parent)),
             ClosingTag => {
                 closing_tag_omitted = false;
                 break;
             }
-            Instruction => nodes.push(parse_instruction(cfg, code)),
-            Bang => nodes.push(parse_bang(cfg, code)),
-            Comment => nodes.push(parse_comment(cfg, code)),
+            Instruction => nodes.push(parse_instruction(code)),
+            Bang => nodes.push(parse_bang(code)),
+            Comment => nodes.push(parse_comment(code)),
             MalformedLeftChevronSlash => code.shift(match memrchr(b'>', code.str()) {
                 Some(m) => m + 1,
                 None => code.rem(),

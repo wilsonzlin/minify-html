@@ -5,7 +5,6 @@ use lazy_static::lazy_static;
 use crate::ast::{NodeData, ScriptOrStyleLang};
 use crate::parse::content::ParsedContent;
 use crate::parse::Code;
-use crate::Cfg;
 
 lazy_static! {
     static ref END: AhoCorasick = AhoCorasickBuilder::new()
@@ -13,7 +12,7 @@ lazy_static! {
         .build(&["</style"]);
 }
 
-pub fn parse_style_content(cfg: &Cfg, code: &mut Code) -> ParsedContent {
+pub fn parse_style_content(code: &mut Code) -> ParsedContent {
     let (len, closing_tag_omitted) = match END.find(code.str()) {
         Some(m) => (m.start(), false),
         None => (code.rem(), true),
