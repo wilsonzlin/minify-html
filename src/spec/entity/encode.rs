@@ -1,10 +1,23 @@
+use aho_corasick::{AhoCorasick, AhoCorasickBuilder, MatchKind};
+use lazy_static::lazy_static;
 use memchr::memchr;
 
 use crate::gen::codepoints::ALPHANUMERIC_OR_EQUALS;
-use crate::gen::entities::{EntityType, ENTITY};
+use crate::gen::entities::{
+    EntityType, ENTITY, SHORTER_ENCODED_ENTITIES_DECODED, SHORTER_ENCODED_ENTITIES_ENCODED,
+};
 use crate::pattern::TrieNodeMatch;
 
-pub fn encode_ampersands(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
+lazy_static! {
+    static ref SHORTER_ENCODED_ENTITIES_ENCODED_SEARCHER: AhoCorasick = AhoCorasickBuilder::new()
+        .dfa(true)
+        .match_kind(MatchKind::LeftmostLongest)
+        .build(SHORTER_ENCODED_ENTITIES_DECODED);
+}
+
+// Encodes ampersands when necessary, as well as UTF-8 sequences that are shorter encoded.
+// Does not handle context-specific escaping e.g. `>`, `'`, `"`.
+pub fn encode_entities(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
     let mut res = Vec::<u8>::new();
     while !code.is_empty() {
         let (before, matched) = match memchr(b'&', code) {
@@ -44,5 +57,6 @@ pub fn encode_ampersands(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
             code = &code[end..];
         };
     }
-    res
+    SHORTER_ENCODED_ENTITIES_ENCODED_SEARCHER
+        .replace_all_bytes(&res, SHORTER_ENCODED_ENTITIES_ENCODED)
 }

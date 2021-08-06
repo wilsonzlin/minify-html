@@ -1,5 +1,5 @@
-import { join } from "path";
 import { mkdirSync, writeFileSync } from "fs";
+import { join } from "path";
 
 export const RUST_OUT_DIR = join(__dirname, "..", "src", "gen");
 
@@ -27,10 +27,12 @@ export const leftPad = (str: string, n: number) =>
 export const prettyJson = (v: any) => JSON.stringify(v, null, 2);
 
 export const byteStringLiteral = (bytes: number[]): string =>
-  'b"' +
-  bytes
-    .map((c) => {
-      if (c > 255) throw new Error("Not a byte");
+  [
+    'b"',
+    ...bytes.map((c) => {
+      if (!Number.isSafeInteger(c) || c < 0 || c > 255) {
+        throw new Error("Not a byte");
+      }
       // 0x20 == ' '.
       // 0x7E == '~'.
       // 0x5C == '\\'.
@@ -40,6 +42,6 @@ export const byteStringLiteral = (bytes: number[]): string =>
       } else {
         return `\\x${leftPad(c.toString(16), 2)}`;
       }
-    })
-    .join("") +
-  '"';
+    }),
+    '"',
+  ].join("");

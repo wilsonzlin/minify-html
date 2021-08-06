@@ -11,7 +11,7 @@ use crate::minify::element::minify_element;
 use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
 use crate::pattern::Replacer;
-use crate::spec::entity::encode::encode_ampersands;
+use crate::spec::entity::encode::encode_entities;
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
 use crate::whitespace::{collapse_whitespace, is_all_whitespace, left_trim, right_trim};
 
@@ -98,7 +98,6 @@ pub fn minify_content(
         };
     }
 
-    let mut previous_sibling_element = Vec::<u8>::new();
     for (i, c) in nodes.into_iter().enumerate() {
         match c {
             NodeData::Bang { code, ended } => minify_bang(cfg, out, &code, ended),
@@ -109,31 +108,28 @@ pub fn minify_content(
                 closing_tag,
                 name,
                 namespace: child_ns,
-            } => {
-                minify_element(
-                    cfg,
-                    out,
-                    descendant_of_pre,
-                    child_ns,
-                    parent,
-                    &previous_sibling_element,
-                    (i as isize) == index_of_last_nonempty_text_or_elem,
-                    &name,
-                    attributes,
-                    closing_tag,
-                    children,
-                );
-                previous_sibling_element = name;
-            }
+                next_sibling_element_name,
+            } => minify_element(
+                cfg,
+                out,
+                descendant_of_pre,
+                child_ns,
+                parent,
+                &next_sibling_element_name,
+                (i as isize) == index_of_last_nonempty_text_or_elem,
+                &name,
+                attributes,
+                closing_tag,
+                children,
+            ),
             NodeData::Instruction { code, ended } => minify_instruction(cfg, out, &code, ended),
             NodeData::ScriptOrStyleContent { code, lang } => match lang {
                 ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
                 ScriptOrStyleLang::Data => out.extend_from_slice(&code),
                 ScriptOrStyleLang::JS => minify_js(cfg, out, &code),
             },
-            NodeData::Text { value } => out.extend_from_slice(
-                &CHEVRON_REPLACER.replace_all(&encode_ampersands(&value, false)),
-            ),
+            NodeData::Text { value } => out
+                .extend_from_slice(&CHEVRON_REPLACER.replace_all(&encode_entities(&value, false))),
         };
     }
 }

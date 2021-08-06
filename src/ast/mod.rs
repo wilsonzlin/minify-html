@@ -39,6 +39,9 @@ pub enum NodeData {
         closing_tag: ElementClosingTag,
         name: Vec<u8>,
         namespace: Namespace,
+        // If the next text or element sibling is an element, this will be set to its tag name.
+        // Otherwise, this will be empty. It should be empty on creation.
+        next_sibling_element_name: Vec<u8>,
     },
     Instruction {
         code: Vec<u8>,
@@ -78,6 +81,7 @@ impl Debug for NodeData {
                 closing_tag,
                 name,
                 namespace,
+                next_sibling_element_name,
             } => f
                 .debug_struct("Element")
                 .field("tag", &{
@@ -89,6 +93,10 @@ impl Debug for NodeData {
                 })
                 .field("children", children)
                 .field("closing_tag", closing_tag)
+                .field(
+                    "next_sibling_element_name",
+                    &from_utf8(next_sibling_element_name).unwrap().to_string(),
+                )
                 .finish(),
             NodeData::Instruction { code, ended } => f
                 .debug_struct("Instruction")

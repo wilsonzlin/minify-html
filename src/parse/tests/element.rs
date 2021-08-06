@@ -58,6 +58,7 @@ fn test_parse_element() {
             closing_tag: ElementClosingTag::Present,
             name: b"a".to_vec(),
             namespace: Namespace::Html,
+            next_sibling_element_name: Vec::new(),
         }
     );
 }

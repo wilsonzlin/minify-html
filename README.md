@@ -413,13 +413,11 @@ Spaces are removed between attributes if possible.
 
 ### Entities
 
-Entities are decoded if they're valid and shorter or equal in length when decoded.
+Entities are decoded if they're valid and shorter or equal in length when decoded. UTF-8 sequences that have a shorter entity representation are encoded.
 
 Numeric entities that do not refer to a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are replaced with the [replacement character](https://en.wikipedia.org/wiki/Specials_(Unicode_block)#Replacement_character).
 
 If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity representations of characters part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
-
-Note that it's possible to get an unintentional entity after removing comments, e.g. `&am<!-- -->p`; minify-html will **not** encode the leading ampersand.
 
 ### Comments
 

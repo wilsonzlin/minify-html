@@ -138,6 +138,7 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
             closing_tag: ElementClosingTag::SelfClosing,
             name: elem_name,
             namespace: ns,
+            next_sibling_element_name: Vec::new(),
         };
     };
     if VOID_TAGS.contains(elem_name.as_slice()) {
@@ -147,6 +148,7 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
             closing_tag: ElementClosingTag::Void,
             name: elem_name,
             namespace: ns,
+            next_sibling_element_name: Vec::new(),
         };
     };
 
@@ -189,5 +191,6 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
         },
         name: elem_name,
         namespace: ns,
+        next_sibling_element_name: Vec::new(),
     }
 }

@@ -6,7 +6,7 @@ use lazy_static::lazy_static;
 use crate::gen::attrs::ATTRS;
 use crate::gen::codepoints::DIGIT;
 use crate::pattern::Replacer;
-use crate::spec::entity::encode::encode_ampersands;
+use crate::spec::entity::encode::encode_entities;
 use crate::spec::script::JAVASCRIPT_MIME_TYPES;
 use crate::spec::tag::ns::Namespace;
 use crate::whitespace::{collapse_whitespace, left_trim, right_trim};
@@ -256,7 +256,7 @@ pub fn minify_attr_val(
         };
     };
 
-    let encoded = encode_ampersands(&value_raw, true);
+    let encoded = encode_entities(&value_raw, true);
 
     // When lengths are equal, prefer double quotes to all and single quotes to unquoted.
     min(

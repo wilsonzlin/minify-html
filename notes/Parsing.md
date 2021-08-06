@@ -23,7 +23,7 @@ If the input ends while in the middle of a tag or attribute value, that tag/attr
 |If an opening tag ends with `/>` instead of `>`, and it's an HTML tag, the `/` is ignored. If it's an SVG tag, it's self-closing.|`<div/>5<div></div>`|`<div>5<div></div>`|
 |A slash as the last character of an unquoted attribute value immediately preceding a `>` is not interpreted as part of the self-closing syntax `/>`, even for self-closable SVG elements.|`<circle r=1/>`|`<circle r="1/">`|
 |Any opening `html`, `head`, or `body` tags after the first are ignored.|`<html><head><meta><body><div><head><span><body>`|`<html><head><meta><body><div><span>`|
-|Any closing `html`, `head`, or `body` tags are ignored.|`<html><head><meta><body><div></body><span></body><input></html><a>`|`<html><head><meta><body><div><span><input><a>`|
+|Any closing `html` or `body` tags, or `head` after the first, are ignored.|`<html><head><meta><body><div></body><span></body><input></html><a>`|`<html><head><meta><body><div><span><input><a>`|
 |If a `<` in content is not followed by an alphanumeric, `:`, or `=` character, it is interpreted as a literal `<`, as per the [spec](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-name)|`<div>< /div>< span>`|`<div>< /div>< span>`|
 
 ## Attributes

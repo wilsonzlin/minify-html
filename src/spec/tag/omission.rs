@@ -286,7 +286,7 @@ pub fn can_omit_as_last_node(parent: &[u8], child: &[u8]) -> bool {
         .is_some()
 }
 
-// Use an empty slice for `before` if no previous sibling element.
+// Use an empty slice for `before` or `after` if no previous/next sibling element.
 pub fn can_omit_as_before(before: &[u8], after: &[u8]) -> bool {
     CLOSING_TAG_OMISSION_RULES
         .get(before)

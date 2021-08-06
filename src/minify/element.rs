@@ -14,8 +14,8 @@ pub fn minify_element(
     ns: Namespace,
     // Use an empty slice if none.
     parent: &[u8],
-    // Use an empty slice if none.
-    previous_sibling_element: &[u8],
+    // Use an empty slice if the next element or text sibling node is not an element.
+    next_sibling_as_element_tag_name: &[u8],
     // If the last node of the parent is an element and it's this one.
     is_last_child_text_or_element_node: bool,
     tag_name: &[u8],
@@ -24,7 +24,7 @@ pub fn minify_element(
     children: Vec<NodeData>,
 ) -> () {
     let can_omit_closing_tag = cfg.omit_closing_tags
-        && (can_omit_as_before(previous_sibling_element, tag_name)
+        && (can_omit_as_before(tag_name, next_sibling_as_element_tag_name)
             || (is_last_child_text_or_element_node && can_omit_as_last_node(parent, tag_name)));
 
     out.push(b'<');

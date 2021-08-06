@@ -10,19 +10,29 @@ const entities: {
 const trieBuilder = new TrieBuilder("ENTITY", "EntityType");
 trieBuilder.addPattern(parsePattern("&#[0-9]"), "EntityType::Dec");
 trieBuilder.addPattern(parsePattern("&#x[0-9a-fA-F]"), "EntityType::Hex");
+const shorterEncodedEntities = [];
 for (const [encoded, entity] of Object.entries(entities)) {
   const encodedBytes = Buffer.from(encoded, "utf8");
   const decodedBytes = Buffer.from(entity.characters, "utf8");
-  // We should not decode if encoded is shorter than decoded.
-  const val = byteStringLiteral([
-    ...(encodedBytes.length < decodedBytes.length
-      ? encodedBytes
-      : decodedBytes),
-  ]);
+  const val = byteStringLiteral([...decodedBytes]);
   trieBuilder.add(encoded, `EntityType::Named(${val})`);
+  // We should encode if encoded is shorter than decoded.
+  if (encodedBytes.byteLength < decodedBytes.byteLength) {
+    shorterEncodedEntities.push([
+      byteStringLiteral([...encodedBytes]),
+      val,
+    ] as const);
+  }
 }
 
 const output = `
+pub static SHORTER_ENCODED_ENTITIES_ENCODED: &[&'static [u8]] = &[
+  ${shorterEncodedEntities.map(([encoded, _]) => encoded).join(",\n  ")}
+];
+pub static SHORTER_ENCODED_ENTITIES_DECODED: &[&'static [u8]] = &[
+  ${shorterEncodedEntities.map(([_, decoded]) => decoded).join(",\n  ")}
+];
+
 #[derive(Clone, Copy)]
 pub enum EntityType {
   Named(&'static [u8]),
