@@ -59,10 +59,9 @@ impl<V: 'static + Copy> TrieNode<V> {
                 None | Some(None) => break,
             };
             pos += 1;
-            match node.value {
-                Some(v) => value = Some(TrieNodeMatch::Found { len: pos, value: v }),
-                None => {}
-            };
+            if let Some(v) = node.value {
+                value = Some(TrieNodeMatch::Found { len: pos, value: v });
+            }
         }
         value.unwrap_or(TrieNodeMatch::NotFound { reached: pos })
     }

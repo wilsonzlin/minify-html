@@ -97,7 +97,7 @@ impl std::ops::Index<u8> for Lookup {
   })
     .map(
       ([name, points]) => `
-pub static ${name}: &'static Lookup = &Lookup {
+pub static ${name}: &Lookup = &Lookup {
   table: [${Array.from({ length: 256 }, (_, i) => points.includes(i)).join(
     ", "
   )}],

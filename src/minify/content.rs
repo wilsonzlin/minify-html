@@ -65,15 +65,13 @@ pub fn minify_content(
         match n {
             NodeData::Element { name, .. } => {
                 if index_of_last_nonempty_text_or_elem > -1 {
-                    match &mut previous_nodes[index_of_last_nonempty_text_or_elem as usize] {
-                        NodeData::Element {
-                            next_sibling_element_name,
-                            ..
-                        } => {
-                            debug_assert!(next_sibling_element_name.is_empty());
-                            next_sibling_element_name.extend_from_slice(name);
-                        }
-                        _ => {}
+                    if let NodeData::Element {
+                        next_sibling_element_name,
+                        ..
+                    } = &mut previous_nodes[index_of_last_nonempty_text_or_elem as usize]
+                    {
+                        debug_assert!(next_sibling_element_name.is_empty());
+                        next_sibling_element_name.extend_from_slice(name);
                     };
                 };
                 found_first_text_or_elem = true;
@@ -106,9 +104,10 @@ pub fn minify_content(
         };
     }
     if trim && index_of_last_text_or_elem > -1 {
-        match nodes.get_mut(index_of_last_text_or_elem as usize).unwrap() {
-            NodeData::Text { value } => right_trim(value),
-            _ => {}
+        if let NodeData::Text { value } =
+            nodes.get_mut(index_of_last_text_or_elem as usize).unwrap()
+        {
+            right_trim(value);
         };
     }
 

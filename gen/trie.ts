@@ -171,7 +171,7 @@ export class TrieBuilder {
 
     const name = `${this.name}_NODE_${this.nextId++}`;
     this.variables.push(
-      `static ${name}: &'static crate::pattern::TrieNode<${this.valueType}> = ${varValue};`
+      `static ${name}: &crate::pattern::TrieNode<${this.valueType}> = ${varValue};`
     );
     this.codeCache.set(varValue, name);
     return name;

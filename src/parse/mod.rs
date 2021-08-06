@@ -59,10 +59,7 @@ impl<'c> Code<'c> {
     }
 
     pub fn shift_if_next_not_in_lookup(&mut self, lookup: &'static Lookup) -> Option<u8> {
-        let c = self
-            .code
-            .get(self.next)
-            .filter(|&&n| !lookup[n]).copied();
+        let c = self.code.get(self.next).filter(|&&n| !lookup[n]).copied();
         if c.is_some() {
             self.next += 1;
         };

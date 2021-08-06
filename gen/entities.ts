@@ -26,10 +26,10 @@ for (const [encoded, entity] of Object.entries(entities)) {
 }
 
 const output = `
-pub static SHORTER_ENCODED_ENTITIES_ENCODED: &[&'static [u8]] = &[
+pub static SHORTER_ENCODED_ENTITIES_ENCODED: &[&[u8]] = &[
   ${shorterEncodedEntities.map(([encoded, _]) => encoded).join(",\n  ")}
 ];
-pub static SHORTER_ENCODED_ENTITIES_DECODED: &[&'static [u8]] = &[
+pub static SHORTER_ENCODED_ENTITIES_DECODED: &[&[u8]] = &[
   ${shorterEncodedEntities.map(([_, decoded]) => decoded).join(",\n  ")}
 ];
 
