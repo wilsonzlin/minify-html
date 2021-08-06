@@ -23,10 +23,18 @@ const ALPHA = [...UPPER_ALPHA, ...LOWER_ALPHA];
 const ALPHANUMERIC = [...DIGIT, ...ALPHA];
 const ALPHANUMERIC_OR_EQUALS = [...DIGIT, ...ALPHA, c('=')];
 
-// Characters allowed in an attribute name.
-// NOTE: Unicode noncharacters not tested.
+
+// Browsers are much more lax than the spec with regards to attribute names.
 // See https://html.spec.whatwg.org/multipage/syntax.html#syntax-attribute-name for spec.
-const ATTR_NAME_CHAR = invert([...CONTROL, c(' '), c('"'), c('\''), c('>'), c('/'), c('=')]);
+// To understand browser behaviour, try parsing:
+/*
+<input type
+
+
+       =
+    "password"  "a"  = "b"   :cd  /e /=fg 	= /\h /i/ /j/k/l m=n=o q==\r/s/ / t] = /u  / w=//>
+ */
+const WHITESPACE_OR_SLASH = [...WHITESPACE, c('/')];
 
 const DOUBLE_QUOTE = [c('"')];
 const SINGLE_QUOTE = [c('\'')];
@@ -68,7 +76,7 @@ impl std::ops::Index<u8> for Lookup {
   HEX_DIGIT,
   ALPHANUMERIC_OR_EQUALS,
 
-  ATTR_NAME_CHAR,
+  WHITESPACE_OR_SLASH,
 
   DOUBLE_QUOTE,
   SINGLE_QUOTE,

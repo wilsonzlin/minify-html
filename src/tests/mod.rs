@@ -1,9 +1,4 @@
 #[cfg(test)]
-use {
-    crate::ErrorType
-};
-
-#[cfg(test)]
 fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
     let mut code = src.to_vec();
     match super::with_friendly_error(&mut code, cfg) {

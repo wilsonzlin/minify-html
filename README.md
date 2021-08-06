@@ -3,8 +3,8 @@
 An HTML minifier meticulously optimised for both speed and effectiveness written in Rust.
 Comes with native bindings to Node.js, Python, Java, and Ruby.
 
-- Advanced minification strategy beats other minifiers with only one pass.
-- Uses zero memory allocations, SIMD searching, direct tries, and lookup tables.
+- Advanced minification strategy beats other minifiers while being faster.
+- Uses SIMD searching, direct tries, and lookup tables.
 - Well tested with a large test suite and extensive [fuzzing](./fuzz).
 - Natively binds to [esbuild](https://github.com/wilsonzlin/esbuild-rs) for super fast JS and CSS minification.
 
