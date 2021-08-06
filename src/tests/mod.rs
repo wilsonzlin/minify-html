@@ -2,8 +2,8 @@ fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
     let mut code = src.to_vec();
     let min = super::minify(&mut code, cfg);
     assert_eq!(
+        std::str::from_utf8(&min).unwrap(),
         std::str::from_utf8(expected).unwrap(),
-        std::str::from_utf8(&min).unwrap()
     );
 }
 

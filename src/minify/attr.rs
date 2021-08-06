@@ -148,49 +148,68 @@ impl AttrValMinified {
         out.extend_from_slice(self.suffix);
     }
 
+    #[cfg(test)]
+    pub fn str(&self) -> String {
+        let mut out = Vec::with_capacity(self.len());
+        self.out(&mut out);
+        String::from_utf8(out).unwrap()
+    }
+
     pub fn typ(&self) -> AttrType {
         self.typ
     }
 }
 
-pub fn minify_attr_val(val: &[u8]) -> AttrValMinified {
-    let double_quoted = AttrValMinified {
+pub fn encode_using_double_quotes(val: &[u8]) -> AttrValMinified {
+    AttrValMinified {
         typ: AttrType::Quoted,
         prefix: b"\"",
         data: DOUBLE_QUOTED_REPLACER.replace_all(val),
         start: 0,
         suffix: b"\"",
-    };
-    let single_quoted = AttrValMinified {
+    }
+}
+
+pub fn encode_using_single_quotes(val: &[u8]) -> AttrValMinified {
+    AttrValMinified {
         typ: AttrType::Quoted,
         prefix: b"'",
         data: SINGLE_QUOTED_REPLACER.replace_all(val),
         start: 0,
         suffix: b"'",
-    };
-    let unquoted = {
-        let data = UNQUOTED_QUOTED_REPLACER.replace_all(val);
-        let first_char_encoded: &'static [u8] = match data.get(0) {
-            Some(b'"') => match data.get(1) {
-                Some(&s) if DIGIT[s] || s == b';' => b"&#34;",
-                _ => b"&#34",
-            },
-            Some(b'\'') => match data.get(1) {
-                Some(&s) if DIGIT[s] || s == b';' => b"&#39;",
-                _ => b"&#39",
-            },
-            _ => b"",
-        };
-        let start = if !first_char_encoded.is_empty() { 1 } else { 0 };
-        AttrValMinified {
-            typ: AttrType::Unquoted,
-            prefix: b"",
-            data,
-            start,
-            suffix: b"",
-        }
-    };
+    }
+}
 
+pub fn encode_unquoted(val: &[u8]) -> AttrValMinified {
+    let data = UNQUOTED_QUOTED_REPLACER.replace_all(val);
+    let prefix: &'static [u8] = match data.get(0) {
+        Some(b'"') => match data.get(1) {
+            Some(&s) if DIGIT[s] || s == b';' => b"&#34;",
+            _ => b"&#34",
+        },
+        Some(b'\'') => match data.get(1) {
+            Some(&s) if DIGIT[s] || s == b';' => b"&#39;",
+            _ => b"&#39",
+        },
+        _ => b"",
+    };
+    let start = if !prefix.is_empty() { 1 } else { 0 };
+    AttrValMinified {
+        typ: AttrType::Unquoted,
+        prefix,
+        data,
+        start,
+        suffix: b"",
+    }
+}
+
+pub fn minify_attr_val(val: &[u8]) -> AttrValMinified {
     // When lengths are equal, prefer double quotes to all and single quotes to unquoted.
-    min(min(double_quoted, single_quoted), unquoted)
+    min(
+        min(
+            encode_using_double_quotes(val),
+            encode_using_single_quotes(val),
+        ),
+        encode_unquoted(val),
+    )
 }

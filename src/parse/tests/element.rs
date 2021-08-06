@@ -13,7 +13,7 @@ fn test_parse_tag() {
 
 
 				 =
-			"password"  "a"  = "b"   :cd  /e /=fg 	= /\h /i/ /j/k/l m=n=o q==\r/s/ / t] = /u  / w=//>"###,
+			"password"  "a"  = "  b  "   :cd  /e /=fg 	= /\h /i/ /j/k/l m=n=o q==\r/s/ / t] = /u  / w=//>"###,
     );
     let tag = parse_tag(&mut code);
     assert_eq!(
@@ -22,7 +22,7 @@ fn test_parse_tag() {
             attributes: {
                 let mut map = HashMap::<Vec<u8>, Vec<u8>>::new();
                 map.insert(b"type".to_vec(), b"password".to_vec());
-                map.insert(b"\"a\"".to_vec(), b"b".to_vec());
+                map.insert(b"\"a\"".to_vec(), b"  b  ".to_vec());
                 map.insert(b":cd".to_vec(), b"".to_vec());
                 map.insert(b"e".to_vec(), b"".to_vec());
                 map.insert(b"=fg".to_vec(), b"/\\h".to_vec());

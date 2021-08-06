@@ -6,3 +6,5 @@ pub mod css;
 pub mod element;
 pub mod instruction;
 pub mod js;
+#[cfg(test)]
+mod tests;
