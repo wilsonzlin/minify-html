@@ -1,4 +1,4 @@
-use crate::cfg::Cfg;
+pub use crate::cfg::Cfg;
 use crate::minify::content::minify_content;
 use crate::parse::content::parse_content;
 use crate::parse::Code;
@@ -31,8 +31,13 @@ mod whitespace;
 ///
 /// let mut code: &[u8] = b"<p>  Hello, world!  </p>";
 /// let cfg = &Cfg {
-///     minify_js: false,
 ///     minify_css: false,
+///     minify_js: false,
+///     omit_closing_tags: true,
+///     remove_bangs: false,
+///     remove_comments: true,
+///     remove_processing_instructions: false,
+///     remove_spaces_between_attributes: true,
 /// };
 /// let minified = minify(&code, cfg);
 /// assert_eq!(minified, b"<p>Hello, world!".to_vec());

@@ -82,9 +82,6 @@ pub fn parse_content(
     // We assume the closing tag has been omitted until we see one explicitly before EOF (or it has been omitted as per the spec).
     let mut closing_tag_omitted = true;
     let mut nodes = Vec::<NodeData>::new();
-    // This is set to the index of the last text or element node that is an element node.
-    // If it's not an element node, this is set to -1.
-    let mut last_elem_node_pos: isize = -1;
     loop {
         let (text_len, mut typ) = match CONTENT_TYPE_MATCHER.0.find(&code.str()) {
             Some(m) => (m.start(), CONTENT_TYPE_MATCHER.1[m.pattern()]),
@@ -98,7 +95,6 @@ pub fn parse_content(
                 Some(NodeData::Text { value }) => value.extend_from_slice(&text),
                 _ => nodes.push(NodeData::Text { value: text }),
             };
-            last_elem_node_pos = -1;
         };
         // Check using Parsing.md tag rules.
         if typ == OpeningTag || typ == ClosingTag {
@@ -130,26 +126,7 @@ pub fn parse_content(
         };
         match typ {
             Text => break,
-            OpeningTag => {
-                let node = parse_element(code, ns, parent);
-                if last_elem_node_pos > -1 {
-                    match (&mut nodes[last_elem_node_pos as usize], &node) {
-                        (
-                            NodeData::Element {
-                                next_sibling_element_name,
-                                ..
-                            },
-                            NodeData::Element { name, .. },
-                        ) => {
-                            debug_assert!(next_sibling_element_name.is_empty());
-                            next_sibling_element_name.extend_from_slice(name);
-                        }
-                        _ => unreachable!(),
-                    }
-                }
-                last_elem_node_pos = nodes.len() as isize;
-                nodes.push(node);
-            }
+            OpeningTag => nodes.push(parse_element(code, ns, parent)),
             ClosingTag => {
                 closing_tag_omitted = false;
                 break;

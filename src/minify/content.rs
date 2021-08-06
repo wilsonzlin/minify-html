@@ -59,9 +59,23 @@ pub fn minify_content(
     let mut found_first_text_or_elem = false;
     let mut index_of_last_nonempty_text_or_elem: isize = -1;
     let mut index_of_last_text_or_elem: isize = -1;
-    for (i, n) in nodes.iter_mut().enumerate() {
+    for i in 0..nodes.len() {
+        let (previous_nodes, next_nodes) = nodes.split_at_mut(i);
+        let n = &mut next_nodes[0];
         match n {
-            NodeData::Element { .. } => {
+            NodeData::Element { name, .. } => {
+                if index_of_last_nonempty_text_or_elem > -1 {
+                    match &mut previous_nodes[index_of_last_nonempty_text_or_elem as usize] {
+                        NodeData::Element {
+                            next_sibling_element_name,
+                            ..
+                        } => {
+                            debug_assert!(next_sibling_element_name.is_empty());
+                            next_sibling_element_name.extend_from_slice(name);
+                        }
+                        _ => {}
+                    };
+                };
                 found_first_text_or_elem = true;
                 index_of_last_nonempty_text_or_elem = i as isize;
                 index_of_last_text_or_elem = i as isize;

@@ -39,6 +39,7 @@ pub enum NodeData {
         closing_tag: ElementClosingTag,
         name: Vec<u8>,
         namespace: Namespace,
+        // WARNING: This should only be set during minification, as minification can alter tree (e.g. remove text nodes completely).
         // If the next text or element sibling is an element, this will be set to its tag name.
         // Otherwise, this will be empty. It should be empty on creation.
         next_sibling_element_name: Vec<u8>,

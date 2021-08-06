@@ -13,7 +13,7 @@ fn test_encode_using_double_quotes() {
 
 #[test]
 fn test_encode_using_single_quotes() {
-    let min = encode_using_single_quotes(br#"'abr'aca'dab   &amp&amp;'10';'8'$4 a'"#);
+    let min = encode_using_single_quotes(br#"'abr'aca'dab   &amp&amp;''10';''8'$4 a'"#);
     assert_eq!(
         min.str(),
         r#"'&#39abr&#39aca&#39dab   &amp&amp;&#39&#39;10&#39;;&#39&#39;8&#39$4 a&#39'"#,
