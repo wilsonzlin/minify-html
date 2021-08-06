@@ -35,6 +35,7 @@ const ALPHANUMERIC_OR_EQUALS = [...DIGIT, ...ALPHA, c('=')];
     "password"  "a"  = "b"   :cd  /e /=fg 	= /\h /i/ /j/k/l m=n=o q==\r/s/ / t] = /u  / w=//>
  */
 const WHITESPACE_OR_SLASH = [...WHITESPACE, c('/')];
+const WHITESPACE_OR_SLASH_OR_EQUALS = [...WHITESPACE_OR_SLASH, c('=')];
 
 const DOUBLE_QUOTE = [c('"')];
 const SINGLE_QUOTE = [c('\'')];
@@ -76,6 +77,7 @@ impl std::ops::Index<u8> for Lookup {
   ALPHANUMERIC_OR_EQUALS,
 
   WHITESPACE_OR_SLASH,
+  WHITESPACE_OR_SLASH_OR_EQUALS,
 
   DOUBLE_QUOTE,
   SINGLE_QUOTE,

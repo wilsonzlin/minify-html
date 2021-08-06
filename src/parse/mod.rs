@@ -7,6 +7,8 @@ pub mod element;
 pub mod instruction;
 pub mod script;
 pub mod style;
+#[cfg(test)]
+mod tests;
 pub mod textarea;
 
 pub struct Code<'c> {
@@ -35,6 +37,7 @@ impl<'c> Code<'c> {
     }
 
     pub fn at_end(&self) -> bool {
+        debug_assert!(self.next <= self.code.len());
         self.next == self.code.len()
     }
 
@@ -55,18 +58,16 @@ impl<'c> Code<'c> {
         c
     }
 
-    pub fn shift_if_next_seq(&mut self, seq: &'static [u8]) -> bool {
-        if self
+    pub fn shift_if_next_not_in_lookup(&mut self, lookup: &'static Lookup) -> Option<u8> {
+        let c = self
             .code
-            .get(self.next..self.next + seq.len())
-            .filter(|&n| n == seq)
-            .is_some()
-        {
-            self.next += seq.len();
-            true
-        } else {
-            false
-        }
+            .get(self.next)
+            .filter(|&&n| !lookup[n])
+            .map(|&c| c);
+        if c.is_some() {
+            self.next += 1;
+        };
+        c
     }
 
     pub fn shift(&mut self, n: usize) -> () {
@@ -103,10 +104,6 @@ impl<'c> Code<'c> {
             };
         }
         self.slice_and_shift(len)
-    }
-
-    pub fn copy_and_shift_while_not_in_lookup(&mut self, lookup: &'static Lookup) -> Vec<u8> {
-        self.slice_and_shift_while_not_in_lookup(lookup).to_vec()
     }
 
     // Returns the last character matched.

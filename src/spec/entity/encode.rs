@@ -14,10 +14,10 @@ pub fn encode_ampersands(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
         res.extend_from_slice(&code[..before]);
         code = &code[before..];
         if matched {
-            let len = match ENTITY.longest_matching_prefix(code) {
+            let (start, end) = match ENTITY.longest_matching_prefix(code) {
                 // Entity is malformed, so we can just ignore it.
-                TrieNodeMatch::NotFound { reached } => reached,
-                TrieNodeMatch::Found { len, value } => {
+                TrieNodeMatch::NotFound { reached } => (0, reached),
+                TrieNodeMatch::Found { len, value } => (
                     match value {
                         EntityType::Named(_)
                             if in_attr_val
@@ -29,17 +29,19 @@ pub fn encode_ampersands(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
                         {
                             // A named entity inside an attribute value that doesn't end with semicolon but is followed by an alphanumeric or `=` character is not decoded, so we don't need to encode.
                             // https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state.
+                            0
                         }
                         _ => {
                             res.extend_from_slice(b"&amp");
+                            // Skip the leading ampersand, as it will be replaced by `&amp`.
+                            1
                         }
-                    };
-                    len
-                }
+                    },
+                    len,
+                ),
             };
-
-            res.extend_from_slice(&code[..len]);
-            code = &code[len..];
+            res.extend_from_slice(&code[start..end]);
+            code = &code[end..];
         };
     }
     res

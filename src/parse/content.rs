@@ -94,7 +94,7 @@ pub fn parse_content(
                 } else if VOID_TAGS.contains(name.as_slice()) {
                     // Closing tag for void element, drop.
                     typ = ClosingTagForVoidElement;
-                } else if !parent.is_empty() && parent == name.as_slice() {
+                } else if parent.is_empty() || parent != name.as_slice() {
                     // Closing tag mismatch, reinterpret as opening tag.
                     typ = OpeningTag;
                 };

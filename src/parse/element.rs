@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::ast::{ElementClosingTag, NodeData, ScriptOrStyleLang};
 use crate::gen::codepoints::{
     ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE,
-    WHITESPACE_OR_SLASH,
+    WHITESPACE_OR_SLASH, WHITESPACE_OR_SLASH_OR_EQUALS,
 };
 use crate::parse::content::{parse_content, ParsedContent};
 use crate::parse::script::parse_script_content;
@@ -14,6 +14,8 @@ use crate::spec::entity::decode::decode_entities;
 use crate::spec::script::JAVASCRIPT_MIME_TYPES;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::void::VOID_TAGS;
+use std::fmt::{Debug, Formatter};
+use std::str::from_utf8;
 
 fn parse_tag_name(code: &mut Code) -> Vec<u8> {
     debug_assert!(code.str().starts_with(b"<"));
@@ -31,10 +33,31 @@ pub fn peek_tag_name(code: &mut Code) -> Vec<u8> {
     name
 }
 
+// Derive Eq for testing.
+#[derive(Eq, PartialEq)]
 pub struct ParsedTag {
-    attributes: HashMap<Vec<u8>, Vec<u8>>,
-    name: Vec<u8>,
-    self_closing: bool,
+    pub attributes: HashMap<Vec<u8>, Vec<u8>>,
+    pub name: Vec<u8>,
+    pub self_closing: bool,
+}
+
+impl Debug for ParsedTag {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("<{}", from_utf8(&self.name).unwrap()))?;
+        let mut attrs = self.attributes.iter().collect::<Vec<_>>();
+        attrs.sort_unstable_by(|a, b| a.0.cmp(b.0));
+        for (n, v) in attrs {
+            f.write_fmt(format_args!(
+                " {}={}",
+                from_utf8(n).unwrap(),
+                from_utf8(v).unwrap()
+            ))?;
+        }
+        if self.self_closing {
+            f.write_str(" />")?;
+        };
+        std::fmt::Result::Ok(())
+    }
 }
 
 // While not valid, attributes in closing tags still need to be parsed (and then discarded) as attributes e.g. `</div x=">">`, which is why this function is used for both opening and closing tags.
@@ -51,7 +74,15 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
             // End of tag.
             break;
         };
-        let mut attr_name = code.copy_and_shift_while_not_in_lookup(WHITESPACE_OR_SLASH);
+        let mut attr_name = Vec::new();
+        // An attribute name can start with `=`, but ends at the next WHITESPACE_OR_SLASH_OR_EQUALS.
+        if let Some(c) = code.shift_if_next_not_in_lookup(WHITESPACE_OR_SLASH) {
+            attr_name.push(c);
+        };
+        attr_name.extend_from_slice(
+            code.slice_and_shift_while_not_in_lookup(WHITESPACE_OR_SLASH_OR_EQUALS),
+        );
+        debug_assert!(!attr_name.is_empty());
         attr_name.make_ascii_lowercase();
         // See comment for WHITESPACE_OR_SLASH in codepoints.ts for details of complex attr parsing.
         code.shift_while_in_lookup(WHITESPACE);
@@ -60,6 +91,7 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
         let attr_value = if !has_value {
             Vec::new()
         } else {
+            // TODO Replace ATTR_QUOTE with direct comparison.
             let attr_delim = code.shift_if_next_in_lookup(ATTR_QUOTE);
             // It seems that for unquoted attribute values, if it's the last value in a tag and is immediately followed by `>`, any trailing `/` is NOT interpreted as a self-closing indicator and is always included as part of the value, even for SVG self-closable elements.
             let attr_delim_pred = match attr_delim {
