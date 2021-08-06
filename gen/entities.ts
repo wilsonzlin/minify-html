@@ -8,11 +8,12 @@ const entities: {[name: string]: {codepoints: number[]; characters: string;}} = 
 const trieBuilder = new TrieBuilder('ENTITY', "EntityType");
 trieBuilder.addPattern(parsePattern("&#[0-9]"), 'EntityType::Dec');
 trieBuilder.addPattern(parsePattern("&#x[0-9a-fA-F]"), 'EntityType::Hex');
-for (const [rep, entity] of Object.entries(entities)) {
-  const bytes = Buffer.from(entity.characters, 'utf8');
-  // Since we're minifying in place, we need to guarantee we'll never write something longer than source.
-  const val = byteStringLiteral(rep.length < bytes.length ? [...rep].map(c => c.charCodeAt(0)) : [...bytes]);
-  trieBuilder.add(rep, `EntityType::Named(${val})`);
+for (const [encoded, entity] of Object.entries(entities)) {
+  const encodedBytes = Buffer.from(encoded, "utf8");
+  const decodedBytes = Buffer.from(entity.characters, 'utf8');
+  // We should not decode if encoded is shorter than decoded.
+  const val = byteStringLiteral([...encodedBytes.length < decodedBytes.length ? encodedBytes : decodedBytes]);
+  trieBuilder.add(encoded, `EntityType::Named(${val})`);
 }
 
 const output = `

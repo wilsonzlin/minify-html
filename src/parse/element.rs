@@ -8,6 +8,7 @@ use crate::parse::content::{parse_content, ParsedContent};
 use crate::parse::script::parse_script_content;
 use crate::parse::style::parse_style_content;
 use crate::parse::textarea::parse_textarea_content;
+use crate::spec::entity::decode::decode_entities;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::void::VOID_TAGS;
 
@@ -64,7 +65,7 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
                 None => NOT_UNQUOTED_ATTR_VAL_CHAR,
                 _ => unreachable!(),
             };
-            let attr_value = code.copy_and_shift_while_not_in_lookup(attr_delim_pred);
+            let attr_value = decode_entities(code.slice_and_shift_while_not_in_lookup(attr_delim_pred), true);
             if let Some(c) = attr_delim {
                 // It might not be next if EOF (i.e. attribute value not closed).
                 code.shift_if_next(c);

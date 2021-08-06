@@ -71,10 +71,14 @@ impl<'c> Code<'c> {
         self.next += n;
     }
 
-    pub fn copy_and_shift(&mut self, n: usize) -> Vec<u8> {
-        let str = self.code[self.next..self.next + n].to_vec();
+    pub fn slice_and_shift(&mut self, n: usize) -> &[u8] {
+        let str = &self.code[self.next..self.next + n];
         self.next += n;
         str
+    }
+
+    pub fn copy_and_shift(&mut self, n: usize) -> Vec<u8> {
+        self.slice_and_shift(n).to_vec()
     }
 
     pub fn copy_and_shift_while_in_lookup(&mut self, lookup: &'static Lookup) -> Vec<u8> {
@@ -88,7 +92,7 @@ impl<'c> Code<'c> {
         self.copy_and_shift(len)
     }
 
-    pub fn copy_and_shift_while_not_in_lookup(&mut self, lookup: &'static Lookup) -> Vec<u8> {
+    pub fn slice_and_shift_while_not_in_lookup(&mut self, lookup: &'static Lookup) -> &[u8] {
         let mut len = 0;
         loop {
             match self.code.get(self.next + len) {
@@ -96,7 +100,11 @@ impl<'c> Code<'c> {
                 _ => break,
             };
         };
-        self.copy_and_shift(len)
+        self.slice_and_shift(len)
+    }
+
+    pub fn copy_and_shift_while_not_in_lookup(&mut self, lookup: &'static Lookup) -> Vec<u8> {
+        self.slice_and_shift_while_not_in_lookup(lookup).to_vec()
     }
 
     // Returns the last character matched.
