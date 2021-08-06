@@ -104,6 +104,7 @@ pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -
             children: Vec::new(),
             closing_tag: ElementClosingTag::SelfClosing,
             name: elem_name,
+            namespace: ns,
         };
     };
     if VOID_TAGS.contains(elem_name.as_slice()) {
@@ -112,9 +113,12 @@ pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -
             children: Vec::new(),
             closing_tag: ElementClosingTag::Void,
             name: elem_name,
+            namespace: ns,
         };
     };
 
+    // TODO Is "svg" itself in the SVG namespace? Does it matter?
+    // If it is and does, we need to update `namespace:` property of this function's return values.
     let child_ns = if elem_name == b"svg" {
         Namespace::Svg
     } else {
@@ -151,5 +155,6 @@ pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -
             ElementClosingTag::Present
         },
         name: elem_name,
+        namespace: ns,
     }
 }

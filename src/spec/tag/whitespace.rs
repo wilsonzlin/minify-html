@@ -1,5 +1,6 @@
-use lazy_static::lazy_static;
 use std::collections::HashMap;
+
+use lazy_static::lazy_static;
 
 pub struct WhitespaceMinification {
     pub collapse: bool,
@@ -165,17 +166,18 @@ lazy_static! {
     };
 }
 
-#[inline(always)]
 pub fn get_whitespace_minification_for_tag(
-    tag_name: Option<&[u8]>,
+    // Use empty slice if root.
+    tag_name: &[u8],
     descendant_of_pre: bool,
 ) -> &'static WhitespaceMinification {
     if descendant_of_pre {
         WHITESPACE_SENSITIVE
+    } else if tag_name.is_empty() {
+        ROOT
     } else {
-        match tag_name {
-            Some(n) => TAG_WHITESPACE_MINIFICATION.get(n).unwrap_or(&DEFAULT),
-            None => ROOT,
-        }
+        TAG_WHITESPACE_MINIFICATION
+            .get(tag_name)
+            .unwrap_or(&DEFAULT)
     }
 }

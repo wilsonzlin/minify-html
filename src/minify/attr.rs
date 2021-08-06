@@ -3,6 +3,7 @@ use lazy_static::lazy_static;
 
 use crate::gen::codepoints::DIGIT;
 use crate::pattern::Replacer;
+use std::cmp::{min, Ordering};
 
 fn build_double_quoted_replacer() -> Replacer {
     let mut patterns = Vec::<Vec<u8>>::new();
@@ -101,35 +102,67 @@ lazy_static! {
     static ref UNQUOTED_QUOTED_REPLACER: Replacer = build_unquoted_replacer();
 }
 
-struct MinifiedVal {
+#[derive(Copy, Clone, Eq, PartialEq)]
+pub enum AttrType {
+    None,
+    Quoted,
+    Unquoted,
+}
+
+pub struct AttrValMinified {
+    typ: AttrType,
     prefix: &'static [u8],
     data: Vec<u8>,
     start: usize,
     suffix: &'static [u8],
 }
 
-impl MinifiedVal {
+impl Eq for AttrValMinified {}
+
+impl PartialEq<Self> for AttrValMinified {
+    fn eq(&self, other: &Self) -> bool {
+        self.len() == other.len()
+    }
+}
+
+impl PartialOrd<Self> for AttrValMinified {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.len().partial_cmp(&other.len())
+    }
+}
+
+impl Ord for AttrValMinified {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.len().cmp(&other.len())
+    }
+}
+
+impl AttrValMinified {
     pub fn len(&self) -> usize {
         self.prefix.len() + (self.data.len() - self.start) + self.suffix.len()
     }
 
-    pub fn res(&self) -> Vec<u8> {
-        let mut res = Vec::<u8>::with_capacity(self.len());
-        res.extend_from_slice(self.prefix);
-        res.extend_from_slice(&self.data[self.start..]);
-        res.extend_from_slice(self.suffix);
-        res
+    pub fn out(&self, out: &mut Vec<u8>) -> () {
+        out.extend_from_slice(self.prefix);
+        out.extend_from_slice(&self.data[self.start..]);
+        out.extend_from_slice(self.suffix);
+    }
+
+    pub fn typ(&self) -> AttrType {
+        self.typ
     }
 }
 
-pub fn minify_attr_val(val: &[u8]) -> Vec<u8> {
-    let double_quoted = MinifiedVal {
+pub fn minify_attr_val(val: &[u8]) -> AttrValMinified {
+    let double_quoted = AttrValMinified {
+        typ: AttrType::Quoted,
         prefix: b"\"",
         data: DOUBLE_QUOTED_REPLACER.replace_all(val),
         start: 0,
         suffix: b"\"",
     };
-    let single_quoted = MinifiedVal {
+    let single_quoted = AttrValMinified {
+        typ: AttrType::Quoted,
         prefix: b"'",
         data: SINGLE_QUOTED_REPLACER.replace_all(val),
         start: 0,
@@ -149,7 +182,8 @@ pub fn minify_attr_val(val: &[u8]) -> Vec<u8> {
             _ => b"",
         };
         let start = if !first_char_encoded.is_empty() { 1 } else { 0 };
-        MinifiedVal {
+        AttrValMinified {
+            typ: AttrType::Unquoted,
             prefix: b"",
             data: res,
             start,
@@ -158,12 +192,5 @@ pub fn minify_attr_val(val: &[u8]) -> Vec<u8> {
     };
 
     // When lengths are equal, prefer double quotes to all and single quotes to unquoted.
-    let mut min = double_quoted;
-    if single_quoted.len() < min.len() {
-        min = single_quoted;
-    };
-    if unquoted.len() < min.len() {
-        min = unquoted;
-    };
-    min.res()
+    min(min(double_quoted, single_quoted), unquoted)
 }

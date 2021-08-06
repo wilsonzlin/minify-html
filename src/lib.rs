@@ -45,6 +45,6 @@ pub fn minify(src: &[u8], cfg: &Cfg) -> Vec<u8> {
         EMPTY_TAG_NAME,
     );
     let mut out = Vec::with_capacity(src.len());
-    minify_content(cfg, &mut out, EMPTY_TAG_NAME, &parsed.children);
+    minify_content(cfg, &mut out, false, EMPTY_TAG_NAME, parsed.children);
     out
 }

@@ -33,7 +33,6 @@ impl<V: 'static + Copy> TrieNode<V> {
     // - "&ax" will return node `a`.
     // - "+ax" will return itself.
     // - "" will return the itself.
-    #[inline(always)]
     pub fn shortest_matching_prefix(&self, text: &[u8], from: usize) -> (&TrieNode<V>, usize) {
         let mut node: &TrieNode<V> = self;
         let mut pos = from;
@@ -50,7 +49,6 @@ impl<V: 'static + Copy> TrieNode<V> {
         (node, pos)
     }
 
-    #[inline(always)]
     pub fn longest_matching_prefix(&self, text: &[u8]) -> TrieNodeMatch<V> {
         let mut node: &TrieNode<V> = self;
         let mut value: Option<TrieNodeMatch<V>> = None;
