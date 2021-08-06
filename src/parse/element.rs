@@ -1,17 +1,20 @@
 use std::collections::HashMap;
 
 use crate::ast::{ElementClosingTag, NodeData, ScriptOrStyleLang};
-use crate::Cfg;
-use crate::gen::codepoints::{ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE, WHITESPACE_OR_SLASH};
-use crate::parse::Code;
+use crate::gen::codepoints::{
+    ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE,
+    WHITESPACE_OR_SLASH,
+};
 use crate::parse::content::{parse_content, ParsedContent};
 use crate::parse::script::parse_script_content;
 use crate::parse::style::parse_style_content;
 use crate::parse::textarea::parse_textarea_content;
+use crate::parse::Code;
 use crate::spec::entity::decode::decode_entities;
 use crate::spec::script::JAVASCRIPT_MIME_TYPES;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::void::VOID_TAGS;
+use crate::Cfg;
 
 fn parse_tag_name(code: &mut Code) -> Vec<u8> {
     debug_assert!(code.str().starts_with(b"<"));
@@ -66,7 +69,10 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
                 None => NOT_UNQUOTED_ATTR_VAL_CHAR,
                 _ => unreachable!(),
             };
-            let attr_value = decode_entities(code.slice_and_shift_while_not_in_lookup(attr_delim_pred), true);
+            let attr_value = decode_entities(
+                code.slice_and_shift_while_not_in_lookup(attr_delim_pred),
+                true,
+            );
             if let Some(c) = attr_delim {
                 // It might not be next if EOF (i.e. attribute value not closed).
                 code.shift_if_next(c);
@@ -74,7 +80,7 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
             attr_value
         };
         attributes.insert(attr_name, attr_value);
-    };
+    }
     ParsedTag {
         attributes,
         name: elem_name,
@@ -121,12 +127,14 @@ pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -
     } = match elem_name.as_slice() {
         // TODO to_vec call allocates every time?
         b"script" => match attributes.get(&b"type".to_vec()) {
-            Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => parse_script_content(cfg, code, ScriptOrStyleLang::Data),
+            Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => {
+                parse_script_content(cfg, code, ScriptOrStyleLang::Data)
+            }
             _ => parse_script_content(cfg, code, ScriptOrStyleLang::JS),
         },
         b"style" => parse_style_content(cfg, code),
         b"textarea" => parse_textarea_content(cfg, code),
-        _ => parse_content(cfg, code, child_ns, parent, &elem_name)
+        _ => parse_content(cfg, code, child_ns, parent, &elem_name),
     };
 
     if !closing_tag_omitted {

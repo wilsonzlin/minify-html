@@ -19,10 +19,7 @@ pub struct Checkpoint(usize);
 
 impl<'c> Code<'c> {
     pub fn new(code: &[u8]) -> Code {
-        Code {
-            code,
-            next: 0,
-        }
+        Code { code, next: 0 }
     }
 
     pub fn str(&self) -> &[u8] {
@@ -59,7 +56,12 @@ impl<'c> Code<'c> {
     }
 
     pub fn shift_if_next_seq(&mut self, seq: &'static [u8]) -> bool {
-        if self.code.get(self.next..self.next + seq.len()).filter(|&n| n == seq).is_some() {
+        if self
+            .code
+            .get(self.next..self.next + seq.len())
+            .filter(|&n| n == seq)
+            .is_some()
+        {
             self.next += seq.len();
             true
         } else {
@@ -88,7 +90,7 @@ impl<'c> Code<'c> {
                 Some(&c) if lookup[c] => len += 1,
                 _ => break,
             };
-        };
+        }
         self.copy_and_shift(len)
     }
 
@@ -99,7 +101,7 @@ impl<'c> Code<'c> {
                 Some(&c) if !lookup[c] => len += 1,
                 _ => break,
             };
-        };
+        }
         self.slice_and_shift(len)
     }
 
@@ -118,7 +120,7 @@ impl<'c> Code<'c> {
                 }
                 _ => break,
             };
-        };
+        }
         last
     }
 

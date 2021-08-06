@@ -17,8 +17,10 @@ use std::char::from_u32;
 
 use memchr::memchr;
 
-use crate::gen::codepoints::{ALPHANUMERIC_OR_EQUALS, DIGIT, HEX_DIGIT, Lookup, LOWER_HEX_ALPHA, UPPER_HEX_ALPHA};
-use crate::gen::entities::{ENTITY, EntityType};
+use crate::gen::codepoints::{
+    Lookup, ALPHANUMERIC_OR_EQUALS, DIGIT, HEX_DIGIT, LOWER_HEX_ALPHA, UPPER_HEX_ALPHA,
+};
+use crate::gen::entities::{EntityType, ENTITY};
 use crate::pattern::TrieNodeMatch;
 
 enum Decoded {
@@ -44,7 +46,7 @@ fn parse_numeric_entity(
     // Skip initial zeros.
     while code.get(read_next).filter(|c| **c == b'0').is_some() {
         read_next += 1;
-    };
+    }
     // Browser will still continue to consume digits past max_digits.
     loop {
         match code.get(read_next) {
@@ -56,7 +58,7 @@ fn parse_numeric_entity(
             }
             _ => break,
         };
-    };
+    }
     // Semicolon is required by spec but seems to be optional in actual browser behaviour.
     if let Some(b';') = code.get(read_next) {
         read_next += 1;
@@ -79,7 +81,10 @@ fn parse_entity(code: &[u8], in_attr_val: bool) -> ParsedEntity {
             read_len: reached,
             decoded: Decoded::Ignored,
         },
-        TrieNodeMatch::Found { len: match_len, value } => match value {
+        TrieNodeMatch::Found {
+            len: match_len,
+            value,
+        } => match value {
             EntityType::Dec => parse_numeric_entity(
                 // Skip past '&#'. Note that match_len is 3 as it matches '&#[0-9]'.
                 &code[2..],
@@ -91,16 +96,24 @@ fn parse_entity(code: &[u8], in_attr_val: bool) -> ParsedEntity {
                 // Skip past '&#x'. Note that match_len is 4 as it matches '&#x[0-9a-fA-F]'.
                 &code[3..],
                 HEX_DIGIT,
-                |value, c| value.wrapping_mul(16).wrapping_add(match c {
-                    c if DIGIT[c] => (c - b'0') as u32,
-                    c if LOWER_HEX_ALPHA[c] => 10 + (c - b'a') as u32,
-                    c if UPPER_HEX_ALPHA[c] => 10 + (c - b'A') as u32,
-                    _ => unreachable!(),
-                }),
+                |value, c| {
+                    value.wrapping_mul(16).wrapping_add(match c {
+                        c if DIGIT[c] => (c - b'0') as u32,
+                        c if LOWER_HEX_ALPHA[c] => 10 + (c - b'a') as u32,
+                        c if UPPER_HEX_ALPHA[c] => 10 + (c - b'A') as u32,
+                        _ => unreachable!(),
+                    })
+                },
                 6,
             ),
             EntityType::Named(decoded) => {
-                if in_attr_val && code[match_len - 1] != b';' && code.get(match_len).filter(|&&c| ALPHANUMERIC_OR_EQUALS[c]).is_some() {
+                if in_attr_val
+                    && code[match_len - 1] != b';'
+                    && code
+                        .get(match_len)
+                        .filter(|&&c| ALPHANUMERIC_OR_EQUALS[c])
+                        .is_some()
+                {
                     // Don't decode if named entity is inside an attribute value and doesn't end with semicolon but is followed by an alphanumeric or `=` character.
                     // https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state.
                     ParsedEntity {
@@ -129,10 +142,7 @@ pub fn decode_entities(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
         res.extend_from_slice(&code[..before]);
         code = &code[before..];
         if matched {
-            let ParsedEntity {
-                decoded,
-                read_len,
-            } = parse_entity(code, in_attr_val);
+            let ParsedEntity { decoded, read_len } = parse_entity(code, in_attr_val);
             match decoded {
                 Decoded::Numeric(c) => {
                     let mut encoded = [0u8; 4];
@@ -140,10 +150,10 @@ pub fn decode_entities(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
                     res.extend_from_slice(&encoded);
                 }
                 Decoded::Ignored => res.extend_from_slice(&code[..read_len]),
-                Decoded::Named(s) => res.extend_from_slice(s)
+                Decoded::Named(s) => res.extend_from_slice(s),
             };
             code = &code[read_len..];
         };
-    };
+    }
     res
 }

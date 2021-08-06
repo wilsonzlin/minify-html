@@ -13,7 +13,7 @@ fn build_double_quoted_replacer() -> Replacer {
     for c in "0123456789;".bytes() {
         patterns.push(vec![b'"', c]);
         replacements.push(vec![b'&', b'#', b'3', b'4', b';', c]);
-    };
+    }
     patterns.push(b"\"".to_vec());
     replacements.push(b"&#34".to_vec());
 
@@ -35,7 +35,7 @@ fn build_single_quoted_replacer() -> Replacer {
     for c in "0123456789;".bytes() {
         patterns.push(vec![b'\'', c]);
         replacements.push(vec![b'&', b'#', b'3', b'9', b';', c]);
-    };
+    }
     patterns.push(b"'".to_vec());
     replacements.push(b"&#39".to_vec());
 
@@ -71,12 +71,12 @@ fn build_unquoted_replacer() -> Replacer {
                 ent.push(c);
                 ent
             });
-        };
-    };
+        }
+    }
     for &(ws, rep) in WS {
         patterns.push(vec![ws]);
         replacements.push(rep.to_vec());
-    };
+    }
 
     // Replace all `>` with `&GT`, unless the chevron is followed by a semicolon,
     // in which case add a semicolon to the encoded entity.
@@ -148,11 +148,7 @@ pub fn minify_attr_val(val: &[u8]) -> Vec<u8> {
             },
             _ => b"",
         };
-        let start = if !first_char_encoded.is_empty() {
-            1
-        } else {
-            0
-        };
+        let start = if !first_char_encoded.is_empty() { 1 } else { 0 };
         MinifiedVal {
             prefix: b"",
             data: res,

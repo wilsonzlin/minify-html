@@ -3,10 +3,10 @@ use aho_corasick::AhoCorasickBuilder;
 use lazy_static::lazy_static;
 
 use crate::ast::NodeData;
-use crate::Cfg;
-use crate::parse::Code;
 use crate::parse::content::ParsedContent;
+use crate::parse::Code;
 use crate::spec::entity::decode::decode_entities;
+use crate::Cfg;
 
 lazy_static! {
     static ref END: AhoCorasick = AhoCorasickBuilder::new()
@@ -21,6 +21,8 @@ pub fn parse_textarea_content(cfg: &Cfg, code: &mut Code) -> ParsedContent {
     };
     ParsedContent {
         closing_tag_omitted,
-        children: vec![NodeData::Text { value: decode_entities(code.slice_and_shift(len), false) }],
+        children: vec![NodeData::Text {
+            value: decode_entities(code.slice_and_shift(len), false),
+        }],
     }
 }

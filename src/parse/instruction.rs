@@ -2,8 +2,8 @@ use aho_corasick::AhoCorasick;
 use lazy_static::lazy_static;
 
 use crate::ast::NodeData;
-use crate::Cfg;
 use crate::parse::Code;
+use crate::Cfg;
 
 lazy_static! {
     static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(&["?>"]);

@@ -1,6 +1,6 @@
 use crate::ast::NodeData;
-use crate::Cfg;
 use crate::parse::Code;
+use crate::Cfg;
 use memchr::memchr;
 
 pub fn parse_bang(cfg: &Cfg, code: &mut Code) -> NodeData {

@@ -46,7 +46,7 @@ impl<V: 'static + Copy> TrieNode<V> {
             if node.value.is_some() {
                 break;
             };
-        };
+        }
         (node, pos)
     }
 
@@ -65,7 +65,7 @@ impl<V: 'static + Copy> TrieNode<V> {
                 Some(v) => value = Some(TrieNodeMatch::Found { len: pos, value: v }),
                 None => {}
             };
-        };
+        }
         value.unwrap_or(TrieNodeMatch::NotFound { reached: pos })
     }
 }
@@ -77,7 +77,10 @@ pub struct Replacer {
 
 impl Replacer {
     pub fn new(searcher: AhoCorasick, replacements: Vec<Vec<u8>>) -> Replacer {
-        Replacer { searcher, replacements }
+        Replacer {
+            searcher,
+            replacements,
+        }
     }
 
     pub fn replace_all(&self, src: &[u8]) -> Vec<u8> {

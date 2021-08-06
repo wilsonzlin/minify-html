@@ -3,9 +3,16 @@ fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
     let mut code = src.to_vec();
     match super::with_friendly_error(&mut code, cfg) {
         Ok(len) => {
-            assert_eq!(std::str::from_utf8(&code[..len]).unwrap(), std::str::from_utf8(expected).unwrap());
+            assert_eq!(
+                std::str::from_utf8(&code[..len]).unwrap(),
+                std::str::from_utf8(expected).unwrap()
+            );
         }
-        Err(super::FriendlyError { code_context, message, .. }) => {
+        Err(super::FriendlyError {
+            code_context,
+            message,
+            ..
+        }) => {
             println!("{}", message);
             println!("{}", code_context);
             assert!(false);
@@ -16,41 +23,60 @@ fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
 #[cfg(test)]
 fn _eval_error(src: &'static [u8], expected: ErrorType, cfg: &super::Cfg) -> () {
     let mut code = src.to_vec();
-    assert_eq!(super::in_place(&mut code, cfg).unwrap_err().error_type, expected);
+    assert_eq!(
+        super::in_place(&mut code, cfg).unwrap_err().error_type,
+        expected
+    );
 }
 
 #[cfg(test)]
 fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
-    _eval(src, expected, &super::Cfg {
-        minify_js: false,
-        minify_css: false,
-    });
+    _eval(
+        src,
+        expected,
+        &super::Cfg {
+            minify_js: false,
+            minify_css: false,
+        },
+    );
 }
 
 #[cfg(test)]
 fn eval_error(src: &'static [u8], expected: ErrorType) -> () {
-    _eval_error(src, expected, &super::Cfg {
-        minify_js: false,
-        minify_css: false,
-    });
+    _eval_error(
+        src,
+        expected,
+        &super::Cfg {
+            minify_js: false,
+            minify_css: false,
+        },
+    );
 }
 
 #[cfg(test)]
 #[cfg(feature = "js-esbuild")]
 fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
-    _eval(src, expected, &super::Cfg {
-        minify_js: true,
-        minify_css: false,
-    });
+    _eval(
+        src,
+        expected,
+        &super::Cfg {
+            minify_js: true,
+            minify_css: false,
+        },
+    );
 }
 
 #[cfg(test)]
 #[cfg(feature = "js-esbuild")]
 fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
-    _eval(src, expected, &super::Cfg {
-        minify_js: false,
-        minify_css: true,
-    });
+    _eval(
+        src,
+        expected,
+        &super::Cfg {
+            minify_js: false,
+            minify_css: true,
+        },
+    );
 }
 
 #[test]
@@ -75,7 +101,10 @@ fn test_collapse_destroy_whole_and_trim_whitespace() {
     eval(b"<ul>   \n&#32;   </ul>", b"<ul></ul>");
     eval(b"<ul>   \n&#32;a   </ul>", b"<ul>a</ul>");
     eval(b"<ul>   \n&#32;a   b   </ul>", b"<ul>a b</ul>");
-    eval(b"<ul>   \n&#32;a<pre></pre>   <pre></pre>b   </ul>", b"<ul>a<pre></pre><pre></pre>b</ul>");
+    eval(
+        b"<ul>   \n&#32;a<pre></pre>   <pre></pre>b   </ul>",
+        b"<ul>a<pre></pre><pre></pre>b</ul>",
+    );
     // Tag names should be case insensitive.
     eval(b"<uL>   \n&#32;a   b   </UL>", b"<ul>a b</ul>");
 }
@@ -83,25 +112,40 @@ fn test_collapse_destroy_whole_and_trim_whitespace() {
 #[test]
 fn test_no_whitespace_minification() {
     eval(b"<pre>   \n&#32; \t   </pre>", b"<pre>   \n  \t   </pre>");
-    eval(b"<textarea>   \n&#32; \t   </textarea>", b"<textarea>   \n  \t   </textarea>");
+    eval(
+        b"<textarea>   \n&#32; \t   </textarea>",
+        b"<textarea>   \n  \t   </textarea>",
+    );
     // Tag names should be case insensitive.
     eval(b"<pRe>   \n&#32; \t   </PRE>", b"<pre>   \n  \t   </pre>");
-    eval(b"<pre>  <span>  1    2   </span>  </pre>", b"<pre>  <span>  1    2   </span>  </pre>");
-    eval(b"<pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>", b"<pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>");
-    eval(b"<div>  <pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>  </div>", b"<div><pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre></div>");
-    eval(br#"<pre><code>fn main() {
+    eval(
+        b"<pre>  <span>  1    2   </span>  </pre>",
+        b"<pre>  <span>  1    2   </span>  </pre>",
+    );
+    eval(
+        b"<pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>",
+        b"<pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>",
+    );
+    eval(
+        b"<div>  <pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre>  </div>",
+        b"<div><pre>  <span>  1 <pre>\n</pre>    2   </span>  </pre></div>",
+    );
+    eval(
+        br#"<pre><code>fn main() {
   println!("Hello, world!");
   <span>loop {
     println!("Hello, world!");
   }</span>
 }
-</code></pre>"#, br#"<pre><code>fn main() {
+</code></pre>"#,
+        br#"<pre><code>fn main() {
   println!("Hello, world!");
   <span>loop {
     println!("Hello, world!");
   }</span>
 }
-</code></pre>"#);
+</code></pre>"#,
+    );
 }
 
 #[test]
@@ -109,7 +153,10 @@ fn test_parsing_omitted_closing_tag() {
     eval(b"<html>", b"<html>");
     eval(b" <html>\n", b"<html>");
     eval(b" <!doctype html> <html>\n", b"<!doctype html><html>");
-    eval(b"<!doctype html><html><div> <p>Foo</div></html>", b"<!doctype html><html><div><p>Foo</div>");
+    eval(
+        b"<!doctype html><html><div> <p>Foo</div></html>",
+        b"<!doctype html><html><div><p>Foo</div>",
+    );
 }
 
 #[test]
@@ -138,19 +185,50 @@ fn test_parsing_with_omitted_tags() {
 fn test_unmatched_closing_tag() {
     eval_error(b"Hello</p>Goodbye", ErrorType::UnexpectedClosingTag);
     eval_error(b"Hello<br></br>Goodbye", ErrorType::UnexpectedClosingTag);
-    eval_error(b"<div>Hello</p>Goodbye", ErrorType::ClosingTagMismatch { expected: "div".to_string(), got: "p".to_string() });
-    eval_error(b"<ul><li>a</p>", ErrorType::ClosingTagMismatch { expected: "ul".to_string(), got: "p".to_string() });
-    eval_error(b"<ul><li><rt>a</p>", ErrorType::ClosingTagMismatch { expected: "ul".to_string(), got: "p".to_string() });
-    eval_error(b"<html><head><body><ul><li><rt>a</p>", ErrorType::ClosingTagMismatch { expected: "ul".to_string(), got: "p".to_string() });
+    eval_error(
+        b"<div>Hello</p>Goodbye",
+        ErrorType::ClosingTagMismatch {
+            expected: "div".to_string(),
+            got: "p".to_string(),
+        },
+    );
+    eval_error(
+        b"<ul><li>a</p>",
+        ErrorType::ClosingTagMismatch {
+            expected: "ul".to_string(),
+            got: "p".to_string(),
+        },
+    );
+    eval_error(
+        b"<ul><li><rt>a</p>",
+        ErrorType::ClosingTagMismatch {
+            expected: "ul".to_string(),
+            got: "p".to_string(),
+        },
+    );
+    eval_error(
+        b"<html><head><body><ul><li><rt>a</p>",
+        ErrorType::ClosingTagMismatch {
+            expected: "ul".to_string(),
+            got: "p".to_string(),
+        },
+    );
 }
 
 #[test]
 fn test_removal_of_optional_tags() {
-    eval(b"<ul><li>1</li><li>2</li><li>3</li></ul>", b"<ul><li>1<li>2<li>3</ul>");
+    eval(
+        b"<ul><li>1</li><li>2</li><li>3</li></ul>",
+        b"<ul><li>1<li>2<li>3</ul>",
+    );
     eval(b"<rt></rt>", b"<rt>");
-    eval(b"<rt></rt><rp>1</rp><div></div>", b"<rt><rp>1</rp><div></div>");
+    eval(
+        b"<rt></rt><rp>1</rp><div></div>",
+        b"<rt><rp>1</rp><div></div>",
+    );
     eval(b"<div><rt></rt></div>", b"<div><rt></div>");
-    eval(br#"
+    eval(
+        br#"
         <html>
             <head>
             </head>
@@ -158,7 +236,9 @@ fn test_removal_of_optional_tags() {
             <body>
             </body>
         </html>
-    "#, b"<html><head><body>");
+    "#,
+        b"<html><head><body>",
+    );
     // Tag names should be case insensitive.
     eval(b"<RT></rt>", b"<rt>");
 }
@@ -168,7 +248,10 @@ fn test_removal_of_optional_closing_p_tag() {
     eval(b"<p></p><address></address>", b"<p><address></address>");
     eval(b"<p></p>", b"<p>");
     eval(b"<map><p></p></map>", b"<map><p></p></map>");
-    eval(b"<map><p></p><address></address></map>", b"<map><p><address></address></map>");
+    eval(
+        b"<map><p></p><address></address></map>",
+        b"<map><p><address></address></map>",
+    );
 }
 
 #[test]
@@ -186,7 +269,10 @@ fn test_attr_single_quoted_value_minification() {
     eval(b"<a b=\"&quot;hello\"></a>", b"<a b='\"hello'></a>");
     eval(b"<a b='\"hello'></a>", b"<a b='\"hello'></a>");
     eval(b"<a b='/>a'></a>", b"<a b=\"/>a\"></a>");
-    eval(b"<a b=&#x20;he&quot;llo&#x20;></a>", b"<a b=' he\"llo '></a>");
+    eval(
+        b"<a b=&#x20;he&quot;llo&#x20;></a>",
+        b"<a b=' he\"llo '></a>",
+    );
 }
 
 #[test]
@@ -203,7 +289,10 @@ fn test_attr_unquoted_value_minification() {
 #[test]
 fn test_class_attr_value_minification() {
     eval(b"<a class=&#x20;c></a>", b"<a class=c></a>");
-    eval(b"<a class=&#x20;c&#x20&#x20;d&#x20></a>", b"<a class=\"c d\"></a>");
+    eval(
+        b"<a class=&#x20;c&#x20&#x20;d&#x20></a>",
+        b"<a class=\"c d\"></a>",
+    );
     eval(b"<a class=&#x20&#x20&#x20;&#x20></a>", b"<a></a>");
     eval(b"<a class=\"  c\n \n  \"></a>", b"<a class=c></a>");
     eval(b"<a class=\"  c\n \nd  \"></a>", b"<a class=\"c d\"></a>");
@@ -218,13 +307,34 @@ fn test_class_attr_value_minification() {
 #[test]
 fn test_d_attr_value_minification() {
     eval(b"<svg><path d=&#x20;c /></svg>", b"<svg><path d=c /></svg>");
-    eval(b"<svg><path d=&#x20;c&#x20&#x20;d&#x20 /></svg>", b"<svg><path d=\"c d\"/></svg>");
-    eval(b"<svg><path d=&#x20;&#x20&#x20&#x20 /></svg>", b"<svg><path/></svg>");
-    eval(b"<svg><path d=\"  c\n \n  \" /></svg>", b"<svg><path d=c /></svg>");
-    eval(b"<svg><path d=\"  c\n \nd  \" /></svg>", b"<svg><path d=\"c d\"/></svg>");
-    eval(b"<svg><path d=\"  \n \n  \" /></svg>", b"<svg><path/></svg>");
-    eval(b"<svg><path d='  c\n \n  ' /></svg>", b"<svg><path d=c /></svg>");
-    eval(b"<svg><path d='  c\n \nd  ' /></svg>", b"<svg><path d=\"c d\"/></svg>");
+    eval(
+        b"<svg><path d=&#x20;c&#x20&#x20;d&#x20 /></svg>",
+        b"<svg><path d=\"c d\"/></svg>",
+    );
+    eval(
+        b"<svg><path d=&#x20;&#x20&#x20&#x20 /></svg>",
+        b"<svg><path/></svg>",
+    );
+    eval(
+        b"<svg><path d=\"  c\n \n  \" /></svg>",
+        b"<svg><path d=c /></svg>",
+    );
+    eval(
+        b"<svg><path d=\"  c\n \nd  \" /></svg>",
+        b"<svg><path d=\"c d\"/></svg>",
+    );
+    eval(
+        b"<svg><path d=\"  \n \n  \" /></svg>",
+        b"<svg><path/></svg>",
+    );
+    eval(
+        b"<svg><path d='  c\n \n  ' /></svg>",
+        b"<svg><path d=c /></svg>",
+    );
+    eval(
+        b"<svg><path d='  c\n \nd  ' /></svg>",
+        b"<svg><path d=\"c d\"/></svg>",
+    );
     eval(b"<svg><path d='  \n \n  ' /></svg>", b"<svg><path/></svg>");
     // Attribute names should be case insensitive.
     eval(b"<svg><path D='  \n \n  ' /></svg>", b"<svg><path/></svg>");
@@ -263,12 +373,27 @@ fn test_default_attr_value_removal() {
 
 #[test]
 fn test_script_type_attr_value_removal() {
-    eval(b"<script type=\"application/ecmascript\"></script>", b"<script></script>");
-    eval(b"<script type=\"application/javascript\"></script>", b"<script></script>");
-    eval(b"<script type=\"text/jscript\"></script>", b"<script></script>");
-    eval(b"<script type=\"text/plain\"></script>", b"<script type=text/plain></script>");
+    eval(
+        b"<script type=\"application/ecmascript\"></script>",
+        b"<script></script>",
+    );
+    eval(
+        b"<script type=\"application/javascript\"></script>",
+        b"<script></script>",
+    );
+    eval(
+        b"<script type=\"text/jscript\"></script>",
+        b"<script></script>",
+    );
+    eval(
+        b"<script type=\"text/plain\"></script>",
+        b"<script type=text/plain></script>",
+    );
     // Tag and attribute names should be case insensitive.
-    eval(b"<SCRipt TYPE=\"application/ecmascript\"></SCrIPT>", b"<script></script>");
+    eval(
+        b"<SCRipt TYPE=\"application/ecmascript\"></SCrIPT>",
+        b"<script></script>",
+    );
 }
 
 #[test]
@@ -282,9 +407,15 @@ fn test_empty_attr_value_removal() {
 
 #[test]
 fn test_space_between_attrs_minification() {
-    eval(b"<div a=\" \" b=\" \"></div>", b"<div a=\" \"b=\" \"></div>");
+    eval(
+        b"<div a=\" \" b=\" \"></div>",
+        b"<div a=\" \"b=\" \"></div>",
+    );
     eval(b"<div a=' ' b=\" \"></div>", b"<div a=\" \"b=\" \"></div>");
-    eval(b"<div a=&#x20 b=\" \"></div>", b"<div a=\" \"b=\" \"></div>");
+    eval(
+        b"<div a=&#x20 b=\" \"></div>",
+        b"<div a=\" \"b=\" \"></div>",
+    );
     eval(b"<div a=\"1\" b=\" \"></div>", b"<div a=1 b=\" \"></div>");
     eval(b"<div a='1' b=\" \"></div>", b"<div a=1 b=\" \"></div>");
     eval(b"<div a=\"a\"b=\"b\"></div>", b"<div a=a b=b></div>");
@@ -304,7 +435,10 @@ fn test_hexadecimal_entity_decoding() {
     eval(b"&#x000000000000000000000000000000000000000000030;", b"0");
     eval(b"&#x1151;", b"\xe1\x85\x91");
     eval(b"&#x11FFFF;", b"\xef\xbf\xbd");
-    eval(b"&#xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;", b"\xef\xbf\xbd");
+    eval(
+        b"&#xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF;",
+        b"\xef\xbf\xbd",
+    );
 }
 
 #[test]
@@ -317,7 +451,10 @@ fn test_decimal_entity_decoding() {
     eval(b"&#000000000000000000000000000000000000000000048;", b"0");
     eval(b"&#4433;", b"\xe1\x85\x91");
     eval(b"&#1114112;", b"\xef\xbf\xbd");
-    eval(b"&#999999999999999999999999999999999999999999999;", b"\xef\xbf\xbd");
+    eval(
+        b"&#999999999999999999999999999999999999999999999;",
+        b"\xef\xbf\xbd",
+    );
 }
 
 #[test]
@@ -337,9 +474,18 @@ fn test_named_entity_decoding() {
 
     // Named entities not ending with ';' in attr values are not decoded if immediately
     // followed by an alphanumeric or `=` character. (See parser for more details.)
-    eval(br#"<a href="exam ple?&gta=5"></a>"#, br#"<a href="exam ple?&gta=5"></a>"#);
-    eval(br#"<a href="exam ple?&gt=5"></a>"#, br#"<a href="exam ple?&gt=5"></a>"#);
-    eval(br#"<a href="exam ple?&gt~5"></a>"#, br#"<a href="exam ple?>~5"></a>"#);
+    eval(
+        br#"<a href="exam ple?&gta=5"></a>"#,
+        br#"<a href="exam ple?&gta=5"></a>"#,
+    );
+    eval(
+        br#"<a href="exam ple?&gt=5"></a>"#,
+        br#"<a href="exam ple?&gt=5"></a>"#,
+    );
+    eval(
+        br#"<a href="exam ple?&gt~5"></a>"#,
+        br#"<a href="exam ple?>~5"></a>"#,
+    );
 }
 
 #[test]
@@ -419,9 +565,15 @@ fn test_left_chevron_in_content() {
 
 #[test]
 fn test_comments_removal() {
-    eval(b"<pre>a <!-- akd--sj\n <!-- \t\0f--ajk--df->lafj -->  b</pre>", b"<pre>a   b</pre>");
+    eval(
+        b"<pre>a <!-- akd--sj\n <!-- \t\0f--ajk--df->lafj -->  b</pre>",
+        b"<pre>a   b</pre>",
+    );
     eval(b"&a<!-- akd--sj\n <!-- \t\0f--ajk--df->lafj -->mp", b"&amp");
-    eval(b"<script><!-- akd--sj\n <!-- \t\0f--ajk--df->lafj --></script>", b"<script><!-- akd--sj\n <!-- \t\0f--ajk--df->lafj --></script>");
+    eval(
+        b"<script><!-- akd--sj\n <!-- \t\0f--ajk--df->lafj --></script>",
+        b"<script><!-- akd--sj\n <!-- \t\0f--ajk--df->lafj --></script>",
+    );
 }
 
 #[test]
@@ -434,30 +586,54 @@ fn test_processing_instructions() {
 #[test]
 fn test_js_minification() {
     eval_with_js_min(b"<script>let a = 1;</script>", b"<script>let a=1;</script>");
-    eval_with_js_min(br#"
+    eval_with_js_min(
+        br#"
         <script>let a = 1;</script>
         <script>let b = 2;</script>
-    "#, b"<script>let a=1;</script><script>let b=2;</script>");
-    eval_with_js_min(b"<scRIPt type=text/plain>   alert(1.00000);   </scripT>", b"<script type=text/plain>   alert(1.00000);   </script>");
-    eval_with_js_min(br#"
+    "#,
+        b"<script>let a=1;</script><script>let b=2;</script>",
+    );
+    eval_with_js_min(
+        b"<scRIPt type=text/plain>   alert(1.00000);   </scripT>",
+        b"<script type=text/plain>   alert(1.00000);   </script>",
+    );
+    eval_with_js_min(
+        br#"
         <script>
             // This is a comment.
             let a = 1;
         </script>
-    "#, b"<script>let a=1;</script>");
+    "#,
+        b"<script>let a=1;</script>",
+    );
 }
 
 #[cfg(feature = "js-esbuild")]
 #[test]
 fn test_js_minification_unintentional_closing_tag() {
-    eval_with_js_min(br#"<script>let a = "</" + "script>";</script>"#, br#"<script>let a="<\/script>";</script>"#);
-    eval_with_js_min(br#"<script>let a = "</S" + "cRiPT>";</script>"#, br#"<script>let a="<\/ScRiPT>";</script>"#);
-    eval_with_js_min(br#"<script>let a = "\u003c/script>";</script>"#, br#"<script>let a="<\/script>";</script>"#);
-    eval_with_js_min(br#"<script>let a = "\u003c/scrIPt>";</script>"#, br#"<script>let a="<\/scrIPt>";</script>"#);
+    eval_with_js_min(
+        br#"<script>let a = "</" + "script>";</script>"#,
+        br#"<script>let a="<\/script>";</script>"#,
+    );
+    eval_with_js_min(
+        br#"<script>let a = "</S" + "cRiPT>";</script>"#,
+        br#"<script>let a="<\/ScRiPT>";</script>"#,
+    );
+    eval_with_js_min(
+        br#"<script>let a = "\u003c/script>";</script>"#,
+        br#"<script>let a="<\/script>";</script>"#,
+    );
+    eval_with_js_min(
+        br#"<script>let a = "\u003c/scrIPt>";</script>"#,
+        br#"<script>let a="<\/scrIPt>";</script>"#,
+    );
 }
 
 #[cfg(feature = "js-esbuild")]
 #[test]
 fn test_css_minification() {
-    eval_with_css_min(b"<style>div { color: yellow }</style>", b"<style>div{color:#ff0}</style>");
+    eval_with_css_min(
+        b"<style>div { color: yellow }</style>",
+        b"<style>div{color:#ff0}</style>",
+    );
 }

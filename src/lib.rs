@@ -1,9 +1,9 @@
 use crate::cfg::Cfg;
 use crate::minify::content::minify_content;
-use crate::parse::Code;
 use crate::parse::content::parse_content;
-use crate::spec::tag::EMPTY_TAG_NAME;
+use crate::parse::Code;
 use crate::spec::tag::ns::Namespace;
+use crate::spec::tag::EMPTY_TAG_NAME;
 
 mod ast;
 mod cfg;
@@ -37,7 +37,13 @@ mod tests;
 /// ```
 pub fn minify(src: &[u8], cfg: &Cfg) -> Vec<u8> {
     let mut code = Code::new(src);
-    let parsed = parse_content(cfg, &mut code, Namespace::Html, EMPTY_TAG_NAME, EMPTY_TAG_NAME);
+    let parsed = parse_content(
+        cfg,
+        &mut code,
+        Namespace::Html,
+        EMPTY_TAG_NAME,
+        EMPTY_TAG_NAME,
+    );
     let mut out = Vec::with_capacity(src.len());
     minify_content(cfg, &mut out, EMPTY_TAG_NAME, &parsed.children);
     out

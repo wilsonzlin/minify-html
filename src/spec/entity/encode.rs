@@ -1,7 +1,7 @@
 use memchr::memchr;
 
 use crate::gen::codepoints::ALPHANUMERIC_OR_EQUALS;
-use crate::gen::entities::{ENTITY, EntityType};
+use crate::gen::entities::{EntityType, ENTITY};
 use crate::pattern::TrieNodeMatch;
 
 pub fn encode_ampersands(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
@@ -19,9 +19,14 @@ pub fn encode_ampersands(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
                 TrieNodeMatch::NotFound { reached } => reached,
                 TrieNodeMatch::Found { len, value } => {
                     match value {
-                        EntityType::Named(_) if in_attr_val
-                            && code[len - 1] != b';'
-                            && code.get(len).filter(|&&c| ALPHANUMERIC_OR_EQUALS[c]).is_some() => {
+                        EntityType::Named(_)
+                            if in_attr_val
+                                && code[len - 1] != b';'
+                                && code
+                                    .get(len)
+                                    .filter(|&&c| ALPHANUMERIC_OR_EQUALS[c])
+                                    .is_some() =>
+                        {
                             // A named entity inside an attribute value that doesn't end with semicolon but is followed by an alphanumeric or `=` character is not decoded, so we don't need to encode.
                             // https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state.
                         }
@@ -36,6 +41,6 @@ pub fn encode_ampersands(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
             res.extend_from_slice(&code[..len]);
             code = &code[len..];
         };
-    };
+    }
     res
 }

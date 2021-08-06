@@ -12,8 +12,8 @@ use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
 use crate::pattern::Replacer;
 use crate::spec::entity::encode::encode_ampersands;
-use crate::spec::tag::EMPTY_TAG_NAME;
 use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use crate::spec::tag::EMPTY_TAG_NAME;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum AttrType {
@@ -35,10 +35,9 @@ pub fn minify_element(
     closing_tag: ElementClosingTag,
     children: &[NodeData],
 ) -> () {
-    let can_omit_closing_tag = cfg.omit_closing_tags && (
-        can_omit_as_before(previous_sibling_element, tag_name)
-            || (is_last_child_text_or_element_node && can_omit_as_last_node(parent, tag_name))
-    );
+    let can_omit_closing_tag = cfg.omit_closing_tags
+        && (can_omit_as_before(previous_sibling_element, tag_name)
+            || (is_last_child_text_or_element_node && can_omit_as_last_node(parent, tag_name)));
 
     out.push(b'<');
     out.extend_from_slice(tag_name);
@@ -50,13 +49,9 @@ pub fn minify_element(
         out.extend_from_slice(name);
         if !value.is_empty() {
             out.push(b'=');
-            out.extend_from_slice(
-                &minify_attr_val(
-                    &encode_ampersands(value, true),
-                ),
-            );
+            out.extend_from_slice(&minify_attr_val(&encode_ampersands(value, true)));
         };
-    };
+    }
     if closing_tag == ElementClosingTag::SelfClosing {
         if last_attr == AttrType::Unquoted {
             out.push(b' ');
@@ -72,7 +67,8 @@ pub fn minify_element(
 
     minify_content(cfg, out, tag_name, children);
 
-    if closing_tag != ElementClosingTag::Present || (cfg.omit_closing_tags && can_omit_closing_tag) {
+    if closing_tag != ElementClosingTag::Present || (cfg.omit_closing_tags && can_omit_closing_tag)
+    {
         return;
     };
     out.extend_from_slice(b"</");

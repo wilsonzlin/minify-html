@@ -166,7 +166,10 @@ lazy_static! {
 }
 
 #[inline(always)]
-pub fn get_whitespace_minification_for_tag(tag_name: Option<&[u8]>, descendant_of_pre: bool) -> &'static WhitespaceMinification {
+pub fn get_whitespace_minification_for_tag(
+    tag_name: Option<&[u8]>,
+    descendant_of_pre: bool,
+) -> &'static WhitespaceMinification {
     if descendant_of_pre {
         WHITESPACE_SENSITIVE
     } else {

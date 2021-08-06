@@ -24,7 +24,7 @@ fn build_chevron_replacer() -> Replacer {
             patterns.push(vec![b'<', c]);
             replacements.push(vec![b'&', b'L', b'T', c]);
         };
-    };
+    }
 
     Replacer::new(
         AhoCorasickBuilder::new()
@@ -52,7 +52,7 @@ pub fn minify_content(
             NodeData::Text { .. } | NodeData::Element { .. } => break,
             _ => index_of_last_text_or_elem_child -= 1,
         };
-    };
+    }
 
     let mut previous_sibling_element: &[u8] = EMPTY_TAG_NAME;
     for (i, c) in nodes.iter().enumerate() {
@@ -84,11 +84,8 @@ pub fn minify_content(
                 ScriptOrStyleLang::Data => out.extend_from_slice(code),
                 ScriptOrStyleLang::JS => minify_js(cfg, out, code),
             },
-            NodeData::Text { value } => out.extend_from_slice(
-                &CHEVRON_REPLACER.replace_all(
-                    &encode_ampersands(value, false)
-                )
-            ),
+            NodeData::Text { value } => out
+                .extend_from_slice(&CHEVRON_REPLACER.replace_all(&encode_ampersands(value, false))),
         };
-    };
+    }
 }

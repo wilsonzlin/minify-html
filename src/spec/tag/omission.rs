@@ -1,5 +1,5 @@
 use lazy_static::lazy_static;
-use std::collections::{HashSet, HashMap};
+use std::collections::{HashMap, HashSet};
 
 // Rules sourced from https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission.
 // TODO Opening tags
@@ -161,14 +161,15 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref OPTGROUP_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
-        followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
-            s.insert(b"optgroup");
-            s
-        },
-        is_last: ClosingTagOmissionRuleIfLast::Always,
-    };
+    static ref OPTGROUP_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule =
+        ClosingTagOmissionRule {
+            followed_by: {
+                let mut s = HashSet::<&'static [u8]>::new();
+                s.insert(b"optgroup");
+                s
+            },
+            is_last: ClosingTagOmissionRuleIfLast::Always,
+        };
 }
 
 lazy_static! {
@@ -275,7 +276,8 @@ lazy_static! {
 
 // Use an empty slice for `parent` if no parent.
 pub fn can_omit_as_last_node(parent: &[u8], child: &[u8]) -> bool {
-    CLOSING_TAG_OMISSION_RULES.get(child)
+    CLOSING_TAG_OMISSION_RULES
+        .get(child)
         .filter(|r| match &r.is_last {
             ClosingTagOmissionRuleIfLast::Always => true,
             ClosingTagOmissionRuleIfLast::Never => false,
@@ -286,7 +288,8 @@ pub fn can_omit_as_last_node(parent: &[u8], child: &[u8]) -> bool {
 
 // Use an empty slice for `before` if no previous sibling element.
 pub fn can_omit_as_before(before: &[u8], after: &[u8]) -> bool {
-    CLOSING_TAG_OMISSION_RULES.get(before)
+    CLOSING_TAG_OMISSION_RULES
+        .get(before)
         .filter(|r| r.followed_by.contains(after))
         .is_some()
 }

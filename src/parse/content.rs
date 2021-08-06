@@ -3,17 +3,17 @@ use lazy_static::lazy_static;
 use memchr::memrchr;
 
 use crate::ast::NodeData;
-use crate::Cfg;
 use crate::parse::bang::parse_bang;
-use crate::parse::Code;
 use crate::parse::comment::parse_comment;
 use crate::parse::content::ContentType::*;
 use crate::parse::element::{parse_element, parse_tag, peek_tag_name};
 use crate::parse::instruction::parse_instruction;
+use crate::parse::Code;
 use crate::spec::entity::decode::decode_entities;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 use crate::spec::tag::void::VOID_TAGS;
+use crate::Cfg;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum ContentType {
@@ -43,7 +43,8 @@ lazy_static! {
 }
 
 // Keep in sync with order of patterns in CONTENT_TYPE_PATTERN.
-static CONTENT_TYPE_FROM_PATTERN: &'static [ContentType] = &[OpeningTag, ClosingTag, Instruction, Bang, Comment];
+static CONTENT_TYPE_FROM_PATTERN: &'static [ContentType] =
+    &[OpeningTag, ClosingTag, Instruction, Bang, Comment];
 
 pub struct ParsedContent {
     pub children: Vec<NodeData>,
@@ -51,7 +52,13 @@ pub struct ParsedContent {
 }
 
 // Use empty slice for `grandparent` or `parent` if none.
-pub fn parse_content(cfg: &Cfg, code: &mut Code, ns: Namespace, grandparent: &[u8], parent: &[u8]) -> ParsedContent {
+pub fn parse_content(
+    cfg: &Cfg,
+    code: &mut Code,
+    ns: Namespace,
+    grandparent: &[u8],
+    parent: &[u8],
+) -> ParsedContent {
     // We assume the closing tag has been omitted until we see one explicitly before EOF (or it has been omitted as per the spec).
     let mut closing_tag_omitted = true;
     let mut nodes = Vec::<NodeData>::new();
@@ -80,7 +87,9 @@ pub fn parse_content(cfg: &Cfg, code: &mut Code, ns: Namespace, grandparent: &[u
                 if name.is_empty() {
                     // Malformed code, drop until and including next `>`.
                     typ = MalformedLeftChevronSlash;
-                } else if grandparent == name.as_slice() && can_omit_as_last_node(grandparent, parent) {
+                } else if grandparent == name.as_slice()
+                    && can_omit_as_last_node(grandparent, parent)
+                {
                     // The upcoming closing tag implicitly closes the current element e.g. `<tr><td>(current position)</tr>`.
                     // This DOESN'T handle when grandparent doesn't exist (represented by an empty slice). However, in that case it's irrelevant, as it would mean we would be at EOF, and our parser simply auto-closes everything anyway. (Normally we'd have to determine if `<p>Hello` is an error or allowed.)
                     typ = OmittedClosingTag;
@@ -119,7 +128,7 @@ pub fn parse_content(cfg: &Cfg, code: &mut Code, ns: Namespace, grandparent: &[u
             }
             ClosingTagForVoidElement => drop(parse_tag(code)),
         };
-    };
+    }
     debug_assert_eq!(text_len, 0);
     ParsedContent {
         children: nodes,
