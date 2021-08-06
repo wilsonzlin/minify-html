@@ -95,7 +95,7 @@ pub fn parse_content(cfg: &Cfg, code: &mut Code, ns: Namespace, grandparent: &[u
         };
         if text_len > 0 {
             nodes.push(NodeData::Text {
-                code: decode_entities(code.slice_and_shift(text_len), false),
+                value: decode_entities(code.slice_and_shift(text_len), false),
             });
             text_len = 0;
         };

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::ast::NodeData;
+use crate::ast::{ElementClosingTag, NodeData, ScriptOrStyleLang};
 use crate::Cfg;
 use crate::gen::codepoints::{ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE, WHITESPACE_OR_SLASH};
 use crate::parse::Code;
@@ -9,6 +9,7 @@ use crate::parse::script::parse_script_content;
 use crate::parse::style::parse_style_content;
 use crate::parse::textarea::parse_textarea_content;
 use crate::spec::entity::decode::decode_entities;
+use crate::spec::script::JAVASCRIPT_MIME_TYPES;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::void::VOID_TAGS;
 
@@ -90,12 +91,20 @@ pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -
         self_closing,
     } = parse_tag(code);
 
-    // See spec for more details.
-    if self_closing && ns != Namespace::Html || VOID_TAGS.contains(elem_name.as_slice()) {
+    // Only foreign elements can be self closed.
+    if self_closing && ns != Namespace::Html {
         return NodeData::Element {
             attributes,
             children: Vec::new(),
-            closing_tag_omitted: true,
+            closing_tag: ElementClosingTag::SelfClosing,
+            name: elem_name,
+        };
+    };
+    if VOID_TAGS.contains(elem_name.as_slice()) {
+        return NodeData::Element {
+            attributes,
+            children: Vec::new(),
+            closing_tag: ElementClosingTag::Void,
             name: elem_name,
         };
     };
@@ -110,7 +119,11 @@ pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -
         mut closing_tag_omitted,
         children,
     } = match elem_name.as_slice() {
-        b"script" => parse_script_content(cfg, code),
+        // TODO to_vec call allocates every time?
+        b"script" => match attributes.get(&b"type".to_vec()) {
+            Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => parse_script_content(cfg, code, ScriptOrStyleLang::Data),
+            _ => parse_script_content(cfg, code, ScriptOrStyleLang::JS),
+        },
         b"style" => parse_style_content(cfg, code),
         b"textarea" => parse_textarea_content(cfg, code),
         _ => parse_content(cfg, code, child_ns, parent, &elem_name)
@@ -124,7 +137,11 @@ pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -
     NodeData::Element {
         attributes,
         children,
-        closing_tag_omitted,
+        closing_tag: if closing_tag_omitted {
+            ElementClosingTag::Omitted
+        } else {
+            ElementClosingTag::Present
+        },
         name: elem_name,
     }
 }

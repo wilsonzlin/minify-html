@@ -22,14 +22,14 @@ use crate::gen::entities::{ENTITY, EntityType};
 use crate::pattern::TrieNodeMatch;
 
 enum Decoded {
-    Numeric(char),
-    Named(&'static [u8]),
     Ignored,
+    Named(&'static [u8]),
+    Numeric(char),
 }
 
 struct ParsedEntity {
-    read_len: usize,
     decoded: Decoded,
+    read_len: usize,
 }
 
 fn parse_numeric_entity(
@@ -100,7 +100,7 @@ fn parse_entity(code: &[u8], in_attr_val: bool) -> ParsedEntity {
                 6,
             ),
             EntityType::Named(decoded) => {
-                if in_attr_val && code[match_len - 1] != b';' && code.get(match_len).filter(|c| ALPHANUMERIC_OR_EQUALS[**c]).is_some() {
+                if in_attr_val && code[match_len - 1] != b';' && code.get(match_len).filter(|&&c| ALPHANUMERIC_OR_EQUALS[c]).is_some() {
                     // Don't decode if named entity is inside an attribute value and doesn't end with semicolon but is followed by an alphanumeric or `=` character.
                     // https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state.
                     ParsedEntity {

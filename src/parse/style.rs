@@ -2,7 +2,7 @@ use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
 use lazy_static::lazy_static;
 
-use crate::ast::NodeData;
+use crate::ast::{NodeData, ScriptOrStyleLang};
 use crate::Cfg;
 use crate::parse::Code;
 use crate::parse::content::ParsedContent;
@@ -20,6 +20,11 @@ pub fn parse_style_content(cfg: &Cfg, code: &mut Code) -> ParsedContent {
     };
     ParsedContent {
         closing_tag_omitted,
-        children: vec![NodeData::ScriptOrStyleContent { code: code.copy_and_shift(len) }],
+        children: vec![
+            NodeData::ScriptOrStyleContent {
+                code: code.copy_and_shift(len),
+                lang: ScriptOrStyleLang::CSS,
+            },
+        ],
     }
 }

@@ -1,13 +1,13 @@
 use crate::gen::codepoints::Lookup;
 
-mod bang;
-mod comment;
-mod content;
-mod element;
-mod instruction;
-mod script;
-mod style;
-mod textarea;
+pub mod bang;
+pub mod comment;
+pub mod content;
+pub mod element;
+pub mod instruction;
+pub mod script;
+pub mod style;
+pub mod textarea;
 
 pub struct Code<'c> {
     code: &'c [u8],

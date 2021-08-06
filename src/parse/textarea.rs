@@ -21,6 +21,6 @@ pub fn parse_textarea_content(cfg: &Cfg, code: &mut Code) -> ParsedContent {
     };
     ParsedContent {
         closing_tag_omitted,
-        children: vec![NodeData::Text { code: decode_entities(code.slice_and_shift(len), false) }],
+        children: vec![NodeData::Text { value: decode_entities(code.slice_and_shift(len), false) }],
     }
 }

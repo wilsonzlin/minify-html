@@ -21,5 +21,6 @@ pub fn parse_comment(cfg: &Cfg, code: &mut Code) -> NodeData {
     code.shift(matched);
     NodeData::Comment {
         code: data,
+        ended: matched > 0,
     }
 }

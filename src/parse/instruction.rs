@@ -21,5 +21,6 @@ pub fn parse_instruction(cfg: &Cfg, code: &mut Code) -> NodeData {
     code.shift(matched);
     NodeData::Instruction {
         code: data,
+        ended: matched > 0,
     }
 }

@@ -15,5 +15,6 @@ pub fn parse_bang(cfg: &Cfg, code: &mut Code) -> NodeData {
     code.shift(matched);
     NodeData::Bang {
         code: data,
+        ended: matched > 0,
     }
 }
