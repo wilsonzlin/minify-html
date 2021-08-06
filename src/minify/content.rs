@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 
 use crate::ast::{NodeData, ScriptOrStyleLang};
 use crate::cfg::Cfg;
-use crate::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use crate::gen::codepoints::TAG_NAME_CHAR;
 use crate::minify::bang::minify_bang;
 use crate::minify::comment::minify_comment;
 use crate::minify::css::minify_css;
@@ -13,14 +13,16 @@ use crate::minify::js::minify_js;
 use crate::pattern::Replacer;
 use crate::spec::entity::encode::encode_ampersands;
 use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
+use crate::whitespace::{collapse_whitespace, is_all_whitespace, left_trim, right_trim};
 
 fn build_chevron_replacer() -> Replacer {
     let mut patterns = Vec::<Vec<u8>>::new();
     let mut replacements = Vec::<Vec<u8>>::new();
 
-    // Replace all `<` with a `&LT` if it's followed by a TAG_NAME_CHAR.
+    // Replace all `<` with a `&LT` if it's followed by a TAG_NAME_CHAR, `/`, `!`, or `?`.
     for c in 0u8..128u8 {
-        if TAG_NAME_CHAR[c] {
+        // TODO Create single lookup.
+        if TAG_NAME_CHAR[c] || c == b'/' || c == b'!' || c == b'?' {
             patterns.push(vec![b'<', c]);
             replacements.push(vec![b'&', b'L', b'T', c]);
         };
@@ -37,50 +39,6 @@ fn build_chevron_replacer() -> Replacer {
 
 lazy_static! {
     static ref CHEVRON_REPLACER: Replacer = build_chevron_replacer();
-}
-
-fn left_trim(val: &mut Vec<u8>) -> () {
-    let mut len = 0;
-    while val.get(len).filter(|&&c| WHITESPACE[c]).is_some() {
-        len += 1;
-    }
-    val.drain(0..len);
-}
-
-fn right_trim(val: &mut Vec<u8>) -> () {
-    let mut retain = val.len();
-    while retain > 0 && val.get(retain - 1).filter(|&&c| WHITESPACE[c]).is_some() {
-        retain -= 1;
-    }
-    val.truncate(retain);
-}
-
-fn collapse_whitespace(val: &mut Vec<u8>) -> () {
-    let mut write = 0;
-    let mut in_whitespace = false;
-    for i in 0..val.len() {
-        let mut c = val[i];
-        if WHITESPACE[c] {
-            if in_whitespace {
-                // Skip this character.
-                continue;
-            };
-            in_whitespace = true;
-            c = b' ';
-        };
-        val[write] = c;
-        write += 1;
-    }
-    val.truncate(write);
-}
-
-fn is_all_whitespace(val: &[u8]) -> bool {
-    for &c in val {
-        if !WHITESPACE[c] {
-            return false;
-        };
-    }
-    true
 }
 
 pub fn minify_content(

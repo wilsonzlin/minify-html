@@ -14,6 +14,7 @@ If the input ends while in the middle of a tag or attribute value, that tag/attr
 
 |Rule|Example source|Example interpretation|
 |---|---|---|
+|A tag name is one or more alphanumeric, `:`, or `-` characters|`<x:a:b:--d09>`|`<x:a:b:--d09>`|
 |`script`, `style`, and `textarea` tags do not close until the case-insensitive sequence `</` followed by the tag name.|`<teXTaRea></textare></TEXTArea>`|`<textarea></textare></textarea>`|
 |Attribute-like syntax in closing tags are parsed like attributes but ignored.|`<div></div x=">">5`|`<div></div>`|
 |If the character following `</` is not a valid tag name character, all code until the next `>` is dropped. It is not considered a closing tag, even as an invalid one.|`<div></   div x=">">5`|`<div>">5`|
@@ -30,7 +31,7 @@ If the input ends while in the middle of a tag or attribute value, that tag/attr
 |Rule|Example source|Example interpretation|
 |---|---|---|
 |Whitespace can exist between an `=` and the attribute name and value.|`a   =  =b=`|`a="=b="`|
-|An unquoted attribute value continues until the next `>`, `/`, or whitespace character.|`a = b"cdef/>`|`a='b"cdef' />`|
+|An unquoted attribute value continues until the next `>` or whitespace character.|`a = b"cdef/>`|`a='b"cdef/'>`|
 |Whitespace and slashes separate attributes, but not around `=`.|`a  = b /c/d==/e=/f`|`a="b" c="" d="=" e="/f"`|
 |An attribute name starts with any character other than a whitespace, `/`, or `>` (i.e. `=` is allowed) and continues until the next `=`, `/`, `>`, or whitespace character.|`== "a":  {}#$'=/>`|`=="" "a":="" {}#$'="" />`|
 |If multiple attributes exist with the same case-insensitive name, only the last is kept.|`a=b a=c b=c a=d`|`a=d`|

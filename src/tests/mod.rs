@@ -17,7 +17,7 @@ fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
             omit_closing_tags: true,
             remove_bangs: true,
             remove_comments: true,
-            remove_processing_instructions: true,
+            remove_processing_instructions: false,
             remove_spaces_between_attributes: true,
         },
     );
@@ -34,7 +34,7 @@ fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
             omit_closing_tags: true,
             remove_bangs: true,
             remove_comments: true,
-            remove_processing_instructions: true,
+            remove_processing_instructions: false,
             remove_spaces_between_attributes: true,
         },
     );
@@ -51,7 +51,7 @@ fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
             omit_closing_tags: true,
             remove_bangs: true,
             remove_comments: true,
-            remove_processing_instructions: true,
+            remove_processing_instructions: false,
             remove_spaces_between_attributes: true,
         },
     );

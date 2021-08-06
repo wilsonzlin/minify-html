@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::ast::{ElementClosingTag, NodeData, ScriptOrStyleLang};
 use crate::gen::codepoints::{
     ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE,
-    WHITESPACE_OR_SLASH, WHITESPACE_OR_SLASH_OR_EQUALS,
+    WHITESPACE_OR_SLASH, WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON,
 };
 use crate::parse::content::{parse_content, ParsedContent};
 use crate::parse::script::parse_script_content;
@@ -75,12 +75,14 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
             break;
         };
         let mut attr_name = Vec::new();
-        // An attribute name can start with `=`, but ends at the next WHITESPACE_OR_SLASH_OR_EQUALS.
+        // An attribute name can start with `=`, but ends at the next whitespace, `=`, `/`, or `>`.
         if let Some(c) = code.shift_if_next_not_in_lookup(WHITESPACE_OR_SLASH) {
             attr_name.push(c);
         };
         attr_name.extend_from_slice(
-            code.slice_and_shift_while_not_in_lookup(WHITESPACE_OR_SLASH_OR_EQUALS),
+            code.slice_and_shift_while_not_in_lookup(
+                WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON,
+            ),
         );
         debug_assert!(!attr_name.is_empty());
         attr_name.make_ascii_lowercase();

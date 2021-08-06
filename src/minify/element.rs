@@ -4,7 +4,6 @@ use crate::ast::{ElementClosingTag, NodeData};
 use crate::cfg::Cfg;
 use crate::minify::attr::{minify_attr_val, AttrType};
 use crate::minify::content::minify_content;
-use crate::spec::entity::encode::encode_ampersands;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 
@@ -34,14 +33,17 @@ pub fn minify_element(
     let mut attrs_sorted = attributes.into_iter().collect::<Vec<_>>();
     attrs_sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
     for (name, value) in attrs_sorted {
+        let min = minify_attr_val(ns, tag_name, &name, value);
+        if min.typ() == AttrType::Redundant {
+            continue;
+        };
         if !cfg.remove_spaces_between_attributes || last_attr != AttrType::Quoted {
             out.push(b' ');
         };
         out.extend_from_slice(&name);
-        if value.is_empty() {
+        if min.len() == 0 {
             last_attr = AttrType::NoValue;
         } else {
-            let min = minify_attr_val(&encode_ampersands(&value, true));
             out.push(b'=');
             min.out(out);
             last_attr = min.typ();

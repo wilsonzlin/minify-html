@@ -4,7 +4,7 @@ use crate::ast::{ElementClosingTag, NodeData};
 use crate::parse::element::{parse_element, parse_tag, ParsedTag};
 use crate::parse::Code;
 use crate::spec::tag::ns::Namespace;
-use crate::spec::tag::EMPTY_TAG_NAME;
+use crate::spec::tag::EMPTY_SLICE;
 
 #[test]
 fn test_parse_tag() {
@@ -45,7 +45,7 @@ fn test_parse_tag() {
 #[test]
 fn test_parse_element() {
     let mut code = Code::new(br#"<a b=\"c\"></a>"#);
-    let elem = parse_element(&mut code, Namespace::Html, EMPTY_TAG_NAME);
+    let elem = parse_element(&mut code, Namespace::Html, EMPTY_SLICE);
     assert_eq!(
         elem,
         NodeData::Element {

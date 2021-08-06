@@ -3,7 +3,7 @@ use crate::minify::content::minify_content;
 use crate::parse::content::parse_content;
 use crate::parse::Code;
 use crate::spec::tag::ns::Namespace;
-use crate::spec::tag::EMPTY_TAG_NAME;
+use crate::spec::tag::EMPTY_SLICE;
 
 mod ast;
 mod cfg;
@@ -14,6 +14,7 @@ mod pattern;
 mod spec;
 #[cfg(test)]
 mod tests;
+mod whitespace;
 
 /// Copies a slice into a new Vec and minifies it, returning the Vec.
 /// The resulting Vec will only contain minified code.
@@ -38,8 +39,8 @@ mod tests;
 /// ```
 pub fn minify(src: &[u8], cfg: &Cfg) -> Vec<u8> {
     let mut code = Code::new(src);
-    let parsed = parse_content(&mut code, Namespace::Html, EMPTY_TAG_NAME, EMPTY_TAG_NAME);
+    let parsed = parse_content(&mut code, Namespace::Html, EMPTY_SLICE, EMPTY_SLICE);
     let mut out = Vec::with_capacity(src.len());
-    minify_content(cfg, &mut out, false, EMPTY_TAG_NAME, parsed.children);
+    minify_content(cfg, &mut out, false, EMPTY_SLICE, parsed.children);
     out
 }
