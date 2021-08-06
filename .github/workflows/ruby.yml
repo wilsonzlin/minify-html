@@ -1,11 +1,12 @@
 name: Build and publish Ruby gem
 
 on:
-  create:
+  push:
+    branches:
+      - master
     tags:
       - 'v*'
-  repository_dispatch:
-    types: [wf-ruby]
+  workflow_dispatch:
 
 jobs:
   build:

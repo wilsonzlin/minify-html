@@ -1,11 +1,12 @@
 name: Build and upload CLI
 
 on:
-  create:
+  push:
+    branches:
+      - master
     tags:
       - 'v*'
-  repository_dispatch:
-    types: [wf-cli]
+  workflow_dispatch:
 
 jobs:
   cli:

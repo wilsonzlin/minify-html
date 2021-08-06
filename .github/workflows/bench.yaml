@@ -1,11 +1,12 @@
 name: Run benchmark and upload results
 
 on:
-  create:
+  push:
+    branches:
+      - master
     tags:
       - 'v*'
-  repository_dispatch:
-    types: [wf-bench]
+  workflow_dispatch:
 
 jobs:
   bench:

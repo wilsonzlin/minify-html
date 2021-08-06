@@ -1,11 +1,12 @@
 name: Build and publish Java artifact
 
 on:
-  create:
+  push:
+    branches:
+      - master
     tags:
       - 'v*'
-  repository_dispatch:
-    types: [wf-java]
+  workflow_dispatch:
 
 jobs:
   build:

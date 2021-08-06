@@ -1,11 +1,12 @@
 name: Fuzz
 
 on:
-  create:
+  push:
+    branches:
+      - master
     tags:
       - 'v*'
-  repository_dispatch:
-    types: [wf-fuzz]
+  workflow_dispatch:
 
 jobs:
   fuzz:
