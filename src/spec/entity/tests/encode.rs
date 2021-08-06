@@ -11,9 +11,9 @@ fn test_encode_ampersands_works_for_content() {
 
 #[test]
 fn test_encode_ampersands_works_for_attr() {
-    let out = encode_ampersands(b"https://a.com/b?c=d&param=123&param;&lt&mdash;", true);
+    let out = encode_ampersands(b"https://a.com/b?c  = d&param=123&param;&lt&mdash;", true);
     assert_eq!(
         std::str::from_utf8(&out).unwrap(),
-        "https://a.com/b?c=d&param=123&param;&amplt&ampmdash;"
+        "https://a.com/b?c  = d&param=123&param;&amplt&ampmdash;"
     );
 }

@@ -163,7 +163,7 @@ fn test_parsing_with_omitted_tags() {
 fn test_unmatched_closing_tag() {
     eval(b"Hello</p>Goodbye", b"Hello<p>Goodbye");
     eval(b"Hello<br></br>Goodbye", b"Hello<br>Goodbye");
-    eval(b"<div>Hello</p>Goodbye", b"<div>Hello</p>Goodbye");
+    eval(b"<div>Hello</p>Goodbye", b"<div>Hello<p>Goodbye");
     eval(b"<ul><li>a</p>", b"<ul><li>a<p>");
     eval(b"<ul><li><rt>a</p>", b"<ul><li><rt>a<p>");
     eval(

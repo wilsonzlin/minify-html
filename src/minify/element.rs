@@ -31,7 +31,9 @@ pub fn minify_element(
     out.push(b'<');
     out.extend_from_slice(tag_name);
     let mut last_attr = AttrType::NoValue;
-    for (name, value) in attributes {
+    let mut attrs_sorted = attributes.into_iter().collect::<Vec<_>>();
+    attrs_sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+    for (name, value) in attrs_sorted {
         if !cfg.remove_spaces_between_attributes || last_attr != AttrType::Quoted {
             out.push(b' ');
         };

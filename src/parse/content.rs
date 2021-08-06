@@ -3,6 +3,7 @@ use lazy_static::lazy_static;
 use memchr::memrchr;
 
 use crate::ast::NodeData;
+use crate::gen::codepoints::TAG_NAME_CHAR;
 use crate::parse::bang::parse_bang;
 use crate::parse::comment::parse_comment;
 use crate::parse::content::ContentType::*;
@@ -27,23 +28,44 @@ enum ContentType {
     ClosingTagForVoidElement,
 }
 
-lazy_static! {
-    static ref CONTENT_TYPE_PATTERN: AhoCorasick = AhoCorasickBuilder::new()
-        .dfa(true)
-        .match_kind(MatchKind::LeftmostLongest)
-        // Keep in sync with order of CONTENT_TYPE_FROM_PATTERN.
-        .build(&[
-            "<",
-            "</",
-            "<?",
-            "<!",
-            "<!--",
-        ]);
+fn build_content_type_matcher() -> (AhoCorasick, Vec<ContentType>) {
+    let mut patterns = Vec::<Vec<u8>>::new();
+    let mut types = Vec::<ContentType>::new();
+
+    // Only when the character after a `<` is TAG_NAME_CHAR is the `<` is an opening tag.
+    // Otherwise, the `<` is interpreted literally as part of text.
+    for c in 0u8..128u8 {
+        if TAG_NAME_CHAR[c] {
+            patterns.push(vec![b'<', c]);
+            types.push(ContentType::OpeningTag);
+        };
+    }
+
+    patterns.push(b"</".to_vec());
+    types.push(ContentType::ClosingTag);
+
+    patterns.push(b"<?".to_vec());
+    types.push(ContentType::Instruction);
+
+    patterns.push(b"<!".to_vec());
+    types.push(ContentType::Bang);
+
+    patterns.push(b"<!--".to_vec());
+    types.push(ContentType::Comment);
+
+    (
+        AhoCorasickBuilder::new()
+            .dfa(true)
+            .match_kind(MatchKind::LeftmostLongest)
+            // Keep in sync with order of CONTENT_TYPE_FROM_PATTERN.
+            .build(patterns),
+        types,
+    )
 }
 
-// Keep in sync with order of patterns in CONTENT_TYPE_PATTERN.
-static CONTENT_TYPE_FROM_PATTERN: &'static [ContentType] =
-    &[OpeningTag, ClosingTag, Instruction, Bang, Comment];
+lazy_static! {
+    static ref CONTENT_TYPE_MATCHER: (AhoCorasick, Vec<ContentType>) = build_content_type_matcher();
+}
 
 pub struct ParsedContent {
     pub children: Vec<NodeData>,
@@ -60,23 +82,23 @@ pub fn parse_content(
     // We assume the closing tag has been omitted until we see one explicitly before EOF (or it has been omitted as per the spec).
     let mut closing_tag_omitted = true;
     let mut nodes = Vec::<NodeData>::new();
-    let mut text_len = 0;
     loop {
-        let (text_len_add, mut typ) = match CONTENT_TYPE_PATTERN.find(&code.str()[text_len..]) {
-            Some(m) => (m.start(), CONTENT_TYPE_FROM_PATTERN[m.pattern()]),
+        let (text_len, mut typ) = match CONTENT_TYPE_MATCHER.0.find(&code.str()) {
+            Some(m) => (m.start(), CONTENT_TYPE_MATCHER.1[m.pattern()]),
             None => (code.rem(), Text),
         };
-        text_len += text_len_add;
+        if text_len > 0 {
+            let text = decode_entities(code.slice_and_shift(text_len), false);
+            match nodes.last_mut() {
+                Some(NodeData::Text { value }) => value.extend_from_slice(&text),
+                _ => nodes.push(NodeData::Text { value: text })
+            };
+        };
         // Check using Parsing.md tag rules.
         if typ == OpeningTag || typ == ClosingTag {
             let name = peek_tag_name(code);
             if typ == OpeningTag {
-                // If character after `<` is TAG_NAME_CHAR, we're at an opening tag.
-                // Otherwise, the `<` is interpreted literally as part of text.
-                if name.is_empty() {
-                    text_len += 1;
-                    continue;
-                };
+                debug_assert!(!name.is_empty());
                 if can_omit_as_before(parent, &name) {
                     // The upcoming opening tag implicitly closes the current element e.g. `<tr><td>(current position)<td>`.
                     typ = OmittedClosingTag;
@@ -100,12 +122,6 @@ pub fn parse_content(
                 };
             };
         };
-        if text_len > 0 {
-            nodes.push(NodeData::Text {
-                value: decode_entities(code.slice_and_shift(text_len), false),
-            });
-            text_len = 0;
-        };
         match typ {
             Text => break,
             OpeningTag => nodes.push(parse_element(code, ns, parent)),
@@ -127,7 +143,6 @@ pub fn parse_content(
             ClosingTagForVoidElement => drop(parse_tag(code)),
         };
     }
-    debug_assert_eq!(text_len, 0);
     ParsedContent {
         children: nodes,
         closing_tag_omitted,

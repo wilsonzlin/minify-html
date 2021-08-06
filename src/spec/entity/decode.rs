@@ -36,13 +36,15 @@ struct ParsedEntity {
 
 fn parse_numeric_entity(
     code: &[u8],
+    // read_start should be separate (and not simply `&code[read_start..]`) so that read_len result is correct.
+    read_start: usize,
     digit_lookup: &'static Lookup,
     on_digit: fn(u32, u8) -> u32,
     max_digits: usize,
 ) -> ParsedEntity {
     let mut value = 0u32;
     let mut digits = 0;
-    let mut read_next = 0;
+    let mut read_next = read_start;
     // Skip initial zeros.
     while code.get(read_next).filter(|c| **c == b'0').is_some() {
         read_next += 1;
@@ -86,15 +88,17 @@ fn parse_entity(code: &[u8], in_attr_val: bool) -> ParsedEntity {
             value,
         } => match value {
             EntityType::Dec => parse_numeric_entity(
+                code,
                 // Skip past '&#'. Note that match_len is 3 as it matches '&#[0-9]'.
-                &code[2..],
+                2,
                 DIGIT,
                 |value, c| value.wrapping_mul(10).wrapping_add((c - b'0') as u32),
                 7,
             ),
             EntityType::Hex => parse_numeric_entity(
+                code,
                 // Skip past '&#x'. Note that match_len is 4 as it matches '&#x[0-9a-fA-F]'.
-                &code[3..],
+                3,
                 HEX_DIGIT,
                 |value, c| {
                     value.wrapping_mul(16).wrapping_add(match c {
@@ -145,9 +149,9 @@ pub fn decode_entities(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
             let ParsedEntity { decoded, read_len } = parse_entity(code, in_attr_val);
             match decoded {
                 Decoded::Numeric(c) => {
-                    let mut encoded = [0u8; 4];
-                    c.encode_utf8(&mut encoded);
-                    res.extend_from_slice(&encoded);
+                    let mut buf = [0u8; 4];
+                    let encoded = c.encode_utf8(&mut buf);
+                    res.extend_from_slice(encoded.as_bytes());
                 }
                 Decoded::Ignored => res.extend_from_slice(&code[..read_len]),
                 Decoded::Named(s) => res.extend_from_slice(s),
