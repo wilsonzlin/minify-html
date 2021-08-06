@@ -48,7 +48,7 @@ pub fn minify_content(
     // Use empty slice if none.
     parent: &[u8],
     mut nodes: Vec<NodeData>,
-) -> () {
+) {
     let &WhitespaceMinification {
         collapse,
         destroy_whole,

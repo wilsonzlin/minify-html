@@ -1,4 +1,4 @@
-fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
+fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) {
     let mut code = src.to_vec();
     let min = super::minify(&mut code, cfg);
     assert_eq!(
@@ -7,7 +7,7 @@ fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) -> () {
     );
 }
 
-fn eval(src: &'static [u8], expected: &'static [u8]) -> () {
+fn eval(src: &'static [u8], expected: &'static [u8]) {
     _eval(
         src,
         expected,

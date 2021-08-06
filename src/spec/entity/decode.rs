@@ -68,7 +68,7 @@ fn parse_numeric_entity(
     // Browsers decode to a replacement character (U+FFFD) if malformed.
     let char = Some(value)
         .filter(|_| digits <= max_digits)
-        .and_then(|v| from_u32(v))
+        .and_then(from_u32)
         .unwrap_or('\u{FFFD}');
     ParsedEntity {
         read_len: read_next,

@@ -22,7 +22,7 @@ pub fn minify_element(
     attributes: HashMap<Vec<u8>, Vec<u8>>,
     closing_tag: ElementClosingTag,
     children: Vec<NodeData>,
-) -> () {
+) {
     let can_omit_closing_tag = cfg.omit_closing_tags
         && (can_omit_as_before(tag_name, next_sibling_as_element_tag_name)
             || (is_last_child_text_or_element_node && can_omit_as_last_node(parent, tag_name)));

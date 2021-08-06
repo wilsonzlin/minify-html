@@ -32,7 +32,7 @@ impl<'c> Code<'c> {
         Checkpoint(self.next)
     }
 
-    pub fn restore_checkpoint(&mut self, cp: Checkpoint) -> () {
+    pub fn restore_checkpoint(&mut self, cp: Checkpoint) {
         self.next = cp.0;
     }
 
@@ -51,7 +51,7 @@ impl<'c> Code<'c> {
     }
 
     pub fn shift_if_next_in_lookup(&mut self, lookup: &'static Lookup) -> Option<u8> {
-        let c = self.code.get(self.next).filter(|&&n| lookup[n]).map(|&c| c);
+        let c = self.code.get(self.next).filter(|&&n| lookup[n]).copied();
         if c.is_some() {
             self.next += 1;
         };
@@ -62,15 +62,14 @@ impl<'c> Code<'c> {
         let c = self
             .code
             .get(self.next)
-            .filter(|&&n| !lookup[n])
-            .map(|&c| c);
+            .filter(|&&n| !lookup[n]).copied();
         if c.is_some() {
             self.next += 1;
         };
         c
     }
 
-    pub fn shift(&mut self, n: usize) -> () {
+    pub fn shift(&mut self, n: usize) {
         self.next += n;
     }
 

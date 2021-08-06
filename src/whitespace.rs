@@ -1,6 +1,6 @@
 use crate::gen::codepoints::WHITESPACE;
 
-pub fn left_trim(val: &mut Vec<u8>) -> () {
+pub fn left_trim(val: &mut Vec<u8>) {
     let mut len = 0;
     while val.get(len).filter(|&&c| WHITESPACE[c]).is_some() {
         len += 1;
@@ -8,7 +8,7 @@ pub fn left_trim(val: &mut Vec<u8>) -> () {
     val.drain(0..len);
 }
 
-pub fn right_trim(val: &mut Vec<u8>) -> () {
+pub fn right_trim(val: &mut Vec<u8>) {
     let mut retain = val.len();
     while retain > 0 && val.get(retain - 1).filter(|&&c| WHITESPACE[c]).is_some() {
         retain -= 1;
@@ -16,7 +16,7 @@ pub fn right_trim(val: &mut Vec<u8>) -> () {
     val.truncate(retain);
 }
 
-pub fn collapse_whitespace(val: &mut Vec<u8>) -> () {
+pub fn collapse_whitespace(val: &mut Vec<u8>) {
     let mut write = 0;
     let mut in_whitespace = false;
     for i in 0..val.len() {

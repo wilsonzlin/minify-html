@@ -150,7 +150,7 @@ impl AttrValMinified {
         self.prefix.len() + (self.data.len() - self.start) + self.suffix.len()
     }
 
-    pub fn out(&self, out: &mut Vec<u8>) -> () {
+    pub fn out(&self, out: &mut Vec<u8>) {
         out.extend_from_slice(self.prefix);
         out.extend_from_slice(&self.data[self.start..]);
         out.extend_from_slice(self.suffix);
