@@ -91,7 +91,7 @@ pub fn parse_content(
             let text = decode_entities(code.slice_and_shift(text_len), false);
             match nodes.last_mut() {
                 Some(NodeData::Text { value }) => value.extend_from_slice(&text),
-                _ => nodes.push(NodeData::Text { value: text })
+                _ => nodes.push(NodeData::Text { value: text }),
             };
         };
         // Check using Parsing.md tag rules.
