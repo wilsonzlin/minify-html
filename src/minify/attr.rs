@@ -107,10 +107,85 @@ fn build_unquoted_replacer() -> Replacer {
     )
 }
 
+// If spec compliance is required, these characters must also be encoded in an unquoted attr value,
+// as well as `<` and `>`.
+static WHATWG_UNQUOTED: &[(u8, &[u8])] = &[
+    (b'"', b"&#34"),
+    (b'\'', b"&#39"),
+    (b'=', b"&#61"),
+    (b'`', b"&#6"),
+];
+
+fn build_whatwg_unquoted_replacer() -> Replacer {
+    let mut patterns = Vec::<Vec<u8>>::new();
+    let mut replacements = Vec::<Vec<u8>>::new();
+
+    // Replace all whitespace with a numeric entity, unless the whitespace is followed by a digit or semicolon,
+    // in which case add a semicolon to the encoded entity.
+    for c in "0123456789;".bytes() {
+        for &(ws, rep) in WS {
+            patterns.push(vec![ws, c]);
+            replacements.push({
+                let mut ent = rep.to_vec();
+                ent.push(b';');
+                ent.push(c);
+                ent
+            });
+        }
+    }
+    for &(ws, rep) in WS {
+        patterns.push(vec![ws]);
+        replacements.push(rep.to_vec());
+    }
+
+    // Replace WHATWG-disallowed characters with a numeric entity, unless they're followed by a digit or semicolon,
+    // in which case add a semicolon to the encoded entity.
+    for c in "0123456789;".bytes() {
+        for &(ws, rep) in WHATWG_UNQUOTED {
+            patterns.push(vec![ws, c]);
+            replacements.push({
+                let mut ent = rep.to_vec();
+                ent.push(b';');
+                ent.push(c);
+                ent
+            });
+        }
+    }
+    for &(ws, rep) in WHATWG_UNQUOTED {
+        patterns.push(vec![ws]);
+        replacements.push(rep.to_vec());
+    }
+
+    // Replace all `<` with `&LT`, unless the chevron is followed by a semicolon,
+    // in which case add a semicolon to the encoded entity.
+    // Use `&GT` instead of `&lt` as `&lt` has more conflicting entities e.g. `&ltcc;`, `&ltdot;`.
+    patterns.push(b"<;".to_vec());
+    replacements.push(b"&LT;;".to_vec());
+    patterns.push(b"<".to_vec());
+    replacements.push(b"&LT".to_vec());
+
+    // Replace all `>` with `&GT`, unless the chevron is followed by a semicolon,
+    // in which case add a semicolon to the encoded entity.
+    // Use `&GT` instead of `&gt` as `&gt` has more conflicting entities e.g. `&gtcc;`, `&gtdot;`.
+    patterns.push(b">;".to_vec());
+    replacements.push(b"&GT;;".to_vec());
+    patterns.push(b">".to_vec());
+    replacements.push(b"&GT".to_vec());
+
+    Replacer::new(
+        AhoCorasickBuilder::new()
+            .dfa(true)
+            .match_kind(MatchKind::LeftmostLongest)
+            .build(patterns),
+        replacements,
+    )
+}
+
 lazy_static! {
     static ref DOUBLE_QUOTED_REPLACER: Replacer = build_double_quoted_replacer();
     static ref SINGLE_QUOTED_REPLACER: Replacer = build_single_quoted_replacer();
     static ref UNQUOTED_QUOTED_REPLACER: Replacer = build_unquoted_replacer();
+    static ref WHATWG_UNQUOTED_QUOTED_REPLACER: Replacer = build_whatwg_unquoted_replacer();
 }
 
 pub struct AttrMinifiedValue {
@@ -164,8 +239,12 @@ pub fn encode_using_single_quotes(val: &[u8]) -> AttrMinifiedValue {
     }
 }
 
-pub fn encode_unquoted(val: &[u8]) -> AttrMinifiedValue {
-    let data = UNQUOTED_QUOTED_REPLACER.replace_all(val);
+pub fn encode_unquoted(val: &[u8], whatwg: bool) -> AttrMinifiedValue {
+    let data = if whatwg {
+        WHATWG_UNQUOTED_QUOTED_REPLACER.replace_all(val)
+    } else {
+        UNQUOTED_QUOTED_REPLACER.replace_all(val)
+    };
     let prefix: &'static [u8] = match data.get(0) {
         Some(b'"') => match data.get(1) {
             Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#34;",
@@ -259,7 +338,10 @@ pub fn minify_attr(
     if sq.len() < min.len() {
         min = sq;
     };
-    let uq = encode_unquoted(&encoded);
+    let uq = encode_unquoted(
+        &encoded,
+        cfg.ensure_spec_compliant_unquoted_attribute_values,
+    );
     if uq.len() < min.len() {
         min = uq;
     };

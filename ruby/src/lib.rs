@@ -29,6 +29,7 @@ methods! {
             .unwrap();
 
         let cfg = &Cfg {
+            ensure_spec_compliant_unquoted_attribute_values: get_cfg_hash_prop!(cfg_hash, "ensure_spec_compliant_unquoted_attribute_values"),
             keep_closing_tags: get_cfg_hash_prop!(cfg_hash, "keep_closing_tags"),
             keep_comments: get_cfg_hash_prop!(cfg_hash, "keep_comments"),
             keep_html_and_head_opening_tags: get_cfg_hash_prop!(cfg_hash, "keep_html_and_head_opening_tags"),

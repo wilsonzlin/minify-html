@@ -71,6 +71,7 @@ napi_value node_method_create_configuration(napi_env env, napi_callback_info inf
     /* It's OK if this fails. */ napi_get_value_bool(env, prop##_value, &prop); \
   }
 
+  GET_CFG_PROP(ensure_spec_compliant_unquoted_attribute_values);
   GET_CFG_PROP(keep_closing_tags);
   GET_CFG_PROP(keep_comments);
   GET_CFG_PROP(keep_html_and_head_opening_tags);
@@ -81,6 +82,7 @@ napi_value node_method_create_configuration(napi_env env, napi_callback_info inf
   GET_CFG_PROP(remove_processing_instructions);
 
   Cfg const* cfg = ffi_create_cfg(
+    ensure_spec_compliant_unquoted_attribute_values,
     keep_closing_tags,
     keep_comments,
     keep_html_and_head_opening_tags,

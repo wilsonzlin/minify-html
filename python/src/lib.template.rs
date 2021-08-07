@@ -5,6 +5,7 @@ use std::string::String;
 
 #[pyfunction(
     py_args="*",
+    ensure_spec_compliant_unquoted_attribute_values="false",
     keep_closing_tags="false",
     keep_comments="false",
     keep_html_and_head_opening_tags="false",
@@ -16,6 +17,7 @@ use std::string::String;
 )]
 fn minify(
     code: String,
+    ensure_spec_compliant_unquoted_attribute_values: bool,
     keep_closing_tags: bool,
     keep_comments: bool,
     keep_html_and_head_opening_tags: bool,
@@ -27,6 +29,7 @@ fn minify(
 ) -> PyResult<String> {
     let code = code.into_bytes();
     let out_code = minify_html_native(&code, &Cfg {
+        ensure_spec_compliant_unquoted_attribute_values,
         keep_closing_tags,
         keep_comments,
         keep_html_and_head_opening_tags,

@@ -1,6 +1,8 @@
 /// Configuration settings that can be adjusted and passed to a minification function to change the
 /// minification approach.
 pub struct Cfg {
+    /// Ensure all unquoted attribute values in the output do not contain any characters prohibited by the [WHATWG specification](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2).
+    pub ensure_spec_compliant_unquoted_attribute_values: bool,
     /// Do not omit closing tags when possible.
     pub keep_closing_tags: bool,
     /// Do not omit `<html>` and `<head>` opening tags when they don't have attributes.
@@ -30,6 +32,7 @@ pub struct Cfg {
 impl Cfg {
     pub fn new() -> Cfg {
         Cfg {
+            ensure_spec_compliant_unquoted_attribute_values: false,
             keep_closing_tags: false,
             keep_comments: false,
             keep_html_and_head_opening_tags: false,

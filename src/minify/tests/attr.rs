@@ -22,7 +22,7 @@ fn test_encode_using_single_quotes() {
 
 #[test]
 fn test_encode_unquoted() {
-    let min = encode_unquoted(br#""123' 'h   0 &amp&amp; ;abbibi "' \ >& 3>;"#);
+    let min = encode_unquoted(br#""123' 'h   0 &amp&amp; ;abbibi "' \ >& 3>;"#, false);
     assert_eq!(
         min.str(),
         r#"&#34;123'&#32'h&#32&#32&#32;0&#32&amp&amp;&#32;;abbibi&#32"'&#32\&#32&GT&&#32;3&GT;;"#,

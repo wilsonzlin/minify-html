@@ -24,6 +24,8 @@ struct Cli {
     /// Minify CSS in `<style>` tags and `style` attributes.
     #[structopt(long)]
     minify_css: bool,
+    /// Ensure all unquoted attribute values in the output do not contain any characters prohibited by the WHATWG specification.
+    pub ensure_spec_compliant_unquoted_attribute_values: bool,
     /// Do not omit closing tags when possible.
     #[structopt(long)]
     keep_closing_tags: bool,
@@ -71,6 +73,7 @@ fn main() {
     let out_code = minify(
         &src_code,
         &Cfg {
+            ensure_spec_compliant_unquoted_attribute_values: args.ensure_spec_compliant_unquoted_attribute_values,
             keep_closing_tags: args.keep_closing_tags,
             keep_comments: args.keep_comments,
             keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,

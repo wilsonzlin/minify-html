@@ -3,6 +3,7 @@ use std::{mem, slice};
 
 #[no_mangle]
 pub extern "C" fn ffi_create_cfg(
+    ensure_spec_compliant_unquoted_attribute_values: bool,
     keep_closing_tags: bool,
     keep_comments: bool,
     keep_html_and_head_opening_tags: bool,
@@ -13,6 +14,7 @@ pub extern "C" fn ffi_create_cfg(
     remove_processing_instructions: bool,
 ) -> *const Cfg {
     Box::into_raw(Box::new(Cfg {
+        ensure_spec_compliant_unquoted_attribute_values,
         keep_closing_tags,
         keep_comments,
         keep_html_and_head_opening_tags,

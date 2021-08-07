@@ -9,6 +9,7 @@ fn build_cfg(
     obj: &JObject,
 ) -> Cfg {
     Cfg {
+        ensure_spec_compliant_unquoted_attribute_values: env.get_field(*obj, "ensure_spec_compliant_unquoted_attribute_values", "Z").unwrap().z().unwrap(),
         keep_closing_tags: env.get_field(*obj, "keep_closing_tags", "Z").unwrap().z().unwrap(),
         keep_comments: env.get_field(*obj, "keep_comments", "Z").unwrap().z().unwrap(),
         keep_html_and_head_opening_tags: env.get_field(*obj, "keep_html_and_head_opening_tags", "Z").unwrap().z().unwrap(),

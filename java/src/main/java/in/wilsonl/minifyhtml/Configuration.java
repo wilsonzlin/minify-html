@@ -4,6 +4,7 @@ package in.wilsonl.minifyhtml;
  * Class representing minification configuration.
  */
 public class Configuration {
+  public final boolean ensure_spec_compliant_unquoted_attribute_values;
   public final boolean keep_closing_tags;
   public final boolean keep_comments;
   public final boolean keep_html_and_head_opening_tags;
@@ -14,6 +15,7 @@ public class Configuration {
   public final boolean remove_processing_instructions;
 
   public Configuration(
+    boolean ensure_spec_compliant_unquoted_attribute_values,
     boolean keep_closing_tags,
     boolean keep_comments,
     boolean keep_html_and_head_opening_tags,
@@ -23,6 +25,7 @@ public class Configuration {
     boolean remove_bangs,
     boolean remove_processing_instructions
   ) {
+    this.ensure_spec_compliant_unquoted_attribute_values = ensure_spec_compliant_unquoted_attribute_values;
     this.keep_closing_tags = keep_closing_tags;
     this.keep_comments = keep_comments;
     this.keep_html_and_head_opening_tags = keep_html_and_head_opening_tags;
@@ -37,6 +40,7 @@ public class Configuration {
    * Builder to help create configuration.
    */
   public static class Builder {
+    private boolean ensure_spec_compliant_unquoted_attribute_values = false;
     private boolean keep_closing_tags = false;
     private boolean keep_comments = false;
     private boolean keep_html_and_head_opening_tags = false;
@@ -45,6 +49,11 @@ public class Configuration {
     private boolean minify_js = false;
     private boolean remove_bangs = false;
     private boolean remove_processing_instructions = false;
+
+    public Builder setEnsureSpecCompliantUnquotedAttributeValues(boolean val) {
+      this.ensure_spec_compliant_unquoted_attribute_values = val;
+      return this;
+    }
 
     public Builder setKeepClosingTags(boolean val) {
       this.keep_closing_tags = val;
@@ -89,6 +98,7 @@ public class Configuration {
 
     public Configuration build() {
       return new Configuration(
+        this.ensure_spec_compliant_unquoted_attribute_values,
         this.keep_closing_tags,
         this.keep_comments,
         this.keep_html_and_head_opening_tags,

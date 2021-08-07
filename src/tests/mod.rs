@@ -251,6 +251,18 @@ fn test_attr_unquoted_value_minification() {
 }
 
 #[test]
+fn test_attr_whatwg_unquoted_value_minification() {
+    let mut cfg = super::Cfg::new();
+    cfg.ensure_spec_compliant_unquoted_attribute_values = true;
+    eval_with_cfg(b"<a b==></a>", br#"<a b="="></a>"#, &cfg);
+    eval_with_cfg(
+        br#"<a b=`'"<<==/`/></a>"#,
+        br#"<a b="`'&#34<<==/`/"></a>"#,
+        &cfg,
+    );
+}
+
+#[test]
 fn test_class_attr_value_minification() {
     eval(b"<a class=&#x20;c></a>", b"<a class=c></a>");
     eval(
