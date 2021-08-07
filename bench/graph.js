@@ -76,7 +76,7 @@ const combinedChartOptions = () => ({
         {
           id: 'y1',
           type: 'linear',
-          scaleLabel: {display: true, fontSize: 22, fontColor: COLOUR_SPEED_PRIMARY, fontStyle: 'bold', labelString: 'Average relative op/s'},
+          scaleLabel: {display: true, fontSize: 22, fontColor: COLOUR_SPEED_PRIMARY, fontStyle: 'bold', labelString: 'Average performance'},
           position: 'left',
           ticks: {
             callback: "$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$",
