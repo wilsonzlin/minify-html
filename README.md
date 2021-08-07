@@ -1,18 +1,27 @@
 # minify-html
 
-An HTML minifier meticulously optimised for both speed and effectiveness written in Rust.
-Comes with native bindings to Node.js, Python, Java, and Ruby.
+An HTML minifier meticulously optimised for both speed and effectiveness, written in Rust.
 
-- Advanced minification strategy beats other minifiers while being faster.
+Available on:
+<img width="24" src="./icon/cli.png">
+<img width="24" src="./icon/java.png">
+<img width="24" src="./icon/nodejs.png">
+<img width="24" src="./icon/python.png">
+<img width="24" src="./icon/ruby.png">
+<img width="24" src="./icon/rust.png">
+
+- Advanced minification strategy beats other minifiers while being much faster.
 - Uses SIMD searching, direct tries, and lookup tables.
-- Well tested with a large test suite and extensive [fuzzing](./fuzz).
+- Handles [invalid HTML](./notes/Parsing.md), with extensive testing and [fuzzing](./fuzz).
 - Natively binds to [esbuild](https://github.com/wilsonzlin/esbuild-rs) for super fast JS and CSS minification.
 
 ## Performance
 
 Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
 
-<img width="415" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.4.11/core/average-speeds.png"> <img width="415" alt="Chart showing effectiveness of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.4.11/core/average-sizes.png">
+<img width="415" alt="Chart showing speed and compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.4.11/core/average-combined.png">
+
+Need even faster performance? Check the [one](https://github.com/wilsonzlin/minify-html/tree/one) branch.
 
 ## Usage
 
@@ -83,13 +92,9 @@ yarn add @minify-html/js
 ```js
 const minifyHtml = require("@minify-html/js");
 
-const cfg = minifyHtml.createConfiguration({ minifyJs: false, minifyCss: false });
+// Refer to TypeScript definitions for details.
+const cfg = minifyHtml.createConfiguration({ minify_js: false, minify_css: false });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
-
-// Alternatively, minify in place to avoid copying.
-const source = Buffer.from("<p>  Hello, world!  </p>");
-// This is a Buffer representing a slice of `source`, not newly allocated memory.
-const minified = minifyHtml.minifyInPlace(source, cfg);
 ```
 
 minify-html is also available for TypeScript:
@@ -98,10 +103,8 @@ minify-html is also available for TypeScript:
 import * as minifyHtml from "@minify-html/js";
 import * as fs from "fs";
 
-const cfg = minifyHtml.createConfiguration({ minifyJs: false, minifyCss: false });
+const cfg = minifyHtml.createConfiguration({ minify_js: false, minify_css: false });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
-// Or alternatively:
-const minified = minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
 ```
 
 </details>
@@ -137,15 +140,7 @@ Configuration cfg = new Configuration.Builder()
     .setMinifyCss(false)
     .build();
 
-try {
-    String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
-} catch (SyntaxException e) {
-    System.err.println(e.getMessage());
-}
-
-// Alternatively, minify in place:
-assert source instanceof ByteBuffer && source.isDirect();
-MinifyHtml.minifyInPlace(source, cfg);
+String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 ```
 
 </details>
@@ -166,10 +161,7 @@ Add the PyPI project as a dependency and install it using `pip` or `pipenv`.
 ```python
 import minify_html
 
-try:
-    minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=False, minify_css=False)
-except SyntaxError as e:
-    print(e)
+minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=False, minify_css=False)
 ```
 
 </details>
@@ -197,7 +189,7 @@ print MinifyHtml.minify("<p>  Hello, world!  </p>", { :minify_js => false, :mini
 
 ## Minification
 
-Note that many of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification.
+Note that many of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. Most of these can be turned off via the Cfg object.
 
 ### Whitespace
 
@@ -430,9 +422,7 @@ Bangs, [processing instructions](https://en.wikipedia.org/wiki/Processing_Instru
 
 ## Parsing
 
-- Input must be UTF-8.
-- Opening tags must not be [omitted](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission).
-- [Escaped and double-escaped](./notes/Script%20data.md) script content are not supported.
+minify-html can process any HTML, handling all possible syntax (including invalid ones) gracefully like browsers. See [Parsing.md](./notes/Parsing.md) for more details.  
 
 ## Issues and contributions
 

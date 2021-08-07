@@ -6,6 +6,12 @@ minify-html tries to match what the specs dictate and modern browsers do. Howeve
 
 To see some complex inputs, check out the [various fuzzing inputs](../fuzz/in).
 
+## Limitations
+
+- Input must be UTF-8.
+- All HTML is interpreted as HTML5.
+- [Escaped and double-escaped](./Script%20data.md) script content are not supported.
+
 ## EOF
 
 If the input ends while in the middle of a tag or attribute value, that tag/attribute is closed, as well as all ancestor tags.
