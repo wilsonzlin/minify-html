@@ -40,22 +40,13 @@ static inline bool napi_is(napi_env env, napi_value value, napi_is_pred pred) {
   return res;
 }
 
-typedef struct js_min_buf_metadata {
-    napi_ref src_buf_ref;
-} js_min_buf_metadata;
-
 void js_cfg_finalizer(napi_env env, void* finalize_data, void* _finalize_hint) {
   ffi_drop_cfg((Cfg const*) finalize_data);
 }
 
-void js_min_buf_finalizer(napi_env env, void* _finalize_data, void* finalize_hint) {
-  js_min_buf_metadata* metadata = (js_min_buf_metadata*) finalize_hint;
-  assert_ok(napi_delete_reference(env, metadata->src_buf_ref));
-  free(metadata);
-}
-
-void js_copy_min_buf_finalizer(napi_env env, void* _finalize_data, void* finalize_hint) {
-  free(finalize_hint);
+void js_output_buf_finalizer(napi_env env, void* _finalize_data, void* finalize_hint) {
+  ffi_output* metadata = (ffi_output*) finalize_hint;
+  ffi_drop_output(metadata);
 }
 
 napi_value node_method_create_configuration(napi_env env, napi_callback_info info) {
@@ -160,12 +151,11 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
   }
   Cfg const* cfg = (Cfg const*) cfg_raw;
 
-  // Run minifier in place.
-  size_t min_len;
-  ffi_in_place(src_data_copy, src_data_len, cfg, &min_len);
+  // Run minifier.
+  ffi_output const* output = ffi_minify(src_data_copy, src_data_len, cfg);
 
   // Create minified buffer with copied memory.
-  if (napi_create_external_buffer(env, min_len, src_data_copy, js_copy_min_buf_finalizer, src_data_copy, &min_buf_rv) != napi_ok) {
+  if (napi_create_external_buffer(env, output->len, output->data, js_output_buf_finalizer, (void*) output, &min_buf_rv) != napi_ok) {
     assert_ok(napi_throw_error(env, NULL, "Failed to create minified buffer"));
     goto rollback;
   }

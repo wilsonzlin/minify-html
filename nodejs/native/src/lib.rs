@@ -1,5 +1,5 @@
 use minify_html::{minify, Cfg};
-use std::slice;
+use std::{mem, slice};
 
 #[no_mangle]
 pub extern "C" fn ffi_create_cfg(
@@ -31,19 +31,35 @@ pub extern "C" fn ffi_drop_cfg(cfg: *const Cfg) -> () {
     };
 }
 
+#[repr(C)]
+pub struct ffi_output {
+    data: *mut u8,
+    len: usize,
+    cap: usize,
+}
+
+#[no_mangle]
+pub extern "C" fn ffi_drop_output(ptr: *const ffi_output) -> () {
+    unsafe {
+        let out = Box::from_raw(ptr as *mut ffi_output);
+        Vec::from_raw_parts(out.data, out.len, out.cap);
+    };
+}
+
 #[no_mangle]
 // TODO Return result memory (let Node.js manage GC) instead of overwriting source.
-pub extern "C" fn ffi_in_place(
-    code: *mut u8,
+pub extern "C" fn ffi_minify(
+    code: *const u8,
     code_len: usize,
     cfg: *const Cfg,
-    out_min_len: *mut usize,
-) {
-    let code_slice = unsafe { slice::from_raw_parts_mut(code, code_len) };
-    let min_code = minify(code_slice, unsafe { &*cfg });
-    let min_len = min_code.len();
-    code_slice[..min_len].copy_from_slice(&min_code);
-    unsafe {
-        *out_min_len = min_len;
-    }
+) -> *const ffi_output {
+    let code_slice = unsafe { slice::from_raw_parts(code, code_len) };
+    let mut out_code = minify(code_slice, unsafe { &*cfg });
+    let res = Box::into_raw(Box::new(ffi_output {
+        data: out_code.as_mut_ptr(),
+        len: out_code.len(),
+        cap: out_code.capacity(),
+    }));
+    mem::forget(out_code);
+    res
 }
