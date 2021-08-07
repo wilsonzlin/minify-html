@@ -41,12 +41,11 @@ Since speed depends on the input, speed charts show performance relative to the 
 
 The settings used for each minifier can be found in [minifiers.js](./minifiers.js). Some settings to note:
 
-- All minifiers are configured to use esbuild for JS minification asynchronously and in parallel, similar to how minify-html works.
 - `conservativeCollapse` is enabled for html-minifier as otherwise some whitespace would be unsafely removed with side effects. minify-html can safely remove whitespace with context if configured properly.
 
 ## Running
 
-Make sure to install the dependencies listed in [package.json](./package.json) by running `npm i` or `yarn`. Node.js 10 is required, and system dependencies for building [canvas](https://www.npmjs.com/package/canvas), used for rendering graphs, may need to be installed. See the [npm package](https://www.npmjs.com/package/canvas) for more details.
+Make sure to install the dependencies listed in [package.json](./package.json) by running `npm i` or `yarn`.
 
 Run [build.sh](./build.sh) to build @minify-html/js with the local minify-html.
 

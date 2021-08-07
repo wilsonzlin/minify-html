@@ -1,5 +1,4 @@
 const fs = require('fs');
-const mkdirp = require('mkdirp');
 const path = require('path');
 const minifiers = require('./minifiers');
 const results = require('./results');
@@ -30,7 +29,7 @@ const setSize = (program, test, result) => {
         // If `min` is a Buffer, convert to string (interpret as UTF-8) to get canonical length.
         setSize(m, t.name, min.toString().length);
         const minPath = path.join(__dirname, 'min', m, `${t.name}.html`);
-        mkdirp.sync(path.dirname(minPath));
+        fs.mkdirSync(path.dirname(minPath), {recursive: true});
         fs.writeFileSync(minPath, min);
       } catch (err) {
         console.error(`Failed to run ${m} on test ${t.name}:`);

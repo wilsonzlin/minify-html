@@ -25,32 +25,20 @@ const jsMime = new Set([
   'text/x-javascript',
 ]);
 
-class EsbuildAsync {
-  constructor () {
-    this.promises = [];
-  }
-
-  queue (code, type) {
-    const id = this.promises.push(esbuild.transform(code, {
-      loader: type,
-      minify: true,
-      minifyWhitespace: true,
-      minifyIdentifiers: true,
-      minifySyntax: true,
-    })) - 1;
-    return `_____ESBUILD_ASYNC_PLACEHOLDER_${id}_____`;
-  }
-
-  async finalise (html) {
-    const jsTransformResults = await Promise.all(this.promises);
-    return html.replace(/_____ESBUILD_ASYNC_PLACEHOLDER_([0-9]+)_____/g, (_, id) => jsTransformResults[id].code.replace(/<\/script/g, "<\\/script"));
-  }
-}
-
 const minifyHtmlCfg = minifyHtml.createConfiguration({
-  minifyJs: testJsAndCssMinification,
-  minifyCss: testJsAndCssMinification,
+  minify_js: testJsAndCssMinification,
+  minify_css: testJsAndCssMinification,
 });
+
+const esbuildCss = code => esbuild.transformSync(code, {
+  loader: "css",
+  minify: true,
+}).code;
+const esbuildJs = code => esbuild.transformSync(code, {
+  loader: "js",
+  minify: true,
+}).code.replace(/<\/script/g, "<\\/script");
+
 const htmlMinifierCfg = {
   collapseBooleanAttributes: true,
   collapseInlineTagWhitespace: true,
@@ -63,9 +51,8 @@ const htmlMinifierCfg = {
   decodeEntities: true,
   ignoreCustomComments: [],
   ignoreCustomFragments: [/<\?[\s\S]*?\?>/],
-  // These will be set later if `testJsAndCssMinification` is true.
-  minifyCSS: false,
-  minifyJS: false,
+  minifyCSS: testJsAndCssMinification && esbuildCss,
+  minifyJS: testJsAndCssMinification && esbuildJs,
   processConditionalComments: true,
   removeAttributeQuotes: true,
   removeComments: true,
@@ -79,39 +66,25 @@ const htmlMinifierCfg = {
 };
 
 module.exports = {
-  '@minify-html/js': (_, buffer) => minifyHtml.minifyInPlace(Buffer.from(buffer), minifyHtmlCfg),
-  'html-minifier': testJsAndCssMinification
-    ? async (content) => {
-      const js = new EsbuildAsync();
-      const res = htmlMinifier.minify(content, {
-        ...htmlMinifierCfg,
-        minifyCSS: code => js.queue(code, 'css'),
-        minifyJS: code => js.queue(code, 'js'),
-      });
-      return js.finalise(res);
-    }
-    : content => htmlMinifier.minify(content, htmlMinifierCfg),
+  '@minify-html/js': (_, buffer) => minifyHtml.minify(Buffer.from(buffer), minifyHtmlCfg),
+  'html-minifier': content => htmlMinifier.minify(content, htmlMinifierCfg),
   'minimize': testJsAndCssMinification
-    ? async (content) => {
-      const js = new EsbuildAsync();
-      const res = new minimize({
+    ? (content) => new minimize({
         plugins: [
           {
             id: 'esbuild',
             element: (node, next) => {
               if (node.type === 'text' && node.parent) {
                 if (node.parent.type === 'script' && jsMime.has(node.parent.attribs.type)) {
-                  node.data = js.queue(node.data, 'js');
+                  node.data = esbuildJs(node.data);
                 } else if (node.parent.type === 'style') {
-                  node.data = js.queue(node.data, 'css');
+                  node.data = esbuildCss(node.data);
                 }
               }
               next();
             },
           },
         ],
-      }).parse(content);
-      return js.finalise(res);
-    }
+      }).parse(content)
     : content => new minimize().parse(content),
 };

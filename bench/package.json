@@ -3,18 +3,12 @@
   "dependencies": {
     "@minify-html/js": "file:../nodejs",
     "benchmark": "2.1.4",
-    "chart.js": "^2.9.3",
-    "chartjs-node": "^1.7.1",
-    "esbuild": "^0.11.6",
+    "esbuild": "^0.12.18",
     "html-minifier": "4.0.0",
     "minimize": "2.2.0",
-    "minimist": "^1.2.0",
-    "mkdirp": "^0.5.1",
-    "request": "^2.88.0",
-    "request-promise-native": "^1.0.8"
-  },
-  "engines": {
-    "node": "10.x"
+    "minimist": "^1.2.5",
+    "request": "^2.88.2",
+    "request-promise-native": "^1.0.9"
   },
   "scripts": {
     "start": "node bench.js"

@@ -1,5 +1,5 @@
-const chartjs = require('chartjs-node');
 const results = require('./results');
+const request = require('request-promise-native');
 
 const colours = {
   'minify-html': '#041f60',
@@ -50,9 +50,9 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
 });
 
 const renderChart = async (cfg) => {
-  const chart = new chartjs(900, 650);
-  await chart.drawChart(cfg);
-  return chart.getImageBuffer('image/png');
+  return await request({
+    url: `https://quickchart.io/chart?chart=${encodeURIComponent(JSON.stringify(cfg))}&width=900&height=650&format=png`,
+  });
 };
 
 (async () => {
