@@ -1,5 +1,5 @@
 const results = require('./results');
-const request = require('request-promise-native');
+const https = require('https');
 
 const colours = {
   'minify-html': '#041f60',
@@ -8,9 +8,7 @@ const colours = {
   'html-minifier': '#2ca02c',
 };
 
-const percentageTick = t => (Math.round(t * 1000) / 10).toFixed(1) + '%';
-
-const chartOptions = (title, displayLegend, yTick = t => t) => ({
+const chartOptions = (title, displayLegend) => ({
   options: {
     title: {
       display: true,
@@ -19,26 +17,29 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
       fontSize: 24,
     },
     scales: {
-      xAxes: [{
-        barPercentage: 0.25,
-        gridLines: {
-          color: '#e2e2e2',
+      xAxes: [
+        {
+          barPercentage: 0.25,
+          gridLines: {
+            color: '#e2e2e2',
+          },
+          ticks: {
+            fontColor: '#666',
+            fontSize: 20,
+          },
         },
-        ticks: {
-          fontColor: '#666',
-          fontSize: 20,
+      ],
+      yAxes: [
+        {
+          gridLines: {
+            color: '#ccc',
+          },
+          ticks: {
+            fontColor: '#666',
+            fontSize: 20,
+          },
         },
-      }],
-      yAxes: [{
-        gridLines: {
-          color: '#ccc',
-        },
-        ticks: {
-          callback: yTick,
-          fontColor: '#666',
-          fontSize: 20,
-        },
-      }],
+      ],
     },
     legend: {
       display: displayLegend,
@@ -49,11 +50,31 @@ const chartOptions = (title, displayLegend, yTick = t => t) => ({
   },
 });
 
-const renderChart = async (cfg) => {
-  return await request({
-    url: `https://quickchart.io/chart?chart=${encodeURIComponent(JSON.stringify(cfg))}&width=900&height=650&format=png`,
+const renderChart = (cfg) => new Promise((resolve, reject) => {
+  const req = https.request('https://quickchart.io/chart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
-};
+  req.on('error', reject);
+  req.on('response', res => {
+    const err = res.headers['x-quickchart-error'];
+    if (res.statusCode < 200 || res.statusCode > 299 || err) {
+      reject(new Error(err || `Status ${res.statusCode}`));
+    }
+    const chunks = [];
+    res.on('error', reject);
+    res.on('data', c => chunks.push(c));
+    res.on('end', () => resolve(Buffer.concat(chunks)));
+  });
+  req.end(JSON.stringify({
+    chart: cfg,
+    width: 900,
+    height: 650,
+    format: 'png',
+  }));
+});
 
 (async () => {
   const averageSpeeds = results.getSpeedResults().getAverageRelativeSpeedPerMinifier('@minify-html/js');
@@ -61,13 +82,15 @@ const renderChart = async (cfg) => {
     type: 'bar',
     data: {
       labels: averageSpeeds.map(([n]) => n),
-      datasets: [{
-        label: 'Average relative op/s',
-        backgroundColor: '#1f77b4',
-        data: averageSpeeds.map(([_, v]) => v),
-      }],
+      datasets: [
+        {
+          label: 'Average relative op/s',
+          backgroundColor: '#1f77b4',
+          data: averageSpeeds.map(([_, v]) => v),
+        },
+      ],
     },
-    ...chartOptions('Average operations per second (higher is better)', false, percentageTick),
+    ...chartOptions('Average operations per second (higher is better)', false),
   }));
 
   const speeds = results.getSpeedResults().getRelativeFileSpeedsPerMinifier('@minify-html/js');
@@ -81,7 +104,7 @@ const renderChart = async (cfg) => {
         data: fileSpeeds.map(([_, speed]) => speed),
       })),
     },
-    ...chartOptions('Operations per second (higher is better)', true, percentageTick),
+    ...chartOptions('Operations per second (higher is better)', true),
   }));
 
   const averageSizes = results.getSizeResults().getAverageRelativeSizePerMinifier();
@@ -90,13 +113,15 @@ const renderChart = async (cfg) => {
     scaleFontColor: 'red',
     data: {
       labels: averageSizes.map(([n]) => n),
-      datasets: [{
-        label: 'Average minified size',
-        backgroundColor: '#2ca02c',
-        data: averageSizes.map(([_, v]) => v),
-      }],
+      datasets: [
+        {
+          label: 'Average minified size',
+          backgroundColor: '#2ca02c',
+          data: averageSizes.map(([_, v]) => v),
+        },
+      ],
     },
-    ...chartOptions('Average minified size (lower is better)', false, percentageTick),
+    ...chartOptions('Average minified size (lower is better)', false),
   }));
 
   const sizes = results.getSizeResults().getRelativeFileSizesPerMinifier();
@@ -110,6 +135,6 @@ const renderChart = async (cfg) => {
         data: fileSizes.map(([_, size]) => size),
       })),
     },
-    ...chartOptions('Minified size (lower is better)', true, percentageTick),
+    ...chartOptions('Minified size (lower is better)', true),
   }));
 })();
