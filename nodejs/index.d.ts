@@ -37,4 +37,4 @@ export function createConfiguration (options: {
  * @param cfg - Configuration created by {@link createConfiguration}
  * @returns Minified HTML code
  */
-export function minify (src: string, cfg: Cfg): Buffer;
+export function minify (src: string | Buffer, cfg: Cfg): Buffer;
