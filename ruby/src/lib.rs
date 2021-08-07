@@ -29,19 +29,19 @@ methods! {
             .unwrap();
 
         let cfg = &Cfg {
-            keep_closing_tags: get_cfg_hash_prop(cfg_hash, "keep_closing_tags"),
-            keep_comments: get_cfg_hash_prop(cfg_hash, "keep_comments"),
-            keep_html_and_head_opening_tags: get_cfg_hash_prop(cfg_hash, "keep_html_and_head_opening_tags"),
-            keep_spaces_between_attributes: get_cfg_hash_prop(cfg_hash, "keep_spaces_between_attributes"),
-            minify_css: get_cfg_hash_prop(cfg_hash, "minify_css"),
-            minify_js: get_cfg_hash_prop(cfg_hash, "minify_js"),
-            remove_bangs: get_cfg_hash_prop(cfg_hash, "remove_bangs"),
-            remove_processing_instructions: get_cfg_hash_prop(cfg_hash, "remove_processing_instructions"),
+            keep_closing_tags: get_cfg_hash_prop!(cfg_hash, "keep_closing_tags"),
+            keep_comments: get_cfg_hash_prop!(cfg_hash, "keep_comments"),
+            keep_html_and_head_opening_tags: get_cfg_hash_prop!(cfg_hash, "keep_html_and_head_opening_tags"),
+            keep_spaces_between_attributes: get_cfg_hash_prop!(cfg_hash, "keep_spaces_between_attributes"),
+            minify_css: get_cfg_hash_prop!(cfg_hash, "minify_css"),
+            minify_js: get_cfg_hash_prop!(cfg_hash, "minify_js"),
+            remove_bangs: get_cfg_hash_prop!(cfg_hash, "remove_bangs"),
+            remove_processing_instructions: get_cfg_hash_prop!(cfg_hash, "remove_processing_instructions"),
         };
 
         let out_code = minify_html_native(&code, cfg);
         let out_str = from_utf8(&out_code).unwrap();
-        RString::new_utf8(out_str).unwrap()
+        RString::new_utf8(out_str)
     }
 }
 
