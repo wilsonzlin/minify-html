@@ -29,9 +29,9 @@ pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minify(
 )
     -> jstring {
     let source: String = env.get_string(input).unwrap().into();
-    let mut code = source.into_bytes();
+    let code = source.into_bytes();
 
-    let out_code = minify_html_native(&mut code, &build_cfg(&env, &cfg));
+    let out_code = minify_html_native(&code, &build_cfg(&env, &cfg));
     let out_code_str = from_utf8(&out_code).unwrap();
     env.new_string(out_code_str).unwrap().into_inner()
 }
