@@ -16,7 +16,8 @@ Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [min
 
 ## Usage
 
-### CLI
+<details>
+<summary><img src="./icon/cli.png" style="width: 32px"> <strong>CLI</strong></summary>
 
 Precompiled binaries are available for x86-64 Linux, macOS, and Windows.
 
@@ -34,10 +35,10 @@ Use the `--help` argument for more details.
 minify-html --src /path/to/src.html --out /path/to/output.min.html --css --js
 ```
 
-### API
+</details>
 
 <details>
-<summary><strong>Rust</strong></summary>
+<summary><img src="./icon/rust.png" style="width: 32px"> <strong>Rust</strong></summary>
 
 ##### Get
 
@@ -57,11 +58,11 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 </details>
 
 <details>
-<summary><strong>Node.js</strong></summary>
+<summary><img src="./icon/nodejs.png" style="width: 32px"> <strong>Node.js</strong></summary>
 
 - Package: [@minify-html/js](https://www.npmjs.com/package/@minify-html/js)
 - Binding: [N-API](https://nodejs.org/api/n-api.html)
-- Platforms: Linux, macOS, Windows; Node.js 8.6.0 and higher
+- Platforms: Linux (ARM64 and x86-64), macOS (x86-64), Windows (x86-64); Node.js 8.6.0 and higher
 
 ##### Get
 
@@ -106,7 +107,7 @@ const minified = minifyHtml.minifyInPlace(fs.readFileSync("source.html"), cfg);
 </details>
 
 <details>
-<summary><strong>Java</strong></summary>
+<summary><img src="./icon/java.png" style="width: 32px"> <strong>Java</strong></summary>
 
 - Package: [in.wilsonl.minifyhtml](https://search.maven.org/artifact/in.wilsonl.minifyhtml/minify-html)
 - Binding: [JNI](https://github.com/jni-rs/jni-rs)
@@ -150,7 +151,7 @@ MinifyHtml.minifyInPlace(source, cfg);
 </details>
 
 <details>
-<summary><strong>Python</strong></summary>
+<summary><img src="./icon/python.png" style="width: 32px"> <strong>Python</strong></summary>
 
 - Package: [minify-html](https://pypi.org/project/minify-html)
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
@@ -174,7 +175,7 @@ except SyntaxError as e:
 </details>
 
 <details>
-<summary><strong>Ruby</strong></summary>
+<summary><img src="./icon/ruby.png" style="width: 32px"> <strong>Ruby</strong></summary>
 
 - Package: [minify_html](https://rubygems.org/gems/minify_html)
 - Binding: [Rutie](https://github.com/danielpclark/rutie)
