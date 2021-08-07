@@ -47,21 +47,8 @@ public class MinifyHtml {
   }
 
   /**
-   * Minify UTF-8 HTML code contents of a {@link ByteBuffer} instance in place.
-   * The backing data will be mutated. Returns the length of the minified portion of the ByteBuffer.
-   * The ByteBuffer must be direct, otherwise {@link IllegalArgumentException} will be thrown.
-   * If the code fails to be minified, a {@link SyntaxException} will be thrown with a descriptive English message and position in code where the error occurred.
-   *
-   * @param code {@link ByteBuffer} containing HTML code to minify
-   * @param cfg  {@link Configuration} minification settings to use
-   * @return length of the written minified code in the {@link ByteBuffer}
-   */
-  public static native int minifyInPlace(ByteBuffer code, Configuration cfg);
-
-  /**
    * Minify HTML code represented as a {@link String}.
    * The {@link String} will be copied to a UTF-8 byte array in native code, and then copied back into a Java {@link String}.
-   * If the code fails to be minified, a {@link SyntaxException} will be thrown with a descriptive English message and position in code where the error occurred.
    *
    * @param code HTML code to minify
    * @param cfg  {@link Configuration} minification settings to use

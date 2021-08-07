@@ -1,6 +1,15 @@
-use minify_html::{Cfg, Error, in_place as minify_html_native};
-use rutie::{Boolean, Class, class, Hash, methods, Object, RString, Symbol, VM};
-use std::str::from_utf8_unchecked;
+use minify_html::{minify as minify_html_native, Cfg};
+use rutie::{class, methods, Boolean, Class, Hash, Object, RString, Symbol, VM};
+use std::str::from_utf8;
+
+macro_rules! get_cfg_hash_prop {
+    ($cfg_hash:ident, $prop:literal) => {
+        $cfg_hash
+            .at(&Symbol::new($prop))
+            .try_convert_to::<Boolean>()
+            .map_or(false, |v| v.to_bool())
+    };
+}
 
 class!(MinifyHtml);
 
@@ -9,7 +18,7 @@ methods! {
     _itself,
 
     fn minify(source: RString, cfg_hash: Hash) -> RString {
-        let mut code = source
+        let code = source
             .map_err(|e| VM::raise_ex(e) )
             .unwrap()
             .to_string()
@@ -20,20 +29,19 @@ methods! {
             .unwrap();
 
         let cfg = &Cfg {
-            minify_js: cfg_hash
-                .at(&Symbol::new("minify_js"))
-                .try_convert_to::<Boolean>()
-                .map_or(false, |v| v.to_bool()),
-            minify_css: cfg_hash
-                .at(&Symbol::new("minify_css"))
-                .try_convert_to::<Boolean>()
-                .map_or(false, |v| v.to_bool()),
+            keep_closing_tags: get_cfg_hash_prop(cfg_hash, "keep_closing_tags"),
+            keep_comments: get_cfg_hash_prop(cfg_hash, "keep_comments"),
+            keep_html_and_head_opening_tags: get_cfg_hash_prop(cfg_hash, "keep_html_and_head_opening_tags"),
+            keep_spaces_between_attributes: get_cfg_hash_prop(cfg_hash, "keep_spaces_between_attributes"),
+            minify_css: get_cfg_hash_prop(cfg_hash, "minify_css"),
+            minify_js: get_cfg_hash_prop(cfg_hash, "minify_js"),
+            remove_bangs: get_cfg_hash_prop(cfg_hash, "remove_bangs"),
+            remove_processing_instructions: get_cfg_hash_prop(cfg_hash, "remove_processing_instructions"),
         };
 
-        minify_html_native(&mut code, cfg)
-            .map_err(|Error { error_type, position }| VM::raise(Class::from_existing("SyntaxError"), format!("{} [Character {}]", error_type.message(), position).as_str()))
-            .map(|out_len| RString::new_utf8(unsafe { from_utf8_unchecked(&code[0..out_len]) }))
-            .unwrap()
+        let out_code = minify_html_native(&code, cfg);
+        let out_str = from_utf8(&out_code).unwrap();
+        RString::new_utf8(out_str).unwrap()
     }
 }
 

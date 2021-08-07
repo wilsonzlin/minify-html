@@ -1,4 +1,4 @@
-use minify_html::{Cfg, in_place};
+use minify_html::{Cfg, minify};
 use std::fs;
 use std::io::{stdout};
 use std::time::Instant;
@@ -22,11 +22,8 @@ fn main() {
         let source = fs::read(t.path()).unwrap();
         let start = Instant::now();
         for _ in 0..args.iterations {
-            let mut data = source.to_vec();
-            in_place(&mut data, &Cfg {
-                minify_js: false,
-                minify_css: false,
-            }).unwrap();
+            let data = source.to_vec();
+            minify(&data, &Cfg::new());
         };
         let elapsed = start.elapsed().as_secs_f64();
         let ops = args.iterations as f64 / elapsed;

@@ -1,7 +1,5 @@
 use lazy_static::lazy_static;
-use std::collections::{HashSet, HashMap};
-use crate::proc::Processor;
-use crate::proc::range::ProcessorRange;
+use std::collections::{HashMap, HashSet};
 
 // Rules sourced from https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission.
 // TODO Opening tags
@@ -15,6 +13,12 @@ enum ClosingTagOmissionRuleIfLast {
     ParentIsNot(HashSet<&'static [u8]>),
 }
 
+// What this means in effect while parsing:
+// - Given we are processing the content of some element B, which itself is inside A (e.g. <A><B>):
+//   - If we see `</C` and B != C:
+//     - If C == A and C is compatible with is_last, B is closed implicitly.
+//   - If we see `<C` and maybe B == C:
+//     - If C is in followed_by, B is closed implicitly.
 struct ClosingTagOmissionRule {
     // Closing tag can be omitted if immediately followed by an element node with one of these tag names.
     followed_by: HashSet<&'static [u8]>,
@@ -157,14 +161,15 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref OPTGROUP_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
-        followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
-            s.insert(b"optgroup");
-            s
-        },
-        is_last: ClosingTagOmissionRuleIfLast::Always,
-    };
+    static ref OPTGROUP_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule =
+        ClosingTagOmissionRule {
+            followed_by: {
+                let mut s = HashSet::<&'static [u8]>::new();
+                s.insert(b"optgroup");
+                s
+            },
+            is_last: ClosingTagOmissionRuleIfLast::Always,
+        };
 }
 
 lazy_static! {
@@ -269,24 +274,22 @@ lazy_static! {
     };
 }
 
-#[inline(always)]
-pub fn can_omit_as_last_node(proc: &Processor, parent: Option<ProcessorRange>, child: ProcessorRange) -> bool {
-    CLOSING_TAG_OMISSION_RULES.get(&proc[child])
+// Use an empty slice for `parent` if no parent.
+pub fn can_omit_as_last_node(parent: &[u8], child: &[u8]) -> bool {
+    CLOSING_TAG_OMISSION_RULES
+        .get(child)
         .filter(|r| match &r.is_last {
             ClosingTagOmissionRuleIfLast::Always => true,
             ClosingTagOmissionRuleIfLast::Never => false,
-            ClosingTagOmissionRuleIfLast::ParentIsNot(parents) => match parent {
-                Some(tag) => !parents.contains(&proc[tag]),
-                None => true,
-            },
+            ClosingTagOmissionRuleIfLast::ParentIsNot(parents) => !parents.contains(parent),
         })
         .is_some()
 }
 
-#[inline(always)]
-pub fn can_omit_as_before(proc: &Processor, before: Option<ProcessorRange>, after: ProcessorRange) -> bool {
-    before
-        .and_then(|b| CLOSING_TAG_OMISSION_RULES.get(&proc[b]))
-        .filter(|r| r.followed_by.contains(&proc[after]))
+// Use an empty slice for `before` or `after` if no previous/next sibling element.
+pub fn can_omit_as_before(before: &[u8], after: &[u8]) -> bool {
+    CLOSING_TAG_OMISSION_RULES
+        .get(before)
+        .filter(|r| r.followed_by.contains(after))
         .is_some()
 }

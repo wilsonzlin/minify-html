@@ -1,3 +1,5 @@
+use aho_corasick::AhoCorasick;
+
 // Can't use pub const fn constructor due to Copy trait, so allow directly creating struct publicly for now.
 pub struct TrieNode<V: 'static + Copy> {
     // Using a children array of size 256 would probably be fastest, but waste too much memory and cause slow compiles
@@ -13,6 +15,7 @@ pub enum TrieNodeMatch<V: 'static + Copy> {
     NotFound { reached: usize },
 }
 
+#[allow(dead_code)]
 impl<V: 'static + Copy> TrieNode<V> {
     // Find the node that matches the shortest prefix of {@param text} that:
     // - has a value (except the start node if it has a value);
@@ -30,8 +33,7 @@ impl<V: 'static + Copy> TrieNode<V> {
     // - "&amx" will return node `m`.
     // - "&ax" will return node `a`.
     // - "+ax" will return itself.
-    // - "" will return the itself.
-    #[inline(always)]
+    // - "" will return itself.
     pub fn shortest_matching_prefix(&self, text: &[u8], from: usize) -> (&TrieNode<V>, usize) {
         let mut node: &TrieNode<V> = self;
         let mut pos = from;
@@ -44,11 +46,10 @@ impl<V: 'static + Copy> TrieNode<V> {
             if node.value.is_some() {
                 break;
             };
-        };
+        }
         (node, pos)
     }
 
-    #[inline(always)]
     pub fn longest_matching_prefix(&self, text: &[u8]) -> TrieNodeMatch<V> {
         let mut node: &TrieNode<V> = self;
         let mut value: Option<TrieNodeMatch<V>> = None;
@@ -59,11 +60,28 @@ impl<V: 'static + Copy> TrieNode<V> {
                 None | Some(None) => break,
             };
             pos += 1;
-            match node.value {
-                Some(v) => value = Some(TrieNodeMatch::Found { len: pos, value: v }),
-                None => {}
-            };
-        };
+            if let Some(v) = node.value {
+                value = Some(TrieNodeMatch::Found { len: pos, value: v });
+            }
+        }
         value.unwrap_or(TrieNodeMatch::NotFound { reached: pos })
+    }
+}
+
+pub struct Replacer {
+    searcher: AhoCorasick,
+    replacements: Vec<Vec<u8>>,
+}
+
+impl Replacer {
+    pub fn new(searcher: AhoCorasick, replacements: Vec<Vec<u8>>) -> Replacer {
+        Replacer {
+            searcher,
+            replacements,
+        }
+    }
+
+    pub fn replace_all(&self, src: &[u8]) -> Vec<u8> {
+        self.searcher.replace_all_bytes(src, &self.replacements)
     }
 }

@@ -58,17 +58,6 @@ void js_copy_min_buf_finalizer(napi_env env, void* _finalize_data, void* finaliz
   free(finalize_hint);
 }
 
-static inline void throw_js_ffi_error(napi_env env, ffi_error const* min_err) {
-  napi_value js_min_err_msg;
-  assert_ok(napi_create_string_utf8(env, (char const*) min_err->message, min_err->message_len, &js_min_err_msg));
-  napi_value js_min_err;
-  assert_ok(napi_create_error(env, NULL, js_min_err_msg, &js_min_err));
-  napi_value js_min_err_pos;
-  assert_ok(napi_create_int64(env, min_err->position, &js_min_err_pos));
-  assert_ok(napi_set_named_property(env, js_min_err, "position", js_min_err_pos));
-  assert_ok(napi_throw(env, js_min_err));
-}
-
 napi_value node_method_create_configuration(napi_env env, napi_callback_info info) {
   napi_value undefined = get_undefined(env);
 
@@ -84,23 +73,32 @@ napi_value node_method_create_configuration(napi_env env, napi_callback_info inf
   }
   napi_value obj_arg = argv[0];
 
-  // Get `minifyJs` property.
-  bool minify_js = false;
-  napi_value minify_js_value;
-  if (napi_get_named_property(env, obj_arg, "minifyJs", &minify_js_value) == napi_ok) {
-    // It's OK if this fails.
-    napi_get_value_bool(env, minify_js_value, &minify_js);
+#define GET_CFG_PROP(prop) \
+  bool prop = false; \
+  napi_value prop##_value; \
+  if (napi_get_named_property(env, obj_arg, #prop, &prop##_value) == napi_ok) { \
+    /* It's OK if this fails. */ napi_get_value_bool(env, prop##_value, &prop); \
   }
 
-  // Get `minifyCss` property.
-  bool minify_css = false;
-  napi_value minify_css_value;
-  if (napi_get_named_property(env, obj_arg, "minifyCss", &minify_css_value) == napi_ok) {
-    // It's OK if this fails.
-    napi_get_value_bool(env, minify_css_value, &minify_css);
-  }
+  GET_CFG_PROP(keep_closing_tags);
+  GET_CFG_PROP(keep_comments);
+  GET_CFG_PROP(keep_html_and_head_opening_tags);
+  GET_CFG_PROP(keep_spaces_between_attributes);
+  GET_CFG_PROP(minify_css);
+  GET_CFG_PROP(minify_js);
+  GET_CFG_PROP(remove_bangs);
+  GET_CFG_PROP(remove_processing_instructions);
 
-  Cfg const* cfg = ffi_create_cfg(minify_js, minify_css);
+  Cfg const* cfg = ffi_create_cfg(
+    keep_closing_tags,
+    keep_comments,
+    keep_html_and_head_opening_tags,
+    keep_spaces_between_attributes,
+    minify_css,
+    minify_js,
+    remove_bangs,
+    remove_processing_instructions
+  );
 
   napi_value js_cfg;
   if (napi_create_external(env, (void*) cfg, js_cfg_finalizer, NULL, &js_cfg) != napi_ok) {
@@ -117,7 +115,6 @@ napi_value node_method_minify_in_place(napi_env env, napi_callback_info info) {
   bool buffer_arg_ref_set = false;
   napi_ref buffer_arg_ref;
   js_min_buf_metadata* min_buf_meta = NULL;
-  ffi_error const* min_err = NULL;
 
   size_t argc = 2;
   napi_value argv[2];
@@ -157,11 +154,7 @@ napi_value node_method_minify_in_place(napi_env env, napi_callback_info info) {
 
   // Run minifier in place.
   size_t min_len;
-  min_err = ffi_in_place(buffer_data, buffer_len, cfg, &min_len);
-  if (min_err != NULL) {
-    throw_js_ffi_error(env, min_err);
-    goto rollback;
-  }
+  ffi_in_place(buffer_data, buffer_len, cfg, &min_len);
 
   // Create minified buffer with underlying source memory but minified length.
   min_buf_meta = assert_malloc(sizeof(js_min_buf_metadata));
@@ -181,10 +174,6 @@ rollback:
   free(min_buf_meta);
 
 cleanup:
-  if (min_err != NULL) {
-    ffi_drop_ffi_error(min_err);
-  }
-
   return min_buf_rv;
 }
 
@@ -193,7 +182,6 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
   napi_value min_buf_rv = undefined;
 
   void* src_data_copy = NULL;
-  ffi_error const* min_err = NULL;
 
   size_t argc = 2;
   napi_value argv[2];
@@ -243,11 +231,7 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
 
   // Run minifier in place.
   size_t min_len;
-  min_err = ffi_in_place(src_data_copy, src_data_len, cfg, &min_len);
-  if (min_err != NULL) {
-    throw_js_ffi_error(env, min_err);
-    goto rollback;
-  }
+  ffi_in_place(src_data_copy, src_data_len, cfg, &min_len);
 
   // Create minified buffer with copied memory.
   if (napi_create_external_buffer(env, min_len, src_data_copy, js_copy_min_buf_finalizer, src_data_copy, &min_buf_rv) != napi_ok) {
@@ -261,10 +245,6 @@ rollback:
   free(src_data_copy);
 
 cleanup:
-  if (min_err != NULL) {
-    ffi_drop_ffi_error(min_err);
-  }
-
   return min_buf_rv;
 }
 

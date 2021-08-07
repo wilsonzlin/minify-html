@@ -1,12 +1,16 @@
 use std::fs::File;
-use std::io::{Read, stdin, stdout, Write};
+use std::io::{stdin, stdout, Read, Write};
 
 use structopt::StructOpt;
 
-use minify_html::{Cfg, FriendlyError, with_friendly_error};
+use minify_html::{minify, Cfg};
 
 #[derive(StructOpt)]
-#[structopt(name = "minify-html", about = "Extremely fast and smart HTML + JS + CSS minifier")]
+#[structopt(
+    name = "minify-html",
+    about = "Extremely fast and smart HTML + JS + CSS minifier"
+)]
+// WARNING: Keep descriptions in sync with Cfg.
 struct Cli {
     /// File to minify; omit for stdin.
     #[structopt(short, long, parse(from_os_str))]
@@ -14,12 +18,30 @@ struct Cli {
     /// Output destination; omit for stdout.
     #[structopt(short, long, parse(from_os_str))]
     out: Option<std::path::PathBuf>,
-    /// Enables JS minification.
+    /// Minify JS in `<script>` tags that have a valid or no `type` attribute value.
     #[structopt(long)]
-    js: bool,
-    /// Enables CSS minification.
+    minify_js: bool,
+    /// Minify CSS in `<style>` tags and `style` attributes.
     #[structopt(long)]
-    css: bool,
+    minify_css: bool,
+    /// Do not omit closing tags when possible.
+    #[structopt(long)]
+    keep_closing_tags: bool,
+    /// Do not omit `<html>` and `<head>` opening tags when they don't have attributes.
+    #[structopt(long)]
+    keep_html_and_head_opening_tags: bool,
+    /// Keep spaces between attributes when possible to conform to HTML standards.
+    #[structopt(long)]
+    keep_spaces_between_attributes: bool,
+    /// Keep all comments.
+    #[structopt(long)]
+    keep_comments: bool,
+    /// Remove all bangs.
+    #[structopt(long)]
+    remove_bangs: bool,
+    /// Remove all processing_instructions.
+    #[structopt(long)]
+    remove_processing_instructions: bool,
 }
 
 macro_rules! io_expect {
@@ -37,31 +59,34 @@ macro_rules! io_expect {
 
 fn main() {
     let args = Cli::from_args();
-    let mut code = Vec::<u8>::new();
+    let mut src_code = Vec::<u8>::new();
     let mut src_file: Box<dyn Read> = match args.src {
         Some(p) => Box::new(io_expect!(File::open(p), "could not open source file")),
         None => Box::new(stdin()),
     };
-    io_expect!(src_file.read_to_end(&mut code), "could not load source code");
-    match with_friendly_error(&mut code, &Cfg {
-        minify_js: args.js,
-        minify_css: args.css,
-    }) {
-        Ok(out_len) => {
-            let mut out_file: Box<dyn Write> = match args.out {
-                Some(p) => Box::new(io_expect!(File::create(p), "could not open output file")),
-                None => Box::new(stdout()),
-            };
-            io_expect!(out_file.write_all(&code[..out_len]), "could not save minified code");
-        }
-        Err(FriendlyError { position, message, code_context }) => {
-            eprintln!("Failed at character {}:", position);
-            eprintln!("{}", message);
-            if args.out.is_some() {
-                eprintln!("The output file has not been touched.");
-            };
-            eprintln!("--------");
-            eprintln!("{}", code_context);
-        }
+    io_expect!(
+        src_file.read_to_end(&mut src_code),
+        "could not load source code"
+    );
+    let out_code = minify(
+        &src_code,
+        &Cfg {
+            keep_closing_tags: args.keep_closing_tags,
+            keep_comments: args.keep_comments,
+            keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,
+            keep_spaces_between_attributes: args.keep_spaces_between_attributes,
+            minify_css: args.minify_css,
+            minify_js: args.minify_js,
+            remove_bangs: args.remove_bangs,
+            remove_processing_instructions: args.remove_processing_instructions,
+        },
+    );
+    let mut out_file: Box<dyn Write> = match args.out {
+        Some(p) => Box::new(io_expect!(File::create(p), "could not open output file")),
+        None => Box::new(stdout()),
     };
+    io_expect!(
+        out_file.write_all(&out_code),
+        "could not save minified code"
+    );
 }
