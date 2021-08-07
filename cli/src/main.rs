@@ -25,6 +25,7 @@ struct Cli {
     #[structopt(long)]
     minify_css: bool,
     /// Ensure all unquoted attribute values in the output do not contain any characters prohibited by the WHATWG specification.
+    #[structopt(long)]
     ensure_spec_compliant_unquoted_attribute_values: bool,
     /// Do not omit closing tags when possible.
     #[structopt(long)]
