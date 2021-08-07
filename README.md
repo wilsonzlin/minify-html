@@ -8,7 +8,7 @@ minify-html
 <img width="24" src="./icon/rust.png">
 </h1>
 
-An HTML minifier meticulously optimised for both speed and effectiveness, written in Rust.
+A Rust HTML minifier meticulously optimised for speed and effectiveness, with bindings for other languages.
 
 - Advanced minification strategy beats other minifiers while being much faster.
 - Uses SIMD searching, direct tries, and lookup tables.
