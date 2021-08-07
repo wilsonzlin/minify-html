@@ -16,8 +16,7 @@ mod spec;
 mod tests;
 mod whitespace;
 
-/// Copies a slice into a new Vec and minifies it, returning the Vec.
-/// The resulting Vec will only contain minified code.
+/// Minifies UTF-8 HTML code, represented as an array of bytes.
 ///
 /// # Arguments
 ///
