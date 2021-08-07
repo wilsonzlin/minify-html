@@ -8,8 +8,19 @@ const colours = {
   'html-minifier': '#2ca02c',
 };
 
-const chartOptions = (title, displayLegend) => ({
+const COLOUR_SPEED_PRIMARY = '#2e61bd';
+const COLOUR_SPEED_SECONDARY = 'rgb(188, 188, 188)';
+const COLOUR_SIZE_PRIMARY = '#64acce';
+const COLOUR_SIZE_SECONDARY = 'rgb(224, 224, 224)';
+
+const breakdownChartOptions = (title) => ({
   options: {
+    legend: {
+      display: true,
+      labels: {
+        fontColor: '#000',
+      },
+    },
     title: {
       display: true,
       text: title,
@@ -41,11 +52,56 @@ const chartOptions = (title, displayLegend) => ({
         },
       ],
     },
+  },
+});
+
+const combinedChartOptions = () => ({
+  options: {
     legend: {
-      display: displayLegend,
-      labels: {
-        fontColor: '#000',
-      },
+      display: false,
+    },
+    scales: {
+      xAxes: [
+        {
+          gridLines: {
+            display: false,
+          },
+          ticks: {
+            fontColor: '#555',
+            fontSize: 20,
+          },
+        },
+      ],
+      yAxes: [
+        {
+          id: 'y1',
+          type: 'linear',
+          scaleLabel: {display: true, fontSize: 22, fontColor: COLOUR_SPEED_PRIMARY, fontStyle: 'bold', labelString: 'Average relative op/s'},
+          position: 'left',
+          ticks: {
+            callback: "$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$",
+            fontColor: COLOUR_SPEED_PRIMARY,
+            fontSize: 16,
+          },
+          gridLines: {
+            color: '#eee',
+          },
+        },
+        {
+          id: 'y2',
+          type: 'linear',
+          scaleLabel: {display: true, fontSize: 22, fontColor: COLOUR_SIZE_PRIMARY, fontStyle: 'bold', labelString: 'Average size reduction'},
+          position: 'right',
+          ticks: {
+            callback: "$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$",
+            fontColor: COLOUR_SIZE_PRIMARY,
+            fontSize: 16,
+          },
+          gridLines: {
+            display: false,
+          }
+        },
+      ],
     },
   },
 });
@@ -69,7 +125,8 @@ const renderChart = (cfg) => new Promise((resolve, reject) => {
     res.on('end', () => resolve(Buffer.concat(chunks)));
   });
   req.end(JSON.stringify({
-    chart: cfg,
+    backgroundColor: 'white',
+    chart: JSON.stringify(cfg).replaceAll('"$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$"', "function(value) {return Math.round(value * 10000) / 100 + '%';}"),
     width: 900,
     height: 650,
     format: 'png',
@@ -78,19 +135,27 @@ const renderChart = (cfg) => new Promise((resolve, reject) => {
 
 (async () => {
   const averageSpeeds = results.getSpeedResults().getAverageRelativeSpeedPerMinifier('@minify-html/js');
-  results.writeAverageSpeedsGraph(await renderChart({
+  const averageSizes = results.getSizeResults().getAverageRelativeSizePerMinifier();
+  const averageLabels = ["html-minifier", "minimize", "@minify-html/js"];
+
+  results.writeAverageCombinedGraph(await renderChart({
     type: 'bar',
     data: {
-      labels: averageSpeeds.map(([n]) => n),
+      labels: averageLabels,
       datasets: [
         {
-          label: 'Average relative op/s',
-          backgroundColor: '#1f77b4',
-          data: averageSpeeds.map(([_, v]) => v),
+          yAxisID: 'y1',
+          backgroundColor: averageLabels.map((n) => n === "@minify-html/js" ? COLOUR_SPEED_PRIMARY : COLOUR_SPEED_SECONDARY),
+          data: averageLabels.map((n) => averageSpeeds.get(n)),
+        },
+        {
+          yAxisID: 'y2',
+          backgroundColor: averageLabels.map((n) => n === "@minify-html/js" ? COLOUR_SIZE_PRIMARY : COLOUR_SIZE_SECONDARY),
+          data: averageLabels.map((n) => 1 - averageSizes.get(n)),
         },
       ],
     },
-    ...chartOptions('Average operations per second (higher is better)', false),
+    ...combinedChartOptions(),
   }));
 
   const speeds = results.getSpeedResults().getRelativeFileSpeedsPerMinifier('@minify-html/js');
@@ -104,24 +169,7 @@ const renderChart = (cfg) => new Promise((resolve, reject) => {
         data: fileSpeeds.map(([_, speed]) => speed),
       })),
     },
-    ...chartOptions('Operations per second (higher is better)', true),
-  }));
-
-  const averageSizes = results.getSizeResults().getAverageRelativeSizePerMinifier();
-  results.writeAverageSizesGraph(await renderChart({
-    type: 'bar',
-    scaleFontColor: 'red',
-    data: {
-      labels: averageSizes.map(([n]) => n),
-      datasets: [
-        {
-          label: 'Average minified size',
-          backgroundColor: '#2ca02c',
-          data: averageSizes.map(([_, v]) => v),
-        },
-      ],
-    },
-    ...chartOptions('Average minified size (lower is better)', false),
+    ...breakdownChartOptions('Operations per second (higher is better)'),
   }));
 
   const sizes = results.getSizeResults().getRelativeFileSizesPerMinifier();
@@ -135,6 +183,6 @@ const renderChart = (cfg) => new Promise((resolve, reject) => {
         data: fileSizes.map(([_, size]) => size),
       })),
     },
-    ...chartOptions('Minified size (lower is better)', true),
+    ...breakdownChartOptions('Minified size (lower is better)'),
   }));
 })();

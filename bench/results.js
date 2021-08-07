@@ -6,6 +6,7 @@ const {mkdirSync, readFileSync, writeFileSync} = require('fs');
 const RESULTS_DIR = join(__dirname, 'results');
 const SPEEDS_JSON = join(RESULTS_DIR, 'speeds.json');
 const SPEEDS_GRAPH = join(RESULTS_DIR, 'speeds.png');
+const AVERAGE_COMBINED_GRAPH = join(RESULTS_DIR, 'average-combined.png');
 const AVERAGE_SPEEDS_GRAPH = join(RESULTS_DIR, 'average-speeds.png');
 const SIZES_JSON = join(RESULTS_DIR, 'sizes.json');
 const SIZES_GRAPH = join(RESULTS_DIR, 'sizes.png');
@@ -23,6 +24,9 @@ module.exports = {
   writeSizeResults(sizes) {
     writeFileSync(SIZES_JSON, JSON.stringify(sizes, null, 2));
   },
+  writeAverageCombinedGraph(data) {
+    writeFileSync(AVERAGE_COMBINED_GRAPH, data);
+  },
   writeAverageSpeedsGraph(data) {
     writeFileSync(AVERAGE_SPEEDS_GRAPH, data);
   },
@@ -39,9 +43,9 @@ module.exports = {
     const data = JSON.parse(readFileSync(SPEEDS_JSON, 'utf8'));
 
     return {
-      // Get minifier-speed pairs sorted by speed ascending.
+      // Get minifier-speed pairs.
       getAverageRelativeSpeedPerMinifier(baselineMinifier) {
-        return minifierNames.map(minifier => [
+        return new Map(minifierNames.map(minifier => [
           minifier,
           testNames
             // Get operations per second for each test.
@@ -50,7 +54,7 @@ module.exports = {
             .reduce((sum, c) => sum + c)
           // Divide by tests count to get average operations per second.
           / testNames.length,
-        ]).sort((a, b) => a[1] - b[1]);
+        ]));
       },
       // Get minifier-speeds pairs.
       getRelativeFileSpeedsPerMinifier(baselineMinifier) {
@@ -65,15 +69,15 @@ module.exports = {
     const data = JSON.parse(readFileSync(SIZES_JSON, 'utf8'));
 
     return {
-      // Get minifier-size pairs sorted by size descending.
+      // Get minifier-size pairs.
       getAverageRelativeSizePerMinifier() {
-        return minifierNames.map(minifier => [
+        return new Map(minifierNames.map(minifier => [
           minifier,
           testNames
             .map(test => data[test][minifier].relative)
             .reduce((sum, c) => sum + c)
           / testNames.length,
-        ]).sort((a, b) => b[1] - a[1]);
+        ]));
       },
       // Get minifier-sizes pairs.
       getRelativeFileSizesPerMinifier() {
