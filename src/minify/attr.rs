@@ -109,43 +109,19 @@ lazy_static! {
     static ref UNQUOTED_QUOTED_REPLACER: Replacer = build_unquoted_replacer();
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
-pub enum AttrType {
-    Redundant,
-    NoValue,
-    Quoted,
-    Unquoted,
-}
-
-pub struct AttrValMinified {
-    typ: AttrType,
+pub struct AttrMinifiedValue {
+    quoted: bool,
     prefix: &'static [u8],
     data: Vec<u8>,
     start: usize,
     suffix: &'static [u8],
 }
 
-impl Eq for AttrValMinified {}
-
-impl PartialEq<Self> for AttrValMinified {
-    fn eq(&self, other: &Self) -> bool {
-        self.len() == other.len()
+impl AttrMinifiedValue {
+    pub fn quoted(&self) -> bool {
+        self.quoted
     }
-}
 
-impl PartialOrd<Self> for AttrValMinified {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.len().partial_cmp(&other.len())
-    }
-}
-
-impl Ord for AttrValMinified {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.len().cmp(&other.len())
-    }
-}
-
-impl AttrValMinified {
     pub fn len(&self) -> usize {
         self.prefix.len() + (self.data.len() - self.start) + self.suffix.len()
     }
@@ -162,15 +138,11 @@ impl AttrValMinified {
         self.out(&mut out);
         String::from_utf8(out).unwrap()
     }
-
-    pub fn typ(&self) -> AttrType {
-        self.typ
-    }
 }
 
-pub fn encode_using_double_quotes(val: &[u8]) -> AttrValMinified {
-    AttrValMinified {
-        typ: AttrType::Quoted,
+pub fn encode_using_double_quotes(val: &[u8]) -> AttrMinifiedValue {
+    AttrMinifiedValue {
+        quoted: true,
         prefix: b"\"",
         data: DOUBLE_QUOTED_REPLACER.replace_all(val),
         start: 0,
@@ -178,9 +150,9 @@ pub fn encode_using_double_quotes(val: &[u8]) -> AttrValMinified {
     }
 }
 
-pub fn encode_using_single_quotes(val: &[u8]) -> AttrValMinified {
-    AttrValMinified {
-        typ: AttrType::Quoted,
+pub fn encode_using_single_quotes(val: &[u8]) -> AttrMinifiedValue {
+    AttrMinifiedValue {
+        quoted: true,
         prefix: b"'",
         data: SINGLE_QUOTED_REPLACER.replace_all(val),
         start: 0,
@@ -188,22 +160,22 @@ pub fn encode_using_single_quotes(val: &[u8]) -> AttrValMinified {
     }
 }
 
-pub fn encode_unquoted(val: &[u8]) -> AttrValMinified {
+pub fn encode_unquoted(val: &[u8]) -> AttrMinifiedValue {
     let data = UNQUOTED_QUOTED_REPLACER.replace_all(val);
     let prefix: &'static [u8] = match data.get(0) {
         Some(b'"') => match data.get(1) {
-            Some(&s) if DIGIT[s] || s == b';' => b"&#34;",
+            Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#34;",
             _ => b"&#34",
         },
         Some(b'\'') => match data.get(1) {
-            Some(&s) if DIGIT[s] || s == b';' => b"&#39;",
+            Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#39;",
             _ => b"&#39",
         },
         _ => b"",
     };
     let start = if !prefix.is_empty() { 1 } else { 0 };
-    AttrValMinified {
-        typ: AttrType::Unquoted,
+    AttrMinifiedValue {
+        quoted: false,
         prefix,
         data,
         start,
@@ -211,12 +183,13 @@ pub fn encode_unquoted(val: &[u8]) -> AttrValMinified {
     }
 }
 
-pub fn minify_attr_val(
-    ns: Namespace,
-    tag: &[u8],
-    name: &[u8],
-    mut value_raw: Vec<u8>,
-) -> AttrValMinified {
+pub enum AttrMinified {
+    Redundant,
+    NoValue,
+    Value(AttrMinifiedValue),
+}
+
+pub fn minify_attr(ns: Namespace, tag: &[u8], name: &[u8], mut value_raw: Vec<u8>) -> AttrMinified {
     let attr_cfg = ATTRS.get(ns, tag, name);
 
     let should_collapse_and_trim = attr_cfg.filter(|attr| attr.collapse_and_trim).is_some();
@@ -237,33 +210,24 @@ pub fn minify_attr_val(
         // TODO Cfg.
         || (tag == b"script" && JAVASCRIPT_MIME_TYPES.contains(value_raw.as_slice()))
     {
-        return AttrValMinified {
-            typ: AttrType::Redundant,
-            prefix: b"",
-            data: Vec::new(),
-            start: 0,
-            suffix: b"",
-        };
+        return AttrMinified::Redundant;
     };
 
-    if is_boolean {
-        return AttrValMinified {
-            typ: AttrType::NoValue,
-            prefix: b"",
-            data: Vec::new(),
-            start: 0,
-            suffix: b"",
-        };
+    if is_boolean || value_raw.is_empty() {
+        return AttrMinified::NoValue;
     };
 
     let encoded = encode_entities(&value_raw, true);
 
     // When lengths are equal, prefer double quotes to all and single quotes to unquoted.
-    min(
-        min(
-            encode_using_double_quotes(&encoded),
-            encode_using_single_quotes(&encoded),
-        ),
-        encode_unquoted(&encoded),
-    )
+    let mut min = encode_using_double_quotes(&encoded);
+    let sq = encode_using_single_quotes(&encoded);
+    if sq.len() < min.len() {
+        min = sq;
+    };
+    let uq = encode_unquoted(&encoded);
+    if uq.len() < min.len() {
+        min = uq;
+    };
+    AttrMinified::Value(min)
 }

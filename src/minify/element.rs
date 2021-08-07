@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::ast::{ElementClosingTag, NodeData};
 use crate::cfg::Cfg;
-use crate::minify::attr::{minify_attr_val, AttrType};
+use crate::minify::attr::{minify_attr, AttrMinified};
 use crate::minify::content::minify_content;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
@@ -29,28 +29,33 @@ pub fn minify_element(
 
     out.push(b'<');
     out.extend_from_slice(tag_name);
-    let mut last_attr = AttrType::NoValue;
+    let mut last_attr_was_quoted = false;
     let mut attrs_sorted = attributes.into_iter().collect::<Vec<_>>();
     attrs_sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
     for (name, value) in attrs_sorted {
-        let min = minify_attr_val(ns, tag_name, &name, value);
-        if min.typ() == AttrType::Redundant {
+        let min = minify_attr(ns, tag_name, &name, value);
+        if let AttrMinified::Redundant = min {
             continue;
         };
-        if cfg.keep_spaces_between_attributes || last_attr != AttrType::Quoted {
+        if cfg.keep_spaces_between_attributes || !last_attr_was_quoted {
             out.push(b' ');
         };
         out.extend_from_slice(&name);
-        if min.len() == 0 {
-            last_attr = AttrType::NoValue;
-        } else {
-            out.push(b'=');
-            min.out(out);
-            last_attr = min.typ();
+        match min {
+            AttrMinified::NoValue => {
+                last_attr_was_quoted = false;
+            }
+            AttrMinified::Value(v) => {
+                debug_assert!(v.len() > 0);
+                out.push(b'=');
+                v.out(out);
+                last_attr_was_quoted = v.quoted();
+            }
+            _ => unreachable!(),
         };
     }
     if closing_tag == ElementClosingTag::SelfClosing {
-        if last_attr == AttrType::Unquoted {
+        if !last_attr_was_quoted {
             out.push(b' ');
         };
         out.push(b'/');
