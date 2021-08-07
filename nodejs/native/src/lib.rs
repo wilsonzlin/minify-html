@@ -32,6 +32,7 @@ pub extern "C" fn ffi_drop_cfg(cfg: *const Cfg) -> () {
 }
 
 #[no_mangle]
+// TODO Return result memory (let Node.js manage GC) instead of overwriting source.
 pub extern "C" fn ffi_in_place(
     code: *mut u8,
     code_len: usize,
