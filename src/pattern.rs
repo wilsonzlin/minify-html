@@ -15,6 +15,7 @@ pub enum TrieNodeMatch<V: 'static + Copy> {
     NotFound { reached: usize },
 }
 
+#[allow(dead_code)]
 impl<V: 'static + Copy> TrieNode<V> {
     // Find the node that matches the shortest prefix of {@param text} that:
     // - has a value (except the start node if it has a value);
@@ -32,7 +33,7 @@ impl<V: 'static + Copy> TrieNode<V> {
     // - "&amx" will return node `m`.
     // - "&ax" will return node `a`.
     // - "+ax" will return itself.
-    // - "" will return the itself.
+    // - "" will return itself.
     pub fn shortest_matching_prefix(&self, text: &[u8], from: usize) -> (&TrieNode<V>, usize) {
         let mut node: &TrieNode<V> = self;
         let mut pos = from;

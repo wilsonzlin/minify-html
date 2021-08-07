@@ -4,6 +4,7 @@ pub mod comment;
 pub mod content;
 pub mod css;
 pub mod element;
+pub mod esbuild;
 pub mod instruction;
 pub mod js;
 #[cfg(test)]

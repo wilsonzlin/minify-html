@@ -1,4 +1,4 @@
-fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) {
+fn eval_with_cfg(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) {
     let mut code = src.to_vec();
     let min = super::minify(&mut code, cfg);
     assert_eq!(
@@ -8,21 +8,27 @@ fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) {
 }
 
 fn eval(src: &'static [u8], expected: &'static [u8]) {
-    _eval(src, expected, &super::Cfg::new());
+    eval_with_cfg(src, expected, &super::Cfg::new());
+}
+
+fn eval_with_keep_html_head(src: &'static [u8], expected: &'static [u8]) -> () {
+    let mut cfg = super::Cfg::new();
+    cfg.keep_html_and_head_opening_tags = true;
+    eval_with_cfg(src, expected, &cfg);
 }
 
 #[cfg(feature = "js-esbuild")]
 fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
     let mut cfg = super::Cfg::new();
     cfg.minify_js = true;
-    _eval(src, expected, &cfg);
+    eval_with_cfg(src, expected, &cfg);
 }
 
 #[cfg(feature = "js-esbuild")]
 fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
     let mut cfg = super::Cfg::new();
     cfg.minify_css = true;
-    _eval(src, expected, &cfg);
+    eval_with_cfg(src, expected, &cfg);
 }
 
 #[test]
@@ -97,17 +103,17 @@ fn test_no_whitespace_minification() {
 #[test]
 fn test_parsing_extra_head_tag() {
     // Extra `<head>` in `<label>` should be dropped, so whitespace around `<head>` should be joined and therefore trimmed due to `<label>` whitespace rules.
-    eval(
+    eval_with_keep_html_head(
         b"<html><head><meta><head><link><head><body><label>  <pre> </pre> <head>  </label>",
         b"<html><head><meta><link><body><label><pre> </pre></label>",
     );
     // Same as above except it's a `</head>`, which should get reinterpreted as a `<head>`.
-    eval(
+    eval_with_keep_html_head(
         b"<html><head><meta><head><link><head><body><label>  <pre> </pre> </head>  </label>",
         b"<html><head><meta><link><body><label><pre> </pre></label>",
     );
     // `<head>` gets implicitly closed by `<body>`, so any following `</head>` should be ignored. (They should be anyway, since `</head>` would not be a valid closing tag.)
-    eval(
+    eval_with_keep_html_head(
         b"<html><head><body><label> </head> </label>",
         b"<html><head><body><label></label>",
     );
@@ -115,10 +121,10 @@ fn test_parsing_extra_head_tag() {
 
 #[test]
 fn test_parsing_omitted_closing_tag() {
-    eval(b"<html>", b"<html>");
-    eval(b" <html>\n", b"<html>");
-    eval(b" <!doctype html> <html>\n", b"<!doctype html><html>");
-    eval(
+    eval_with_keep_html_head(b"<html>", b"<html>");
+    eval_with_keep_html_head(b" <html>\n", b"<html>");
+    eval_with_keep_html_head(b" <!doctype html> <html>\n", b"<!doctype html><html>");
+    eval_with_keep_html_head(
         b"<!doctype html><html><div> <p>Foo</div></html>",
         b"<!doctype html><html><div><p>Foo</div>",
     );
@@ -136,24 +142,24 @@ fn test_self_closing_svg_tag_whitespace_removal() {
 
 #[test]
 fn test_parsing_with_omitted_tags() {
-    eval(b"<ul><li>1<li>2<li>3</ul>", b"<ul><li>1<li>2<li>3</ul>");
-    eval(b"<rt>", b"<rt>");
-    eval(b"<rt><rp>1</rp><div></div>", b"<rt><rp>1</rp><div></div>");
-    eval(b"<div><rt></div>", b"<div><rt></div>");
-    eval(b"<html><head><body>", b"<html><head><body>");
-    eval(b"<html><head><body>", b"<html><head><body>");
+    eval_with_keep_html_head(b"<ul><li>1<li>2<li>3</ul>", b"<ul><li>1<li>2<li>3</ul>");
+    eval_with_keep_html_head(b"<rt>", b"<rt>");
+    eval_with_keep_html_head(b"<rt><rp>1</rp><div></div>", b"<rt><rp>1</rp><div></div>");
+    eval_with_keep_html_head(b"<div><rt></div>", b"<div><rt></div>");
+    eval_with_keep_html_head(b"<html><head><body>", b"<html><head><body>");
+    eval_with_keep_html_head(b"<html><head><body>", b"<html><head><body>");
     // Tag names should be case insensitive.
-    eval(b"<rt>", b"<rt>");
+    eval_with_keep_html_head(b"<rt>", b"<rt>");
 }
 
 #[test]
 fn test_unmatched_closing_tag() {
-    eval(b"Hello</p>Goodbye", b"Hello<p>Goodbye");
-    eval(b"Hello<br></br>Goodbye", b"Hello<br>Goodbye");
-    eval(b"<div>Hello</p>Goodbye", b"<div>Hello<p>Goodbye");
-    eval(b"<ul><li>a</p>", b"<ul><li>a<p>");
-    eval(b"<ul><li><rt>a</p>", b"<ul><li><rt>a<p>");
-    eval(
+    eval_with_keep_html_head(b"Hello</p>Goodbye", b"Hello<p>Goodbye");
+    eval_with_keep_html_head(b"Hello<br></br>Goodbye", b"Hello<br>Goodbye");
+    eval_with_keep_html_head(b"<div>Hello</p>Goodbye", b"<div>Hello<p>Goodbye");
+    eval_with_keep_html_head(b"<ul><li>a</p>", b"<ul><li>a<p>");
+    eval_with_keep_html_head(b"<ul><li><rt>a</p>", b"<ul><li><rt>a<p>");
+    eval_with_keep_html_head(
         b"<html><head><body><ul><li><rt>a</p>",
         b"<html><head><body><ul><li><rt>a<p>",
     );
@@ -175,17 +181,17 @@ fn test_removal_of_html_and_head_opening_tags() {
 
 #[test]
 fn test_removal_of_optional_tags() {
-    eval(
+    eval_with_keep_html_head(
         b"<ul><li>1</li><li>2</li><li>3</li></ul>",
         b"<ul><li>1<li>2<li>3</ul>",
     );
-    eval(b"<rt></rt>", b"<rt>");
-    eval(
+    eval_with_keep_html_head(b"<rt></rt>", b"<rt>");
+    eval_with_keep_html_head(
         b"<rt></rt><rp>1</rp><div></div>",
         b"<rt><rp>1</rp><div></div>",
     );
-    eval(b"<div><rt></rt></div>", b"<div><rt></div>");
-    eval(
+    eval_with_keep_html_head(b"<div><rt></rt></div>", b"<div><rt></div>");
+    eval_with_keep_html_head(
         br#"
         <html>
             <head>
@@ -198,7 +204,7 @@ fn test_removal_of_optional_tags() {
         b"<html><head><body>",
     );
     // Tag names should be case insensitive.
-    eval(b"<RT></rt>", b"<rt>");
+    eval_with_keep_html_head(b"<RT></rt>", b"<rt>");
 }
 
 #[test]
