@@ -13,7 +13,7 @@ lazy_static! {
 }
 
 pub fn parse_script_content(code: &mut Code, lang: ScriptOrStyleLang) -> ParsedContent {
-    let (len, closing_tag_omitted) = match END.find(code.str()) {
+    let (len, closing_tag_omitted) = match END.find(code.as_slice()) {
         Some(m) => (m.start(), false),
         None => (code.rem(), true),
     };

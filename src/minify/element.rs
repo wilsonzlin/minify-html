@@ -30,49 +30,55 @@ pub fn minify_element(
     closing_tag: ElementClosingTag,
     children: Vec<NodeData>,
 ) {
+    let can_omit_opening_tag = (tag_name == b"html" || tag_name == b"head")
+        && attributes.is_empty()
+        && !cfg.keep_html_and_head_opening_tags;
     let can_omit_closing_tag = !cfg.keep_closing_tags
         && (can_omit_as_before(tag_name, next_sibling_as_element_tag_name)
             || (is_last_child_text_or_element_node && can_omit_as_last_node(parent, tag_name)));
 
-    out.push(b'<');
-    out.extend_from_slice(tag_name);
-    let mut last_attr = LastAttr::NoValue;
-    // TODO Further optimisation: order attrs based on optimal spacing strategy, given that spaces can be omitted after quoted attrs, and maybe after the tag name?
-    let mut attrs_sorted = attributes.into_iter().collect::<Vec<_>>();
-    attrs_sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
-    for (name, value) in attrs_sorted {
-        let min = minify_attr(ns, tag_name, &name, value);
-        if let AttrMinified::Redundant = min {
-            continue;
+    // TODO Attributes list could become empty after minification, making opening tag eligible for omission again.
+    if !can_omit_opening_tag {
+        out.push(b'<');
+        out.extend_from_slice(tag_name);
+        let mut last_attr = LastAttr::NoValue;
+        // TODO Further optimisation: order attrs based on optimal spacing strategy, given that spaces can be omitted after quoted attrs, and maybe after the tag name?
+        let mut attrs_sorted = attributes.into_iter().collect::<Vec<_>>();
+        attrs_sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+        for (name, value) in attrs_sorted {
+            let min = minify_attr(ns, tag_name, &name, value);
+            if let AttrMinified::Redundant = min {
+                continue;
+            };
+            if cfg.keep_spaces_between_attributes || last_attr != LastAttr::Quoted {
+                out.push(b' ');
+            };
+            out.extend_from_slice(&name);
+            match min {
+                AttrMinified::NoValue => {
+                    last_attr = LastAttr::NoValue;
+                }
+                AttrMinified::Value(v) => {
+                    debug_assert!(v.len() > 0);
+                    out.push(b'=');
+                    v.out(out);
+                    last_attr = if v.quoted() {
+                        LastAttr::Quoted
+                    } else {
+                        LastAttr::Unquoted
+                    };
+                }
+                _ => unreachable!(),
+            };
+        }
+        if closing_tag == ElementClosingTag::SelfClosing {
+            if last_attr == LastAttr::Unquoted {
+                out.push(b' ');
+            };
+            out.push(b'/');
         };
-        if cfg.keep_spaces_between_attributes || last_attr != LastAttr::Quoted {
-            out.push(b' ');
-        };
-        out.extend_from_slice(&name);
-        match min {
-            AttrMinified::NoValue => {
-                last_attr = LastAttr::NoValue;
-            }
-            AttrMinified::Value(v) => {
-                debug_assert!(v.len() > 0);
-                out.push(b'=');
-                v.out(out);
-                last_attr = if v.quoted() {
-                    LastAttr::Quoted
-                } else {
-                    LastAttr::Unquoted
-                };
-            }
-            _ => unreachable!(),
-        };
+        out.push(b'>');
     }
-    if closing_tag == ElementClosingTag::SelfClosing {
-        if last_attr == LastAttr::Unquoted {
-            out.push(b' ');
-        };
-        out.push(b'/');
-    };
-    out.push(b'>');
 
     if closing_tag == ElementClosingTag::SelfClosing || closing_tag == ElementClosingTag::Void {
         debug_assert!(children.is_empty());

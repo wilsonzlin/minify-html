@@ -14,7 +14,7 @@ lazy_static! {
 }
 
 pub fn parse_textarea_content(code: &mut Code) -> ParsedContent {
-    let (len, closing_tag_omitted) = match END.find(code.str()) {
+    let (len, closing_tag_omitted) = match END.find(code.as_slice()) {
         Some(m) => (m.start(), false),
         None => (code.rem(), true),
     };

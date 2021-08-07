@@ -95,6 +95,25 @@ fn test_no_whitespace_minification() {
 }
 
 #[test]
+fn test_parsing_extra_head_tag() {
+    // Extra `<head>` in `<label>` should be dropped, so whitespace around `<head>` should be joined and therefore trimmed due to `<label>` whitespace rules.
+    eval(
+        b"<html><head><meta><head><link><head><body><label>  <pre> </pre> <head>  </label>",
+        b"<html><head><meta><link><body><label><pre> </pre></label>",
+    );
+    // Same as above except it's a `</head>`, which should get reinterpreted as a `<head>`.
+    eval(
+        b"<html><head><meta><head><link><head><body><label>  <pre> </pre> </head>  </label>",
+        b"<html><head><meta><link><body><label><pre> </pre></label>",
+    );
+    // `<head>` gets implicitly closed by `<body>`, so any following `</head>` should be ignored. (They should be anyway, since `</head>` would not be a valid closing tag.)
+    eval(
+        b"<html><head><body><label> </head> </label>",
+        b"<html><head><body><label></label>",
+    );
+}
+
+#[test]
 fn test_parsing_omitted_closing_tag() {
     eval(b"<html>", b"<html>");
     eval(b" <html>\n", b"<html>");
@@ -137,6 +156,20 @@ fn test_unmatched_closing_tag() {
     eval(
         b"<html><head><body><ul><li><rt>a</p>",
         b"<html><head><body><ul><li><rt>a<p>",
+    );
+}
+
+#[test]
+fn test_removal_of_html_and_head_opening_tags() {
+    // Even though `<head>` is dropped, it's still parsed, so its content is still subject to `<head>` whitespace minification rules.
+    eval(
+        b"<!DOCTYPE html><html><head>  <meta> <body>",
+        b"<!DOCTYPE html><meta><body>",
+    );
+    // The tag should not be dropped if it has attributes.
+    eval(
+        b"<!DOCTYPE html><html lang=en><head>  <meta> <body>",
+        b"<!DOCTYPE html><html lang=en><meta><body>",
     );
 }
 

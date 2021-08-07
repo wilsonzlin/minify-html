@@ -25,7 +25,54 @@ enum ContentType {
     Comment,
     MalformedLeftChevronSlash,
     OmittedClosingTag,
-    ClosingTagForVoidElement,
+    IgnoredTag,
+}
+
+fn maybe_ignore_html_head_body(
+    code: &mut Code,
+    typ: ContentType,
+    parent: &[u8],
+    name: &[u8],
+) -> ContentType {
+    match (typ, name, parent) {
+        (OpeningTag, b"html", _) => {
+            if code.seen_html_open {
+                IgnoredTag
+            } else {
+                code.seen_html_open = true;
+                typ
+            }
+        }
+        (OpeningTag, b"head", _) => {
+            if code.seen_head_open {
+                IgnoredTag
+            } else {
+                code.seen_head_open = true;
+                typ
+            }
+        }
+        (ClosingTag, b"head", _) => {
+            if code.seen_head_close {
+                IgnoredTag
+            } else {
+                code.seen_head_close = true;
+                typ
+            }
+        }
+        (OmittedClosingTag, _, b"head") => {
+            code.seen_head_close = true;
+            typ
+        }
+        (OpeningTag, b"body", _) => {
+            if code.seen_body_open {
+                IgnoredTag
+            } else {
+                code.seen_body_open = true;
+                typ
+            }
+        }
+        _ => typ,
+    }
 }
 
 fn build_content_type_matcher() -> (AhoCorasick, Vec<ContentType>) {
@@ -83,7 +130,7 @@ pub fn parse_content(
     let mut closing_tag_omitted = true;
     let mut nodes = Vec::<NodeData>::new();
     loop {
-        let (text_len, mut typ) = match CONTENT_TYPE_MATCHER.0.find(&code.str()) {
+        let (text_len, mut typ) = match CONTENT_TYPE_MATCHER.0.find(&code.as_slice()) {
             Some(m) => (m.start(), CONTENT_TYPE_MATCHER.1[m.pattern()]),
             None => (code.rem(), Text),
         };
@@ -117,12 +164,13 @@ pub fn parse_content(
                     typ = OmittedClosingTag;
                 } else if VOID_TAGS.contains(name.as_slice()) {
                     // Closing tag for void element, drop.
-                    typ = ClosingTagForVoidElement;
+                    typ = IgnoredTag;
                 } else if parent.is_empty() || parent != name.as_slice() {
                     // Closing tag mismatch, reinterpret as opening tag.
                     typ = OpeningTag;
                 };
             };
+            typ = maybe_ignore_html_head_body(code, typ, parent, &name);
         };
         match typ {
             Text => break,
@@ -134,7 +182,7 @@ pub fn parse_content(
             Instruction => nodes.push(parse_instruction(code)),
             Bang => nodes.push(parse_bang(code)),
             Comment => nodes.push(parse_comment(code)),
-            MalformedLeftChevronSlash => code.shift(match memrchr(b'>', code.str()) {
+            MalformedLeftChevronSlash => code.shift(match memrchr(b'>', code.as_slice()) {
                 Some(m) => m + 1,
                 None => code.rem(),
             }),
@@ -142,7 +190,7 @@ pub fn parse_content(
                 closing_tag_omitted = true;
                 break;
             }
-            ClosingTagForVoidElement => drop(parse_tag(code)),
+            IgnoredTag => drop(parse_tag(code)),
         };
     }
     ParsedContent {

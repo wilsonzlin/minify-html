@@ -9,6 +9,7 @@ use crate::parse::content::{parse_content, ParsedContent};
 use crate::parse::script::parse_script_content;
 use crate::parse::style::parse_style_content;
 use crate::parse::textarea::parse_textarea_content;
+use crate::parse::title::parse_title_content;
 use crate::parse::Code;
 use crate::spec::entity::decode::decode_entities;
 use crate::spec::script::JAVASCRIPT_MIME_TYPES;
@@ -18,7 +19,7 @@ use std::fmt::{Debug, Formatter};
 use std::str::from_utf8;
 
 fn parse_tag_name(code: &mut Code) -> Vec<u8> {
-    debug_assert!(code.str().starts_with(b"<"));
+    debug_assert!(code.as_slice().starts_with(b"<"));
     code.shift(1);
     code.shift_if_next(b'/');
     let mut name = code.copy_and_shift_while_in_lookup(TAG_NAME_CHAR);
@@ -172,6 +173,7 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
         },
         b"style" => parse_style_content(code),
         b"textarea" => parse_textarea_content(code),
+        b"title" => parse_title_content(code),
         _ => parse_content(code, child_ns, parent, &elem_name),
     };
 

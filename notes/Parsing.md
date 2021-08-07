@@ -15,7 +15,7 @@ If the input ends while in the middle of a tag or attribute value, that tag/attr
 |Rule|Example source|Example interpretation|
 |---|---|---|
 |A tag name is one or more alphanumeric, `:`, or `-` characters|`<x:a:b:--d09>`|`<x:a:b:--d09>`|
-|`script`, `style`, and `textarea` tags do not close until the case-insensitive sequence `</` followed by the tag name.|`<teXTaRea></textare></TEXTArea>`|`<textarea></textare></textarea>`|
+|`script`, `style`, `textarea`, and `title` tags do not close until the case-insensitive sequence `</` followed by the tag name.|`<teXTaRea></textare></TEXTArea>`|`<textarea></textare></textarea>`|
 |Attribute-like syntax in closing tags are parsed like attributes but ignored.|`<div></div x=">">5`|`<div></div>`|
 |If the character following `</` is not a valid tag name character, all code until the next `>` is dropped. It is not considered a closing tag, even as an invalid one.|`<div></   div x=">">5`|`<div>">5`|
 |If a closing tag represents a void element, the closing tag is dropped.|`<div><br>ax</br><img></img>i</div>`|`<div><br>ax<img>i</div>`|

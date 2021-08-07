@@ -17,6 +17,8 @@ pub struct Cfg {
 
     /// Do not omit closing tags when possible.
     pub keep_closing_tags: bool,
+    /// Do not omit `<html>` and `<head>` opening tags when they don't have attributes.
+    pub keep_html_and_head_opening_tags: bool,
     /// Keep spaces between attributes when possible to conform to HTML standards.
     pub keep_spaces_between_attributes: bool,
     /// Keep all comments.
@@ -32,6 +34,7 @@ impl Cfg {
         Cfg {
             keep_closing_tags: false,
             keep_comments: false,
+            keep_html_and_head_opening_tags: false,
             keep_spaces_between_attributes: false,
             minify_css: false,
             minify_js: false,

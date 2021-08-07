@@ -9,9 +9,9 @@ lazy_static! {
 }
 
 pub fn parse_instruction(code: &mut Code) -> NodeData {
-    debug_assert!(code.str().starts_with(b"<?"));
+    debug_assert!(code.as_slice().starts_with(b"<?"));
     code.shift(2);
-    let (len, matched) = match INSTRUCTION_END.find(code.str()) {
+    let (len, matched) = match INSTRUCTION_END.find(code.as_slice()) {
         Some(m) => (m.start(), m.end() - m.start()),
         None => (code.rem(), 0),
     };

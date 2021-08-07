@@ -10,10 +10,16 @@ pub mod style;
 #[cfg(test)]
 mod tests;
 pub mod textarea;
+pub mod title;
 
 pub struct Code<'c> {
     code: &'c [u8],
     next: usize,
+
+    pub seen_html_open: bool,
+    pub seen_head_open: bool,
+    pub seen_head_close: bool,
+    pub seen_body_open: bool,
 }
 
 #[derive(Copy, Clone)]
@@ -21,10 +27,17 @@ pub struct Checkpoint(usize);
 
 impl<'c> Code<'c> {
     pub fn new(code: &[u8]) -> Code {
-        Code { code, next: 0 }
+        Code {
+            code,
+            next: 0,
+            seen_html_open: false,
+            seen_head_open: false,
+            seen_head_close: false,
+            seen_body_open: false,
+        }
     }
 
-    pub fn str(&self) -> &[u8] {
+    pub fn as_slice(&self) -> &[u8] {
         &self.code[self.next..]
     }
 

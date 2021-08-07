@@ -3,9 +3,9 @@ use crate::parse::Code;
 use memchr::memchr;
 
 pub fn parse_bang(code: &mut Code) -> NodeData {
-    debug_assert!(code.str().starts_with(b"<!"));
+    debug_assert!(code.as_slice().starts_with(b"<!"));
     code.shift(2);
-    let (len, matched) = match memchr(b'>', code.str()) {
+    let (len, matched) = match memchr(b'>', code.as_slice()) {
         Some(m) => (m, 1),
         None => (code.rem(), 0),
     };
