@@ -30,13 +30,13 @@ Need even faster performance? Check the [one](https://github.com/wilsonzlin/mini
 
 Precompiled binaries are available for x86-64 Linux, macOS, and Windows.
 
-##### Get
+### Get
 
 [Linux](https://wilsonl.in/minify-html/bin/0.4.11-linux-x86_64) |
 [macOS](https://wilsonl.in/minify-html/bin/0.4.11-macos-x86_64) |
 [Windows](https://wilsonl.in/minify-html/bin/0.4.11-windows-x86_64.exe)
 
-##### Use
+### Use
 
 Use the `--help` argument for more details.
 
@@ -49,7 +49,7 @@ minify-html --src /path/to/src.html --out /path/to/output.min.html --css --js
 <details>
 <summary><img width="24" src="./icon/rust.png"> <strong>Rust</strong></summary>
 
-##### Get
+### Get
 
 ```toml
 [dependencies]
@@ -60,7 +60,7 @@ Building with the `js-esbuild` feature requires the Go compiler to be installed 
 
 If the `js-esbuild` feature is not enabled, `cfg.minify_js` and `cfg.minify_css` will have no effect.
 
-##### Use
+### Use
 
 Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 
@@ -73,7 +73,7 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 - Binding: [N-API](https://nodejs.org/api/n-api.html)
 - Platforms: Linux (ARM64 and x86-64), macOS (x86-64), Windows (x86-64); Node.js 8.6.0 and higher
 
-##### Get
+### Get
 
 Using npm:
 
@@ -87,7 +87,7 @@ Using Yarn:
 yarn add @minify-html/js
 ```
 
-##### Use
+### Use
 
 ```js
 const minifyHtml = require("@minify-html/js");
@@ -116,7 +116,7 @@ const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 - Binding: [JNI](https://github.com/jni-rs/jni-rs)
 - Platforms: Linux, macOS, Windows; Java 7 and higher
 
-##### Get
+### Get
 
 Add as a Maven dependency:
 
@@ -128,7 +128,7 @@ Add as a Maven dependency:
 </dependency>
 ```
 
-##### Use
+### Use
 
 ```java
 import in.wilsonl.minifyhtml.Configuration;
@@ -152,11 +152,11 @@ String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
 - Platforms: Linux, macOS, Windows; Python 3.7 and higher
 
-##### Get
+### Get
 
 Add the PyPI project as a dependency and install it using `pip` or `pipenv`.
 
-##### Use
+### Use
 
 ```python
 import minify_html
@@ -173,11 +173,11 @@ minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=False, minif
 - Binding: [Rutie](https://github.com/danielpclark/rutie)
 - Platforms: Linux, macOS; Ruby 2.5 and higher
 
-##### Get
+### Get
 
 Add the library as a dependency to `Gemfile` or `*.gemspec`.
 
-##### Use
+### Use
 
 ```ruby
 require 'minify_html'
@@ -189,7 +189,7 @@ print MinifyHtml.minify("<p>  Hello, world!  </p>", { :minify_js => false, :mini
 
 ## Minification
 
-Note that many of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. Most of these can be turned off via the Cfg object.
+Note that some of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. These can be turned off via the Cfg object.
 
 ### Whitespace
 
