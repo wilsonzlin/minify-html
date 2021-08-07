@@ -19,7 +19,7 @@ An HTML minifier meticulously optimised for both speed and effectiveness, writte
 
 Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
 
-<img width="415" alt="Chart showing speed and compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.5.1/core/average-combined.png">
+<img width="415" alt="Chart showing speed and compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.5.2/core/average-combined.png">
 
 Need even faster performance? Check the [one](https://github.com/wilsonzlin/minify-html/tree/one) branch.
 
@@ -32,9 +32,9 @@ Precompiled binaries are available for x86-64 Linux, macOS, and Windows.
 
 ### Get
 
-[Linux](https://wilsonl.in/minify-html/bin/0.5.1-linux-x86_64) |
-[macOS](https://wilsonl.in/minify-html/bin/0.5.1-macos-x86_64) |
-[Windows](https://wilsonl.in/minify-html/bin/0.5.1-windows-x86_64.exe)
+[Linux](https://wilsonl.in/minify-html/bin/0.5.2-linux-x86_64) |
+[macOS](https://wilsonl.in/minify-html/bin/0.5.2-macos-x86_64) |
+[Windows](https://wilsonl.in/minify-html/bin/0.5.2-windows-x86_64.exe)
 
 ### Use
 
@@ -53,7 +53,7 @@ minify-html --src /path/to/src.html --out /path/to/output.min.html --css --js
 
 ```toml
 [dependencies]
-minify-html = { version = "0.5.1", features = ["js-esbuild"] }
+minify-html = { version = "0.5.2", features = ["js-esbuild"] }
 ```
 
 Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS and CSS minifier](https://github.com/wilsonzlin/esbuild-rs).
@@ -124,7 +124,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.minifyhtml</groupId>
   <artifactId>minify-html</artifactId>
-  <version>0.5.1</version>
+  <version>0.5.2</version>
 </dependency>
 ```
 
