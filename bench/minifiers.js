@@ -66,7 +66,7 @@ const htmlMinifierCfg = {
 };
 
 module.exports = {
-  '@minify-html/js': (_, buffer) => minifyHtml.minify(Buffer.from(buffer), minifyHtmlCfg),
+  '@minify-html/js': (_, buffer) => minifyHtml.minify(buffer, minifyHtmlCfg),
   'html-minifier': content => htmlMinifier.minify(content, htmlMinifierCfg),
   'minimize': testJsAndCssMinification
     ? (content) => new minimize({

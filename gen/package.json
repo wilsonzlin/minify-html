@@ -5,7 +5,7 @@
   },
   "dependencies": {
     "@types/node": "^14.0.5",
-    "@wzlin/html-data": "^2020103004.0.1",
+    "@wzlin/html-data": "^2021080714.0.0",
     "prettier": "2.3.2",
     "ts-node": "^8.10.1",
     "typescript": "^3.7.4",

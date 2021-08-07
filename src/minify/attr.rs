@@ -217,14 +217,26 @@ pub fn minify_attr(
 
     #[cfg(feature = "js-esbuild")]
     if name == b"style" && cfg.minify_css {
-        let mut value_raw_min = Vec::new();
+        let mut value_raw_wrapped = Vec::with_capacity(value_raw.len() + 3);
+        // TODO This isn't safe for invalid input e.g. `a}/*`.
+        value_raw_wrapped.extend_from_slice(b"x{");
+        value_raw_wrapped.extend_from_slice(&value_raw);
+        value_raw_wrapped.push(b'}');
+        let mut value_raw_wrapped_min = Vec::with_capacity(value_raw_wrapped.len());
         minify_using_esbuild(
-            &mut value_raw_min,
-            &value_raw,
+            &mut value_raw_wrapped_min,
+            &value_raw_wrapped,
             &MINIFY_CSS_TRANSFORM_OPTIONS.clone(),
             None,
         );
-        value_raw = value_raw_min;
+        // If input was invalid, wrapper syntax may not exist anymore.
+        if value_raw_wrapped_min.starts_with(b"x{") {
+            value_raw_wrapped_min.drain(0..2);
+        };
+        if value_raw_wrapped_min.ends_with(b"}") {
+            value_raw_wrapped_min.pop();
+        };
+        value_raw = value_raw_wrapped_min;
     }
 
     if (value_raw.is_empty() && redundant_if_empty)

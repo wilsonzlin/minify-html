@@ -603,7 +603,9 @@ fn test_css_minification() {
     );
     // `style` attributes.
     eval_with_css_min(
-        br#"<div style="div { color: yellow }"></div>"#,
-        br#"<div style=div{color:#ff0}></div>"#,
+        br#"<div style="color: yellow;"></div>"#,
+        br#"<div style=color:#ff0></div>"#,
     );
+    // `style` attributes are removed if fully minified away.
+    eval_with_css_min(br#"<div style="  /*  */   "></div>"#, br#"<div></div>"#);
 }
