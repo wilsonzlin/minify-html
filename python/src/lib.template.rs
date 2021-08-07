@@ -1,19 +1,42 @@
-use minify_html::{Cfg, Error, in_place as minify_html_native};
+use minify_html::{Cfg, minify as minify_html_native};
 use pyo3::prelude::*;
-use pyo3::exceptions::PySyntaxError;
 use pyo3::wrap_pyfunction;
-use std::str::from_utf8_unchecked;
+use std::string::String;
 
-#[pyfunction(py_args="*", minify_js="false", minify_css="false")]
-fn minify(code: String, minify_js: bool, minify_css: bool) -> PyResult<String> {
-    let mut code = code.into_bytes();
-    match minify_html_native(&mut code, &Cfg {
-        minify_js,
+#[pyfunction(
+    py_args="*",
+    keep_closing_tags="false",
+    keep_comments="false",
+    keep_html_and_head_opening_tags="false",
+    keep_spaces_between_attributes="false",
+    minify_css="false",
+    minify_js="false",
+    remove_bangs="false",
+    remove_processing_instructions="false",
+)]
+fn minify(
+    code: String,
+    keep_closing_tags: bool,
+    keep_comments: bool,
+    keep_html_and_head_opening_tags: bool,
+    keep_spaces_between_attributes: bool,
+    minify_css: bool,
+    minify_js: bool,
+    remove_bangs: bool,
+    remove_processing_instructions: bool,
+) -> PyResult<String> {
+    let code = code.into_bytes();
+    let out_code = minify_html_native(&code, &Cfg {
+        keep_closing_tags,
+        keep_comments,
+        keep_html_and_head_opening_tags,
+        keep_spaces_between_attributes,
         minify_css,
-    }) {
-        Ok(out_len) => Ok(unsafe { from_utf8_unchecked(&code[0..out_len]).to_string() }),
-        Err(Error { error_type, position }) => Err(PySyntaxError::new_err(format!("{} [Character {}]", error_type.message(), position))),
-    }
+        minify_js,
+        remove_bangs,
+        remove_processing_instructions,
+    });
+    Ok(String::from_utf8(out_code).unwrap())
 }
 
 #[pymodule]
