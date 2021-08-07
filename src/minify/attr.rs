@@ -1,5 +1,3 @@
-use std::cmp::{min, Ordering};
-
 use aho_corasick::{AhoCorasickBuilder, MatchKind};
 use lazy_static::lazy_static;
 

@@ -7,6 +7,13 @@ use crate::minify::content::minify_content;
 use crate::spec::tag::ns::Namespace;
 use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 
+#[derive(Copy, Clone, Eq, PartialEq)]
+enum LastAttr {
+    NoValue,
+    Quoted,
+    Unquoted,
+}
+
 pub fn minify_element(
     cfg: &Cfg,
     out: &mut Vec<u8>,
@@ -29,7 +36,8 @@ pub fn minify_element(
 
     out.push(b'<');
     out.extend_from_slice(tag_name);
-    let mut last_attr_was_quoted = false;
+    let mut last_attr = LastAttr::NoValue;
+    // TODO Further optimisation: order attrs based on optimal spacing strategy, given that spaces can be omitted after quoted attrs, and maybe after the tag name?
     let mut attrs_sorted = attributes.into_iter().collect::<Vec<_>>();
     attrs_sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
     for (name, value) in attrs_sorted {
@@ -37,25 +45,29 @@ pub fn minify_element(
         if let AttrMinified::Redundant = min {
             continue;
         };
-        if cfg.keep_spaces_between_attributes || !last_attr_was_quoted {
+        if cfg.keep_spaces_between_attributes || last_attr != LastAttr::Quoted {
             out.push(b' ');
         };
         out.extend_from_slice(&name);
         match min {
             AttrMinified::NoValue => {
-                last_attr_was_quoted = false;
+                last_attr = LastAttr::NoValue;
             }
             AttrMinified::Value(v) => {
                 debug_assert!(v.len() > 0);
                 out.push(b'=');
                 v.out(out);
-                last_attr_was_quoted = v.quoted();
+                last_attr = if v.quoted() {
+                    LastAttr::Quoted
+                } else {
+                    LastAttr::Unquoted
+                };
             }
             _ => unreachable!(),
         };
     }
     if closing_tag == ElementClosingTag::SelfClosing {
-        if !last_attr_was_quoted {
+        if last_attr == LastAttr::Unquoted {
             out.push(b' ');
         };
         out.push(b'/');
