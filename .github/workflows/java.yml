@@ -2,8 +2,6 @@ name: Build and publish Java artifact
 
 on:
   push:
-    branches:
-      - master
     tags:
       - 'v*'
   workflow_dispatch:
@@ -11,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         os: [macos-11.0, ubuntu-18.04, windows-2019]

@@ -2,8 +2,6 @@ name: Build and upload CLI
 
 on:
   push:
-    branches:
-      - master
     tags:
       - 'v*'
   workflow_dispatch:
@@ -11,6 +9,7 @@ on:
 jobs:
   cli:
     runs-on: ${{ matrix.os }}
+    if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         os: [macos-11.0, ubuntu-18.04, windows-2019]
