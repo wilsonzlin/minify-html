@@ -30,16 +30,9 @@ mod whitespace;
 /// use minify_html::{Cfg, minify};
 ///
 /// let mut code: &[u8] = b"<p>  Hello, world!  </p>";
-/// let cfg = &Cfg {
-///     minify_css: false,
-///     minify_js: false,
-///     omit_closing_tags: true,
-///     remove_bangs: false,
-///     remove_comments: true,
-///     remove_processing_instructions: false,
-///     remove_spaces_between_attributes: true,
-/// };
-/// let minified = minify(&code, cfg);
+/// let mut cfg = Cfg::new();
+/// cfg.keep_comments = true;
+/// let minified = minify(&code, &cfg);
 /// assert_eq!(minified, b"<p>Hello, world!".to_vec());
 /// ```
 pub fn minify(src: &[u8], cfg: &Cfg) -> Vec<u8> {

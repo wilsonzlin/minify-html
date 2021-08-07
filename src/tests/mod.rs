@@ -8,53 +8,21 @@ fn _eval(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) {
 }
 
 fn eval(src: &'static [u8], expected: &'static [u8]) {
-    _eval(
-        src,
-        expected,
-        &super::Cfg {
-            minify_css: false,
-            minify_js: false,
-            omit_closing_tags: true,
-            remove_bangs: false,
-            remove_comments: true,
-            remove_processing_instructions: false,
-            remove_spaces_between_attributes: true,
-        },
-    );
+    _eval(src, expected, &super::Cfg::new());
 }
 
 #[cfg(feature = "js-esbuild")]
 fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
-    _eval(
-        src,
-        expected,
-        &super::Cfg {
-            minify_js: true,
-            minify_css: false,
-            omit_closing_tags: true,
-            remove_bangs: false,
-            remove_comments: true,
-            remove_processing_instructions: false,
-            remove_spaces_between_attributes: true,
-        },
-    );
+    let mut cfg = super::Cfg::new();
+    cfg.minify_js = true;
+    _eval(src, expected, &cfg);
 }
 
 #[cfg(feature = "js-esbuild")]
 fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
-    _eval(
-        src,
-        expected,
-        &super::Cfg {
-            minify_js: false,
-            minify_css: true,
-            omit_closing_tags: true,
-            remove_bangs: false,
-            remove_comments: true,
-            remove_processing_instructions: false,
-            remove_spaces_between_attributes: true,
-        },
-    );
+    let mut cfg = super::Cfg::new();
+    cfg.minify_css = true;
+    _eval(src, expected, &cfg);
 }
 
 #[test]

@@ -15,14 +15,28 @@ pub struct Cfg {
     /// enabled; otherwise, this value has no effect.
     pub minify_css: bool,
 
-    /// Omit closing tags when possible.
-    pub omit_closing_tags: bool,
-    /// Remove spaces between attributes when possible (may result in invalid HTML).
-    pub remove_spaces_between_attributes: bool,
-    /// Remove all comments.
-    pub remove_comments: bool,
+    /// Do not omit closing tags when possible.
+    pub keep_closing_tags: bool,
+    /// Keep spaces between attributes when possible to conform to HTML standards.
+    pub keep_spaces_between_attributes: bool,
+    /// Keep all comments.
+    pub keep_comments: bool,
     /// Remove all bangs.
     pub remove_bangs: bool,
     /// Remove all processing_instructions.
     pub remove_processing_instructions: bool,
+}
+
+impl Cfg {
+    pub fn new() -> Cfg {
+        Cfg {
+            keep_closing_tags: false,
+            keep_comments: false,
+            keep_spaces_between_attributes: false,
+            minify_css: false,
+            minify_js: false,
+            remove_bangs: false,
+            remove_processing_instructions: false,
+        }
+    }
 }

@@ -164,8 +164,7 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
         closing_tag_omitted,
         children,
     } = match elem_name.as_slice() {
-        // TODO to_vec call allocates every time?
-        b"script" => match attributes.get(&b"type".to_vec()) {
+        b"script" => match attributes.get(b"type".as_ref()) {
             Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => {
                 parse_script_content(code, ScriptOrStyleLang::Data)
             }

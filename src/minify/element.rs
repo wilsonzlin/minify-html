@@ -23,7 +23,7 @@ pub fn minify_element(
     closing_tag: ElementClosingTag,
     children: Vec<NodeData>,
 ) {
-    let can_omit_closing_tag = cfg.omit_closing_tags
+    let can_omit_closing_tag = !cfg.keep_closing_tags
         && (can_omit_as_before(tag_name, next_sibling_as_element_tag_name)
             || (is_last_child_text_or_element_node && can_omit_as_last_node(parent, tag_name)));
 
@@ -37,7 +37,7 @@ pub fn minify_element(
         if min.typ() == AttrType::Redundant {
             continue;
         };
-        if !cfg.remove_spaces_between_attributes || last_attr != AttrType::Quoted {
+        if cfg.keep_spaces_between_attributes || last_attr != AttrType::Quoted {
             out.push(b' ');
         };
         out.extend_from_slice(&name);
@@ -70,8 +70,7 @@ pub fn minify_element(
         children,
     );
 
-    if closing_tag != ElementClosingTag::Present || (cfg.omit_closing_tags && can_omit_closing_tag)
-    {
+    if closing_tag != ElementClosingTag::Present || can_omit_closing_tag {
         return;
     };
     out.extend_from_slice(b"</");
