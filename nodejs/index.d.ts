@@ -38,12 +38,3 @@ export function createConfiguration (options: {
  * @returns Minified HTML code
  */
 export function minify (src: string, cfg: Cfg): Buffer;
-
-/**
- * Minifies a {@link Buffer} containing UTF-8 HTML code in place.
- *
- * @param code - Source Buffer code
- * @param cfg - Configuration created by {@link createConfiguration}
- * @returns Subslice of source Buffer (not a copy) representing the minified output HTML
- */
-export function minifyInPlace (code: Buffer, cfg: Cfg): Buffer;

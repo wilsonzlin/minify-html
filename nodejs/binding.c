@@ -108,75 +108,6 @@ napi_value node_method_create_configuration(napi_env env, napi_callback_info inf
   return js_cfg;
 }
 
-napi_value node_method_minify_in_place(napi_env env, napi_callback_info info) {
-  napi_value undefined = get_undefined(env);
-  napi_value min_buf_rv = undefined;
-
-  bool buffer_arg_ref_set = false;
-  napi_ref buffer_arg_ref;
-  js_min_buf_metadata* min_buf_meta = NULL;
-
-  size_t argc = 2;
-  napi_value argv[2];
-  napi_value _this;
-  void* _data;
-
-  // Get the arguments.
-  if (napi_get_cb_info(env, info, &argc, argv, &_this, &_data) != napi_ok) {
-    assert_ok(napi_throw_error(env, NULL, "Failed to get callback info"));
-    goto rollback;
-  }
-  napi_value buffer_arg = argv[0];
-  napi_value js_cfg_arg = argv[1];
-
-  // Ensure buffer lives along side minified buffer (both point to same memory).
-  if (napi_create_reference(env, buffer_arg, 1, &buffer_arg_ref) != napi_ok) {
-    assert_ok(napi_throw_error(env, NULL, "Failed to create reference for source buffer"));
-    goto rollback;
-  }
-  buffer_arg_ref_set = true;
-
-  // Get pointer to bytes in buffer.
-  void* buffer_data;
-  size_t buffer_len;
-  if (napi_get_buffer_info(env, buffer_arg, &buffer_data, &buffer_len) != napi_ok || buffer_data == NULL) {
-    assert_ok(napi_throw_type_error(env, NULL, "Failed to read source buffer"));
-    goto rollback;
-  }
-
-  // Get Cfg.
-  void* cfg_raw;
-  if (napi_get_value_external(env, js_cfg_arg, &cfg_raw) != napi_ok) {
-    assert_ok(napi_throw_type_error(env, NULL, "Failed to get configuration"));
-    goto rollback;
-  }
-  Cfg const* cfg = (Cfg const*) cfg_raw;
-
-  // Run minifier in place.
-  size_t min_len;
-  ffi_in_place(buffer_data, buffer_len, cfg, &min_len);
-
-  // Create minified buffer with underlying source memory but minified length.
-  min_buf_meta = assert_malloc(sizeof(js_min_buf_metadata));
-  min_buf_meta->src_buf_ref = buffer_arg_ref;
-  if (napi_create_external_buffer(env, min_len, buffer_data, js_min_buf_finalizer, min_buf_meta, &min_buf_rv) != napi_ok) {
-    assert_ok(napi_throw_error(env, NULL, "Failed to create minified buffer"));
-    goto rollback;
-  }
-
-  goto cleanup;
-
-rollback:
-  if (buffer_arg_ref_set) {
-    // Release source buffer.
-    assert_ok(napi_delete_reference(env, buffer_arg_ref));
-  }
-  free(min_buf_meta);
-
-cleanup:
-  return min_buf_rv;
-}
-
 napi_value node_method_minify(napi_env env, napi_callback_info info) {
   napi_value undefined = get_undefined(env);
   napi_value min_buf_rv = undefined;
@@ -257,7 +188,6 @@ static inline void define_method(napi_env env, napi_value exports, char const* n
 napi_value node_module_init(napi_env env, napi_value exports) {
   define_method(env, exports, "createConfiguration", node_method_create_configuration);
   define_method(env, exports, "minify", node_method_minify);
-  define_method(env, exports, "minifyInPlace", node_method_minify_in_place);
   return exports;
 }
 
