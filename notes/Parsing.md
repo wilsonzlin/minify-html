@@ -8,7 +8,7 @@ To see some complex inputs, check out the [various fuzzing inputs](../fuzz/in).
 
 ## Limitations
 
-- Input must be UTF-8.
+- Input must be valid UTF-8 without BOM.
 - All HTML is interpreted as HTML5.
 - [Escaped and double-escaped](./Script%20data.md) script content are not supported.
 
