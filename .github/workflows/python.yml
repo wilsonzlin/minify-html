@@ -9,7 +9,6 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
-    if: github.ref == 'refs/heads/master'
     strategy:
       matrix:
         feature: [core, js]

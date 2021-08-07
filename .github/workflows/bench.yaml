@@ -9,7 +9,6 @@ on:
 jobs:
   bench:
     runs-on: ubuntu-18.04
-    if: github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v1
 
