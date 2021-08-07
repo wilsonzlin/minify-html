@@ -596,8 +596,14 @@ fn test_js_minification_unintentional_closing_tag() {
 #[cfg(feature = "js-esbuild")]
 #[test]
 fn test_css_minification() {
+    // `<style>` contents.
     eval_with_css_min(
         b"<style>div { color: yellow }</style>",
         b"<style>div{color:#ff0}</style>",
+    );
+    // `style` attributes.
+    eval_with_css_min(
+        br#"<div style="div { color: yellow }"></div>"#,
+        br#"<div style=div{color:#ff0}></div>"#,
     );
 }

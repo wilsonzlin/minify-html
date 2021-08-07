@@ -46,7 +46,7 @@ pub fn minify_element(
         let mut attrs_sorted = attributes.into_iter().collect::<Vec<_>>();
         attrs_sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
         for (name, value) in attrs_sorted {
-            let min = minify_attr(ns, tag_name, &name, value);
+            let min = minify_attr(cfg, ns, tag_name, &name, value);
             if let AttrMinified::Redundant = min {
                 continue;
             };

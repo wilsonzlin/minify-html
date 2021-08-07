@@ -1,6 +1,11 @@
 use aho_corasick::{AhoCorasickBuilder, MatchKind};
 use lazy_static::lazy_static;
 
+#[cfg(feature = "js-esbuild")]
+use {
+    crate::minify::css::MINIFY_CSS_TRANSFORM_OPTIONS, crate::minify::esbuild::minify_using_esbuild,
+};
+
 use crate::gen::attrs::ATTRS;
 use crate::gen::codepoints::DIGIT;
 use crate::pattern::Replacer;
@@ -8,6 +13,7 @@ use crate::spec::entity::encode::encode_entities;
 use crate::spec::script::JAVASCRIPT_MIME_TYPES;
 use crate::spec::tag::ns::Namespace;
 use crate::whitespace::{collapse_whitespace, left_trim, right_trim};
+use crate::Cfg;
 
 fn build_double_quoted_replacer() -> Replacer {
     let mut patterns = Vec::<Vec<u8>>::new();
@@ -187,7 +193,13 @@ pub enum AttrMinified {
     Value(AttrMinifiedValue),
 }
 
-pub fn minify_attr(ns: Namespace, tag: &[u8], name: &[u8], mut value_raw: Vec<u8>) -> AttrMinified {
+pub fn minify_attr(
+    cfg: &Cfg,
+    ns: Namespace,
+    tag: &[u8],
+    name: &[u8],
+    mut value_raw: Vec<u8>,
+) -> AttrMinified {
     let attr_cfg = ATTRS.get(ns, tag, name);
 
     let should_collapse_and_trim = attr_cfg.filter(|attr| attr.collapse_and_trim).is_some();
@@ -202,6 +214,18 @@ pub fn minify_attr(ns: Namespace, tag: &[u8], name: &[u8], mut value_raw: Vec<u8
         left_trim(&mut value_raw);
         collapse_whitespace(&mut value_raw);
     };
+
+    #[cfg(feature = "js-esbuild")]
+    if name == b"style" && cfg.minify_css {
+        let mut value_raw_min = Vec::new();
+        minify_using_esbuild(
+            &mut value_raw_min,
+            &value_raw,
+            &MINIFY_CSS_TRANSFORM_OPTIONS.clone(),
+            None,
+        );
+        value_raw = value_raw_min;
+    }
 
     if (value_raw.is_empty() && redundant_if_empty)
         || default_value.filter(|dv| dv == &value_raw).is_some()

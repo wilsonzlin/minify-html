@@ -14,7 +14,7 @@ lazy_static! {
     static ref STYLE_END: AhoCorasick = AhoCorasickBuilder::new()
         .ascii_case_insensitive(true)
         .build(&["</style"]);
-    static ref TRANSFORM_OPTIONS: Arc<TransformOptions> = {
+    pub static ref MINIFY_CSS_TRANSFORM_OPTIONS: Arc<TransformOptions> = {
         let mut builder = TransformOptionsBuilder::new();
         builder.loader = Loader::CSS;
         builder.minify_identifiers = true;
@@ -34,6 +34,11 @@ pub fn minify_css(cfg: &Cfg, out: &mut Vec<u8>, code: &[u8]) {
     if !cfg.minify_css {
         out.extend_from_slice(&code);
     } else {
-        minify_using_esbuild(out, code, &TRANSFORM_OPTIONS.clone(), &STYLE_END);
+        minify_using_esbuild(
+            out,
+            code,
+            &MINIFY_CSS_TRANSFORM_OPTIONS.clone(),
+            Some(&STYLE_END),
+        );
     }
 }
