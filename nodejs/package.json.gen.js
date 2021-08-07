@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 const common = {
-  version: "0.5.0",
+  version: "0.5.1",
   main: "index.node",
   types: "index.d.ts",
   files: ["postinstall.js", "index.d.ts"],
