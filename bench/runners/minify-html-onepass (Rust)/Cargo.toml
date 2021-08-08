@@ -1,15 +1,11 @@
 [package]
-name = "minify-html-bench"
+name = "minify-html-onepass-bench"
 publish = false
 version = "0.0.1"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-minify-html = { path = "../../rust/main" }
-structopt = "0.3.5"
+minify-html-onepass = { path = "../../../rust/onepass" }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0.44"
-
-[profile.release]
-debug = true

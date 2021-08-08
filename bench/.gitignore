@@ -1,7 +1,1 @@
-/minify-html-bench/Cargo.lock
-/minify-html-bench/target/
-/min/
-/results*/
-node_modules/
-package-lock.json
-perf.data*
+/results/

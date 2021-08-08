@@ -1,0 +1,7 @@
+{
+  "private": true,
+  "dependencies": {
+    "esbuild": "0.12.19",
+    "minimize": "2.2.0"
+  }
+}

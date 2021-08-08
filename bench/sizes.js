@@ -1,15 +1,15 @@
-const fs = require('fs');
-const path = require('path');
-const minifiers = require('./minifiers');
-const results = require('./results');
-const tests = require('./tests');
+const fs = require("fs");
+const path = require("path");
+const minifiers = require("./minifiers");
+const results = require("./results");
+const tests = require("./tests");
 
 const sizes = {};
 const setSize = (program, test, result) => {
   if (!sizes[test]) {
     sizes[test] = {
       original: {
-        absolute: tests.find(t => t.name === test).contentAsString.length,
+        absolute: tests.find((t) => t.name === test).contentAsString.length,
         relative: 1,
       },
     };
@@ -28,8 +28,8 @@ const setSize = (program, test, result) => {
         const min = await minifiers[m](t.contentAsString, t.contentAsBuffer);
         // If `min` is a Buffer, convert to string (interpret as UTF-8) to get canonical length.
         setSize(m, t.name, min.toString().length);
-        const minPath = path.join(__dirname, 'min', m, `${t.name}.html`);
-        fs.mkdirSync(path.dirname(minPath), {recursive: true});
+        const minPath = path.join(__dirname, "min", m, `${t.name}.html`);
+        fs.mkdirSync(path.dirname(minPath), { recursive: true });
         fs.writeFileSync(minPath, min);
       } catch (err) {
         console.error(`Failed to run ${m} on test ${t.name}:`);
