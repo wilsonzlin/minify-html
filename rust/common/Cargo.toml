@@ -2,3 +2,13 @@
 name = "minify-html-common"
 publish = false
 version = "0.0.1"
+authors = ["Wilson Lin <code@wilsonl.in>"]
+homepage = "https://github.com/wilsonzlin/minify-html"
+repository = "https://github.com/wilsonzlin/minify-html.git"
+edition = "2018"
+include = ["/src/**/*", "/Cargo.toml"]
+
+[dependencies]
+aho-corasick = "0.7"
+lazy_static = "1.4"
+memchr = "2"
