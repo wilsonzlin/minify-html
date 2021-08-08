@@ -22,7 +22,7 @@ Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [min
 <img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.0/core/average-speeds.png">
 <img width="435" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.0/core/average-sizes.png">
 
-Need even faster performance? Check the [one](https://github.com/wilsonzlin/minify-html/tree/one) branch.
+The [onepass](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) variant is even more optimised for speed. See its [README](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) for more details.
 
 ## Usage
 
