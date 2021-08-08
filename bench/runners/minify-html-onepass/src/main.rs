@@ -7,7 +7,7 @@ use minify_html_onepass::{Cfg, in_place};
 fn main() {
     let iterations = env::var("MHB_ITERATIONS").unwrap().parse::<usize>().unwrap();
     let input_dir = env::var("MHB_INPUT_DIR").unwrap();
-    let html_only = env::var("MHB_HTML_ONLY").unwrap() == "1";
+    let html_only = env::var("MHB_HTML_ONLY").ok().filter(|v| v == "1").is_some();
 
     let tests = fs::read_dir(input_dir).unwrap().map(|d| d.unwrap());
 
