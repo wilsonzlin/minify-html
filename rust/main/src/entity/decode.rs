@@ -17,11 +17,11 @@ use std::char::from_u32;
 
 use memchr::memchr;
 
-use crate::gen::codepoints::{
+use minify_html_common::gen::codepoints::{
     Lookup, ALPHANUMERIC_OR_EQUALS, DIGIT, HEX_DIGIT, LOWER_HEX_ALPHA, UPPER_HEX_ALPHA,
 };
-use crate::gen::entities::{EntityType, ENTITY};
-use crate::pattern::TrieNodeMatch;
+use minify_html_common::gen::entities::{EntityType, ENTITY};
+use minify_html_common::pattern::TrieNodeMatch;
 
 enum Decoded {
     Ignored,

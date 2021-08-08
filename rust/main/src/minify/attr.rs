@@ -6,11 +6,11 @@ use {
     crate::minify::css::MINIFY_CSS_TRANSFORM_OPTIONS, crate::minify::esbuild::minify_using_esbuild,
 };
 
+use crate::entity::encode::encode_entities;
 use crate::Cfg;
 use minify_html_common::gen::attrs::ATTRS;
 use minify_html_common::gen::codepoints::DIGIT;
 use minify_html_common::pattern::Replacer;
-use minify_html_common::spec::entity::encode::encode_entities;
 use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
 use minify_html_common::spec::tag::ns::Namespace;
 use minify_html_common::whitespace::{collapse_whitespace, left_trim, right_trim};

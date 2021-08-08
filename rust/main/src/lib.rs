@@ -7,6 +7,7 @@ use minify_html_common::spec::tag::EMPTY_SLICE;
 
 mod ast;
 mod cfg;
+mod entity;
 mod minify;
 mod parse;
 

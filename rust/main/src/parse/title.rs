@@ -3,9 +3,9 @@ use aho_corasick::AhoCorasickBuilder;
 use lazy_static::lazy_static;
 
 use crate::ast::NodeData;
+use crate::entity::decode::decode_entities;
 use crate::parse::content::ParsedContent;
 use crate::parse::Code;
-use minify_html_common::spec::entity::decode::decode_entities;
 
 lazy_static! {
     static ref END: AhoCorasick = AhoCorasickBuilder::new()

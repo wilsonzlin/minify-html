@@ -2,11 +2,11 @@ use aho_corasick::{AhoCorasick, AhoCorasickBuilder, MatchKind};
 use lazy_static::lazy_static;
 use memchr::memchr;
 
-use crate::gen::codepoints::ALPHANUMERIC_OR_EQUALS;
-use crate::gen::entities::{
+use minify_html_common::gen::codepoints::ALPHANUMERIC_OR_EQUALS;
+use minify_html_common::gen::entities::{
     EntityType, ENTITY, SHORTER_ENCODED_ENTITIES_DECODED, SHORTER_ENCODED_ENTITIES_ENCODED,
 };
-use crate::pattern::TrieNodeMatch;
+use minify_html_common::pattern::TrieNodeMatch;
 
 lazy_static! {
     static ref SHORTER_ENCODED_ENTITIES_ENCODED_SEARCHER: AhoCorasick = AhoCorasickBuilder::new()
