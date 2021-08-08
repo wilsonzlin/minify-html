@@ -120,16 +120,14 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
   napi_value src_arg = argv[0];
   napi_value js_cfg_arg = argv[1];
 
+  void* src_data;
   size_t src_data_len;
   if (napi_is(env, src_arg, napi_is_buffer)) {
     // Get pointer to bytes in buffer.
-    void* buffer_data;
-    if (napi_get_buffer_info(env, src_arg, &buffer_data, &src_data_len) != napi_ok || buffer_data == NULL) {
+    if (napi_get_buffer_info(env, src_arg, &src_data, &src_data_len) != napi_ok || src_data == NULL) {
       assert_ok(napi_throw_type_error(env, NULL, "Failed to read source buffer"));
       goto rollback;
     }
-    src_data_copy = assert_malloc(src_data_len);
-    memcpy(src_data_copy, buffer_data, src_data_len);
   } else {
     // Assume string.
     if (napi_get_value_string_utf8(env, src_arg, NULL, 0, &src_data_len) != napi_ok) {
@@ -143,6 +141,7 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
       assert_ok(napi_throw_error(env, NULL, "Failed to copy source string"));
       goto rollback;
     }
+    src_data = src_data_copy;
   }
 
   // Get Cfg.
@@ -154,7 +153,7 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
   Cfg const* cfg = (Cfg const*) cfg_raw;
 
   // Run minifier.
-  ffi_output const* output = ffi_minify(src_data_copy, src_data_len, cfg);
+  ffi_output const* output = ffi_minify(src_data, src_data_len, cfg);
 
   // Create minified buffer with copied memory.
   if (napi_create_external_buffer(env, output->len, output->data, js_output_buf_finalizer, (void*) output, &min_buf_rv) != napi_ok) {
@@ -165,9 +164,9 @@ napi_value node_method_minify(napi_env env, napi_callback_info info) {
   goto cleanup;
 
 rollback:
-  free(src_data_copy);
 
 cleanup:
+  free(src_data_copy);
   return min_buf_rv;
 }
 
