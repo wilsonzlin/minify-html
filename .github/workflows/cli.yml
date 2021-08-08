@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0, ubuntu-18.04, windows-2019]
+        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted]
         include:
           - os: macos-11.0
             ARCH: macos-x86_64
@@ -25,6 +25,10 @@ jobs:
             ARCH: windows-x86_64
             MIME: application/vnd.microsoft.portable-executable
             EXT: '.exe'
+          - os: self-hosted
+            ARCH: linux-arm64
+            MIME: application/octet-stream
+            EXT: ''
     steps:
       - uses: actions/checkout@v1
       - name: Get version
