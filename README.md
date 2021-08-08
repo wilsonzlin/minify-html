@@ -19,8 +19,8 @@ A Rust HTML minifier meticulously optimised for speed and effectiveness, with bi
 
 Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
 
-<img alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.0/core/average-speeds.png">
-<img alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.0/core/average-sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.0/core/average-speeds.png">
+<img width="435" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.0/core/average-sizes.png">
 
 Need even faster performance? Check the [one](https://github.com/wilsonzlin/minify-html/tree/one) branch.
 
