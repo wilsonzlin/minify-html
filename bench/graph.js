@@ -55,6 +55,15 @@ const breakdownChartOptions = (title) => ({
   },
 });
 
+const axisLabel = (fontColor, labelString) => ({
+  display: true,
+  fontColor,
+  fontSize: 24,
+  fontStyle: 'bold',
+  labelString,
+  padding: 16,
+});
+
 const combinedChartOptions = () => ({
   options: {
     legend: {
@@ -68,7 +77,8 @@ const combinedChartOptions = () => ({
           },
           ticks: {
             fontColor: '#555',
-            fontSize: 20,
+            fontSize: 24,
+            fontStyle: 'bold',
           },
         },
       ],
@@ -76,12 +86,12 @@ const combinedChartOptions = () => ({
         {
           id: 'y1',
           type: 'linear',
-          scaleLabel: {display: true, fontSize: 22, fontColor: COLOUR_SPEED_PRIMARY, fontStyle: 'bold', labelString: 'Average performance'},
+          scaleLabel: axisLabel(COLOUR_SPEED_PRIMARY, 'Performance'),
           position: 'left',
           ticks: {
             callback: "$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$",
             fontColor: COLOUR_SPEED_PRIMARY,
-            fontSize: 16,
+            fontSize: 24,
           },
           gridLines: {
             color: '#eee',
@@ -90,12 +100,12 @@ const combinedChartOptions = () => ({
         {
           id: 'y2',
           type: 'linear',
-          scaleLabel: {display: true, fontSize: 22, fontColor: COLOUR_SIZE_PRIMARY, fontStyle: 'bold', labelString: 'Average size reduction'},
+          scaleLabel: axisLabel(COLOUR_SIZE_PRIMARY, 'Average size reduction'),
           position: 'right',
           ticks: {
             callback: "$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$",
             fontColor: COLOUR_SIZE_PRIMARY,
-            fontSize: 16,
+            fontSize: 24,
           },
           gridLines: {
             display: false,
@@ -127,8 +137,8 @@ const renderChart = (cfg) => new Promise((resolve, reject) => {
   req.end(JSON.stringify({
     backgroundColor: 'white',
     chart: JSON.stringify(cfg).replaceAll('"$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$"', "function(value) {return Math.round(value * 10000) / 100 + '%';}"),
-    width: 900,
-    height: 650,
+    width: 1200,
+    height: 800,
     format: 'png',
   }));
 });
@@ -136,7 +146,7 @@ const renderChart = (cfg) => new Promise((resolve, reject) => {
 (async () => {
   const averageSpeeds = results.getSpeedResults().getAverageRelativeSpeedPerMinifier('@minify-html/js');
   const averageSizes = results.getSizeResults().getAverageRelativeSizePerMinifier();
-  const averageLabels = ["html-minifier", "minimize", "@minify-html/js"];
+  const averageLabels = ["minimize", "html-minifier", "@minify-html/js"];
 
   results.writeAverageCombinedGraph(await renderChart({
     type: 'bar',
