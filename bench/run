@@ -12,7 +12,7 @@ done
 
 results_dir="$PWD/results"
 input_dir="$PWD/inputs"
-iterations=${MHB_ITERATIONS:-100}
+iterations=${MHB_ITERATIONS:-25}
 
 mkdir -p "$results_dir"
 

@@ -81,6 +81,7 @@ const averageChartOptions = (label) => ({
     scales: {
       xAxes: [
         {
+          barPercentage: 0.5,
           gridLines: {
             display: false,
           },
