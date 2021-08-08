@@ -94,7 +94,7 @@ yarn add @minify-html/js
 const minifyHtml = require("@minify-html/js");
 
 // Refer to TypeScript definitions for details.
-const cfg = minifyHtml.createConfiguration({ minify_js: false, minify_css: false });
+const cfg = minifyHtml.createConfiguration({ keep_closing_tags: true, remove_bangs: false });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 ```
 
@@ -104,7 +104,7 @@ minify-html is also available for TypeScript:
 import * as minifyHtml from "@minify-html/js";
 import * as fs from "fs";
 
-const cfg = minifyHtml.createConfiguration({ minify_js: false, minify_css: false });
+const cfg = minifyHtml.createConfiguration({ keep_spaces_between_attributes: true, keep_comments: true });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 ```
 
@@ -137,8 +137,8 @@ import in.wilsonl.minifyhtml.MinifyHtml;
 import in.wilsonl.minifyhtml.SyntaxException;
 
 Configuration cfg = new Configuration.Builder()
-    .setMinifyJs(false)
-    .setMinifyCss(false)
+    .setKeepHtmlAndHeadOpeningTags(true)
+    .setMinifyCss(true)
     .build();
 
 String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
@@ -162,7 +162,7 @@ Add the PyPI project as a dependency and install it using `pip` or `pipenv`.
 ```python
 import minify_html
 
-minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=False, minify_css=False)
+minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=True, remove_processing_instructions=True)
 ```
 
 </details>
@@ -183,14 +183,14 @@ Add the library as a dependency to `Gemfile` or `*.gemspec`.
 ```ruby
 require 'minify_html'
 
-print MinifyHtml.minify("<p>  Hello, world!  </p>", { :minify_js => false, :minify_css => false })
+print MinifyHtml.minify("<p>  Hello, world!  </p>", { :keep_spaces_between_attributes => true, :minify_js => true })
 ```
 
 </details>
 
 ## Minification
 
-Note that some of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. These can be turned off via the Cfg object.
+Note that some of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. These can be turned off via the `Cfg` object.
 
 ### Whitespace
 
@@ -384,7 +384,7 @@ These elements are usually like content elements but are occasionally used like 
 
 ### Tags
 
-[Optional closing tags](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission) are removed.
+[Optional opening and closing tags](https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission) are removed.
 
 ### Attributes
 
@@ -394,16 +394,16 @@ Any entities in attribute values are decoded, and then the shortest representati
 - Single quoted, with any `'` encoded.
 - Unquoted, with `"`/`'` first character (if applicable), any `>`, and any whitespace encoded.
 
-`class` and `d` attributes have their whitespace (after any decoding) trimmed and collapsed.
+Attributes have their whitespace (after any decoding) trimmed and collapsed when possible.
 
-[Boolean attribute](./gen/attrs.json) values are removed.
-[Some other attributes](./gen/attrs.json) are completely removed if their value is empty or the default value after any processing.
+[Boolean attribute](https://github.com/wilsonzlin/html-data) values are removed.
+[Some other attributes](https://github.com/wilsonzlin/html-data) are completely removed if their value is empty or the default value after any processing.
 
 `type` attributes on `script` tags with a value equaling a [JavaScript MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) are removed.
 
 If an attribute value is empty after any processing, everything but the name is completely removed (i.e. no `=`), as an empty attribute is implicitly [the same](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2) as an attribute with an empty string value.
 
-Spaces are removed between attributes if possible.
+Spaces are removed between attributes when possible.
 
 ### Entities
 
@@ -411,7 +411,8 @@ Entities are decoded if they're valid and shorter or equal in length when decode
 
 Numeric entities that do not refer to a valid [Unicode Scalar Value](https://www.unicode.org/glossary/#unicode_scalar_value) are replaced with the [replacement character](https://en.wikipedia.org/wiki/Specials_(Unicode_block)#Replacement_character).
 
-If an entity is unintentionally formed after decoding, the leading ampersand is encoded, e.g. `&&#97;&#109;&#112;;` becomes `&ampamp;`. This is done as `&amp` is equal to or shorter than all other entity representations of characters part of an entity (`[&#a-zA-Z0-9;]`), and there is no other conflicting entity name that starts with `amp`.
+Encoding is avoided when possible; for example, `<` are only encoded in content if they are followed by a valid tag name character.
+If necessary, the shortest entity representation is chosen.
 
 ### Comments
 
