@@ -22,7 +22,7 @@ mod unit;
 /// # Examples
 ///
 /// ```
-/// use minify_html::{Cfg, Error, in_place};
+/// use minify_html_onepass::{Cfg, Error, in_place};
 ///
 /// let mut code = b"<p>  Hello, world!  </p>".to_vec();
 /// let cfg = &Cfg {
@@ -62,7 +62,7 @@ pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, Error> {
 /// # Examples
 ///
 /// ```
-/// use minify_html::{Cfg, Error, in_place_str};
+/// use minify_html_onepass::{Cfg, Error, in_place_str};
 ///
 /// let mut code = "<p>  Hello, world!  </p>".to_string();
 /// let cfg = &Cfg {
@@ -92,7 +92,7 @@ pub fn in_place_str<'s>(code: &'s mut str, cfg: &Cfg) -> Result<&'s str, Error> 
 /// # Examples
 ///
 /// ```
-/// use minify_html::{Cfg, Error, truncate};
+/// use minify_html_onepass::{Cfg, Error, truncate};
 ///
 /// let mut code = b"<p>  Hello, world!  </p>".to_vec();
 /// let cfg = &Cfg {
@@ -125,7 +125,7 @@ pub fn truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), Error> {
 /// # Examples
 ///
 /// ```
-/// use minify_html::{Cfg, Error, copy};
+/// use minify_html_onepass::{Cfg, Error, copy};
 ///
 /// let mut code: &[u8] = b"<p>  Hello, world!  </p>";
 /// let cfg = &Cfg {
@@ -164,7 +164,7 @@ pub fn copy(code: &[u8], cfg: &Cfg) -> Result<Vec<u8>, Error> {
 /// # Examples
 ///
 /// ```
-/// use minify_html::{Cfg, FriendlyError, with_friendly_error};
+/// use minify_html_onepass::{Cfg, FriendlyError, with_friendly_error};
 ///
 /// let mut code = b"<p></div>".to_vec();
 /// let cfg = &Cfg {

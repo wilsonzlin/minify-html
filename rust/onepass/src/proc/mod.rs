@@ -16,6 +16,7 @@ use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use minify_html_common::gen::codepoints::Lookup;
+use minify_html_common::spec::tag::EMPTY_SLICE;
 
 pub mod checkpoint;
 pub mod entity;
@@ -237,6 +238,12 @@ impl<'d> Processor<'d> {
     #[inline(always)]
     pub fn at_end(&self) -> bool {
         !self._in_bounds(0)
+    }
+
+    #[inline(always)]
+    pub fn get_or_empty(&self, r: Option<ProcessorRange>) -> &[u8] {
+        r.and_then(|r| self.code.get(r.start..r.end))
+            .unwrap_or(EMPTY_SLICE)
     }
 
     #[inline(always)]

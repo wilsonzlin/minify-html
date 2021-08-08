@@ -64,7 +64,7 @@ pub fn process_content(
         collapse,
         destroy_whole,
         trim,
-    } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]), descendant_of_pre);
+    } = get_whitespace_minification_for_tag(proc.get_or_empty(parent), descendant_of_pre);
 
     let handle_ws = collapse || destroy_whole || trim;
 
@@ -146,7 +146,7 @@ pub fn process_content(
                     .require("tag name")?;
                 proc.make_lowercase(tag_name);
 
-                if can_omit_as_before(proc, parent, tag_name) {
+                if can_omit_as_before(proc.get_or_empty(parent), &proc[tag_name]) {
                     // TODO Is this necessary? Can a previous closing tag even exist?
                     prev_sibling_closing_tag.write_if_exists(proc);
                     tag_checkpoint.restore(proc);
@@ -169,9 +169,9 @@ pub fn process_content(
                 prev_sibling_closing_tag.replace(new_closing_tag);
             }
             ContentType::End => {
-                if prev_sibling_closing_tag
-                    .exists_and(|prev_tag| !can_omit_as_last_node(proc, parent, prev_tag))
-                {
+                if prev_sibling_closing_tag.exists_and(|prev_tag| {
+                    !can_omit_as_last_node(proc.get_or_empty(parent), &proc[prev_tag])
+                }) {
                     prev_sibling_closing_tag.write(proc);
                 };
                 break;

@@ -8,7 +8,7 @@ use crate::unit::attr::value::{
     process_attr_value, skip_attr_value, DelimiterType, ProcessedAttrValue,
 };
 use minify_html_common::gen::attrs::ATTRS;
-use minify_html_common::gen::codepoints::{ATTR_NAME_CHAR, WHITESPACE};
+use minify_html_common::gen::codepoints::{WHATWG_ATTR_NAME_CHAR, WHITESPACE};
 use minify_html_common::spec::tag::ns::Namespace;
 
 mod value;
@@ -34,7 +34,7 @@ pub fn process_attr(
     // It's possible to expect attribute name but not be called at an attribute, e.g. due to whitespace between name and
     // value, which causes name to be considered boolean attribute and `=` to be start of new (invalid) attribute name.
     let name = proc
-        .m(WhileInLookup(ATTR_NAME_CHAR), Keep)
+        .m(WhileInLookup(WHATWG_ATTR_NAME_CHAR), Keep)
         .require("attribute name")?;
     proc.make_lowercase(name);
     let attr_cfg = ATTRS.get(ns, &proc[element], &proc[name]);

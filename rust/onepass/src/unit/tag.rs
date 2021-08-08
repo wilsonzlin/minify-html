@@ -107,7 +107,7 @@ pub fn process_tag(
     source_tag_name: ProcessorRange,
 ) -> ProcessingResult<MaybeClosingTag> {
     if prev_sibling_closing_tag
-        .exists_and(|prev_tag| !can_omit_as_before(proc, Some(prev_tag), source_tag_name))
+        .exists_and(|prev_tag| !can_omit_as_before(&proc[prev_tag], &proc[source_tag_name]))
     {
         prev_sibling_closing_tag.write(proc);
     };
@@ -237,7 +237,7 @@ pub fn process_tag(
         }
     };
 
-    let can_omit_closing_tag = can_omit_as_last_node(proc, parent, tag_name);
+    let can_omit_closing_tag = can_omit_as_last_node(proc.get_or_empty(parent), &proc[tag_name]);
     if closing_tag_omitted || proc.at_end() && can_omit_closing_tag {
         return Ok(MaybeClosingTag(None));
     };
