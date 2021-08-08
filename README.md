@@ -28,11 +28,12 @@ Need even faster performance? Check the [one](https://github.com/wilsonzlin/mini
 <details>
 <summary><img width="24" src="./icon/cli.png"> <strong>CLI</strong></summary>
 
-Precompiled binaries are available for x86-64 Linux, macOS, and Windows.
+Precompiled binaries are available for Linux, macOS, and Windows.
 
 ### Get
 
-[Linux](https://wilsonl.in/minify-html/bin/0.5.3-linux-x86_64) |
+[Linux x86-64](https://wilsonl.in/minify-html/bin/0.5.3-linux-x86_64) |
+[Linux ARM](https://wilsonl.in/minify-html/bin/0.5.3-linux-arm64) |
 [macOS](https://wilsonl.in/minify-html/bin/0.5.3-macos-x86_64) |
 [Windows](https://wilsonl.in/minify-html/bin/0.5.3-windows-x86_64.exe)
 
