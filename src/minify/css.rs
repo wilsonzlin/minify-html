@@ -2,7 +2,7 @@
 use {
     crate::minify::esbuild::minify_using_esbuild,
     aho_corasick::{AhoCorasick, AhoCorasickBuilder},
-    esbuild_rs::{Loader, TransformOptions, TransformOptionsBuilder},
+    esbuild_rs::{Charset, Loader, SourceMap, TransformOptions, TransformOptionsBuilder},
     lazy_static::lazy_static,
     std::sync::Arc,
 };
@@ -16,10 +16,13 @@ lazy_static! {
         .build(&["</style"]);
     pub static ref MINIFY_CSS_TRANSFORM_OPTIONS: Arc<TransformOptions> = {
         let mut builder = TransformOptionsBuilder::new();
+        builder.charset = Charset::UTF8;
+        builder.legal_comments = LegalComments::None;
         builder.loader = Loader::CSS;
         builder.minify_identifiers = true;
         builder.minify_syntax = true;
         builder.minify_whitespace = true;
+        builder.source_map = SourceMap::None;
         builder.build()
     };
 }
