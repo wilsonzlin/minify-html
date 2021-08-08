@@ -312,7 +312,6 @@ pub fn minify_attr(
             &mut value_raw_wrapped_min,
             &value_raw_wrapped,
             &MINIFY_CSS_TRANSFORM_OPTIONS.clone(),
-            None,
         );
         // If input was invalid, wrapper syntax may not exist anymore.
         if value_raw_wrapped_min.starts_with(b"x{") {
