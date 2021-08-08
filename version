@@ -7,7 +7,7 @@ const {spawnSync} = require('child_process');
 
 const RUST_MAIN_DIR = `${__dirname}/rust/main`;
 
-const currentVersion = /^version = "(\d+)\.(\d+)\.(\d+)"\s*$/m.exec(readFileSync('Cargo.toml', 'utf8')).slice(1).map(n => Number.parseInt(n, 10));
+const currentVersion = /^version = "(\d+)\.(\d+)\.(\d+)"\s*$/m.exec(readFileSync(`${RUST_MAIN_DIR}/Cargo.toml`, 'utf8')).slice(1).map(n => Number.parseInt(n, 10));
 
 const assertBetween = (n, min, max) => {
   if (n < min || n > max) {
@@ -71,7 +71,7 @@ cmd('git', 'pull');
 cmd('bash', './prebuild.sh');
 cmd('cargo', 'test', '--features', 'js-esbuild', {workingDir: RUST_MAIN_DIR});
 
-for (const f of ['Cargo.toml', 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.core.toml', 'python/Cargo.js.toml', 'ruby/Cargo.toml']) {
+for (const f of [`${RUST_MAIN_DIR}/Cargo.toml`, 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.core.toml', 'python/Cargo.js.toml', 'ruby/Cargo.toml']) {
   replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
 }
 
