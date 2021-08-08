@@ -1,4 +1,5 @@
 use crate::spec::entity::encode::encode_entities;
+use crate::entity::encode::encode_entities;
 
 #[test]
 fn test_encode_entities_encodes_ampersands_when_they_form_valid_entities() {
