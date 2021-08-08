@@ -78,7 +78,6 @@ const combinedChartOptions = () => ({
           ticks: {
             fontColor: '#555',
             fontSize: 24,
-            fontStyle: 'bold',
           },
         },
       ],
@@ -137,8 +136,8 @@ const renderChart = (cfg) => new Promise((resolve, reject) => {
   req.end(JSON.stringify({
     backgroundColor: 'white',
     chart: JSON.stringify(cfg).replaceAll('"$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$"', "function(value) {return Math.round(value * 10000) / 100 + '%';}"),
-    width: 1200,
-    height: 800,
+    width: 1333,
+    height: 768,
     format: 'png',
   }));
 });
