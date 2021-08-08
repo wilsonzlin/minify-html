@@ -7,4 +7,4 @@ edition = "2018"
 
 [dependencies]
 afl = "0.10.0"
-minify-html = { path = ".." }
+minify-html = { path = "../rust/main" }

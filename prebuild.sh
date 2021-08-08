@@ -4,7 +4,7 @@ set -e
 
 pushd "$(dirname "$0")"
 
-# Generate crate::gen::* code.
+# Generate common::gen::* code.
 pushd gen
 npm i
 bash gen.sh

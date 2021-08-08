@@ -10,5 +10,5 @@ name = "minify_html_ruby_lib"
 crate-type = ["cdylib"]
 
 [dependencies]
-minify-html = { path = "..", features = ["js-esbuild"] }
+minify-html = { path = "../rust/main", features = ["js-esbuild"] }
 rutie = "0.7.0"

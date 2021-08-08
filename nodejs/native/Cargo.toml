@@ -19,4 +19,4 @@ cbindgen = "0.14"
 
 [dependencies]
 libc = "0.2"
-minify-html = { path = "../..", optional = true }
+minify-html = { path = "../../rust/main", optional = true }
