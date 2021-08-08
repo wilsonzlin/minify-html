@@ -42,7 +42,7 @@ Precompiled binaries are available for Linux, macOS, and Windows.
 Use the `--help` argument for more details.
 
 ```bash
-minify-html --src /path/to/src.html --out /path/to/output.min.html --css --js
+minify-html --output /path/to/output.min.html --keep-closing-tags --minify-css /path/to/src.html
 ```
 
 </details>

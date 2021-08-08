@@ -13,11 +13,11 @@ use minify_html::{minify, Cfg};
 // WARNING: Keep descriptions in sync with Cfg.
 struct Cli {
     /// File to minify; omit for stdin.
-    #[structopt(short, long, parse(from_os_str))]
-    src: Option<std::path::PathBuf>,
+    #[structopt(parse(from_os_str))]
+    input: Option<std::path::PathBuf>,
     /// Output destination; omit for stdout.
     #[structopt(short, long, parse(from_os_str))]
-    out: Option<std::path::PathBuf>,
+    output: Option<std::path::PathBuf>,
     /// Minify JS in `<script>` tags that have a valid or no `type` attribute value.
     #[structopt(long)]
     minify_js: bool,
@@ -63,7 +63,7 @@ macro_rules! io_expect {
 fn main() {
     let args = Cli::from_args();
     let mut src_code = Vec::<u8>::new();
-    let mut src_file: Box<dyn Read> = match args.src {
+    let mut src_file: Box<dyn Read> = match args.input {
         Some(p) => Box::new(io_expect!(File::open(p), "could not open source file")),
         None => Box::new(stdin()),
     };
@@ -85,7 +85,7 @@ fn main() {
             remove_processing_instructions: args.remove_processing_instructions,
         },
     );
-    let mut out_file: Box<dyn Write> = match args.out {
+    let mut out_file: Box<dyn Write> = match args.output {
         Some(p) => Box::new(io_expect!(File::create(p), "could not open output file")),
         None => Box::new(stdout()),
     };
