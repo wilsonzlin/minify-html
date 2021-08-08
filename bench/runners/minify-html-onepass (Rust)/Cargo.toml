@@ -6,6 +6,6 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-minify-html-onepass = { path = "../../../rust/onepass" }
+minify-html-onepass = { path = "../../../rust/onepass", features = ["js-esbuild"] }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0.44"

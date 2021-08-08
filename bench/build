@@ -4,6 +4,8 @@ set -Eeuo pipefail
 
 shopt -s nullglob
 
+pushd "$(dirname "$0")" >/dev/null
+
 pushd runners >/dev/null
 for r in *; do
   if [ ! -d "$r" ]; then
@@ -14,6 +16,8 @@ for r in *; do
   ./build
   popd >/dev/null
 done
+popd >/dev/null
+
 popd >/dev/null
 
 echo "All done!"
