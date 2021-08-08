@@ -158,7 +158,7 @@ const renderChart = (cfg, width, height) =>
       {
         type: "bar",
         data: {
-          labels: speedMinifiers.map(m => m.replace(" (", "\n(")),
+          labels: speedMinifiers.map((m) => m.replace(" (", "\n(")),
           datasets: [
             {
               backgroundColor: speedMinifiers.map(
@@ -183,7 +183,7 @@ const renderChart = (cfg, width, height) =>
       {
         type: "bar",
         data: {
-          labels: sizeMinifiers.map(m => m.replace(" (", "\n(")),
+          labels: sizeMinifiers.map((m) => m.replace(" (", "\n(")),
           datasets: [
             {
               backgroundColor: sizeMinifiers.map(
