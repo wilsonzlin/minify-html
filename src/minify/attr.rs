@@ -108,7 +108,7 @@ fn build_unquoted_replacer() -> Replacer {
 }
 
 // If spec compliance is required, these characters must also be encoded in an unquoted attr value,
-// as well as `<` and `>`.
+// as well as whitespace, `<`, and `>`.
 static WHATWG_UNQUOTED: &[(u8, &[u8])] = &[
     (b'"', b"&#34"),
     (b'\'', b"&#39"),
@@ -240,29 +240,35 @@ pub fn encode_using_single_quotes(val: &[u8]) -> AttrMinifiedValue {
 }
 
 pub fn encode_unquoted(val: &[u8], whatwg: bool) -> AttrMinifiedValue {
-    let data = if whatwg {
-        WHATWG_UNQUOTED_QUOTED_REPLACER.replace_all(val)
+    if whatwg {
+        AttrMinifiedValue {
+            quoted: false,
+            prefix: b"",
+            data: WHATWG_UNQUOTED_QUOTED_REPLACER.replace_all(val),
+            start: 0,
+            suffix: b"",
+        }
     } else {
-        UNQUOTED_QUOTED_REPLACER.replace_all(val)
-    };
-    let prefix: &'static [u8] = match data.get(0) {
-        Some(b'"') => match data.get(1) {
-            Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#34;",
-            _ => b"&#34",
-        },
-        Some(b'\'') => match data.get(1) {
-            Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#39;",
-            _ => b"&#39",
-        },
-        _ => b"",
-    };
-    let start = if !prefix.is_empty() { 1 } else { 0 };
-    AttrMinifiedValue {
-        quoted: false,
-        prefix,
-        data,
-        start,
-        suffix: b"",
+        let data = UNQUOTED_QUOTED_REPLACER.replace_all(val);
+        let prefix: &'static [u8] = match data.get(0) {
+            Some(b'"') => match data.get(1) {
+                Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#34;",
+                _ => b"&#34",
+            },
+            Some(b'\'') => match data.get(1) {
+                Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#39;",
+                _ => b"&#39",
+            },
+            _ => b"",
+        };
+        let start = if !prefix.is_empty() { 1 } else { 0 };
+        AttrMinifiedValue {
+            quoted: false,
+            prefix,
+            data,
+            start,
+            suffix: b"",
+        }
     }
 }
 
