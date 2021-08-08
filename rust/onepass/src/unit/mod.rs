@@ -2,10 +2,7 @@ pub mod attr;
 pub mod bang;
 pub mod comment;
 pub mod content;
-pub mod css;
-pub mod element;
-pub mod esbuild;
 pub mod instruction;
-pub mod js;
-#[cfg(test)]
-mod tests;
+pub mod script;
+pub mod style;
+pub mod tag;

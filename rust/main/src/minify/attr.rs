@@ -6,14 +6,14 @@ use {
     crate::minify::css::MINIFY_CSS_TRANSFORM_OPTIONS, crate::minify::esbuild::minify_using_esbuild,
 };
 
-use crate::gen::attrs::ATTRS;
-use crate::gen::codepoints::DIGIT;
-use crate::pattern::Replacer;
-use crate::spec::entity::encode::encode_entities;
-use crate::spec::script::JAVASCRIPT_MIME_TYPES;
-use crate::spec::tag::ns::Namespace;
-use crate::whitespace::{collapse_whitespace, left_trim, right_trim};
 use crate::Cfg;
+use minify_html_common::gen::attrs::ATTRS;
+use minify_html_common::gen::codepoints::DIGIT;
+use minify_html_common::pattern::Replacer;
+use minify_html_common::spec::entity::encode::encode_entities;
+use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::whitespace::{collapse_whitespace, left_trim, right_trim};
 
 fn build_double_quoted_replacer() -> Replacer {
     let mut patterns = Vec::<Vec<u8>>::new();

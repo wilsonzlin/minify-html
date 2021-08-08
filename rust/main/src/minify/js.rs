@@ -32,10 +32,6 @@ pub fn minify_js(cfg: &Cfg, out: &mut Vec<u8>, code: &[u8]) {
     if !cfg.minify_js {
         out.extend_from_slice(&code);
     } else {
-        minify_using_esbuild(
-            out,
-            code,
-            &TRANSFORM_OPTIONS.clone(),
-        );
+        minify_using_esbuild(out, code, &TRANSFORM_OPTIONS.clone());
     }
 }

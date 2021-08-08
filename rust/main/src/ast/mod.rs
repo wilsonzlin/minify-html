@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::str::from_utf8;
 
-use crate::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::ns::Namespace;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum ElementClosingTag {

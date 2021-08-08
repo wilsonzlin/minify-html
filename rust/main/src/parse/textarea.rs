@@ -5,7 +5,7 @@ use lazy_static::lazy_static;
 use crate::ast::NodeData;
 use crate::parse::content::ParsedContent;
 use crate::parse::Code;
-use crate::spec::entity::decode::decode_entities;
+use minify_html_common::spec::entity::decode::decode_entities;
 
 lazy_static! {
     static ref END: AhoCorasick = AhoCorasickBuilder::new()

@@ -1,21 +1,21 @@
-use lazy_static::lazy_static;
-use std::collections::HashSet;
+use crate::cfg::Cfg;
 use crate::err::{ErrorType, ProcessingResult};
-use crate::proc::checkpoint::{WriteCheckpoint, ReadCheckpoint};
+use crate::proc::checkpoint::{ReadCheckpoint, WriteCheckpoint};
+use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
-use crate::proc::range::ProcessorRange;
-use crate::spec::tag::void::VOID_TAGS;
-use crate::unit::attr::{AttrType, process_attr, ProcessedAttr};
+use crate::unit::attr::{process_attr, AttrType, ProcessedAttr};
 use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
-use crate::gen::attrs::{ATTRS, AttributeMinification};
-use crate::spec::tag::ns::Namespace;
-use crate::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
-use crate::cfg::Cfg;
-use crate::spec::tag::omission::{can_omit_as_last_node, can_omit_as_before};
+use lazy_static::lazy_static;
+use minify_html_common::gen::attrs::{AttributeMinification, ATTRS};
+use minify_html_common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use minify_html_common::spec::tag::void::VOID_TAGS;
+use std::collections::HashSet;
 
 lazy_static! {
     pub static ref JAVASCRIPT_MIME_TYPES: HashSet<&'static [u8]> = {
@@ -66,12 +66,15 @@ impl MaybeClosingTag {
 
     #[inline(always)]
     pub fn write_if_exists(&mut self, proc: &mut Processor) -> bool {
-        self.0.take().filter(|tag| {
-            proc.write_slice(b"</");
-            proc.write_range(*tag);
-            proc.write(b'>');
-            true
-        }).is_some()
+        self.0
+            .take()
+            .filter(|tag| {
+                proc.write_slice(b"</");
+                proc.write_range(*tag);
+                proc.write(b'>');
+                true
+            })
+            .is_some()
     }
 
     #[inline(always)]
@@ -103,7 +106,9 @@ pub fn process_tag(
     mut prev_sibling_closing_tag: MaybeClosingTag,
     source_tag_name: ProcessorRange,
 ) -> ProcessingResult<MaybeClosingTag> {
-    if prev_sibling_closing_tag.exists_and(|prev_tag| !can_omit_as_before(proc, Some(prev_tag), source_tag_name)) {
+    if prev_sibling_closing_tag
+        .exists_and(|prev_tag| !can_omit_as_before(proc, Some(prev_tag), source_tag_name))
+    {
         prev_sibling_closing_tag.write(proc);
     };
     // Write initially skipped left chevron.
@@ -171,8 +176,20 @@ pub fn process_tag(
             (_, name) => {
                 // TODO Check if HTML tag before checking if attribute removal applies to all elements.
                 erase_attr = match (value, ATTRS.get(ns, &proc[tag_name], name)) {
-                    (None, Some(AttributeMinification { redundant_if_empty: true, .. })) => true,
-                    (Some(val), Some(AttributeMinification { default_value: Some(defval), .. })) => proc[val].eq(*defval),
+                    (
+                        None,
+                        Some(AttributeMinification {
+                            redundant_if_empty: true,
+                            ..
+                        }),
+                    ) => true,
+                    (
+                        Some(val),
+                        Some(AttributeMinification {
+                            default_value: Some(defval),
+                            ..
+                        }),
+                    ) => proc[val].eq(*defval),
                     _ => false,
                 };
             }
@@ -182,7 +199,7 @@ pub fn process_tag(
         } else {
             last_attr_type = Some(typ);
         };
-    };
+    }
 
     // TODO Self closing does not actually close for HTML elements, but might close for foreign elements.
     // See spec for more details.
@@ -213,7 +230,11 @@ pub fn process_tag(
         TagType::ScriptData => process_script(proc, cfg, false)?,
         TagType::ScriptJs => process_script(proc, cfg, true)?,
         TagType::Style => process_style(proc, cfg)?,
-        _ => closing_tag_omitted = process_content(proc, cfg, child_ns, Some(tag_name), descendant_of_pre)?.closing_tag_omitted,
+        _ => {
+            closing_tag_omitted =
+                process_content(proc, cfg, child_ns, Some(tag_name), descendant_of_pre)?
+                    .closing_tag_omitted
+        }
     };
 
     let can_omit_closing_tag = can_omit_as_last_node(proc, parent, tag_name);
@@ -223,7 +244,9 @@ pub fn process_tag(
 
     let closing_tag_checkpoint = ReadCheckpoint::new(proc);
     proc.m(IsSeq(b"</"), Discard).require("closing tag")?;
-    let closing_tag = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("closing tag name")?;
+    let closing_tag = proc
+        .m(WhileInLookup(TAG_NAME_CHAR), Discard)
+        .require("closing tag name")?;
     proc.make_lowercase(closing_tag);
 
     // We need to check closing tag matches as otherwise when we later write closing tag, it might be longer than source closing tag and cause source to be overwritten.

@@ -1,18 +1,14 @@
+pub use crate::cfg::Cfg;
+use crate::err::debug_repr;
 pub use crate::err::{Error, ErrorType, FriendlyError};
 use crate::proc::Processor;
 use crate::unit::content::process_content;
-use crate::spec::tag::ns::Namespace;
-pub use crate::cfg::Cfg;
-use crate::err::debug_repr;
+use minify_html_common::spec::tag::ns::Namespace;
 
 mod cfg;
 mod err;
-mod gen;
-mod pattern;
 #[macro_use]
 mod proc;
-mod spec;
-mod tests;
 mod unit;
 
 /// Minifies a slice in-place and returns the new minified length.
@@ -41,10 +37,12 @@ mod unit;
 pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, Error> {
     let mut proc = Processor::new(code);
     process_content(&mut proc, cfg, Namespace::Html, None, false)
-        .and_then(|_| if !proc.at_end() {
-            Err(ErrorType::UnexpectedClosingTag)
-        } else {
-            Ok(())
+        .and_then(|_| {
+            if !proc.at_end() {
+                Err(ErrorType::UnexpectedClosingTag)
+            } else {
+                Ok(())
+            }
         })
         .map_err(|error_type| Error {
             error_type,

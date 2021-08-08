@@ -3,17 +3,21 @@ use lazy_static::lazy_static;
 
 use crate::ast::{NodeData, ScriptOrStyleLang};
 use crate::cfg::Cfg;
-use crate::gen::codepoints::TAG_NAME_CHAR;
 use crate::minify::bang::minify_bang;
 use crate::minify::comment::minify_comment;
 use crate::minify::css::minify_css;
 use crate::minify::element::minify_element;
 use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
-use crate::pattern::Replacer;
-use crate::spec::entity::encode::encode_entities;
-use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
-use crate::whitespace::{collapse_whitespace, is_all_whitespace, left_trim, right_trim};
+use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
+use minify_html_common::pattern::Replacer;
+use minify_html_common::spec::entity::encode::encode_entities;
+use minify_html_common::spec::tag::whitespace::{
+    get_whitespace_minification_for_tag, WhitespaceMinification,
+};
+use minify_html_common::whitespace::{
+    collapse_whitespace, is_all_whitespace, left_trim, right_trim,
+};
 
 fn build_chevron_replacer() -> Replacer {
     let mut patterns = Vec::<Vec<u8>>::new();

@@ -2,19 +2,13 @@ pub use crate::cfg::Cfg;
 use crate::minify::content::minify_content;
 use crate::parse::content::parse_content;
 use crate::parse::Code;
-use crate::spec::tag::ns::Namespace;
-use crate::spec::tag::EMPTY_SLICE;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::EMPTY_SLICE;
 
 mod ast;
 mod cfg;
-mod gen;
 mod minify;
 mod parse;
-mod pattern;
-mod spec;
-#[cfg(test)]
-mod tests;
-mod whitespace;
 
 /// Minifies UTF-8 HTML code, represented as an array of bytes.
 ///

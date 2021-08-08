@@ -4,8 +4,8 @@ use crate::ast::{ElementClosingTag, NodeData};
 use crate::cfg::Cfg;
 use crate::minify::attr::{minify_attr, AttrMinified};
 use crate::minify::content::minify_content;
-use crate::spec::tag::ns::Namespace;
-use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum LastAttr {

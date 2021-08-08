@@ -1,5 +1,5 @@
-use crate::proc::Processor;
 use crate::proc::range::ProcessorRange;
+use crate::proc::Processor;
 
 #[derive(Copy, Clone)]
 pub struct WriteCheckpoint {
@@ -40,7 +40,10 @@ impl WriteCheckpoint {
     /// Get written characters since checkpoint as range.
     #[inline(always)]
     pub fn written_range(&self, proc: &mut Processor) -> ProcessorRange {
-        ProcessorRange { start: self.write_next, end: proc.write_next }
+        ProcessorRange {
+            start: self.write_next,
+            end: proc.write_next,
+        }
     }
 
     /// Get amount of output characters written since self.

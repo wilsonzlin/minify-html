@@ -12,10 +12,10 @@ use {
 };
 
 use crate::err::{debug_repr, Error, ErrorType, ProcessingResult};
-use crate::gen::codepoints::Lookup;
+use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
-use crate::proc::range::ProcessorRange;
+use minify_html_common::gen::codepoints::Lookup;
 
 pub mod checkpoint;
 pub mod entity;
@@ -125,7 +125,8 @@ impl<'d> Processor<'d> {
 
     #[inline(always)]
     fn _maybe_read_slice_offset(&self, offset: usize, count: usize) -> Option<&[u8]> {
-        self.code.get(self.read_next + offset..self.read_next + offset + count)
+        self.code
+            .get(self.read_next + offset..self.read_next + offset + count)
     }
 
     /// Move next `amount` characters to output.
@@ -134,7 +135,8 @@ impl<'d> Processor<'d> {
     fn _shift(&mut self, amount: usize) -> () {
         // Optimisation: Don't shift if already there (but still update offsets).
         if self.read_next != self.write_next {
-            self.code.copy_within(self.read_next..self.read_next + amount, self.write_next);
+            self.code
+                .copy_within(self.read_next..self.read_next + amount, self.write_next);
         };
         self.read_next += amount;
         self.write_next += amount;
@@ -167,9 +169,13 @@ impl<'d> Processor<'d> {
     #[inline(always)]
     fn _many<C: Fn(u8) -> bool>(&mut self, cond: C) -> usize {
         let mut count = 0usize;
-        while self._maybe_read_offset(count).filter(|c| cond(*c)).is_some() {
+        while self
+            ._maybe_read_offset(count)
+            .filter(|c| cond(*c))
+            .is_some()
+        {
             count += 1;
-        };
+        }
         count
     }
 
@@ -196,10 +202,17 @@ impl<'d> Processor<'d> {
             WhilePred(p) => self._many(|n| p(n)),
             WhileNotPred(p) => self._many(|n| !p(n)),
 
-            IsSeq(seq) => self._maybe_read_slice_offset(0, seq.len()).filter(|src| *src == seq).map_or(0, |_| seq.len()),
-            WhileNotSeq(seq) => seq.find(&self.code[self.read_next..]).map_or(self._remaining(), |m| m.start()),
+            IsSeq(seq) => self
+                ._maybe_read_slice_offset(0, seq.len())
+                .filter(|src| *src == seq)
+                .map_or(0, |_| seq.len()),
+            WhileNotSeq(seq) => seq
+                .find(&self.code[self.read_next..])
+                .map_or(self._remaining(), |m| m.start()),
             // Match.end is exclusive, so do not add one.
-            ThroughSeq(seq) => seq.find(&self.code[self.read_next..]).map_or(0, |m| m.end()),
+            ThroughSeq(seq) => seq
+                .find(&self.code[self.read_next..])
+                .map_or(0, |m| m.end()),
         };
         // If keeping, match will be available in written range (which is better as source might eventually get overwritten).
         // If discarding, then only option is source range.
@@ -213,7 +226,10 @@ impl<'d> Processor<'d> {
             MatchOnly => {}
         };
 
-        ProcessorRange { start, end: start + count }
+        ProcessorRange {
+            start,
+            end: start + count,
+        }
     }
 
     // PUBLIC APIs.
@@ -266,10 +282,12 @@ impl<'d> Processor<'d> {
     /// Will result in an error if exceeds bounds.
     #[inline(always)]
     pub fn skip(&mut self) -> ProcessingResult<u8> {
-        self._maybe_read_offset(0).map(|c| {
-            self.read_next += 1;
-            c
-        }).ok_or(ErrorType::UnexpectedEnd)
+        self._maybe_read_offset(0)
+            .map(|c| {
+                self.read_next += 1;
+                c
+            })
+            .ok_or(ErrorType::UnexpectedEnd)
     }
 
     #[inline(always)]
@@ -307,7 +325,10 @@ impl<'d> Processor<'d> {
         let dest_end = dest_start + s.len();
         self.code.copy_within(s.start..s.end, dest_start);
         self.write_next = dest_end;
-        ProcessorRange { start: dest_start, end: dest_end }
+        ProcessorRange {
+            start: dest_start,
+            end: dest_end,
+        }
     }
 
     /// Write `s` to output. Will panic if exceeds bounds.
@@ -326,12 +347,14 @@ impl<'d> Processor<'d> {
     // Shifting characters.
     #[inline(always)]
     pub fn accept(&mut self) -> ProcessingResult<u8> {
-        self._maybe_read_offset(0).map(|c| {
-            self.code[self.write_next] = c;
-            self.read_next += 1;
-            self.write_next += 1;
-            c
-        }).ok_or(ErrorType::UnexpectedEnd)
+        self._maybe_read_offset(0)
+            .map(|c| {
+                self.code[self.write_next] = c;
+                self.read_next += 1;
+                self.write_next += 1;
+                c
+            })
+            .ok_or(ErrorType::UnexpectedEnd)
     }
 
     #[inline(always)]
@@ -380,7 +403,14 @@ impl<'d> Processor<'d> {
         // the write pointer after previous compaction.
         // If there are no script sections, then we get self.write_next which will be returned.
         let mut write_next = results.get(0).map_or(self.write_next, |r| r.src.start);
-        for (i, EsbuildSection { escaped: min_code, src }) in results.iter().enumerate() {
+        for (
+            i,
+            EsbuildSection {
+                escaped: min_code,
+                src,
+            },
+        ) in results.iter().enumerate()
+        {
             // Resulting minified JS/CSS to write.
             let min_len = if min_code.len() < src.len() {
                 self.code[write_next..write_next + min_code.len()].copy_from_slice(min_code);
@@ -395,14 +425,18 @@ impl<'d> Processor<'d> {
             let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src.start);
             self.code.copy_within(src.end..next_start, write_end);
             write_next = write_end + (next_start - src.end);
-        };
+        }
         Ok(write_next)
     }
 }
 
 impl Debug for Processor<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        f.write_str(&debug_repr(self.code, self.read_next as isize, self.write_next as isize))?;
+        f.write_str(&debug_repr(
+            self.code,
+            self.read_next as isize,
+            self.write_next as isize,
+        ))?;
         Ok(())
     }
 }

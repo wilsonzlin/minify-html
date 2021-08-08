@@ -3,13 +3,15 @@ use std::collections::HashMap;
 use lazy_static::lazy_static;
 
 use crate::err::ProcessingResult;
-use crate::gen::codepoints::{ATTR_QUOTE, DIGIT, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, WHITESPACE};
 use crate::proc::checkpoint::WriteCheckpoint;
 use crate::proc::entity::maybe_normalise_entity;
+use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
-use crate::proc::range::ProcessorRange;
+use minify_html_common::gen::codepoints::{
+    ATTR_QUOTE, DIGIT, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, WHITESPACE,
+};
 
 // See comment in `process_attr_value` for full description of why these intentionally do not have semicolons.
 lazy_static! {
@@ -18,7 +20,7 @@ lazy_static! {
         m.insert(b'\'', b"&#39");
         m.insert(b'"', b"&#34");
         m.insert(b'>', b"&gt");
-        // Whitespace characters as defined by spec in crate::spec::codepoint::is_whitespace.
+        // Whitespace characters as defined by spec in minify_html_common::spec::codepoint::is_whitespace.
         m.insert(b'\x09', b"&#9");
         m.insert(b'\x0a', b"&#10");
         m.insert(b'\x0c', b"&#12");
@@ -47,7 +49,13 @@ impl CharType {
             b'"' => CharType::DoubleQuote,
             b'\'' => CharType::SingleQuote,
             b'>' => CharType::Gt,
-            c => if WHITESPACE[c] { CharType::Whitespace(c) } else { CharType::Normal(c) },
+            c => {
+                if WHITESPACE[c] {
+                    CharType::Whitespace(c)
+                } else {
+                    CharType::Normal(c)
+                }
+            }
         }
     }
 
@@ -95,7 +103,8 @@ impl Metrics {
         // Costs for encoding first and last characters if going with unquoted attribute value.
         // NOTE: Don't need to consider whitespace for either as all whitespace will be encoded and counts as part of `total_whitespace_encoded_length`.
         // Need to consider semicolon in any encoded entity in case first char is followed by semicolon or digit.
-        let first_char_encoded_semicolon = raw_val.get(1).filter(|&&c| DIGIT[c] || c == b';').is_some() as usize;
+        let first_char_encoded_semicolon =
+            raw_val.get(1).filter(|&&c| DIGIT[c] || c == b';').is_some() as usize;
         let first_char_encoding_cost = match raw_val.first() {
             Some(b'"') => ENCODED[&b'"'].len() + first_char_encoded_semicolon,
             Some(b'\'') => ENCODED[&b'\''].len() + first_char_encoded_semicolon,
@@ -113,7 +122,8 @@ impl Metrics {
 
     fn single_quoted_len(&self, raw_len: usize) -> usize {
         // Replace all single quote chars with encoded version.
-        let raw_len = raw_len - self.count_single_quotation + self.total_single_quote_encoded_length;
+        let raw_len =
+            raw_len - self.count_single_quotation + self.total_single_quote_encoded_length;
         // Delimiter quotes.
         let raw_len = raw_len + 2;
         raw_len
@@ -121,7 +131,8 @@ impl Metrics {
 
     fn double_quoted_len(&self, raw_len: usize) -> usize {
         // Replace all double quote chars with encoded version.
-        let raw_len = raw_len - self.count_double_quotation + self.total_double_quote_encoded_length;
+        let raw_len =
+            raw_len - self.count_double_quotation + self.total_double_quote_encoded_length;
         // Delimiter quotes.
         let raw_len = raw_len + 2;
         raw_len
@@ -155,7 +166,8 @@ pub fn skip_attr_value(proc: &mut Processor) -> ProcessingResult<()> {
     };
     proc.m(WhileNotInLookup(delim_pred), Discard);
     if let Some(c) = src_delimiter {
-        proc.m(IsChar(c), Discard).require("attribute value closing quote")?;
+        proc.m(IsChar(c), Discard)
+            .require("attribute value closing quote")?;
     };
     Ok(())
 }
@@ -187,7 +199,10 @@ fn handle_whitespace_char_type(c: u8, proc: &mut Processor, metrics: &mut Metric
 // Read left to right, writing an unquoted value with all entities decoded (including special chars like quotes and whitespace).
 // The resulting written value would have the minimum possible value length.
 // Since the actual processed value would have a length equal or greater to it (e.g. it might be quoted, or some characters might get encoded), we can then read minimum value right to left and start writing from actual processed value length (which is calculated), quoting/encoding as necessary.
-pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: bool) -> ProcessingResult<ProcessedAttrValue> {
+pub fn process_attr_value(
+    proc: &mut Processor,
+    should_collapse_and_trim_ws: bool,
+) -> ProcessingResult<ProcessedAttrValue> {
     let start = WriteCheckpoint::new(proc);
     let src_delimiter = proc.m(IsInLookup(ATTR_QUOTE), Discard).first(proc);
     let delim_lookup = match src_delimiter {
@@ -214,7 +229,9 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
 
     let mut last_char_type: CharType = CharType::Start;
     loop {
-        let char_type = if maybe_normalise_entity(proc, true) && proc.peek(0).filter(|c| delim_lookup[*c]).is_some() {
+        let char_type = if maybe_normalise_entity(proc, true)
+            && proc.peek(0).filter(|c| delim_lookup[*c]).is_some()
+        {
             CharType::from_char(proc.skip()?)
         } else if proc.m(IsInLookup(delim_lookup), MatchOnly).nonempty() {
             // DO NOT BREAK HERE. More processing is done afterwards upon reaching end.
@@ -269,18 +286,25 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
                 proc.write(c);
                 // If the last char written was a quote or whitespace, and this character would require the previous character, encoded as an entity, to have a semicolon, then add one more character to encoded length in metrics.
                 match last_char_type {
-                    CharType::SingleQuote if c == b';' || DIGIT[c] => metrics.total_single_quote_encoded_length += 1,
-                    CharType::DoubleQuote if c == b';' || DIGIT[c] => metrics.total_double_quote_encoded_length += 1,
+                    CharType::SingleQuote if c == b';' || DIGIT[c] => {
+                        metrics.total_single_quote_encoded_length += 1
+                    }
+                    CharType::DoubleQuote if c == b';' || DIGIT[c] => {
+                        metrics.total_double_quote_encoded_length += 1
+                    }
                     CharType::Gt if c == b';' => metrics.total_gt_encoded_length += 1,
-                    CharType::Whitespace(_) if c == b';' || DIGIT[c] => metrics.total_whitespace_encoded_length += 1,
+                    CharType::Whitespace(_) if c == b';' || DIGIT[c] => {
+                        metrics.total_whitespace_encoded_length += 1
+                    }
                     _ => {}
                 };
             }
         };
         last_char_type = char_type;
-    };
+    }
     if let Some(c) = src_delimiter {
-        proc.m(IsChar(c), Discard).require("attribute value closing quote")?;
+        proc.m(IsChar(c), Discard)
+            .require("attribute value closing quote")?;
     };
     let minimum_value = start.written_range(proc);
     // If minimum value is empty, return now before trying to read out of range later.
@@ -334,10 +358,9 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
             // - Unquoted attribute values are only ever followed by a space (written by minify-html) or the opening tag delimiter ('>').
             let next_char = optimal_slice[write + 1];
             let encoded = ENCODED[&c];
-            let should_add_semicolon = !is_last && (
-                next_char == b';'
-                    || DIGIT[next_char] && encoded.last().unwrap().is_ascii_digit()
-            );
+            let should_add_semicolon = !is_last
+                && (next_char == b';'
+                    || DIGIT[next_char] && encoded.last().unwrap().is_ascii_digit());
             // Make extra room for entity (only have room for 1 char currently).
             write -= encoded.len() + should_add_semicolon as usize - 1;
             optimal_slice[write..write + encoded.len()].copy_from_slice(encoded);
@@ -354,7 +377,7 @@ pub fn process_attr_value(proc: &mut Processor, should_collapse_and_trim_ws: boo
         };
 
         write -= 1;
-    };
+    }
     // Write closing delimiter, if any.
     if let Some(c) = optimal_delimiter_char {
         // Don't use `write` as index, as it will not have decremented on last iteration of previous loop to zero if quoted.

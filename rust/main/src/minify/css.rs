@@ -1,7 +1,9 @@
 #[cfg(feature = "js-esbuild")]
 use {
     crate::minify::esbuild::minify_using_esbuild,
-    esbuild_rs::{Charset, LegalComments, Loader, SourceMap, TransformOptions, TransformOptionsBuilder},
+    esbuild_rs::{
+        Charset, LegalComments, Loader, SourceMap, TransformOptions, TransformOptionsBuilder,
+    },
     lazy_static::lazy_static,
     std::sync::Arc,
 };
@@ -33,10 +35,6 @@ pub fn minify_css(cfg: &Cfg, out: &mut Vec<u8>, code: &[u8]) {
     if !cfg.minify_css {
         out.extend_from_slice(&code);
     } else {
-        minify_using_esbuild(
-            out,
-            code,
-            &MINIFY_CSS_TRANSFORM_OPTIONS.clone(),
-        );
+        minify_using_esbuild(out, code, &MINIFY_CSS_TRANSFORM_OPTIONS.clone());
     }
 }

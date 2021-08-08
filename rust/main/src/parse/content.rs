@@ -3,17 +3,17 @@ use lazy_static::lazy_static;
 use memchr::memrchr;
 
 use crate::ast::NodeData;
-use crate::gen::codepoints::TAG_NAME_CHAR;
 use crate::parse::bang::parse_bang;
 use crate::parse::comment::parse_comment;
 use crate::parse::content::ContentType::*;
 use crate::parse::element::{parse_element, parse_tag, peek_tag_name};
 use crate::parse::instruction::parse_instruction;
 use crate::parse::Code;
-use crate::spec::entity::decode::decode_entities;
-use crate::spec::tag::ns::Namespace;
-use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
-use crate::spec::tag::void::VOID_TAGS;
+use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
+use minify_html_common::spec::entity::decode::decode_entities;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use minify_html_common::spec::tag::void::VOID_TAGS;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum ContentType {

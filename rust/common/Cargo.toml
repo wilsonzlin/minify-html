@@ -1,0 +1,4 @@
+[package]
+name = "minify-html-common"
+publish = false
+version = "0.0.1"

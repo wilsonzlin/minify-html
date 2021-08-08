@@ -1,13 +1,13 @@
 [package]
-name = "minify-html"
-description = "Extremely fast and smart HTML + JS + CSS minifier"
+name = "minify-html-onepass"
+description = "Alternate version of minify-html"
 license = "MIT"
 homepage = "https://github.com/wilsonzlin/minify-html"
 readme = "README.md"
 keywords = ["html", "compress", "minifier", "js", "css"]
 categories = ["compression", "command-line-utilities", "development-tools::build-utils", "web-programming"]
 repository = "https://github.com/wilsonzlin/minify-html.git"
-version = "0.6.0"
+version = "0.4.11"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md"]

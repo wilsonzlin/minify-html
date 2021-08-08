@@ -1,19 +1,21 @@
 use crate::cfg::Cfg;
 use crate::err::ProcessingResult;
-use crate::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
 use crate::proc::checkpoint::ReadCheckpoint;
 use crate::proc::entity::maybe_normalise_entity;
+use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
-use crate::proc::range::ProcessorRange;
-use crate::spec::tag::ns::Namespace;
-use crate::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
-use crate::spec::tag::whitespace::{get_whitespace_minification_for_tag, WhitespaceMinification};
 use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::instruction::process_instruction;
-use crate::unit::tag::{MaybeClosingTag, process_tag};
+use crate::unit::tag::{process_tag, MaybeClosingTag};
+use minify_html_common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use minify_html_common::spec::tag::whitespace::{
+    get_whitespace_minification_for_tag, WhitespaceMinification,
+};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {
@@ -51,8 +53,18 @@ pub struct ProcessedContent {
     pub closing_tag_omitted: bool,
 }
 
-pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: Option<ProcessorRange>, descendant_of_pre: bool) -> ProcessingResult<ProcessedContent> {
-    let &WhitespaceMinification { collapse, destroy_whole, trim } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]), descendant_of_pre);
+pub fn process_content(
+    proc: &mut Processor,
+    cfg: &Cfg,
+    ns: Namespace,
+    parent: Option<ProcessorRange>,
+    descendant_of_pre: bool,
+) -> ProcessingResult<ProcessedContent> {
+    let &WhitespaceMinification {
+        collapse,
+        destroy_whole,
+        trim,
+    } = get_whitespace_minification_for_tag(parent.map(|r| &proc[r]), descendant_of_pre);
 
     let handle_ws = collapse || destroy_whole || trim;
 
@@ -86,7 +98,9 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
         maybe_normalise_entity(proc, false);
 
         if handle_ws {
-            if next_content_type == ContentType::Text && proc.m(IsInLookup(WHITESPACE), Discard).nonempty() {
+            if next_content_type == ContentType::Text
+                && proc.m(IsInLookup(WHITESPACE), Discard).nonempty()
+            {
                 // This is the start or part of one or more whitespace characters.
                 // Simply ignore and process until first non-whitespace.
                 ws_skipped = true;
@@ -95,10 +109,15 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
 
             // Next character is not whitespace, so handle any previously ignored whitespace.
             if ws_skipped {
-                if destroy_whole && last_written == ContentType::Tag && next_content_type == ContentType::Tag {
+                if destroy_whole
+                    && last_written == ContentType::Tag
+                    && next_content_type == ContentType::Tag
+                {
                     // Whitespace is between two tags, instructions, or bangs.
                     // `destroy_whole` is on, so don't write it.
-                } else if trim && (last_written == ContentType::Start || next_content_type == ContentType::End) {
+                } else if trim
+                    && (last_written == ContentType::Start || next_content_type == ContentType::End)
+                {
                     // Whitespace is leading or trailing.
                     // `trim` is on, so don't write it.
                 } else if collapse {
@@ -122,7 +141,9 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
             ContentType::Tag => {
                 let tag_checkpoint = ReadCheckpoint::new(proc);
                 proc.skip_expect();
-                let tag_name = proc.m(WhileInLookup(TAG_NAME_CHAR), Discard).require("tag name")?;
+                let tag_name = proc
+                    .m(WhileInLookup(TAG_NAME_CHAR), Discard)
+                    .require("tag name")?;
                 proc.make_lowercase(tag_name);
 
                 if can_omit_as_before(proc, parent, tag_name) {
@@ -134,11 +155,23 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
                     });
                 };
 
-                let new_closing_tag = process_tag(proc, cfg, ns, parent, descendant_of_pre || ns == Namespace::Html && parent.filter(|p| &proc[*p] == b"pre").is_some(), prev_sibling_closing_tag, tag_name)?;
+                let new_closing_tag = process_tag(
+                    proc,
+                    cfg,
+                    ns,
+                    parent,
+                    descendant_of_pre
+                        || ns == Namespace::Html
+                            && parent.filter(|p| &proc[*p] == b"pre").is_some(),
+                    prev_sibling_closing_tag,
+                    tag_name,
+                )?;
                 prev_sibling_closing_tag.replace(new_closing_tag);
             }
             ContentType::End => {
-                if prev_sibling_closing_tag.exists_and(|prev_tag| !can_omit_as_last_node(proc, parent, prev_tag)) {
+                if prev_sibling_closing_tag
+                    .exists_and(|prev_tag| !can_omit_as_last_node(proc, parent, prev_tag))
+                {
                     prev_sibling_closing_tag.write(proc);
                 };
                 break;
@@ -154,9 +187,7 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
                 // From the spec: https://html.spec.whatwg.org/multipage/parsing.html#tag-open-state
                 // After a `<`, a valid character is an ASCII alpha, `/`, `!`, or `?`. Anything
                 // else, and the `<` is treated as content.
-                if proc.last_is(b'<') && (
-                    TAG_NAME_CHAR[c] || c == b'?' || c == b'!' || c == b'/'
-                ) {
+                if proc.last_is(b'<') && (TAG_NAME_CHAR[c] || c == b'?' || c == b'!' || c == b'/') {
                     // We need to encode the `<` that we just wrote as otherwise this char will
                     // cause it to be interpreted as something else (e.g. opening tag).
                     // NOTE: This conditional should mean that we never have to worry about a
@@ -177,7 +208,7 @@ pub fn process_content(proc: &mut Processor, cfg: &Cfg, ns: Namespace, parent: O
 
         // This should not be reached if ContentType::{Comment, End}.
         last_written = next_content_type;
-    };
+    }
 
     Ok(ProcessedContent {
         closing_tag_omitted: false,

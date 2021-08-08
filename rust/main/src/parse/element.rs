@@ -1,20 +1,20 @@
 use std::collections::HashMap;
 
 use crate::ast::{ElementClosingTag, NodeData, ScriptOrStyleLang};
-use crate::gen::codepoints::{
-    ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE,
-    WHITESPACE_OR_SLASH, WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON,
-};
 use crate::parse::content::{parse_content, ParsedContent};
 use crate::parse::script::parse_script_content;
 use crate::parse::style::parse_style_content;
 use crate::parse::textarea::parse_textarea_content;
 use crate::parse::title::parse_title_content;
 use crate::parse::Code;
-use crate::spec::entity::decode::decode_entities;
-use crate::spec::script::JAVASCRIPT_MIME_TYPES;
-use crate::spec::tag::ns::Namespace;
-use crate::spec::tag::void::VOID_TAGS;
+use minify_html_common::gen::codepoints::{
+    ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE,
+    WHITESPACE_OR_SLASH, WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON,
+};
+use minify_html_common::spec::entity::decode::decode_entities;
+use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::void::VOID_TAGS;
 use std::fmt::{Debug, Formatter};
 use std::str::from_utf8;
 
