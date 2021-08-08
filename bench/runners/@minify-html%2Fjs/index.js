@@ -14,10 +14,11 @@ const minifyHtmlCfg = minifyHtml.createConfiguration({
 const results = fs.readdirSync(inputDir).map((name) => {
   const src = fs.readFileSync(path.join(inputDir, name));
   const start = process.hrtime.bigint();
+  let len;
   for (let i = 0; i < iterations; i++) {
-    minifyHtml.minify(src, minifyHtmlCfg);
+    len = minifyHtml.minify(src, minifyHtmlCfg).byteLength;
   }
   const elapsed = process.hrtime.bigint() - start;
-  return [name, Number(elapsed) / 1_000_000_000];
+  return [name, len, iterations, Number(elapsed) / 1_000_000_000];
 });
 console.log(JSON.stringify(results));

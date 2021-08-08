@@ -1,17 +1,25 @@
 const results = require("./results");
 const https = require("https");
+const path = require("path");
+const fs = require("fs/promises");
 
-const colours = {
-  "minify-html": "#041f60",
-  "@minify-html/js": "#1f77b4",
-  minimize: "#ff7f0e",
-  "html-minifier": "#2ca02c",
+const GRAPHS_DIR = path.join(__dirname, "graphs");
+const SPEEDS_GRAPH = path.join(GRAPHS_DIR, "speeds.png");
+const SIZES_GRAPH = path.join(GRAPHS_DIR, "sizes.png");
+const AVERAGE_SPEEDS_GRAPH = path.join(GRAPHS_DIR, "average-speeds.png");
+const AVERAGE_SIZES_GRAPH = path.join(GRAPHS_DIR, "average-sizes.png");
+
+const speedColours = {
+  "@minify-html/js": "#2e61bd",
+  "minify-html": "#2e61bd",
+  "minify-html-onepass": "#222",
 };
+const defaultSpeedColour = "rgb(188, 188, 188)";
 
-const COLOUR_SPEED_PRIMARY = "#2e61bd";
-const COLOUR_SPEED_SECONDARY = "rgb(188, 188, 188)";
-const COLOUR_SIZE_PRIMARY = "#64acce";
-const COLOUR_SIZE_SECONDARY = "rgb(224, 224, 224)";
+const sizeColours = {
+  "minify-html": "#2e61bd",
+};
+const defaultSizeColour = "rgb(188, 188, 188)";
 
 const breakdownChartOptions = (title) => ({
   options: {
@@ -30,20 +38,21 @@ const breakdownChartOptions = (title) => ({
     scales: {
       xAxes: [
         {
-          barPercentage: 0.25,
           gridLines: {
-            color: "#e2e2e2",
+            color: "#f2f2f2",
           },
           ticks: {
-            fontColor: "#666",
+            callback: "$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$",
+            fontColor: "#999",
             fontSize: 20,
           },
         },
       ],
       yAxes: [
         {
+          barPercentage: 0.5,
           gridLines: {
-            color: "#ccc",
+            color: "#aaa",
           },
           ticks: {
             fontColor: "#666",
@@ -61,10 +70,10 @@ const axisLabel = (fontColor, labelString) => ({
   fontSize: 24,
   fontStyle: "bold",
   labelString,
-  padding: 16,
+  padding: 12,
 });
 
-const combinedChartOptions = () => ({
+const averageChartOptions = (label) => ({
   options: {
     legend: {
       display: false,
@@ -77,37 +86,22 @@ const combinedChartOptions = () => ({
           },
           ticks: {
             fontColor: "#555",
-            fontSize: 24,
+            fontSize: 16,
           },
         },
       ],
       yAxes: [
         {
-          id: "y1",
           type: "linear",
-          scaleLabel: axisLabel(COLOUR_SPEED_PRIMARY, "Performance"),
+          scaleLabel: axisLabel("#222", label),
           position: "left",
           ticks: {
             callback: "$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$",
-            fontColor: COLOUR_SPEED_PRIMARY,
-            fontSize: 24,
+            fontColor: "#222",
+            fontSize: 16,
           },
           gridLines: {
             color: "#eee",
-          },
-        },
-        {
-          id: "y2",
-          type: "linear",
-          scaleLabel: axisLabel(COLOUR_SIZE_PRIMARY, "Average size reduction"),
-          position: "right",
-          ticks: {
-            callback: "$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$",
-            fontColor: COLOUR_SIZE_PRIMARY,
-            fontSize: 24,
-          },
-          gridLines: {
-            display: false,
           },
         },
       ],
@@ -115,7 +109,7 @@ const combinedChartOptions = () => ({
   },
 });
 
-const renderChart = (cfg) =>
+const renderChart = (cfg, width, height) =>
   new Promise((resolve, reject) => {
     const req = https.request("https://quickchart.io/chart", {
       method: "POST",
@@ -141,83 +135,109 @@ const renderChart = (cfg) =>
           '"$$$_____REPLACE_WITH_TICK_CALLBACK_____$$$"',
           "function(value) {return Math.round(value * 10000) / 100 + '%';}"
         ),
-        width: 1333,
-        height: 768,
+        width,
+        height,
         format: "png",
       })
     );
   });
 
 (async () => {
-  const averageSpeeds = results
-    .getSpeedResults()
-    .getAverageRelativeSpeedPerMinifier("@minify-html/js");
-  const averageSizes = results
-    .getSizeResults()
-    .getAverageRelativeSizePerMinifier();
-  const averageLabels = ["minimize", "html-minifier", "@minify-html/js"];
+  await fs.mkdir(GRAPHS_DIR, { recursive: true });
 
-  results.writeAverageCombinedGraph(
-    await renderChart({
-      type: "bar",
-      data: {
-        labels: averageLabels,
-        datasets: [
-          {
-            yAxisID: "y1",
-            backgroundColor: averageLabels.map((n) =>
-              n === "@minify-html/js"
-                ? COLOUR_SPEED_PRIMARY
-                : COLOUR_SPEED_SECONDARY
-            ),
-            data: averageLabels.map((n) => averageSpeeds.get(n)),
-          },
-          {
-            yAxisID: "y2",
-            backgroundColor: averageLabels.map((n) =>
-              n === "@minify-html/js"
-                ? COLOUR_SIZE_PRIMARY
-                : COLOUR_SIZE_SECONDARY
-            ),
-            data: averageLabels.map((n) => 1 - averageSizes.get(n)),
-          },
-        ],
+  const res = results.calculate();
+  const speedMinifiers = [...res.minifiers].sort(
+    (a, b) => res.minifierAvgOps[a] - res.minifierAvgOps[b]
+  );
+  const sizeMinifiers = ["minimize", "html-minifier", "minify-html"];
+  const inputs = Object.keys(res.inputSizes).sort();
+
+  await fs.writeFile(
+    AVERAGE_SPEEDS_GRAPH,
+    await renderChart(
+      {
+        type: "bar",
+        data: {
+          labels: speedMinifiers.map(m => m.replace(" (", "\n(")),
+          datasets: [
+            {
+              backgroundColor: speedMinifiers.map(
+                (n) => speedColours[n] ?? defaultSpeedColour
+              ),
+              data: speedMinifiers.map(
+                (m) => res.minifierAvgOps[m] / res.maxMinifierAvgOps
+              ),
+            },
+          ],
+        },
+        ...averageChartOptions("Performance"),
       },
-      ...combinedChartOptions(),
-    })
+      1024,
+      768
+    )
   );
 
-  const speeds = results
-    .getSpeedResults()
-    .getRelativeFileSpeedsPerMinifier("@minify-html/js");
-  results.writeSpeedsGraph(
-    await renderChart({
-      type: "bar",
-      data: {
-        labels: speeds[0][1].map(([n]) => n),
-        datasets: speeds.map(([minifier, fileSpeeds]) => ({
-          label: minifier,
-          backgroundColor: colours[minifier],
-          data: fileSpeeds.map(([_, speed]) => speed),
-        })),
+  await fs.writeFile(
+    AVERAGE_SIZES_GRAPH,
+    await renderChart(
+      {
+        type: "bar",
+        data: {
+          labels: sizeMinifiers.map(m => m.replace(" (", "\n(")),
+          datasets: [
+            {
+              backgroundColor: sizeMinifiers.map(
+                (n) => sizeColours[n] ?? defaultSizeColour
+              ),
+              data: sizeMinifiers.map((m) => res.minifierAvgReduction[m]),
+            },
+          ],
+        },
+        ...averageChartOptions("Reduction"),
       },
-      ...breakdownChartOptions("Operations per second (higher is better)"),
-    })
+      1024,
+      768
+    )
   );
 
-  const sizes = results.getSizeResults().getRelativeFileSizesPerMinifier();
-  results.writeSizesGraph(
-    await renderChart({
-      type: "bar",
-      data: {
-        labels: sizes[0][1].map(([n]) => n),
-        datasets: sizes.map(([minifier, fileSizes]) => ({
-          label: minifier,
-          backgroundColor: colours[minifier],
-          data: fileSizes.map(([_, size]) => size),
-        })),
+  await fs.writeFile(
+    SPEEDS_GRAPH,
+    await renderChart(
+      {
+        type: "horizontalBar",
+        data: {
+          labels: inputs,
+          datasets: speedMinifiers.map((minifier) => ({
+            label: minifier,
+            data: inputs.map(
+              (input) =>
+                res.perInputOps[minifier][input] / res.maxInputOps[input]
+            ),
+          })),
+        },
+        ...breakdownChartOptions("Operations per second (higher is better)"),
       },
-      ...breakdownChartOptions("Minified size (lower is better)"),
-    })
+      900,
+      1000
+    )
+  );
+
+  await fs.writeFile(
+    SIZES_GRAPH,
+    await renderChart(
+      {
+        type: "horizontalBar",
+        data: {
+          labels: inputs,
+          datasets: sizeMinifiers.map((minifier) => ({
+            label: minifier,
+            data: inputs.map((input) => res.perInputReduction[minifier][input]),
+          })),
+        },
+        ...breakdownChartOptions("Size reduction (higher is better)"),
+      },
+      900,
+      1000
+    )
   );
 })();

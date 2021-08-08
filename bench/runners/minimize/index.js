@@ -61,10 +61,11 @@ const plugins = htmlOnly ? [] : [jsCssPlugin];
 const results = fs.readdirSync(inputDir).map((name) => {
   const src = fs.readFileSync(path.join(inputDir, name), "utf8");
   const start = process.hrtime.bigint();
+  let len;
   for (let i = 0; i < iterations; i++) {
-    new minimize({ plugins }).parse(src);
+    len = new minimize({ plugins }).parse(src).length;
   }
   const elapsed = process.hrtime.bigint() - start;
-  return [name, Number(elapsed) / 1_000_000_000];
+  return [name, len, iterations, Number(elapsed) / 1_000_000_000];
 });
 console.log(JSON.stringify(results));

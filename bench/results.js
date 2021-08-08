@@ -1,99 +1,67 @@
-const minifiers = require("./minifiers");
-const tests = require("./tests");
-const { join } = require("path");
-const { mkdirSync, readFileSync, writeFileSync } = require("fs");
+const fs = require("fs");
+const path = require("path");
 
-const RESULTS_DIR = join(__dirname, "results");
-const SPEEDS_JSON = join(RESULTS_DIR, "speeds.json");
-const SPEEDS_GRAPH = join(RESULTS_DIR, "speeds.png");
-const AVERAGE_COMBINED_GRAPH = join(RESULTS_DIR, "average-combined.png");
-const AVERAGE_SPEEDS_GRAPH = join(RESULTS_DIR, "average-speeds.png");
-const SIZES_JSON = join(RESULTS_DIR, "sizes.json");
-const SIZES_GRAPH = join(RESULTS_DIR, "sizes.png");
-const AVERAGE_SIZES_GRAPH = join(RESULTS_DIR, "average-sizes.png");
-
-const minifierNames = Object.keys(minifiers);
-const testNames = tests.map((t) => t.name);
-
-mkdirSync(RESULTS_DIR, { recursive: true });
+const RESULTS_DIR = path.join(__dirname, "results");
+const INPUTS_DIR = path.join(__dirname, "inputs");
 
 module.exports = {
-  writeSpeedResults(speeds) {
-    writeFileSync(SPEEDS_JSON, JSON.stringify(speeds, null, 2));
-  },
-  writeSizeResults(sizes) {
-    writeFileSync(SIZES_JSON, JSON.stringify(sizes, null, 2));
-  },
-  writeAverageCombinedGraph(data) {
-    writeFileSync(AVERAGE_COMBINED_GRAPH, data);
-  },
-  writeAverageSpeedsGraph(data) {
-    writeFileSync(AVERAGE_SPEEDS_GRAPH, data);
-  },
-  writeSpeedsGraph(data) {
-    writeFileSync(SPEEDS_GRAPH, data);
-  },
-  writeAverageSizesGraph(data) {
-    writeFileSync(AVERAGE_SIZES_GRAPH, data);
-  },
-  writeSizesGraph(data) {
-    writeFileSync(SIZES_GRAPH, data);
-  },
-  getSpeedResults() {
-    const data = JSON.parse(readFileSync(SPEEDS_JSON, "utf8"));
+  calculate: () => {
+    // minifier => avg(ops).
+    const minifierAvgOps = {};
+    // minifier => avg(1 - output / original).
+    const minifierAvgReduction = {};
+    let maxMinifierAvgOps = 0;
+    // minifier => input => ops.
+    const perInputOps = {};
+    // minifier => input => (1 - output / original).
+    const perInputReduction = {};
+    // input => max(ops).
+    const maxInputOps = {};
+    const inputSizes = Object.fromEntries(
+      fs.readdirSync(INPUTS_DIR).map((f) => {
+        const name = path.basename(f, ".json");
+        const stats = fs.statSync(path.join(INPUTS_DIR, f));
+        return [name, stats.size];
+      })
+    );
+
+    for (const f of fs.readdirSync(RESULTS_DIR)) {
+      const minifier = decodeURIComponent(path.basename(f, ".json"));
+      const data = JSON.parse(
+        fs.readFileSync(path.join(RESULTS_DIR, f), "utf8")
+      );
+      for (const [input, size, iterations, seconds] of data) {
+        const originalSize = inputSizes[input];
+        const ops = 1 / (seconds / iterations);
+        const reduction = 1 - size / originalSize;
+        (minifierAvgOps[minifier] ??= []).push(ops);
+        (minifierAvgReduction[minifier] ??= []).push(reduction);
+        (perInputOps[minifier] ??= {})[input] = ops;
+        (perInputReduction[minifier] ??= {})[input] = reduction;
+        maxInputOps[input] = Math.max(maxInputOps[input] ?? 0, ops);
+      }
+    }
+
+    const minifiers = Object.keys(minifierAvgOps);
+    for (const m of minifiers) {
+      minifierAvgOps[m] =
+        minifierAvgOps[m].reduce((sum, ops) => sum + ops, 0) /
+        minifierAvgOps[m].length;
+      maxMinifierAvgOps = Math.max(maxMinifierAvgOps, minifierAvgOps[m]);
+      minifierAvgReduction[m] =
+        minifierAvgReduction[m].reduce((sum, ops) => sum + ops, 0) /
+        minifierAvgReduction[m].length;
+    }
 
     return {
-      // Get minifier-speed pairs.
-      getAverageRelativeSpeedPerMinifier(baselineMinifier) {
-        return new Map(
-          minifierNames.map((minifier) => [
-            minifier,
-            testNames
-              // Get operations per second for each test.
-              .map(
-                (test) => data[test][minifier] / data[test][baselineMinifier]
-              )
-              // Sum all test operations per second.
-              .reduce((sum, c) => sum + c) /
-              // Divide by tests count to get average operations per second.
-              testNames.length,
-          ])
-        );
-      },
-      // Get minifier-speeds pairs.
-      getRelativeFileSpeedsPerMinifier(baselineMinifier) {
-        return minifierNames.map((minifier) => [
-          minifier,
-          testNames.map((test) => [
-            test,
-            data[test][minifier] / data[test][baselineMinifier],
-          ]),
-        ]);
-      },
-    };
-  },
-  getSizeResults() {
-    const data = JSON.parse(readFileSync(SIZES_JSON, "utf8"));
-
-    return {
-      // Get minifier-size pairs.
-      getAverageRelativeSizePerMinifier() {
-        return new Map(
-          minifierNames.map((minifier) => [
-            minifier,
-            testNames
-              .map((test) => data[test][minifier].relative)
-              .reduce((sum, c) => sum + c) / testNames.length,
-          ])
-        );
-      },
-      // Get minifier-sizes pairs.
-      getRelativeFileSizesPerMinifier() {
-        return minifierNames.map((minifier) => [
-          minifier,
-          testNames.map((test) => [test, data[test][minifier].relative]),
-        ]);
-      },
+      minifierAvgReduction,
+      minifierAvgOps,
+      maxMinifierAvgOps,
+      perInputOps,
+      perInputReduction,
+      maxInputOps,
+      inputSizes,
+      minifiers,
     };
   },
 };

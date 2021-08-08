@@ -48,10 +48,11 @@ const htmlMinifierCfg = {
 const results = fs.readdirSync(inputDir).map((name) => {
   const src = fs.readFileSync(path.join(inputDir, name), "utf8");
   const start = process.hrtime.bigint();
+  let len;
   for (let i = 0; i < iterations; i++) {
-    htmlMinifier.minify(src, htmlMinifierCfg);
+    len = htmlMinifier.minify(src, htmlMinifierCfg).length;
   }
   const elapsed = process.hrtime.bigint() - start;
-  return [name, Number(elapsed) / 1_000_000_000];
+  return [name, len, iterations, Number(elapsed) / 1_000_000_000];
 });
 console.log(JSON.stringify(results));

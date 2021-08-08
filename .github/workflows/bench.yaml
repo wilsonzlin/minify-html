@@ -47,9 +47,7 @@ jobs:
       - name: Build bench
         working-directory: ./bench
         run: |
-          sudo apt install -y build-essential
-          npm install
-          ./build.sh
+          ./build
 
       - name: Set up Backblaze B2 CLI
         uses: wilsonzlin/setup-b2@v3
@@ -58,7 +56,7 @@ jobs:
         working-directory: ./bench
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          ./bench.sh
-          b2 sync ./results/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bench/${{ steps.version.outputs.VERSION }}/js/
-          HTML_ONLY=1 ./bench.sh
-          b2 sync ./results/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bench/${{ steps.version.outputs.VERSION }}/core/
+          ./run
+          b2 sync ./graphs/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bench/${{ steps.version.outputs.VERSION }}/js/
+          MHB_HTML_ONLY=1 ./run
+          b2 sync ./graphs/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bench/${{ steps.version.outputs.VERSION }}/core/
