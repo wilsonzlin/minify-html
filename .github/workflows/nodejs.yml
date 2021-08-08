@@ -48,46 +48,24 @@ jobs:
 
       - name: Build native module
         working-directory: ./nodejs
+        id: module
         shell: bash
         run: |
           node package.json.gen.js ${{ matrix.feature }}
           npm install
           npm run build
           node compress.js
+          echo ::set-output name=BINARY_NAME::"$(node -e 'console.log([process.platform, process.arch].join("__"))')"
 
       - name: Upload to B2
-        shell: bash
-        run: |
-          binary_name="$(node -e 'console.log([process.platform, process.arch].join("__"))')"
-          file=nodejs/index.node.gz
-          # Use Node.js as sha1sum and/or curl might not exist on macOS or Windows.
-          sha1="$(node -e "h=crypto.createHash('sha1'); h.update(fs.readFileSync('$file')); console.log(h.digest('hex'));")"
-          # Use upload proxy as b2 CLI isn't available on ARM64.
-          url="https://b2-upload.wlin.workers.dev/${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ matrix.feature }}/$binary_name.node.gz?sha1=$sha1"
-          node << EOD
-          const fs = require("fs");
-          const https = require("https");
-          const req = https.request("$url", {
-            method: "POST",
-            auth: "${{ secrets.CICD_CLI_B2_KEY_ID }}:${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}",
-          });
-          req.on("error", err => {
-            console.error(err);
-            process.exitCode = 1;
-          });
-          req.on("response", res => {
-            console.log("Upload responded with", res.statusCode);
-            if (res.statusCode < 200 || res.statusCode > 299) {
-              process.exitCode = 1;
-            }
-            res.on("data", chunk => process.stdout.write(chunk));
-            res.on("error", err => {
-              console.log("\nEncountered error during response:", err);
-              process.exitCode = 1;
-            });
-          });
-          req.end(fs.readFileSync("$file"));
-          EOD
+        uses: wilsonzlin/b2-upload-action@v1.0.0
+        with:
+          bucket: ${{ secrets.CICD_CLI_B2_BUCKET_NAME }}
+          uploadKey: minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ matrix.feature }}/${{ steps.module.outputs.BINARY_NAME }}.node.gz
+          keyId: ${{ secrets.CICD_CLI_B2_KEY_ID }}
+          applicationKey: ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
+          file: ./nodejs/index.node.gz
+
   package:
     strategy:
       matrix:

@@ -117,7 +117,7 @@ const renderChart = (cfg) => new Promise((resolve, reject) => {
   req.on('response', res => {
     const err = res.headers['x-quickchart-error'];
     if (res.statusCode < 200 || res.statusCode > 299 || err) {
-      reject(new Error(err || `Status ${res.statusCode}`));
+      return reject(new Error(err || `Status ${res.statusCode}`));
     }
     const chunks = [];
     res.on('error', reject);

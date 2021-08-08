@@ -31,36 +31,47 @@ jobs:
             EXT: ''
     steps:
       - uses: actions/checkout@v1
+
       - name: Get version
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+
       - name: Get file name
         id: file
         shell: bash
         run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}-${{ matrix.ARCH }}${{ matrix.EXT }}
+
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
           default: true
+
       - name: Set up GCC (Windows)
         if: runner.os == 'Windows'
         run: .\.github\workflows\gcc.ps1
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: '^1.14.0'
+
       - name: Run prebuild steps
         shell: bash
         run: bash ./prebuild.sh
+
       - name: Build CLI
         working-directory: ./cli
         run: cargo build --release -vvv
-      - name: Set up Backblaze B2 CLI
-        uses: wilsonzlin/setup-b2@v3
+
       - name: Upload to B2
-        run: |
-          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file --contentType ${{ matrix.MIME }} ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./cli/target/release/minify-html-cli${{ matrix.EXT }} minify-html/bin/${{ steps.file.outputs.FILE }}
+        uses: wilsonzlin/b2-upload-action@v1.0.0
+        with:
+          bucket: ${{ secrets.CICD_CLI_B2_BUCKET_NAME }}
+          uploadKey: minify-html/bin/${{ steps.file.outputs.FILE }}
+          keyId: ${{ secrets.CICD_CLI_B2_KEY_ID }}
+          applicationKey: ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
+          file: ./cli/target/release/minify-html-cli${{ matrix.EXT }}
+          contentType: ${{ matrix.MIME }}
