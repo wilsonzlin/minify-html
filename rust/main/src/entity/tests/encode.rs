@@ -1,4 +1,3 @@
-use crate::spec::entity::encode::encode_entities;
 use crate::entity::encode::encode_entities;
 
 #[test]
