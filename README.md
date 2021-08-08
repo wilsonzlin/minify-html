@@ -1,11 +1,11 @@
 <h1>
 minify-html
-<img width="24" src="./icon/cli.png">
-<img width="24" src="./icon/java.png">
-<img width="24" src="./icon/nodejs.png">
-<img width="24" src="./icon/python.png">
-<img width="24" src="./icon/ruby.png">
-<img width="24" src="./icon/rust.png">
+<img width="24" src="https://wilsonl.in/minify-html/icon/cli.png">
+<img width="24" src="https://wilsonl.in/minify-html/icon/java.png">
+<img width="24" src="https://wilsonl.in/minify-html/icon/nodejs.png">
+<img width="24" src="https://wilsonl.in/minify-html/icon/python.png">
+<img width="24" src="https://wilsonl.in/minify-html/icon/ruby.png">
+<img width="24" src="https://wilsonl.in/minify-html/icon/rust.png">
 </h1>
 
 A Rust HTML minifier meticulously optimised for speed and effectiveness, with bindings for other languages.
@@ -26,7 +26,7 @@ Need even faster performance? Check the [one](https://github.com/wilsonzlin/mini
 ## Usage
 
 <details>
-<summary><img width="24" src="./icon/cli.png"> <strong>CLI</strong></summary>
+<summary><img width="24" src="https://wilsonl.in/minify-html/icon/cli.png"> <strong>CLI</strong></summary>
 
 Precompiled binaries are available for Linux, macOS, and Windows.
 
@@ -48,7 +48,7 @@ minify-html --output /path/to/output.min.html --keep-closing-tags --minify-css /
 </details>
 
 <details>
-<summary><img width="24" src="./icon/rust.png"> <strong>Rust</strong></summary>
+<summary><img width="24" src="https://wilsonl.in/minify-html/icon/rust.png"> <strong>Rust</strong></summary>
 
 ### Get
 
@@ -68,7 +68,7 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 </details>
 
 <details>
-<summary><img width="24" src="./icon/nodejs.png"> <strong>Node.js</strong></summary>
+<summary><img width="24" src="https://wilsonl.in/minify-html/icon/nodejs.png"> <strong>Node.js</strong></summary>
 
 - Package: [@minify-html/js](https://www.npmjs.com/package/@minify-html/js)
 - Binding: [N-API](https://nodejs.org/api/n-api.html)
@@ -111,7 +111,7 @@ const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 </details>
 
 <details>
-<summary><img width="24" src="./icon/java.png"> <strong>Java</strong></summary>
+<summary><img width="24" src="https://wilsonl.in/minify-html/icon/java.png"> <strong>Java</strong></summary>
 
 - Package: [in.wilsonl.minifyhtml](https://search.maven.org/artifact/in.wilsonl.minifyhtml/minify-html)
 - Binding: [JNI](https://github.com/jni-rs/jni-rs)
@@ -147,7 +147,7 @@ String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 </details>
 
 <details>
-<summary><img width="24" src="./icon/python.png"> <strong>Python</strong></summary>
+<summary><img width="24" src="https://wilsonl.in/minify-html/icon/python.png"> <strong>Python</strong></summary>
 
 - Package: [minify-html](https://pypi.org/project/minify-html)
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
@@ -168,7 +168,7 @@ minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=True, remove
 </details>
 
 <details>
-<summary><img width="24" src="./icon/ruby.png"> <strong>Ruby</strong></summary>
+<summary><img width="24" src="https://wilsonl.in/minify-html/icon/ruby.png"> <strong>Ruby</strong></summary>
 
 - Package: [minify_html](https://rubygems.org/gems/minify_html)
 - Binding: [Rutie](https://github.com/danielpclark/rutie)
