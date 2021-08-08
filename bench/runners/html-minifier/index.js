@@ -7,6 +7,18 @@ const iterations = parseInt(process.env.MHB_ITERATIONS, 10);
 const inputDir = process.env.MHB_INPUT_DIR;
 const htmlOnly = process.env.MHB_HTML_ONLY === "1";
 
+const esbuildCss = (code) =>
+  esbuild.transformSync(code, {
+    loader: "css",
+    minify: true,
+  }).code;
+
+const esbuildJs = (code) =>
+  esbuild.transformSync(code, {
+    loader: "js",
+    minify: true,
+  }).code;
+
 const htmlMinifierCfg = {
   collapseBooleanAttributes: true,
   collapseInlineTagWhitespace: true,
@@ -32,18 +44,6 @@ const htmlMinifierCfg = {
   removeTagWhitespace: true,
   useShortDoctype: true,
 };
-
-const esbuildCss = (code) =>
-  esbuild.transformSync(code, {
-    loader: "css",
-    minify: true,
-  }).code;
-
-const esbuildJs = (code) =>
-  esbuild.transformSync(code, {
-    loader: "js",
-    minify: true,
-  }).code;
 
 const results = fs.readdirSync(inputDir).map((name) => {
   const src = fs.readFileSync(path.join(inputDir, name), "utf8");

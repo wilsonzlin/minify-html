@@ -22,8 +22,7 @@ fn main() {
         let source = fs::read(t.path()).unwrap();
         let start = Instant::now();
         for _ in 0..iterations {
-            let data = source.to_vec();
-            minify(&source, &cfg);
+            let _ = minify(&source, &cfg);
         };
         let elapsed = start.elapsed().as_secs_f64();
         results.push((t.file_name().into_string().unwrap(), elapsed));

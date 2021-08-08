@@ -12,7 +12,7 @@ fn main() {
     let tests = fs::read_dir(input_dir).unwrap().map(|d| d.unwrap());
 
     let mut results: Vec<(String, f64)> = Vec::new();
-    let mut cfg = Cfg {
+    let cfg = Cfg {
         minify_css: !html_only,
         minify_js: !html_only,
     };
@@ -22,7 +22,7 @@ fn main() {
         let start = Instant::now();
         for _ in 0..iterations {
             let mut data = source.to_vec();
-            let _ = in_place(&mut data, &cfg).unwrap();
+            let _ = in_place(&mut data, &cfg).expect("failed to minify");
         };
         let elapsed = start.elapsed().as_secs_f64();
         results.push((t.file_name().into_string().unwrap(), elapsed));
