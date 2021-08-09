@@ -134,7 +134,6 @@ Add as a Maven dependency:
 ```java
 import in.wilsonl.minifyhtml.Configuration;
 import in.wilsonl.minifyhtml.MinifyHtml;
-import in.wilsonl.minifyhtml.SyntaxException;
 
 Configuration cfg = new Configuration.Builder()
     .setKeepHtmlAndHeadOpeningTags(true)
