@@ -21,7 +21,7 @@ const rsTagAttr = ({
 let code = `
 use lazy_static::lazy_static;
 use std::collections::HashMap;
-use crate::spec::tag::ns::Namespace;
+use crate::common::spec::tag::ns::Namespace;
 
 pub struct AttributeMinification {
     pub boolean: bool,

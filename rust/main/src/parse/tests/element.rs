@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use crate::ast::{ElementClosingTag, NodeData};
 use crate::parse::element::{parse_element, parse_tag, ParsedTag};
 use crate::parse::Code;
-use minify_html_common::spec::tag::ns::Namespace;
-use minify_html_common::spec::tag::EMPTY_SLICE;
+use crate::common::spec::tag::ns::Namespace;
+use crate::common::spec::tag::EMPTY_SLICE;
 
 #[test]
 fn test_parse_tag() {

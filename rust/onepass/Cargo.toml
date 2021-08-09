@@ -25,4 +25,3 @@ crossbeam = { version = "0.7", optional = true }
 esbuild-rs = { version = "0.12.18", optional = true }
 lazy_static = "1.4"
 memchr = "2"
-minify-html-common = { path = "../common" }

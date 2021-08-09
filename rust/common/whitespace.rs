@@ -1,4 +1,4 @@
-use crate::gen::codepoints::WHITESPACE;
+use crate::common::gen::codepoints::WHITESPACE;
 
 pub fn left_trim(val: &mut Vec<u8>) {
     let mut len = 0;

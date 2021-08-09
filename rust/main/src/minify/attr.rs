@@ -8,12 +8,12 @@ use {
 
 use crate::entity::encode::encode_entities;
 use crate::Cfg;
-use minify_html_common::gen::attrs::ATTRS;
-use minify_html_common::gen::codepoints::DIGIT;
-use minify_html_common::pattern::Replacer;
-use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
-use minify_html_common::spec::tag::ns::Namespace;
-use minify_html_common::whitespace::{collapse_whitespace, left_trim, right_trim};
+use crate::common::gen::attrs::ATTRS;
+use crate::common::gen::codepoints::DIGIT;
+use crate::common::pattern::Replacer;
+use crate::common::spec::script::JAVASCRIPT_MIME_TYPES;
+use crate::common::spec::tag::ns::Namespace;
+use crate::common::whitespace::{collapse_whitespace, left_trim, right_trim};
 
 fn build_double_quoted_replacer() -> Replacer {
     let mut patterns = Vec::<Vec<u8>>::new();

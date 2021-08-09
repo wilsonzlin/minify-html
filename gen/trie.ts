@@ -159,7 +159,7 @@ export class TrieBuilder {
     ).join(", ");
 
     const value = node.value === undefined ? "None" : `Some(${node.value})`;
-    const varValue = `&crate::pattern::TrieNode {
+    const varValue = `&crate::common::pattern::TrieNode {
       offset: ${firstIdx},
       value: ${value},
       children: &[${children}],
@@ -171,7 +171,7 @@ export class TrieBuilder {
 
     const name = `${this.name}_NODE_${this.nextId++}`;
     this.variables.push(
-      `static ${name}: &crate::pattern::TrieNode<${this.valueType}> = ${varValue};`
+      `static ${name}: &crate::common::pattern::TrieNode<${this.valueType}> = ${varValue};`
     );
     this.codeCache.set(varValue, name);
     return name;

@@ -16,11 +16,11 @@
 use std::char::from_u32;
 
 use crate::proc::Processor;
-use minify_html_common::gen::codepoints::{
+use crate::common::gen::codepoints::{
     Lookup, ALPHANUMERIC_OR_EQUALS, DIGIT, HEX_DIGIT, LOWER_HEX_ALPHA, UPPER_HEX_ALPHA,
 };
-use minify_html_common::gen::entities::{EntityType, ENTITY};
-use minify_html_common::pattern::TrieNodeMatch;
+use crate::common::gen::entities::{EntityType, ENTITY};
+use crate::common::pattern::TrieNodeMatch;
 
 enum Parsed {
     // This includes numeric entities that were invalid and decoded to 0xFFFD.

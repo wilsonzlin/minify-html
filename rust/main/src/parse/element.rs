@@ -8,13 +8,13 @@ use crate::parse::style::parse_style_content;
 use crate::parse::textarea::parse_textarea_content;
 use crate::parse::title::parse_title_content;
 use crate::parse::Code;
-use minify_html_common::gen::codepoints::{
+use crate::common::gen::codepoints::{
     ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE,
     WHITESPACE_OR_SLASH, WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON,
 };
-use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
-use minify_html_common::spec::tag::ns::Namespace;
-use minify_html_common::spec::tag::void::VOID_TAGS;
+use crate::common::spec::script::JAVASCRIPT_MIME_TYPES;
+use crate::common::spec::tag::ns::Namespace;
+use crate::common::spec::tag::void::VOID_TAGS;
 use std::fmt::{Debug, Formatter};
 use std::str::from_utf8;
 

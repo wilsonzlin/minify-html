@@ -9,7 +9,7 @@ use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
-use minify_html_common::gen::codepoints::{
+use crate::common::gen::codepoints::{
     ATTR_QUOTE, DIGIT, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, WHITESPACE,
 };
 
@@ -20,7 +20,7 @@ lazy_static! {
         m.insert(b'\'', b"&#39");
         m.insert(b'"', b"&#34");
         m.insert(b'>', b"&gt");
-        // Whitespace characters as defined by spec in minify_html_common::spec::codepoint::is_whitespace.
+        // Whitespace characters as defined by spec in crate::common::spec::codepoint::is_whitespace.
         m.insert(b'\x09', b"&#9");
         m.insert(b'\x0a', b"&#10");
         m.insert(b'\x0c', b"&#12");

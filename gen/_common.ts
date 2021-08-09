@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { join } from "path";
 
-export const RUST_OUT_DIR = join(__dirname, "..", "rust", "common", "src", "gen");
+export const RUST_OUT_DIR = join(__dirname, "..", "rust", "common", "gen");
 
 try {
   mkdirSync(RUST_OUT_DIR);

@@ -2,11 +2,12 @@ pub use crate::cfg::Cfg;
 use crate::minify::content::minify_content;
 use crate::parse::content::parse_content;
 use crate::parse::Code;
-use minify_html_common::spec::tag::ns::Namespace;
-use minify_html_common::spec::tag::EMPTY_SLICE;
+use crate::common::spec::tag::ns::Namespace;
+use crate::common::spec::tag::EMPTY_SLICE;
 
 mod ast;
 mod cfg;
+mod common;
 mod entity;
 mod minify;
 mod parse;

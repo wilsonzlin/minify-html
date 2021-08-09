@@ -10,11 +10,11 @@ use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
 use lazy_static::lazy_static;
-use minify_html_common::gen::attrs::{AttributeMinification, ATTRS};
-use minify_html_common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
-use minify_html_common::spec::tag::ns::Namespace;
-use minify_html_common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
-use minify_html_common::spec::tag::void::VOID_TAGS;
+use crate::common::gen::attrs::{AttributeMinification, ATTRS};
+use crate::common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use crate::common::spec::tag::ns::Namespace;
+use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use crate::common::spec::tag::void::VOID_TAGS;
 use std::collections::HashSet;
 
 lazy_static! {

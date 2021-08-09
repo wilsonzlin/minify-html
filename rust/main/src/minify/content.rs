@@ -10,12 +10,12 @@ use crate::minify::css::minify_css;
 use crate::minify::element::minify_element;
 use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
-use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
-use minify_html_common::pattern::Replacer;
-use minify_html_common::spec::tag::whitespace::{
+use crate::common::gen::codepoints::TAG_NAME_CHAR;
+use crate::common::pattern::Replacer;
+use crate::common::spec::tag::whitespace::{
     get_whitespace_minification_for_tag, WhitespaceMinification,
 };
-use minify_html_common::whitespace::{
+use crate::common::whitespace::{
     collapse_whitespace, is_all_whitespace, left_trim, right_trim,
 };
 
