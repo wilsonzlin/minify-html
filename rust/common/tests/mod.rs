@@ -1,35 +1,7 @@
-fn eval_with_cfg(src: &'static [u8], expected: &'static [u8], cfg: &super::Cfg) {
-    let mut code = src.to_vec();
-    let min = super::minify(&mut code, cfg);
-    assert_eq!(
-        std::str::from_utf8(&min).unwrap(),
-        std::str::from_utf8(expected).unwrap(),
-    );
-}
-
-fn eval(src: &'static [u8], expected: &'static [u8]) {
-    eval_with_cfg(src, expected, &super::Cfg::new());
-}
-
-fn eval_with_keep_html_head(src: &'static [u8], expected: &'static [u8]) -> () {
-    let mut cfg = super::Cfg::new();
-    cfg.keep_html_and_head_opening_tags = true;
-    eval_with_cfg(src, expected, &cfg);
-}
+use crate::tests::eval;
 
 #[cfg(feature = "js-esbuild")]
-fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
-    let mut cfg = super::Cfg::new();
-    cfg.minify_js = true;
-    eval_with_cfg(src, expected, &cfg);
-}
-
-#[cfg(feature = "js-esbuild")]
-fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
-    let mut cfg = super::Cfg::new();
-    cfg.minify_css = true;
-    eval_with_cfg(src, expected, &cfg);
-}
+use crate::tests::{eval_with_css_min, eval_with_js_min};
 
 #[test]
 fn test_collapse_whitespace() {
@@ -101,30 +73,11 @@ fn test_no_whitespace_minification() {
 }
 
 #[test]
-fn test_parsing_extra_head_tag() {
-    // Extra `<head>` in `<label>` should be dropped, so whitespace around `<head>` should be joined and therefore trimmed due to `<label>` whitespace rules.
-    eval_with_keep_html_head(
-        b"<html><head><meta><head><link><head><body><label>  <pre> </pre> <head>  </label>",
-        b"<html><head><meta><link><body><label><pre> </pre></label>",
-    );
-    // Same as above except it's a `</head>`, which should get reinterpreted as a `<head>`.
-    eval_with_keep_html_head(
-        b"<html><head><meta><head><link><head><body><label>  <pre> </pre> </head>  </label>",
-        b"<html><head><meta><link><body><label><pre> </pre></label>",
-    );
-    // `<head>` gets implicitly closed by `<body>`, so any following `</head>` should be ignored. (They should be anyway, since `</head>` would not be a valid closing tag.)
-    eval_with_keep_html_head(
-        b"<html><head><body><label> </head> </label>",
-        b"<html><head><body><label></label>",
-    );
-}
-
-#[test]
 fn test_parsing_omitted_closing_tag() {
-    eval_with_keep_html_head(b"<html>", b"<html>");
-    eval_with_keep_html_head(b" <html>\n", b"<html>");
-    eval_with_keep_html_head(b" <!doctype html> <html>\n", b"<!doctype html><html>");
-    eval_with_keep_html_head(
+    eval(b"<html>", b"<html>");
+    eval(b" <html>\n", b"<html>");
+    eval(b" <!doctype html> <html>\n", b"<!doctype html><html>");
+    eval(
         b"<!doctype html><html><div> <p>Foo</div></html>",
         b"<!doctype html><html><div><p>Foo</div>",
     );
@@ -142,56 +95,29 @@ fn test_self_closing_svg_tag_whitespace_removal() {
 
 #[test]
 fn test_parsing_with_omitted_tags() {
-    eval_with_keep_html_head(b"<ul><li>1<li>2<li>3</ul>", b"<ul><li>1<li>2<li>3</ul>");
-    eval_with_keep_html_head(b"<rt>", b"<rt>");
-    eval_with_keep_html_head(b"<rt><rp>1</rp><div></div>", b"<rt><rp>1</rp><div></div>");
-    eval_with_keep_html_head(b"<div><rt></div>", b"<div><rt></div>");
-    eval_with_keep_html_head(b"<html><head><body>", b"<html><head><body>");
-    eval_with_keep_html_head(b"<html><head><body>", b"<html><head><body>");
+    eval(b"<ul><li>1<li>2<li>3</ul>", b"<ul><li>1<li>2<li>3</ul>");
+    eval(b"<rt>", b"<rt>");
+    eval(b"<rt><rp>1</rp><div></div>", b"<rt><rp>1</rp><div></div>");
+    eval(b"<div><rt></div>", b"<div><rt></div>");
+    eval(b"<html><head><body>", b"<html><head><body>");
+    eval(b"<html><head><body>", b"<html><head><body>");
     // Tag names should be case insensitive.
-    eval_with_keep_html_head(b"<rt>", b"<rt>");
-}
-
-#[test]
-fn test_unmatched_closing_tag() {
-    eval_with_keep_html_head(b"Hello</p>Goodbye", b"Hello<p>Goodbye");
-    eval_with_keep_html_head(b"Hello<br></br>Goodbye", b"Hello<br>Goodbye");
-    eval_with_keep_html_head(b"<div>Hello</p>Goodbye", b"<div>Hello<p>Goodbye");
-    eval_with_keep_html_head(b"<ul><li>a</p>", b"<ul><li>a<p>");
-    eval_with_keep_html_head(b"<ul><li><rt>a</p>", b"<ul><li><rt>a<p>");
-    eval_with_keep_html_head(
-        b"<html><head><body><ul><li><rt>a</p>",
-        b"<html><head><body><ul><li><rt>a<p>",
-    );
-}
-
-#[test]
-fn test_removal_of_html_and_head_opening_tags() {
-    // Even though `<head>` is dropped, it's still parsed, so its content is still subject to `<head>` whitespace minification rules.
-    eval(
-        b"<!DOCTYPE html><html><head>  <meta> <body>",
-        b"<!DOCTYPE html><meta><body>",
-    );
-    // The tag should not be dropped if it has attributes.
-    eval(
-        b"<!DOCTYPE html><html lang=en><head>  <meta> <body>",
-        b"<!DOCTYPE html><html lang=en><meta><body>",
-    );
+    eval(b"<rt>", b"<rt>");
 }
 
 #[test]
 fn test_removal_of_optional_tags() {
-    eval_with_keep_html_head(
+    eval(
         b"<ul><li>1</li><li>2</li><li>3</li></ul>",
         b"<ul><li>1<li>2<li>3</ul>",
     );
-    eval_with_keep_html_head(b"<rt></rt>", b"<rt>");
-    eval_with_keep_html_head(
+    eval(b"<rt></rt>", b"<rt>");
+    eval(
         b"<rt></rt><rp>1</rp><div></div>",
         b"<rt><rp>1</rp><div></div>",
     );
-    eval_with_keep_html_head(b"<div><rt></rt></div>", b"<div><rt></div>");
-    eval_with_keep_html_head(
+    eval(b"<div><rt></rt></div>", b"<div><rt></div>");
+    eval(
         br#"
         <html>
             <head>
@@ -204,7 +130,7 @@ fn test_removal_of_optional_tags() {
         b"<html><head><body>",
     );
     // Tag names should be case insensitive.
-    eval_with_keep_html_head(b"<RT></rt>", b"<rt>");
+    eval(b"<RT></rt>", b"<rt>");
 }
 
 #[test]
@@ -248,18 +174,6 @@ fn test_attr_unquoted_value_minification() {
     eval(b"<a b=/&gt></a>", br#"<a b="/>"></a>"#);
     eval(b"<a b=/&gt&lt;a></a>", br#"<a b="/><a"></a>"#);
     eval(b"<a b=hello></a>", b"<a b=hello></a>");
-}
-
-#[test]
-fn test_attr_whatwg_unquoted_value_minification() {
-    let mut cfg = super::Cfg::new();
-    cfg.ensure_spec_compliant_unquoted_attribute_values = true;
-    eval_with_cfg(b"<a b==></a>", br#"<a b="="></a>"#, &cfg);
-    eval_with_cfg(
-        br#"<a b=`'"<<==/`/></a>"#,
-        br#"<a b="`'&#34<<==/`/"></a>"#,
-        &cfg,
-    );
 }
 
 #[test]
@@ -379,22 +293,6 @@ fn test_empty_attr_value_removal() {
     eval(b"<div a=''></div>", b"<div a></div>");
     eval(b"<div a=></div>", b"<div a></div>");
     eval(b"<div a></div>", b"<div a></div>");
-}
-
-#[test]
-fn test_space_between_attrs_minification() {
-    eval(
-        b"<div a=\" \" b=\" \"></div>",
-        b"<div a=\" \"b=\" \"></div>",
-    );
-    eval(b"<div a=' ' b=\" \"></div>", b"<div a=\" \"b=\" \"></div>");
-    eval(
-        b"<div a=&#x20 b=\" \"></div>",
-        b"<div a=\" \"b=\" \"></div>",
-    );
-    eval(b"<div a=\"1\" b=\" \"></div>", b"<div a=1 b=\" \"></div>");
-    eval(b"<div a='1' b=\" \"></div>", b"<div a=1 b=\" \"></div>");
-    eval(b"<div a=\"a\"b=\"b\"></div>", b"<div a=a b=b></div>");
 }
 
 #[test]
@@ -591,33 +489,28 @@ fn test_js_minification_unintentional_closing_tag() {
         br#"<script>let a = "</" + "script>";</script>"#,
         br#"<script>let a="<\/script>";</script>"#,
     );
-    eval_with_js_min(
-        br#"<script>let a = "</S" + "cRiPT>";</script>"#,
-        br#"<script>let a="<\/ScRiPT>";</script>"#,
-    );
+    // TODO Reenable once esbuild handles closing tags case insensitively (evanw/esbuild#1509).
+    // eval_with_js_min(
+    //     br#"<script>let a = "</S" + "cRiPT>";</script>"#,
+    //     br#"<script>let a="<\/ScRiPT>";</script>"#,
+    // );
     eval_with_js_min(
         br#"<script>let a = "\u003c/script>";</script>"#,
         br#"<script>let a="<\/script>";</script>"#,
     );
-    eval_with_js_min(
-        br#"<script>let a = "\u003c/scrIPt>";</script>"#,
-        br#"<script>let a="<\/scrIPt>";</script>"#,
-    );
+    // TODO Reenable once esbuild handles closing tags case insensitively (evanw/esbuild#1509).
+    // eval_with_js_min(
+    //     br#"<script>let a = "\u003c/scrIPt>";</script>"#,
+    //     br#"<script>let a="<\/scrIPt>";</script>"#,
+    // );
 }
 
 #[cfg(feature = "js-esbuild")]
 #[test]
-fn test_css_minification() {
+fn test_style_element_minification() {
     // `<style>` contents.
     eval_with_css_min(
         b"<style>div { color: yellow }</style>",
         b"<style>div{color:#ff0}</style>",
     );
-    // `style` attributes.
-    eval_with_css_min(
-        br#"<div style="color: yellow;"></div>"#,
-        br#"<div style=color:#ff0></div>"#,
-    );
-    // `style` attributes are removed if fully minified away.
-    eval_with_css_min(br#"<div style="  /*  */   "></div>"#, br#"<div></div>"#);
 }

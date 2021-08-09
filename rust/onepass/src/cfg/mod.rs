@@ -15,3 +15,12 @@ pub struct Cfg {
     /// enabled; otherwise, this value has no effect.
     pub minify_css: bool,
 }
+
+impl Cfg {
+    pub fn new() -> Cfg {
+        Cfg {
+            minify_css: false,
+            minify_js: false,
+        }
+    }
+}

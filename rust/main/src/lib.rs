@@ -11,6 +11,8 @@ mod common;
 mod entity;
 mod minify;
 mod parse;
+#[cfg(test)]
+mod tests;
 
 /// Minifies UTF-8 HTML code, represented as an array of bytes.
 ///

@@ -114,8 +114,7 @@ fn parse_entity(code: &mut [u8], read_pos: usize, write_pos: usize, in_attr_val:
             ),
             EntityType::Named(decoded) => {
                 // https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state.
-                // TODO Generated trie no longer contains encoded values, even if longer.
-                if decoded[0] == b'&' && decoded.len() > 1
+                if decoded.len() > match_len
                     || in_attr_val
                         && *code.get(read_pos + match_len - 1).unwrap() != b';'
                         && code

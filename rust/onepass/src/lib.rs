@@ -10,6 +10,8 @@ mod common;
 mod err;
 #[macro_use]
 mod proc;
+#[cfg(test)]
+mod tests;
 mod unit;
 
 /// Minifies a slice in-place and returns the new minified length.

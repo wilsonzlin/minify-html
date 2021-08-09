@@ -42,6 +42,10 @@ pub fn minify_element(
         };
     }
 
+    // Determinism.
+    quoted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+    unquoted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
+
     // Attributes list could become empty after minification, so check opening tag omission eligibility after attributes minification.
     let can_omit_opening_tag = (tag_name == b"html" || tag_name == b"head")
         && quoted.len() + unquoted.len() == 0
@@ -77,9 +81,8 @@ pub fn minify_element(
         }
 
         if closing_tag == ElementClosingTag::SelfClosing {
-            // Write a space after the tag name if there are no attributes,
-            // or the last attribute is unquoted.
-            if unquoted.len() > 0 || unquoted.len() + quoted.len() == 0 {
+            // Write a space only if the last attribute is unquoted.
+            if unquoted.len() > 0 {
                 out.push(b' ');
             };
             out.push(b'/');
