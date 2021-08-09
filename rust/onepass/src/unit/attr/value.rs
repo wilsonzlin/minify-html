@@ -2,6 +2,9 @@ use std::collections::HashMap;
 
 use lazy_static::lazy_static;
 
+use crate::common::gen::codepoints::{
+    ATTR_QUOTE, DIGIT, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, WHITESPACE,
+};
 use crate::err::ProcessingResult;
 use crate::proc::checkpoint::WriteCheckpoint;
 use crate::proc::entity::maybe_normalise_entity;
@@ -9,9 +12,6 @@ use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
-use crate::common::gen::codepoints::{
-    ATTR_QUOTE, DIGIT, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, WHITESPACE,
-};
 
 // See comment in `process_attr_value` for full description of why these intentionally do not have semicolons.
 lazy_static! {

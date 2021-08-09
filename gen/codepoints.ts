@@ -49,7 +49,15 @@ const SINGLE_QUOTE = [c("'")];
 // Official characters allowed in an attribute name.
 // NOTE: Unicode noncharacters not tested.
 // See https://html.spec.whatwg.org/multipage/syntax.html#syntax-attribute-name for spec.
-const WHATWG_ATTR_NAME_CHAR = invert([...CONTROL, c(' '), c('"'), c('\''), c('>'), c('/'), c('=')]);
+const WHATWG_ATTR_NAME_CHAR = invert([
+  ...CONTROL,
+  c(" "),
+  c('"'),
+  c("'"),
+  c(">"),
+  c("/"),
+  c("="),
+]);
 // Valid attribute quote characters.
 // See https://html.spec.whatwg.org/multipage/introduction.html#intro-early-example for spec.
 // Backtick is not a valid quote character according to spec.

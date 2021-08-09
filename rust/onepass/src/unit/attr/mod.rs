@@ -1,3 +1,6 @@
+use crate::common::gen::attrs::ATTRS;
+use crate::common::gen::codepoints::{WHATWG_ATTR_NAME_CHAR, WHITESPACE};
+use crate::common::spec::tag::ns::Namespace;
 use crate::err::ProcessingResult;
 use crate::proc::checkpoint::WriteCheckpoint;
 use crate::proc::range::ProcessorRange;
@@ -7,9 +10,6 @@ use crate::proc::Processor;
 use crate::unit::attr::value::{
     process_attr_value, skip_attr_value, DelimiterType, ProcessedAttrValue,
 };
-use crate::common::gen::attrs::ATTRS;
-use crate::common::gen::codepoints::{WHATWG_ATTR_NAME_CHAR, WHITESPACE};
-use crate::common::spec::tag::ns::Namespace;
 
 mod value;
 

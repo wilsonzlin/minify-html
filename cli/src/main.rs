@@ -74,7 +74,8 @@ fn main() {
     let out_code = minify(
         &src_code,
         &Cfg {
-            ensure_spec_compliant_unquoted_attribute_values: args.ensure_spec_compliant_unquoted_attribute_values,
+            ensure_spec_compliant_unquoted_attribute_values: args
+                .ensure_spec_compliant_unquoted_attribute_values,
             keep_closing_tags: args.keep_closing_tags,
             keep_comments: args.keep_comments,
             keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,

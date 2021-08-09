@@ -1,4 +1,10 @@
 use crate::cfg::Cfg;
+use crate::common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use crate::common::spec::tag::ns::Namespace;
+use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use crate::common::spec::tag::whitespace::{
+    get_whitespace_minification_for_tag, WhitespaceMinification,
+};
 use crate::err::ProcessingResult;
 use crate::proc::checkpoint::ReadCheckpoint;
 use crate::proc::entity::maybe_normalise_entity;
@@ -10,12 +16,6 @@ use crate::unit::bang::process_bang;
 use crate::unit::comment::process_comment;
 use crate::unit::instruction::process_instruction;
 use crate::unit::tag::{process_tag, MaybeClosingTag};
-use crate::common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
-use crate::common::spec::tag::ns::Namespace;
-use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
-use crate::common::spec::tag::whitespace::{
-    get_whitespace_minification_for_tag, WhitespaceMinification,
-};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 enum ContentType {

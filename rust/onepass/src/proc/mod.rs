@@ -11,12 +11,12 @@ use {
     std::sync::{Arc, Mutex},
 };
 
+use crate::common::gen::codepoints::Lookup;
+use crate::common::spec::tag::EMPTY_SLICE;
 use crate::err::{debug_repr, Error, ErrorType, ProcessingResult};
 use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
-use crate::common::gen::codepoints::Lookup;
-use crate::common::spec::tag::EMPTY_SLICE;
 
 pub mod checkpoint;
 pub mod entity;

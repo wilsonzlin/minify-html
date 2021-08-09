@@ -43,7 +43,7 @@ const averageChartOptions = (label) => ({
           type: "linear",
           scaleLabel: {
             display: true,
-            fontColor: '#222',
+            fontColor: "#222",
             fontSize: 24,
             fontStyle: "bold",
             labelString: label,
@@ -145,7 +145,12 @@ const renderChart = (cfg, width, height) =>
   await fs.mkdir(GRAPHS_DIR, { recursive: true });
 
   const res = results.calculate();
-  const speedMinifiers = ["html-minifier", "minimize", "minify-html", "minify-html-onepass"];
+  const speedMinifiers = [
+    "html-minifier",
+    "minimize",
+    "minify-html",
+    "minify-html-onepass",
+  ];
   const sizeMinifiers = ["minimize", "html-minifier", "minify-html"];
   const inputs = Object.keys(res.inputSizes).sort();
 
@@ -208,11 +213,14 @@ const renderChart = (cfg, width, height) =>
             label: minifier,
             data: inputs.map(
               (input) =>
-                res.perInputOps[minifier][input] / res.perInputOps['minify-html'][input]
+                res.perInputOps[minifier][input] /
+                res.perInputOps["minify-html"][input]
             ),
           })),
         },
-        ...breakdownChartOptions("Operations per second, relative to minify-html"),
+        ...breakdownChartOptions(
+          "Operations per second, relative to minify-html"
+        ),
       },
       900,
       1600
@@ -228,7 +236,11 @@ const renderChart = (cfg, width, height) =>
           labels: inputs,
           datasets: sizeMinifiers.map((minifier) => ({
             label: minifier,
-            data: inputs.map((input) => res.perInputReduction[minifier][input] / res.perInputReduction['minify-html'][input]),
+            data: inputs.map(
+              (input) =>
+                res.perInputReduction[minifier][input] /
+                res.perInputReduction["minify-html"][input]
+            ),
           })),
         },
         ...breakdownChartOptions("Size reduction, relative to minify-html"),

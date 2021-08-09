@@ -1,7 +1,7 @@
+use minify_html;
 use std::fs;
 use std::io::{self, Write};
 use std::panic;
-use minify_html;
 
 fn main() {
     for dirent in fs::read_dir("../out/crashes").unwrap() {
@@ -9,9 +9,7 @@ fn main() {
         let path_in_catch = path.clone();
         let res = panic::catch_unwind(|| {
             let mut contents = fs::read(path_in_catch).unwrap();
-            let _ = minify_html::in_place(&mut contents, &minify_html::Cfg {
-                minify_js: false,
-            });
+            let _ = minify_html::in_place(&mut contents, &minify_html::Cfg { minify_js: false });
         });
         if res.is_err() {
             let contents = fs::read(path).unwrap();
@@ -19,5 +17,5 @@ fn main() {
             break;
         };
         fs::remove_file(path).unwrap();
-    };
+    }
 }

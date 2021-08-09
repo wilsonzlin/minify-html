@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
 use crate::ast::{ElementClosingTag, NodeData};
-use crate::parse::element::{parse_element, parse_tag, ParsedTag};
-use crate::parse::Code;
 use crate::common::spec::tag::ns::Namespace;
 use crate::common::spec::tag::EMPTY_SLICE;
+use crate::parse::element::{parse_element, parse_tag, ParsedTag};
+use crate::parse::Code;
 
 #[test]
 fn test_parse_tag() {

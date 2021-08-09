@@ -1,9 +1,9 @@
 pub use crate::cfg::Cfg;
+use crate::common::spec::tag::ns::Namespace;
 use crate::err::debug_repr;
 pub use crate::err::{Error, ErrorType, FriendlyError};
 use crate::proc::Processor;
 use crate::unit::content::process_content;
-use crate::common::spec::tag::ns::Namespace;
 
 mod cfg;
 mod common;
