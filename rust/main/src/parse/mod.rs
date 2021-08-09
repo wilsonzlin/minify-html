@@ -3,6 +3,7 @@ use crate::common::gen::codepoints::Lookup;
 pub mod bang;
 pub mod comment;
 pub mod content;
+pub mod doctype;
 pub mod element;
 pub mod instruction;
 pub mod script;
@@ -57,6 +58,20 @@ impl<'c> Code<'c> {
     pub fn shift_if_next(&mut self, c: u8) -> bool {
         if self.code.get(self.next).filter(|&&n| n == c).is_some() {
             self.next += 1;
+            true
+        } else {
+            false
+        }
+    }
+
+    pub fn shift_if_next_seq_case_insensitive(&mut self, seq: &[u8]) -> bool {
+        if self
+            .code
+            .get(self.next..self.next + seq.len())
+            .filter(|n| n.eq_ignore_ascii_case(seq))
+            .is_some()
+        {
+            self.next += seq.len();
             true
         } else {
             false

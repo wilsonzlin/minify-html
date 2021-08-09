@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::ast::{ElementClosingTag, NodeData, ScriptOrStyleLang};
+use crate::ast::{AttrVal, ElementClosingTag, NodeData, ScriptOrStyleLang};
 use crate::common::gen::codepoints::{
     ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE,
     WHITESPACE_OR_SLASH, WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON,
@@ -37,7 +37,7 @@ pub fn peek_tag_name(code: &mut Code) -> Vec<u8> {
 // Derive Eq for testing.
 #[derive(Eq, PartialEq)]
 pub struct ParsedTag {
-    pub attributes: HashMap<Vec<u8>, Vec<u8>>,
+    pub attributes: HashMap<Vec<u8>, AttrVal>,
     pub name: Vec<u8>,
     pub self_closing: bool,
 }
@@ -48,11 +48,7 @@ impl Debug for ParsedTag {
         let mut attrs = self.attributes.iter().collect::<Vec<_>>();
         attrs.sort_unstable_by(|a, b| a.0.cmp(b.0));
         for (n, v) in attrs {
-            f.write_fmt(format_args!(
-                " {}={}",
-                from_utf8(n).unwrap(),
-                from_utf8(v).unwrap()
-            ))?;
+            f.write_fmt(format_args!(" {}={:?}", from_utf8(n).unwrap(), v))?;
         }
         if self.self_closing {
             f.write_str(" />")?;
@@ -65,7 +61,7 @@ impl Debug for ParsedTag {
 // TODO Use generics to create version that doesn't create a HashMap.
 pub fn parse_tag(code: &mut Code) -> ParsedTag {
     let elem_name = parse_tag_name(code);
-    let mut attributes = HashMap::<Vec<u8>, Vec<u8>>::new();
+    let mut attributes = HashMap::new();
     let self_closing;
     loop {
         // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).
@@ -92,7 +88,10 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
         let has_value = code.shift_if_next(b'=');
         code.shift_while_in_lookup(WHITESPACE);
         let attr_value = if !has_value {
-            Vec::new()
+            AttrVal {
+                quote: None,
+                value: Vec::new(),
+            }
         } else {
             // TODO Replace ATTR_QUOTE with direct comparison.
             let attr_delim = code.shift_if_next_in_lookup(ATTR_QUOTE);
@@ -111,7 +110,10 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
                 // It might not be next if EOF (i.e. attribute value not closed).
                 code.shift_if_next(c);
             };
-            attr_value
+            AttrVal {
+                quote: attr_delim,
+                value: attr_value,
+            }
         };
         attributes.insert(attr_name, attr_value);
     }

@@ -1,10 +1,17 @@
 use std::collections::HashMap;
 
-use crate::ast::{ElementClosingTag, NodeData};
+use crate::ast::{AttrVal, ElementClosingTag, NodeData};
 use crate::common::spec::tag::ns::Namespace;
 use crate::common::spec::tag::EMPTY_SLICE;
 use crate::parse::element::{parse_element, parse_tag, ParsedTag};
 use crate::parse::Code;
+
+fn val(v: &[u8]) -> AttrVal {
+    AttrVal {
+        value: v.to_vec(),
+        quote: None,
+    }
+}
 
 #[test]
 fn test_parse_tag() {
@@ -20,20 +27,20 @@ fn test_parse_tag() {
         tag,
         ParsedTag {
             attributes: {
-                let mut map = HashMap::<Vec<u8>, Vec<u8>>::new();
-                map.insert(b"type".to_vec(), b"password".to_vec());
-                map.insert(b"\"a\"".to_vec(), b"  b  ".to_vec());
-                map.insert(b":cd".to_vec(), b"".to_vec());
-                map.insert(b"e".to_vec(), b"".to_vec());
-                map.insert(b"=fg".to_vec(), b"/\\h".to_vec());
-                map.insert(b"i".to_vec(), b"".to_vec());
-                map.insert(b"j".to_vec(), b"".to_vec());
-                map.insert(b"k".to_vec(), b"".to_vec());
-                map.insert(b"l".to_vec(), b"".to_vec());
-                map.insert(b"m".to_vec(), b"n=o".to_vec());
-                map.insert(b"q".to_vec(), b"=\\r/s/".to_vec());
-                map.insert(b"t]".to_vec(), b"/u".to_vec());
-                map.insert(b"w".to_vec(), b"//".to_vec());
+                let mut map = HashMap::<Vec<u8>, AttrVal>::new();
+                map.insert(b"type".to_vec(), val(b"password"));
+                map.insert(b"\"a\"".to_vec(), val(b"  b  "));
+                map.insert(b":cd".to_vec(), val(b""));
+                map.insert(b"e".to_vec(), val(b""));
+                map.insert(b"=fg".to_vec(), val(b"/\\h"));
+                map.insert(b"i".to_vec(), val(b""));
+                map.insert(b"j".to_vec(), val(b""));
+                map.insert(b"k".to_vec(), val(b""));
+                map.insert(b"l".to_vec(), val(b""));
+                map.insert(b"m".to_vec(), val(b"n=o"));
+                map.insert(b"q".to_vec(), val(b"=\\r/s/"));
+                map.insert(b"t]".to_vec(), val(b"/u"));
+                map.insert(b"w".to_vec(), val(b"//"));
                 map
             },
             name: b"input".to_vec(),
@@ -50,8 +57,8 @@ fn test_parse_element() {
         elem,
         NodeData::Element {
             attributes: {
-                let mut map = HashMap::<Vec<u8>, Vec<u8>>::new();
-                map.insert(b"b".to_vec(), br#"\"c\""#.to_vec());
+                let mut map = HashMap::<Vec<u8>, AttrVal>::new();
+                map.insert(b"b".to_vec(), val(br#"\"c\""#));
                 map
             },
             children: vec![],

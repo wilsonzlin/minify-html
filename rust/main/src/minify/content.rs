@@ -13,6 +13,7 @@ use crate::entity::encode::encode_entities;
 use crate::minify::bang::minify_bang;
 use crate::minify::comment::minify_comment;
 use crate::minify::css::minify_css;
+use crate::minify::doctype::minify_doctype;
 use crate::minify::element::minify_element;
 use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
@@ -117,6 +118,7 @@ pub fn minify_content(
         match c {
             NodeData::Bang { code, ended } => minify_bang(cfg, out, &code, ended),
             NodeData::Comment { code, ended } => minify_comment(cfg, out, &code, ended),
+            NodeData::Doctype { legacy, ended } => minify_doctype(cfg, out, &legacy, ended),
             NodeData::Element {
                 attributes,
                 children,

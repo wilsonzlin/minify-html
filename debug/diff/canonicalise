@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+pushd "$(dirname "$0")" >/dev/null
+
+cargo build --manifest-path c14n/Cargo.toml --release
+
+for f in outputs/*/*; do
+  src=$(cat "$f")
+  c14n/target/release/c14n <<< "$src" > "$f"
+done
+
+popd >/dev/null

@@ -11,21 +11,23 @@ use crate::entity::decode::decode_entities;
 use crate::parse::bang::parse_bang;
 use crate::parse::comment::parse_comment;
 use crate::parse::content::ContentType::*;
+use crate::parse::doctype::parse_doctype;
 use crate::parse::element::{parse_element, parse_tag, peek_tag_name};
 use crate::parse::instruction::parse_instruction;
 use crate::parse::Code;
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum ContentType {
-    Text,
-    OpeningTag,
-    ClosingTag,
-    Instruction,
     Bang,
+    ClosingTag,
     Comment,
+    Doctype,
+    IgnoredTag,
+    Instruction,
     MalformedLeftChevronSlash,
     OmittedClosingTag,
-    IgnoredTag,
+    OpeningTag,
+    Text,
 }
 
 fn maybe_ignore_html_head_body(
@@ -94,6 +96,9 @@ fn build_content_type_matcher() -> (AhoCorasick, Vec<ContentType>) {
     patterns.push(b"<?".to_vec());
     types.push(ContentType::Instruction);
 
+    patterns.push(b"<!doctype".to_vec());
+    types.push(ContentType::Doctype);
+
     patterns.push(b"<!".to_vec());
     types.push(ContentType::Bang);
 
@@ -102,6 +107,7 @@ fn build_content_type_matcher() -> (AhoCorasick, Vec<ContentType>) {
 
     (
         AhoCorasickBuilder::new()
+            .ascii_case_insensitive(true)
             .dfa(true)
             .match_kind(MatchKind::LeftmostLongest)
             // Keep in sync with order of CONTENT_TYPE_FROM_PATTERN.
@@ -182,6 +188,7 @@ pub fn parse_content(
             Instruction => nodes.push(parse_instruction(code)),
             Bang => nodes.push(parse_bang(code)),
             Comment => nodes.push(parse_comment(code)),
+            Doctype => nodes.push(parse_doctype(code)),
             MalformedLeftChevronSlash => code.shift(match memrchr(b'>', code.as_slice()) {
                 Some(m) => m + 1,
                 None => code.rem(),

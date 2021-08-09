@@ -11,7 +11,9 @@ use crate::common::gen::codepoints::DIGIT;
 use crate::common::pattern::Replacer;
 use crate::common::spec::script::JAVASCRIPT_MIME_TYPES;
 use crate::common::spec::tag::ns::Namespace;
-use crate::common::whitespace::{collapse_whitespace, left_trim, right_trim};
+use crate::common::whitespace::{
+    collapse_whitespace, left_trim, remove_all_whitespace, right_trim,
+};
 use crate::entity::encode::encode_entities;
 use crate::Cfg;
 
@@ -184,8 +186,8 @@ fn build_whatwg_unquoted_replacer() -> Replacer {
 lazy_static! {
     static ref DOUBLE_QUOTED_REPLACER: Replacer = build_double_quoted_replacer();
     static ref SINGLE_QUOTED_REPLACER: Replacer = build_single_quoted_replacer();
-    static ref UNQUOTED_QUOTED_REPLACER: Replacer = build_unquoted_replacer();
-    static ref WHATWG_UNQUOTED_QUOTED_REPLACER: Replacer = build_whatwg_unquoted_replacer();
+    static ref UNQUOTED_REPLACER: Replacer = build_unquoted_replacer();
+    static ref WHATWG_UNQUOTED_REPLACER: Replacer = build_whatwg_unquoted_replacer();
 }
 
 pub struct AttrMinifiedValue {
@@ -244,12 +246,12 @@ pub fn encode_unquoted(val: &[u8], whatwg: bool) -> AttrMinifiedValue {
         AttrMinifiedValue {
             quoted: false,
             prefix: b"",
-            data: WHATWG_UNQUOTED_QUOTED_REPLACER.replace_all(val),
+            data: WHATWG_UNQUOTED_REPLACER.replace_all(val),
             start: 0,
             suffix: b"",
         }
     } else {
-        let data = UNQUOTED_QUOTED_REPLACER.replace_all(val);
+        let data = UNQUOTED_REPLACER.replace_all(val);
         let prefix: &'static [u8] = match data.get(0) {
             Some(b'"') => match data.get(1) {
                 Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#34;",
@@ -282,6 +284,8 @@ pub fn minify_attr(
     cfg: &Cfg,
     ns: Namespace,
     tag: &[u8],
+    // True if element is <meta> and has an attribute `name` equal to `viewport`.
+    is_meta_viewport: bool,
     name: &[u8],
     mut value_raw: Vec<u8>,
 ) -> AttrMinified {
@@ -292,6 +296,10 @@ pub fn minify_attr(
     // An attribute can have both redundant_if_empty and default_value, which means it has two default values: "" and default_value.
     let redundant_if_empty = attr_cfg.filter(|attr| attr.redundant_if_empty).is_some();
     let default_value = attr_cfg.and_then(|attr| attr.default_value);
+
+    if is_meta_viewport {
+        remove_all_whitespace(&mut value_raw);
+    };
 
     // Trim before checking is_boolean as the entire attribute could be redundant post-minification.
     if should_collapse_and_trim {

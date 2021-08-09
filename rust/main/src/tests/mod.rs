@@ -34,6 +34,15 @@ fn eval_without_keep_html_head(src: &'static [u8], expected: &'static [u8]) -> (
 }
 
 #[test]
+fn test_minification_of_doctype() {
+    eval(b"<!DOCTYPE html><html>", b"<!doctypehtml><html>");
+    eval(
+        b"<!DOCTYPE html SYSTEM 'about:legacy-compat'><html>",
+        b"<!doctypehtml SYSTEM 'about:legacy-compat'><html>",
+    );
+}
+
+#[test]
 fn test_parsing_extra_head_tag() {
     // Extra `<head>` in `<label>` should be dropped, so whitespace around `<head>` should be joined and therefore trimmed due to `<label>` whitespace rules.
     eval(
@@ -57,17 +66,17 @@ fn test_removal_of_html_and_head_opening_tags() {
     // Even though `<head>` is dropped, it's still parsed, so its content is still subject to `<head>` whitespace minification rules.
     eval_without_keep_html_head(
         b"<!DOCTYPE html><html><head>  <meta> <body>",
-        b"<!DOCTYPE html><meta><body>",
+        b"<!doctypehtml><meta><body>",
     );
     // The tag should not be dropped if it has attributes.
     eval_without_keep_html_head(
         b"<!DOCTYPE html><html lang=en><head>  <meta> <body>",
-        b"<!DOCTYPE html><html lang=en><meta><body>",
+        b"<!doctypehtml><html lang=en><meta><body>",
     );
     // The tag should be dropped if it has no attributes after minification.
     eval_without_keep_html_head(
         b"<!DOCTYPE html><html style='  '><head>  <meta> <body>",
-        b"<!DOCTYPE html><meta><body>",
+        b"<!doctypehtml><meta><body>",
     );
 }
 
@@ -110,6 +119,14 @@ fn test_attr_whatwg_unquoted_value_minification() {
         br#"<a b=`'"<<==/`/></a>"#,
         br#"<a b="`'&#34<<==/`/"></a>"#,
         &cfg,
+    );
+}
+
+#[test]
+fn test_viewport_attr_minification() {
+    eval(
+        b"<meta name=viewport content='width=device-width, initial-scale=1'>",
+        b"<meta content=width=device-width,initial-scale=1 name=viewport>",
     );
 }
 

@@ -10,6 +10,7 @@ for dir in \
   bench/runners/minify-html \
   bench/runners/minify-html-onepass \
   cli \
+  debug/diff/c14n \
   fuzz \
   fuzz/process \
   java \

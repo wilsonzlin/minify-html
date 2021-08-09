@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::ast::{ElementClosingTag, NodeData};
+use crate::ast::{AttrVal, ElementClosingTag, NodeData};
 use crate::cfg::Cfg;
 use crate::common::spec::tag::ns::Namespace;
 use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
@@ -19,7 +19,7 @@ pub fn minify_element(
     // If the last node of the parent is an element and it's this one.
     is_last_child_text_or_element_node: bool,
     tag_name: &[u8],
-    attributes: HashMap<Vec<u8>, Vec<u8>>,
+    attributes: HashMap<Vec<u8>, AttrVal>,
     closing_tag: ElementClosingTag,
     children: Vec<NodeData>,
 ) {
@@ -27,8 +27,14 @@ pub fn minify_element(
     let mut quoted = Vec::new();
     let mut unquoted = Vec::new();
 
+    let is_meta_viewport = tag_name == b"meta"
+        && attributes
+            .get(b"name".as_ref())
+            .filter(|a| a.value.eq_ignore_ascii_case(b"viewport"))
+            .is_some();
+
     for (name, value) in attributes {
-        match minify_attr(cfg, ns, tag_name, &name, value) {
+        match minify_attr(cfg, ns, tag_name, is_meta_viewport, &name, value.value) {
             AttrMinified::Redundant => {}
             a @ AttrMinified::NoValue => unquoted.push((name, a)),
             AttrMinified::Value(v) => {

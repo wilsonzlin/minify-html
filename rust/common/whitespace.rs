@@ -37,6 +37,20 @@ pub fn collapse_whitespace(val: &mut Vec<u8>) {
     val.truncate(write);
 }
 
+pub fn remove_all_whitespace(val: &mut Vec<u8>) {
+    let mut write = 0;
+    for i in 0..val.len() {
+        let c = val[i];
+        if WHITESPACE[c] {
+            // Skip this character.
+            continue;
+        };
+        val[write] = c;
+        write += 1;
+    }
+    val.truncate(write);
+}
+
 pub fn is_all_whitespace(val: &[u8]) -> bool {
     for &c in val {
         if !WHITESPACE[c] {

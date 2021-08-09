@@ -15,19 +15,25 @@ module.exports = {
       code = `x{${code}}`;
     }
     code = esbuild.transformSync(code, {
+      charset: "utf8",
+      legalComments: "none",
       loader: "css",
       minify: true,
+      sourcemap: false,
     }).code;
     if (type === "inline") {
-      code = code.slice(2, -1);
+      code = code.trim().slice(2, -1);
     }
     return code;
   },
 
   esbuildJs: (code) =>
     esbuild.transformSync(code, {
+      charset: "utf8",
+      legalComments: "none",
       loader: "js",
       minify: true,
+      sourcemap: false,
     }).code,
 
   run: (minifierFn) => {

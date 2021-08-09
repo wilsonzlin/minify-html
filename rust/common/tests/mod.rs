@@ -76,10 +76,10 @@ fn test_no_whitespace_minification() {
 fn test_parsing_omitted_closing_tag() {
     eval(b"<html>", b"<html>");
     eval(b" <html>\n", b"<html>");
-    eval(b" <!doctype html> <html>\n", b"<!doctype html><html>");
+    eval(b" <!doctypehtml> <html>\n", b"<!doctypehtml><html>");
     eval(
-        b"<!doctype html><html><div> <p>Foo</div></html>",
-        b"<!doctype html><html><div><p>Foo</div>",
+        b"<!doctypehtml><html><div> <p>Foo</div></html>",
+        b"<!doctypehtml><html><div><p>Foo</div>",
     );
 }
 

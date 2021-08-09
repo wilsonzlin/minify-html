@@ -4,6 +4,8 @@ use std::str::from_utf8;
 
 use crate::common::spec::tag::ns::Namespace;
 
+pub mod c14n;
+
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum ElementClosingTag {
     Omitted,
@@ -19,6 +21,32 @@ pub enum ScriptOrStyleLang {
     JS,
 }
 
+pub struct AttrVal {
+    // For serialisation only, not used for equality or value.
+    pub quote: Option<u8>,
+    pub value: Vec<u8>,
+}
+
+impl AttrVal {
+    pub fn as_slice(&self) -> &[u8] {
+        self.value.as_slice()
+    }
+}
+
+impl Debug for AttrVal {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(from_utf8(&self.value).unwrap())
+    }
+}
+
+impl PartialEq for AttrVal {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
+    }
+}
+
+impl Eq for AttrVal {}
+
 // Derive Eq for testing.
 #[derive(Eq, PartialEq)]
 pub enum NodeData {
@@ -32,8 +60,13 @@ pub enum NodeData {
         // If the source unexpectedly ended before `-->`, we can't add it, as otherwise output could be longer than source.
         ended: bool,
     },
+    Doctype {
+        legacy: Vec<u8>,
+        // If the source unexpectedly ended before `>`, we can't add it, as otherwise output could be longer than source.
+        ended: bool,
+    },
     Element {
-        attributes: HashMap<Vec<u8>, Vec<u8>>,
+        attributes: HashMap<Vec<u8>, AttrVal>,
         children: Vec<NodeData>,
         // If the source doesn't have a closing tag, then we can't add one, as otherwise output could be longer than source.
         closing_tag: ElementClosingTag,
@@ -59,10 +92,6 @@ pub enum NodeData {
     },
 }
 
-fn str(bytes: &[u8]) -> &str {
-    from_utf8(bytes).unwrap()
-}
-
 impl Debug for NodeData {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -76,6 +105,11 @@ impl Debug for NodeData {
                 .field("code", &from_utf8(code).unwrap().to_string())
                 .field("ended", ended)
                 .finish(),
+            NodeData::Doctype { legacy, ended } => f
+                .debug_struct("Doctype")
+                .field("legacy", &from_utf8(legacy).unwrap().to_string())
+                .field("ended", ended)
+                .finish(),
             NodeData::Element {
                 attributes,
                 children,
@@ -86,9 +120,9 @@ impl Debug for NodeData {
             } => f
                 .debug_struct("Element")
                 .field("tag", &{
-                    let mut out = format!("{:?}:{}", namespace, str(name));
+                    let mut out = format!("{:?}:{}", namespace, from_utf8(name).unwrap());
                     for (n, v) in attributes {
-                        out.push_str(format!(" {}={}", str(n), str(v)).as_str());
+                        out.push_str(format!(" {}={:?}", from_utf8(n).unwrap(), v).as_str());
                     }
                     out
                 })
@@ -109,7 +143,7 @@ impl Debug for NodeData {
                 .field("code", &from_utf8(code).unwrap().to_string())
                 .field("lang", lang)
                 .finish(),
-            NodeData::Text { value } => f.write_str(str(value)),
+            NodeData::Text { value } => f.write_str(from_utf8(value).unwrap()),
         }
     }
 }
