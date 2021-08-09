@@ -2,7 +2,7 @@
 
 This folder contains scripts used to test the performance and effectiveness of minify-html, for guided optimisation and/or comparisons.
 
-It also contains a set of common web pages as tests for benchmarking.
+It also contains a set of common web pages as inputs for benchmarking.
 
 ## Comparison
 
@@ -26,11 +26,11 @@ Each minifier is run against each file in the [inputs](./inputs) folder, which a
 
 **Note that these pages are already mostly minified.**
 
-For more information on how the tests are fetched, see [fetch.js](./fetch.js).
+For more information on how the inputs are fetched, see [fetch.js](./fetch.js).
 
-On this [project's README](../README.md), average graphs are shown. Graphs showing per-test results are shown below:
+On this [project's README](../README.md), average graphs are shown. Graphs showing per-input results are shown below:
 
-<img width="435" alt="Chart showing speed of HTML minifiers per test" src="https://wilsonl.in/minify-html/bench/0.6.1/core/speeds.png"><img width="435" alt="Chart showing effectiveness of HTML minifiers per test" src="https://wilsonl.in/minify-html/bench/0.6.1/core/sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers per input" src="https://wilsonl.in/minify-html/bench/0.6.1/core/speeds.png"><img width="435" alt="Chart showing effectiveness of HTML minifiers per input" src="https://wilsonl.in/minify-html/bench/0.6.1/core/sizes.png">
 
 Results depend on the input, so charts show performance relative to minify-html as a percentage.
 
@@ -38,6 +38,6 @@ Results depend on the input, so charts show performance relative to minify-html 
 
 Run [build](./build) to build the minifiers.
 
-Run [run](./run) to benchmark the performance of each HTML minifier against each test and record the op/s results.
+Run [run](./run) to benchmark each HTML minifier against each input and output the results to the `results` folder.
 
-Run [graph.js](./graph.js) to render graphs from recorded speed and size results in the `results` folder.
+Run [graph.js](./graph.js) to render graphs to the `graphs` folder.
