@@ -14,8 +14,7 @@ fn main() {
         .ok()
         .filter(|v| v == "1")
         .is_some();
-
-    let tests = fs::read_dir(input_dir).unwrap().map(|d| d.unwrap());
+    let output_dir = env::var("MHB_OUTPUT_DIR").ok();
 
     let mut results: Vec<(String, usize, usize, f64)> = Vec::new();
     let mut cfg = Cfg::new();
@@ -24,20 +23,23 @@ fn main() {
         cfg.minify_js = true;
     };
 
-    for t in tests {
+    for t in fs::read_dir(input_dir).unwrap().map(|d| d.unwrap()) {
         let source = fs::read(t.path()).unwrap();
+        let input_name = t.file_name().into_string().unwrap();
+
+        let output = minify(&source, &cfg);
+        let len = output.len();
+        if let Some(output_dir) = &output_dir {
+            fs::write(format!("{}/{}", output_dir, input_name), output).unwrap();
+        };
+
         let start = Instant::now();
-        let mut len = 0;
         for _ in 0..iterations {
-            len = minify(&source, &cfg).len();
+            let _ = minify(&source, &cfg);
         }
         let elapsed = start.elapsed().as_secs_f64();
-        results.push((
-            t.file_name().into_string().unwrap(),
-            len,
-            iterations,
-            elapsed,
-        ));
+
+        results.push((input_name, len, iterations, elapsed));
     }
 
     serde_json::to_writer(stdout(), &results).unwrap();

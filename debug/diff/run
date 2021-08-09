@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+shopt -s nullglob
+
+pushd "$(dirname "$0")" >/dev/null
+
+input_dir="$PWD/../../bench/inputs"
+output_dir="$PWD/outputs"
+
+rm -rf "$output_dir"
+mkdir -p "$output_dir"
+
+pushd "../../bench/runners" >/dev/null
+for r in *; do
+  if [ ! -d "$r" ]; then
+    continue
+  fi
+  mkdir -p "$output_dir/$r"
+  echo "Running $r..."
+  pushd "$r" >/dev/null
+  MHB_ITERATIONS=1 MHB_INPUT_DIR="$input_dir" MHB_OUTPUT_DIR="$output_dir/$r" RUST_BACKTRACE=1 ./run >/dev/null
+  popd >/dev/null
+done
+popd >/dev/null
+
+echo "All done!"
+
+popd >/dev/null

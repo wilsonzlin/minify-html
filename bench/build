@@ -18,6 +18,6 @@ for r in *; do
 done
 popd >/dev/null
 
-popd >/dev/null
-
 echo "All done!"
+
+popd >/dev/null

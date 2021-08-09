@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -Eeuxo pipefail
+
+pushd "$(dirname "$0")" >/dev/null
+
+git --no-pager diff --no-index --word-diff=color --word-diff-regex=. "outputs/html-minifier/$1" "outputs/minify-html/$1" | less
+
+popd >/dev/null
