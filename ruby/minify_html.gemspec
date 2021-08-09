@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
   spec.files         = FileList["lib/*", "README.md"].to_a
   spec.summary       = "Extremely fast and smart HTML + JS + CSS minifier"
-  spec.homepage      = "https://github.com/wilsonzlin/minify_html"
+  spec.homepage      = "https://github.com/wilsonzlin/minify-html"
 
   spec.require_paths = ["lib"]
 
