@@ -19,7 +19,7 @@ A Rust HTML minifier meticulously optimised for speed and effectiveness, with bi
 
 Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
 
-<img width="415" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.5/core/average-speeds.png"><img width="415" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.5/core/average-sizes.png">
+<img width="415" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.6/core/average-speeds.png"><img width="415" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.6/core/average-sizes.png">
 
 The [onepass](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) variant is even more optimised for speed. See its [README](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) for more details.
 
@@ -32,10 +32,10 @@ Precompiled binaries are available for Linux, macOS, and Windows.
 
 ### Get
 
-[Linux x86-64](https://wilsonl.in/minify-html/bin/0.6.5-linux-x86_64) |
-[Linux ARM](https://wilsonl.in/minify-html/bin/0.6.5-linux-arm64) |
-[macOS](https://wilsonl.in/minify-html/bin/0.6.5-macos-x86_64) |
-[Windows](https://wilsonl.in/minify-html/bin/0.6.5-windows-x86_64.exe)
+[Linux x86-64](https://wilsonl.in/minify-html/bin/0.6.6-linux-x86_64) |
+[Linux ARM](https://wilsonl.in/minify-html/bin/0.6.6-linux-arm64) |
+[macOS](https://wilsonl.in/minify-html/bin/0.6.6-macos-x86_64) |
+[Windows](https://wilsonl.in/minify-html/bin/0.6.6-windows-x86_64.exe)
 
 ### Use
 
@@ -54,7 +54,7 @@ minify-html --output /path/to/output.min.html --keep-closing-tags --minify-css /
 
 ```toml
 [dependencies]
-minify-html = { version = "0.6.5", features = ["js-esbuild"] }
+minify-html = { version = "0.6.6", features = ["js-esbuild"] }
 ```
 
 Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS and CSS minifier](https://github.com/wilsonzlin/esbuild-rs).
@@ -125,7 +125,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.minifyhtml</groupId>
   <artifactId>minify-html</artifactId>
-  <version>0.6.5</version>
+  <version>0.6.6</version>
 </dependency>
 ```
 
