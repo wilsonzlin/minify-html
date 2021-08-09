@@ -7,13 +7,6 @@ use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_no
 use crate::minify::attr::{minify_attr, AttrMinified};
 use crate::minify::content::minify_content;
 
-#[derive(Copy, Clone, Eq, PartialEq)]
-enum LastAttr {
-    NoValue,
-    Quoted,
-    Unquoted,
-}
-
 pub fn minify_element(
     cfg: &Cfg,
     out: &mut Vec<u8>,
@@ -30,49 +23,63 @@ pub fn minify_element(
     closing_tag: ElementClosingTag,
     children: Vec<NodeData>,
 ) {
+    // Output quoted attributes, followed by unquoted, to optimise space omission between attributes.
+    let mut quoted = Vec::new();
+    let mut unquoted = Vec::new();
+
+    for (name, value) in attributes {
+        match minify_attr(cfg, ns, tag_name, &name, value) {
+            AttrMinified::Redundant => {}
+            a @ AttrMinified::NoValue => unquoted.push((name, a)),
+            AttrMinified::Value(v) => {
+                debug_assert!(v.len() > 0);
+                if v.quoted() {
+                    quoted.push((name, v));
+                } else {
+                    unquoted.push((name, AttrMinified::Value(v)));
+                }
+            }
+        };
+    }
+
+    // Attributes list could become empty after minification, so check opening tag omission eligibility after attributes minification.
     let can_omit_opening_tag = (tag_name == b"html" || tag_name == b"head")
-        && attributes.is_empty()
+        && quoted.len() + unquoted.len() == 0
         && !cfg.keep_html_and_head_opening_tags;
     let can_omit_closing_tag = !cfg.keep_closing_tags
         && (can_omit_as_before(tag_name, next_sibling_as_element_tag_name)
             || (is_last_child_text_or_element_node && can_omit_as_last_node(parent, tag_name)));
 
-    // TODO Attributes list could become empty after minification, making opening tag eligible for omission again.
     if !can_omit_opening_tag {
         out.push(b'<');
         out.extend_from_slice(tag_name);
-        let mut last_attr = LastAttr::NoValue;
-        // TODO Further optimisation: order attrs based on optimal spacing strategy, given that spaces can be omitted after quoted attrs, and maybe after the tag name?
-        let mut attrs_sorted = attributes.into_iter().collect::<Vec<_>>();
-        attrs_sorted.sort_unstable_by(|a, b| a.0.cmp(&b.0));
-        for (name, value) in attrs_sorted {
-            let min = minify_attr(cfg, ns, tag_name, &name, value);
-            if let AttrMinified::Redundant = min {
-                continue;
-            };
-            if cfg.keep_spaces_between_attributes || last_attr != LastAttr::Quoted {
+
+        for (i, (name, value)) in quoted.iter().enumerate() {
+            if i == 0 || cfg.keep_spaces_between_attributes {
                 out.push(b' ');
             };
             out.extend_from_slice(&name);
-            match min {
-                AttrMinified::NoValue => {
-                    last_attr = LastAttr::NoValue;
-                }
-                AttrMinified::Value(v) => {
-                    debug_assert!(v.len() > 0);
-                    out.push(b'=');
-                    v.out(out);
-                    last_attr = if v.quoted() {
-                        LastAttr::Quoted
-                    } else {
-                        LastAttr::Unquoted
-                    };
-                }
-                _ => unreachable!(),
+            out.push(b'=');
+            debug_assert!(value.quoted());
+            value.out(out);
+        }
+        for (i, (name, value)) in unquoted.iter().enumerate() {
+            // Write a space between unquoted attributes,
+            // and after the tag name if it wasn't written already during `quoted` processing.
+            if i > 0 || (i == 0 && quoted.len() == 0) {
+                out.push(b' ');
+            };
+            out.extend_from_slice(&name);
+            if let AttrMinified::Value(v) = value {
+                out.push(b'=');
+                v.out(out);
             };
         }
+
         if closing_tag == ElementClosingTag::SelfClosing {
-            if last_attr == LastAttr::Unquoted {
+            // Write a space after the tag name if there are no attributes,
+            // or the last attribute is unquoted.
+            if unquoted.len() > 0 || unquoted.len() + quoted.len() == 0 {
                 out.push(b' ');
             };
             out.push(b'/');

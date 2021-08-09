@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "html-minifier": "4.0.0"
+    "esbuild": "0.12.19"
   }
 }

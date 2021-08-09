@@ -22,6 +22,6 @@ js-esbuild = ["crossbeam", "esbuild-rs"]
 [dependencies]
 aho-corasick = "0.7"
 crossbeam = { version = "0.7", optional = true }
-esbuild-rs = { version = "0.12.18", optional = true }
+esbuild-rs = { version = "0.12.19", optional = true }
 lazy_static = "1.4"
 memchr = "2"

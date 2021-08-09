@@ -1,24 +1,5 @@
-const esbuild = require("esbuild");
-const fs = require("fs");
 const htmlMinifier = require("html-minifier");
-const path = require("path");
-
-const iterations = parseInt(process.env.MHB_ITERATIONS, 10);
-const inputDir = process.env.MHB_INPUT_DIR;
-const htmlOnly = process.env.MHB_HTML_ONLY === "1";
-const outputDir = process.env.MHB_OUTPUT_DIR;
-
-const esbuildCss = (code) =>
-  esbuild.transformSync(code, {
-    loader: "css",
-    minify: true,
-  }).code;
-
-const esbuildJs = (code) =>
-  esbuild.transformSync(code, {
-    loader: "js",
-    minify: true,
-  }).code;
+const { htmlOnly, esbuildCss, esbuildJs, run } = require("../common");
 
 const htmlMinifierCfg = {
   collapseBooleanAttributes: true,
@@ -46,21 +27,4 @@ const htmlMinifierCfg = {
   useShortDoctype: true,
 };
 
-const results = fs.readdirSync(inputDir).map((name) => {
-  const src = fs.readFileSync(path.join(inputDir, name), "utf8");
-
-  const out = htmlMinifier.minify(src, htmlMinifierCfg);
-  const len = Buffer.from(out, "utf8").length;
-  if (outputDir) {
-    fs.writeFileSync(path.join(outputDir, name), out);
-  }
-
-  const start = process.hrtime.bigint();
-  for (let i = 0; i < iterations; i++) {
-    htmlMinifier.minify(src, htmlMinifierCfg);
-  }
-  const elapsed = process.hrtime.bigint() - start;
-
-  return [name, len, iterations, Number(elapsed) / 1_000_000_000];
-});
-console.log(JSON.stringify(results));
+run((src) => htmlMinifier.minify(src, htmlMinifierCfg));

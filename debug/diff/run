@@ -14,7 +14,7 @@ mkdir -p "$output_dir"
 
 pushd "../../bench/runners" >/dev/null
 for r in *; do
-  if [ ! -d "$r" ]; then
+  if [[ ! -d "$r" ]] || [[ "$r" == "node_modules" ]]; then
     continue
   fi
   mkdir -p "$output_dir/$r"
