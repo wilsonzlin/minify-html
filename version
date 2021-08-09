@@ -83,7 +83,7 @@ for (const f of ['README.md']) {
   replaceInFile(f, /(wilsonl\.in\/minify-html\/bin\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
 }
 
-for (const f of ['README.md', 'bench/README.md']) {
+for (const f of ['README.md', 'bench/README.md', 'rust/onepass/README.md']) {
   replaceInFile(f, /(wilsonl\.in\/minify-html\/bench\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
 }
 
