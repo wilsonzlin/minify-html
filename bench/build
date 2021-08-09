@@ -10,7 +10,7 @@ pushd runners >/dev/null
 npm i
 
 for r in *; do
-  if [ ! -d "$r" ]; then
+  if [[ ! -d "$r" ]] || [[ "$r" == "node_modules" ]]; then
     continue
   fi
   echo "Building $r..."

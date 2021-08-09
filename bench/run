@@ -18,7 +18,7 @@ mkdir -p "$results_dir"
 
 pushd runners >/dev/null
 for r in *; do
-  if [ ! -d "$r" ]; then
+  if [[ ! -d "$r" ]] || [[ "$r" == "node_modules" ]]; then
     continue
   fi
   echo "Running $r..."
