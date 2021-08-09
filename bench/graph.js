@@ -214,8 +214,8 @@ const renderChart = (cfg, width, height) =>
         },
         ...breakdownChartOptions("Operations per second, relative to minify-html"),
       },
-      800,
-      1280
+      900,
+      1600
     )
   );
 
@@ -233,8 +233,8 @@ const renderChart = (cfg, width, height) =>
         },
         ...breakdownChartOptions("Size reduction, relative to minify-html"),
       },
-      800,
-      1280
+      900,
+      1600
     )
   );
 })();
