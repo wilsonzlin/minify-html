@@ -2,30 +2,39 @@
 
 "use strict";
 
-const {readFileSync, writeFileSync} = require('fs');
-const {spawnSync} = require('child_process');
+const { readFileSync, writeFileSync } = require("fs");
+const { spawnSync } = require("child_process");
 
 const RUST_MAIN_DIR = `${__dirname}/rust/main`;
+const RUST_ONEPASS_DIR = `${__dirname}/rust/onepass`;
 
-const currentVersion = /^version = "(\d+)\.(\d+)\.(\d+)"\s*$/m.exec(readFileSync(`${RUST_MAIN_DIR}/Cargo.toml`, 'utf8')).slice(1).map(n => Number.parseInt(n, 10));
+// Use minify-html as source of truth for current version value.
+const currentVersion = /^version = "(\d+)\.(\d+)\.(\d+)"\s*$/m
+  .exec(readFileSync(`${RUST_MAIN_DIR}/Cargo.toml`, "utf8"))
+  .slice(1)
+  .map((n) => Number.parseInt(n, 10));
 
 const assertBetween = (n, min, max) => {
   if (n < min || n > max) {
-    throw new Error('Invalid argument');
+    throw new Error("Invalid argument");
   }
   return n;
 };
 
 const newVersion = currentVersion.slice();
-let versionPart = assertBetween(['major', 'minor', 'patch'].indexOf(process.argv[2].toLowerCase()), 0, 2);
+let versionPart = assertBetween(
+  ["major", "minor", "patch"].indexOf(process.argv[2].toLowerCase()),
+  0,
+  2
+);
 newVersion[versionPart++]++;
 while (versionPart < 3) {
   newVersion[versionPart++] = 0;
 }
 
-console.log(`${currentVersion.join('.')} => ${newVersion.join('.')}`);
+console.log(`${currentVersion.join(".")} => ${newVersion.join(".")}`);
 
-const NEW_VERSION = newVersion.join('.');
+const NEW_VERSION = newVersion.join(".");
 
 const cmd = (...cfg) => {
   const command = cfg[0];
@@ -36,17 +45,25 @@ const cmd = (...cfg) => {
     throwOnSignal = true,
     captureStdio = false,
     throwOnStdErr = false,
-  } = typeof args[args.length - 1] == 'object' ? args.pop() : {};
+  } = typeof args[args.length - 1] == "object" ? args.pop() : {};
 
-  const throwErr = msg => {
-    throw new Error(`${msg}\n  ${command} ${args.join(' ')}`);
+  const throwErr = (msg) => {
+    throw new Error(`${msg}\n  ${command} ${args.join(" ")}`);
   };
 
-  const {status, signal, error, stdout, stderr} = spawnSync(command, args.map(String), {
-    cwd: workingDir,
-    stdio: ['ignore', captureStdio ? 'pipe' : 'inherit', captureStdio || throwOnStdErr ? 'pipe' : 'inherit'],
-    encoding: 'utf8',
-  });
+  const { status, signal, error, stdout, stderr } = spawnSync(
+    command,
+    args.map(String),
+    {
+      cwd: workingDir,
+      stdio: [
+        "ignore",
+        captureStdio ? "pipe" : "inherit",
+        captureStdio || throwOnStdErr ? "pipe" : "inherit",
+      ],
+      encoding: "utf8",
+    }
+  );
   if (error) {
     throwErr(error.message);
   }
@@ -59,50 +76,95 @@ const cmd = (...cfg) => {
   if (throwOnStdErr && stderr) {
     throwErr(`stderr: ${stderr}`);
   }
-  return {status, signal, stdout, stderr};
+  return { status, signal, stdout, stderr };
 };
 
-const replaceInFile = (path, pattern, replacement) => writeFileSync(path, readFileSync(path, 'utf8').replace(pattern, replacement));
+const replaceInFile = (path, pattern, replacement) =>
+  writeFileSync(path, readFileSync(path, "utf8").replace(pattern, replacement));
 
-if (cmd('git', 'status', '--porcelain', {throwOnStderr: true, captureStdio: true}).stdout) {
-  throw new Error('Working directory not clean');
+if (
+  cmd("git", "status", "--porcelain", {
+    throwOnStderr: true,
+    captureStdio: true,
+  }).stdout
+) {
+  throw new Error("Working directory not clean");
 }
-cmd('git', 'pull');
-cmd('bash', './prebuild.sh');
-cmd('cargo', 'test', '--features', 'js-esbuild', {workingDir: RUST_MAIN_DIR});
+cmd("git", "pull");
+cmd("bash", "./prebuild.sh");
+cmd("cargo", "test", "--features", "js-esbuild", { workingDir: RUST_MAIN_DIR });
 
-for (const f of [`${RUST_MAIN_DIR}/Cargo.toml`, 'cli/Cargo.toml', 'nodejs/native/Cargo.toml', 'java/Cargo.toml', 'python/Cargo.core.toml', 'python/Cargo.js.toml', 'ruby/Cargo.toml']) {
-  replaceInFile(f, /^version = "\d+\.\d+\.\d+"\s*$/m, `version = "${NEW_VERSION}"`);
-}
-
-for (const f of ['README.md']) {
-  replaceInFile(f, /^(minify-html = \{ version = )"\d+\.\d+\.\d+"/m, `$1"${NEW_VERSION}"`);
-}
-
-for (const f of ['README.md']) {
-  replaceInFile(f, /(wilsonl\.in\/minify-html\/bin\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
-}
-
-for (const f of ['README.md', 'bench/README.md', 'rust/onepass/README.md']) {
-  replaceInFile(f, /(wilsonl\.in\/minify-html\/bench\/)\d+\.\d+\.\d+/g, `$1${NEW_VERSION}`);
-}
-
-for (const f of ['java/pom.xml', 'README.md']) {
-  replaceInFile(f, /(<artifactId>minify-html<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/, `$1${NEW_VERSION}$2`);
-}
-
-for (const f of ['nodejs/package.json.gen.js']) {
-  replaceInFile(f, /^(\s*version: )"\d+\.\d+\.\d+",\s*$/m, `$1"${NEW_VERSION}",`);
-}
-
-for (const f of ['ruby/minify_html.gemspec']) {
-  replaceInFile(f, /^(\s*spec\.version\s*=\s*)"\d+\.\d+\.\d+"\s*$/m, `$1"${NEW_VERSION}"`);
+for (const f of [
+  `${RUST_MAIN_DIR}/Cargo.toml`,
+  `${RUST_ONEPASS_DIR}/Cargo.toml`,
+  "cli/Cargo.toml",
+  "nodejs/native/Cargo.toml",
+  "java/Cargo.toml",
+  "python/Cargo.core.toml",
+  "python/Cargo.js.toml",
+  "ruby/Cargo.toml",
+]) {
+  replaceInFile(
+    f,
+    /^version = "\d+\.\d+\.\d+"\s*$/m,
+    `version = "${NEW_VERSION}"`
+  );
 }
 
-cmd('cargo', 'generate-lockfile', {workingDir: RUST_MAIN_DIR});
-cmd('git', 'add', '-A');
-cmd('git', 'commit', '-m', NEW_VERSION);
-cmd('git', 'tag', '-a', `v${NEW_VERSION}`, '-m', '');
+for (const f of ["README.md"]) {
+  replaceInFile(
+    f,
+    /^(minify-html = \{ version = )"\d+\.\d+\.\d+"/m,
+    `$1"${NEW_VERSION}"`
+  );
+}
+
+for (const f of ["README.md"]) {
+  replaceInFile(
+    f,
+    /(wilsonl\.in\/minify-html\/bin\/)\d+\.\d+\.\d+/g,
+    `$1${NEW_VERSION}`
+  );
+}
+
+for (const f of ["README.md", "bench/README.md", "rust/onepass/README.md"]) {
+  replaceInFile(
+    f,
+    /(wilsonl\.in\/minify-html\/bench\/)\d+\.\d+\.\d+/g,
+    `$1${NEW_VERSION}`
+  );
+}
+
+for (const f of ["java/pom.xml", "README.md"]) {
+  replaceInFile(
+    f,
+    /(<artifactId>minify-html<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/,
+    `$1${NEW_VERSION}$2`
+  );
+}
+
+for (const f of ["nodejs/package.json.gen.js"]) {
+  replaceInFile(
+    f,
+    /^(\s*version: )"\d+\.\d+\.\d+",\s*$/m,
+    `$1"${NEW_VERSION}",`
+  );
+}
+
+for (const f of ["ruby/minify_html.gemspec"]) {
+  replaceInFile(
+    f,
+    /^(\s*spec\.version\s*=\s*)"\d+\.\d+\.\d+"\s*$/m,
+    `$1"${NEW_VERSION}"`
+  );
+}
+
+cmd("cargo", "generate-lockfile", { workingDir: RUST_MAIN_DIR });
+cmd("cargo", "generate-lockfile", { workingDir: RUST_ONEPASS_DIR });
+cmd("git", "add", "-A");
+cmd("git", "commit", "-m", NEW_VERSION);
+cmd("git", "tag", "-a", `v${NEW_VERSION}`, "-m", "");
 // We have generated but ignored in `rust/common/gen`.
-cmd('cargo', 'publish', '--allow-dirty', {workingDir: RUST_MAIN_DIR});
-cmd('git', 'push', '--follow-tags');
+cmd("cargo", "publish", "--allow-dirty", { workingDir: RUST_MAIN_DIR });
+cmd("cargo", "publish", "--allow-dirty", { workingDir: RUST_ONEPASS_DIR });
+cmd("git", "push", "--follow-tags");

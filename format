@@ -4,7 +4,7 @@ set -Eeuxo pipefail
 
 pushd "$(dirname "$0")" >/dev/null
 
-npx prettier@2.3.2 -w 'bench/*.{js,json}' 'bench/*/*.{js,json}' 'gen/*.{ts,json}'
+npx prettier@2.3.2 -w 'version' 'bench/*.{js,json}' 'bench/*/*.{js,json}' 'gen/*.{ts,json}'
 
 for dir in \
   bench/runners/minify-html \
