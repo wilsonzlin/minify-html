@@ -19,8 +19,7 @@ A Rust HTML minifier meticulously optimised for speed and effectiveness, with bi
 
 Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
 
-<img width="415" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.1/core/average-speeds.png">
-<img width="415" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.1/core/average-sizes.png">
+<img width="415" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.1/core/average-speeds.png"><img width="415" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.6.1/core/average-sizes.png">
 
 The [onepass](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) variant is even more optimised for speed. See its [README](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) for more details.
 

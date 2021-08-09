@@ -1,0 +1,1 @@
+[compare.sh](./compare.sh) is a useful script for viewing a character-by-character diff between the minified outputs of minify-html and html-minifier for a specific test. Pass the test's file name as the first argument.
