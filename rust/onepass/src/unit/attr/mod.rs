@@ -41,8 +41,9 @@ pub fn process_attr(
     let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
     let after_name = WriteCheckpoint::new(proc);
 
+    // TODO Use attr cfg: collapse, trim, case_sensitive.
     let should_collapse_and_trim_value_ws =
-        attr_cfg.filter(|attr| attr.collapse_and_trim).is_some();
+        attr_cfg.filter(|attr| attr.collapse && attr.trim).is_some();
     proc.m(WhileInLookup(WHITESPACE), Discard);
     let has_value = proc.m(IsChar(b'='), Keep).nonempty();
 
