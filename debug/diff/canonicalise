@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 
-set -Eeuo pipefail
+set -Eeo pipefail
 
 pushd "$(dirname "$0")" >/dev/null
 
 cargo build --manifest-path c14n/Cargo.toml --release
+cargo build --manifest-path charlines/Cargo.toml --release
 
 for f in outputs/*/*; do
-  src=$(cat "$f")
-  c14n/target/release/c14n <<< "$src" > "$f"
+  out=$(c14n/target/release/c14n < "$f")
+  if [[ "$CHARLINES" == "1" ]]; then
+    out=$(charlines/target/release/charlines <<< "$out")
+  fi
+  cat <<< "$out" > "$f"
 done
 
 popd >/dev/null

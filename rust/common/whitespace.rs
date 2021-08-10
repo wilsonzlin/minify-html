@@ -1,5 +1,19 @@
 use crate::common::gen::codepoints::WHITESPACE;
 
+pub fn trimmed(val: &[u8]) -> &[u8] {
+    let mut start = 0;
+    while val.get(start).filter(|&&c| WHITESPACE[c]).is_some() {
+        start += 1;
+    }
+
+    let mut end = val.len();
+    while end > start && val.get(end - 1).filter(|&&c| WHITESPACE[c]).is_some() {
+        end -= 1;
+    }
+
+    &val[start..end]
+}
+
 pub fn left_trim(val: &mut Vec<u8>) {
     let mut len = 0;
     while val.get(len).filter(|&&c| WHITESPACE[c]).is_some() {

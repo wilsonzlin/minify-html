@@ -11,6 +11,7 @@ for dir in \
   bench/runners/minify-html-onepass \
   cli \
   debug/diff/c14n \
+  debug/diff/charlines \
   fuzz \
   fuzz/process \
   java \

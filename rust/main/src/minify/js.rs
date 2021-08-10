@@ -6,7 +6,8 @@ use {
     std::sync::Arc,
 };
 
-use crate::Cfg;
+use crate::cfg::Cfg;
+use crate::common::whitespace::trimmed;
 
 #[cfg(feature = "js-esbuild")]
 lazy_static! {
@@ -24,13 +25,13 @@ lazy_static! {
 
 #[cfg(not(feature = "js-esbuild"))]
 pub fn minify_js(_cfg: &Cfg, out: &mut Vec<u8>, code: &[u8]) {
-    out.extend_from_slice(&code);
+    out.extend_from_slice(trimmed(code));
 }
 
 #[cfg(feature = "js-esbuild")]
 pub fn minify_js(cfg: &Cfg, out: &mut Vec<u8>, code: &[u8]) {
     if !cfg.minify_js {
-        out.extend_from_slice(&code);
+        out.extend_from_slice(trimmed(code));
     } else {
         minify_using_esbuild(out, code, &TRANSFORM_OPTIONS.clone());
     }
