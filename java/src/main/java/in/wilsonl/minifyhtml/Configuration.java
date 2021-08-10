@@ -4,6 +4,7 @@ package in.wilsonl.minifyhtml;
  * Class representing minification configuration.
  */
 public class Configuration {
+  public final boolean do_not_minify_doctype;
   public final boolean ensure_spec_compliant_unquoted_attribute_values;
   public final boolean keep_closing_tags;
   public final boolean keep_comments;
@@ -15,6 +16,7 @@ public class Configuration {
   public final boolean remove_processing_instructions;
 
   public Configuration(
+    boolean do_not_minify_doctype,
     boolean ensure_spec_compliant_unquoted_attribute_values,
     boolean keep_closing_tags,
     boolean keep_comments,
@@ -25,6 +27,7 @@ public class Configuration {
     boolean remove_bangs,
     boolean remove_processing_instructions
   ) {
+    this.do_not_minify_doctype = do_not_minify_doctype;
     this.ensure_spec_compliant_unquoted_attribute_values = ensure_spec_compliant_unquoted_attribute_values;
     this.keep_closing_tags = keep_closing_tags;
     this.keep_comments = keep_comments;
@@ -40,6 +43,7 @@ public class Configuration {
    * Builder to help create configuration.
    */
   public static class Builder {
+    private boolean do_not_minify_doctype = false;
     private boolean ensure_spec_compliant_unquoted_attribute_values = false;
     private boolean keep_closing_tags = false;
     private boolean keep_comments = false;
@@ -49,6 +53,11 @@ public class Configuration {
     private boolean minify_js = false;
     private boolean remove_bangs = false;
     private boolean remove_processing_instructions = false;
+
+    public Builder setDoNotMinifyDoctype(boolean val) {
+      this.do_not_minify_doctype = val;
+      return this;
+    }
 
     public Builder setEnsureSpecCompliantUnquotedAttributeValues(boolean val) {
       this.ensure_spec_compliant_unquoted_attribute_values = val;
@@ -98,6 +107,7 @@ public class Configuration {
 
     public Configuration build() {
       return new Configuration(
+        this.do_not_minify_doctype,
         this.ensure_spec_compliant_unquoted_attribute_values,
         this.keep_closing_tags,
         this.keep_comments,

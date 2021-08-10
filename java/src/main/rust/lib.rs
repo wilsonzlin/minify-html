@@ -6,6 +6,11 @@ use std::str::from_utf8;
 
 fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
     Cfg {
+        do_not_minify_doctype: env
+            .get_field(*obj, "do_not_minify_doctype", "Z")
+            .unwrap()
+            .z()
+            .unwrap(),
         ensure_spec_compliant_unquoted_attribute_values: env
             .get_field(*obj, "ensure_spec_compliant_unquoted_attribute_values", "Z")
             .unwrap()

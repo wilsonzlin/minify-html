@@ -15,33 +15,47 @@ struct Cli {
     /// File to minify; omit for stdin.
     #[structopt(parse(from_os_str))]
     input: Option<std::path::PathBuf>,
+
     /// Output destination; omit for stdout.
     #[structopt(short, long, parse(from_os_str))]
     output: Option<std::path::PathBuf>,
+
     /// Minify JS in `<script>` tags that have a valid or no `type` attribute value.
     #[structopt(long)]
     minify_js: bool,
+
     /// Minify CSS in `<style>` tags and `style` attributes.
     #[structopt(long)]
     minify_css: bool,
+
+    #[structopt(long)]
+    /// Do not minify DOCTYPEs. Minified DOCTYPEs may not be spec compliant.
+    do_not_minify_doctype: bool,
+
     /// Ensure all unquoted attribute values in the output do not contain any characters prohibited by the WHATWG specification.
     #[structopt(long)]
     ensure_spec_compliant_unquoted_attribute_values: bool,
+
     /// Do not omit closing tags when possible.
     #[structopt(long)]
     keep_closing_tags: bool,
+
     /// Do not omit `<html>` and `<head>` opening tags when they don't have attributes.
     #[structopt(long)]
     keep_html_and_head_opening_tags: bool,
+
     /// Keep spaces between attributes when possible to conform to HTML standards.
     #[structopt(long)]
     keep_spaces_between_attributes: bool,
+
     /// Keep all comments.
     #[structopt(long)]
     keep_comments: bool,
+
     /// Remove all bangs.
     #[structopt(long)]
     remove_bangs: bool,
+
     /// Remove all processing_instructions.
     #[structopt(long)]
     remove_processing_instructions: bool,
@@ -74,6 +88,7 @@ fn main() {
     let out_code = minify(
         &src_code,
         &Cfg {
+            do_not_minify_doctype: args.do_not_minify_doctype,
             ensure_spec_compliant_unquoted_attribute_values: args
                 .ensure_spec_compliant_unquoted_attribute_values,
             keep_closing_tags: args.keep_closing_tags,

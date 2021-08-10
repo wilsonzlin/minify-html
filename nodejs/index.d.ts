@@ -8,6 +8,8 @@ export type Cfg = { __doNotUseCfgDirectly: string & { __itIsANapiExternalValue: 
  * @returns An opaque value that can be passed to minify functions
  */
 export function createConfiguration (options: {
+  /** Do not minify DOCTYPEs. Minified DOCTYPEs may not be spec compliant. */
+  do_not_minify_doctype?: boolean,
   /** Ensure all unquoted attribute values in the output do not contain any characters prohibited by the WHATWG specification. */
   ensure_spec_compliant_unquoted_attribute_values?: boolean;
   /** Do not omit closing tags when possible. */

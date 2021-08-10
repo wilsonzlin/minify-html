@@ -2,6 +2,8 @@
 /// minification approach.
 #[derive(Default)]
 pub struct Cfg {
+    /// Do not minify DOCTYPEs. Minified DOCTYPEs may not be spec compliant.
+    pub do_not_minify_doctype: bool,
     /// Ensure all unquoted attribute values in the output do not contain any characters prohibited by the [WHATWG specification](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2).
     pub ensure_spec_compliant_unquoted_attribute_values: bool,
     /// Do not omit closing tags when possible.
@@ -37,6 +39,7 @@ impl Cfg {
 
     pub fn spec_compliant() -> Cfg {
         Cfg {
+            do_not_minify_doctype: true,
             ensure_spec_compliant_unquoted_attribute_values: true,
             keep_spaces_between_attributes: true,
             ..Cfg::default()

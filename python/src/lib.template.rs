@@ -4,19 +4,21 @@ use pyo3::wrap_pyfunction;
 use std::string::String;
 
 #[pyfunction(
-    py_args="*",
-    ensure_spec_compliant_unquoted_attribute_values="false",
-    keep_closing_tags="false",
-    keep_comments="false",
-    keep_html_and_head_opening_tags="false",
-    keep_spaces_between_attributes="false",
-    minify_css="false",
-    minify_js="false",
-    remove_bangs="false",
-    remove_processing_instructions="false",
+    py_args = "*",
+    do_not_minify_doctype = "false",
+    ensure_spec_compliant_unquoted_attribute_values = "false",
+    keep_closing_tags = "false",
+    keep_comments = "false",
+    keep_html_and_head_opening_tags = "false",
+    keep_spaces_between_attributes = "false",
+    minify_css = "false",
+    minify_js = "false",
+    remove_bangs = "false",
+    remove_processing_instructions = "false",
 )]
 fn minify(
     code: String,
+    do_not_minify_doctype: bool,
     ensure_spec_compliant_unquoted_attribute_values: bool,
     keep_closing_tags: bool,
     keep_comments: bool,
@@ -29,6 +31,7 @@ fn minify(
 ) -> PyResult<String> {
     let code = code.into_bytes();
     let out_code = minify_html_native(&code, &Cfg {
+        do_not_minify_doctype,
         ensure_spec_compliant_unquoted_attribute_values,
         keep_closing_tags,
         keep_comments,
