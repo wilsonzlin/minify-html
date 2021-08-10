@@ -23,7 +23,9 @@ AttributeMinification {
     boolean: ${boolean},
     case_insensitive: ${caseInsensitive}, 
     collapse: ${collapse}, 
-    default_value: ${defaultValue == undefined ? "None" : `Some(b"${defaultValue}")`},
+    default_value: ${
+      defaultValue == undefined ? "None" : `Some(b"${defaultValue}")`
+    },
     redundant_if_empty: ${redundantIfEmpty}, 
     trim: ${trim}, 
 }

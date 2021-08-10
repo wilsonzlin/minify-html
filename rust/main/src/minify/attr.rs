@@ -342,7 +342,9 @@ pub fn minify_attr(
 
     if (value_raw.is_empty() && redundant_if_empty)
         || default_value.filter(|dv| dv == &value_raw).is_some()
-        || (tag == b"script" && name == b"type" && JAVASCRIPT_MIME_TYPES.contains(value_raw.as_slice()))
+        || (tag == b"script"
+            && name == b"type"
+            && JAVASCRIPT_MIME_TYPES.contains(value_raw.as_slice()))
     {
         return AttrMinified::Redundant;
     };
