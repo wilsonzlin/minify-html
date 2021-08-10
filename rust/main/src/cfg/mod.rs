@@ -43,4 +43,18 @@ impl Cfg {
             remove_processing_instructions: false,
         }
     }
+
+    pub fn spec_compliant() -> Cfg {
+        Cfg {
+            ensure_spec_compliant_unquoted_attribute_values: true,
+            keep_spaces_between_attributes: true,
+            ..Cfg::new()
+        }
+    }
+}
+
+impl Default for Cfg {
+    fn default() -> Self {
+        Self::new()
+    }
 }
