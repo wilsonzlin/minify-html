@@ -1,5 +1,6 @@
 /// Configuration settings that can be adjusted and passed to a minification function to change the
 /// minification approach.
+#[derive(Default)]
 pub struct Cfg {
     /// Ensure all unquoted attribute values in the output do not contain any characters prohibited by the [WHATWG specification](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2).
     pub ensure_spec_compliant_unquoted_attribute_values: bool,
@@ -31,30 +32,14 @@ pub struct Cfg {
 
 impl Cfg {
     pub fn new() -> Cfg {
-        Cfg {
-            ensure_spec_compliant_unquoted_attribute_values: false,
-            keep_closing_tags: false,
-            keep_comments: false,
-            keep_html_and_head_opening_tags: false,
-            keep_spaces_between_attributes: false,
-            minify_css: false,
-            minify_js: false,
-            remove_bangs: false,
-            remove_processing_instructions: false,
-        }
+        Cfg::default()
     }
 
     pub fn spec_compliant() -> Cfg {
         Cfg {
             ensure_spec_compliant_unquoted_attribute_values: true,
             keep_spaces_between_attributes: true,
-            ..Cfg::new()
+            ..Cfg::default()
         }
-    }
-}
-
-impl Default for Cfg {
-    fn default() -> Self {
-        Self::new()
     }
 }
