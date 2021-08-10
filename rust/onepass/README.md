@@ -26,3 +26,4 @@ In addition to the [minify-html rules](https://github.com/wilsonzlin/minify-html
 
 - Opening tags must not be omitted.
 - Invalid closing tags are not allowed.
+- The document cannot end unexpectedly.
