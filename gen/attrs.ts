@@ -4,19 +4,30 @@ import { join } from "path";
 import { RUST_OUT_DIR } from "./_common";
 
 const rsTagAttr = ({
-  redundantIfEmpty,
+  boolean = false,
+  caseInsensitive = false,
+  collapse = false,
   defaultValue,
-  collapseAndTrim,
-  boolean,
+  redundantIfEmpty = false,
+  trim = false,
 }: {
-  boolean: boolean;
-  redundantIfEmpty: boolean;
-  collapseAndTrim: boolean;
+  boolean?: boolean;
+  caseInsensitive?: boolean;
+  collapse?: boolean;
   defaultValue?: string;
+  redundantIfEmpty?: boolean;
+  trim?: boolean;
 }) =>
-  `AttributeMinification { boolean: ${boolean}, redundant_if_empty: ${redundantIfEmpty}, collapse_and_trim: ${collapseAndTrim}, default_value: ${
-    defaultValue == undefined ? "None" : `Some(b"${defaultValue}")`
-  } }`;
+  `
+AttributeMinification {
+    boolean: ${boolean},
+    case_insensitive: ${caseInsensitive}, 
+    collapse: ${collapse}, 
+    default_value: ${defaultValue == undefined ? "None" : `Some(b"${defaultValue}")`},
+    redundant_if_empty: ${redundantIfEmpty}, 
+    trim: ${trim}, 
+}
+`;
 
 let code = `
 use lazy_static::lazy_static;
@@ -25,9 +36,11 @@ use crate::common::spec::tag::ns::Namespace;
 
 pub struct AttributeMinification {
     pub boolean: bool,
-    pub redundant_if_empty: bool,
-    pub collapse_and_trim: bool,
+    pub case_insensitive: bool,
+    pub collapse: bool,
     pub default_value: Option<&'static [u8]>,
+    pub redundant_if_empty: bool,
+    pub trim: bool,
 }
 
 pub enum AttrMapEntry {

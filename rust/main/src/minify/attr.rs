@@ -291,7 +291,9 @@ pub fn minify_attr(
 ) -> AttrMinified {
     let attr_cfg = ATTRS.get(ns, tag, name);
 
-    let should_collapse_and_trim = attr_cfg.filter(|attr| attr.collapse_and_trim).is_some();
+    let should_collapse = attr_cfg.filter(|attr| attr.collapse).is_some();
+    let should_trim = attr_cfg.filter(|attr| attr.trim).is_some();
+    let should_lowercase = attr_cfg.filter(|attr| attr.case_insensitive).is_some();
     let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
     // An attribute can have both redundant_if_empty and default_value, which means it has two default values: "" and default_value.
     let redundant_if_empty = attr_cfg.filter(|attr| attr.redundant_if_empty).is_some();
@@ -299,13 +301,15 @@ pub fn minify_attr(
 
     if is_meta_viewport {
         remove_all_whitespace(&mut value_raw);
-    };
-
-    // Trim before checking is_boolean as the entire attribute could be redundant post-minification.
-    if should_collapse_and_trim {
-        right_trim(&mut value_raw);
-        left_trim(&mut value_raw);
-        collapse_whitespace(&mut value_raw);
+    } else {
+        // Trim before checking is_boolean as the entire attribute could be redundant post-minification.
+        if should_trim {
+            right_trim(&mut value_raw);
+            left_trim(&mut value_raw);
+        }
+        if should_collapse {
+            collapse_whitespace(&mut value_raw);
+        };
     };
 
     #[cfg(feature = "js-esbuild")]
@@ -331,9 +335,13 @@ pub fn minify_attr(
         value_raw = value_raw_wrapped_min;
     }
 
+    // Make lowercase before checking against default value or JAVASCRIPT_MIME_TYPES.
+    if should_lowercase {
+        value_raw.make_ascii_lowercase();
+    };
+
     if (value_raw.is_empty() && redundant_if_empty)
         || default_value.filter(|dv| dv == &value_raw).is_some()
-        // TODO Cfg.
         || (tag == b"script" && name == b"type" && JAVASCRIPT_MIME_TYPES.contains(value_raw.as_slice()))
     {
         return AttrMinified::Redundant;
