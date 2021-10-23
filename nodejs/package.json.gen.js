@@ -4,7 +4,7 @@ const common = {
   version: "0.6.10",
   main: "index.node",
   types: "index.d.ts",
-  files: ["postinstall.js", "index.d.ts"],
+  files: ["cli.js", "postinstall.js", "index.d.ts"],
   scripts: {
     build: "node-gyp build && shx mv build/Release/index.node index.node",
     clean:
