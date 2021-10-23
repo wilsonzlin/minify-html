@@ -461,7 +461,8 @@ fn test_processing_instructions() {
 fn test_js_minification() {
     eval_with_js_min(b"<script>let a = 1;</script>", b"<script>let a=1;</script>");
     eval_with_js_min(b"<script type=text/javascript>let a = 1;</script>", b"<script>let a=1;</script>");
-    eval_with_js_min(b"<script type=module>let a = 1;</script>", b"<script type=module>let a=1;</script>");
+    // `export` statements are not allowed inline.
+    eval_with_js_min(b"<script type=module>let a = 1; export a;</script>", b"<script type=module></script>");
     eval_with_js_min(
         br#"
         <script>let a = 1;</script>
