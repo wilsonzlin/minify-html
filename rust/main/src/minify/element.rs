@@ -75,8 +75,9 @@ pub fn minify_element(
         }
         for (i, (name, value)) in unquoted.iter().enumerate() {
             // Write a space between unquoted attributes,
-            // and after the tag name if it wasn't written already during `quoted` processing.
-            if i > 0 || (i == 0 && quoted.len() == 0) {
+            // or after the tag name if it wasn't written already during `quoted` processing,
+            // or if forced by Cfg.
+            if i > 0 || (i == 0 && quoted.len() == 0) || cfg.keep_spaces_between_attributes {
                 out.push(b' ');
             };
             out.extend_from_slice(&name);

@@ -128,6 +128,12 @@ fn test_viewport_attr_minification() {
         b"<meta name=viewport content='width=device-width, initial-scale=1'>",
         b"<meta content=width=device-width,initial-scale=1 name=viewport>",
     );
+    let spec_compliant_cfg = Cfg::spec_compliant();
+    eval_with_cfg(
+        b"<meta name=viewport content='width=device-width, initial-scale=1'>",
+        br#"<meta content="width=device-width,initial-scale=1" name=viewport>"#,
+        &spec_compliant_cfg
+    );
 }
 
 #[cfg(feature = "js-esbuild")]

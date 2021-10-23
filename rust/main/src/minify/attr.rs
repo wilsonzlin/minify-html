@@ -306,7 +306,7 @@ pub fn minify_attr(
         if should_trim {
             right_trim(&mut value_raw);
             left_trim(&mut value_raw);
-        }
+        };
         if should_collapse {
             collapse_whitespace(&mut value_raw);
         };
@@ -325,7 +325,7 @@ pub fn minify_attr(
             &value_raw_wrapped,
             &MINIFY_CSS_TRANSFORM_OPTIONS.clone(),
         );
-        // If input was invalid, wrapper syntax may not exist anymore.
+        // TODO If input was invalid, wrapper syntax may not exist anymore.
         if value_raw_wrapped_min.starts_with(b"x{") {
             value_raw_wrapped_min.drain(0..2);
         };
