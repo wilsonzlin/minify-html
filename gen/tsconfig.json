@@ -19,6 +19,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "suppressImplicitAnyIndexErrors": true,
-    "target": "es6"
+    "target": "es6",
+    "useUnknownInCatchVariables": false
   }
 }

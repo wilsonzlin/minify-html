@@ -1,6 +1,7 @@
 use crate::cfg::Cfg;
 use crate::common::gen::attrs::{AttributeMinification, ATTRS};
 use crate::common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use crate::common::spec::script::JAVASCRIPT_MIME_TYPES;
 use crate::common::spec::tag::ns::Namespace;
 use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 use crate::common::spec::tag::void::VOID_TAGS;
@@ -14,31 +15,6 @@ use crate::unit::attr::{process_attr, AttrType, ProcessedAttr};
 use crate::unit::content::process_content;
 use crate::unit::script::process_script;
 use crate::unit::style::process_style;
-use lazy_static::lazy_static;
-use std::collections::HashSet;
-
-lazy_static! {
-    pub static ref JAVASCRIPT_MIME_TYPES: HashSet<&'static [u8]> = {
-        let mut s = HashSet::<&'static [u8]>::new();
-        s.insert(b"application/ecmascript");
-        s.insert(b"application/javascript");
-        s.insert(b"application/x-ecmascript");
-        s.insert(b"application/x-javascript");
-        s.insert(b"text/ecmascript");
-        s.insert(b"text/javascript");
-        s.insert(b"text/javascript1.0");
-        s.insert(b"text/javascript1.1");
-        s.insert(b"text/javascript1.2");
-        s.insert(b"text/javascript1.3");
-        s.insert(b"text/javascript1.4");
-        s.insert(b"text/javascript1.5");
-        s.insert(b"text/jscript");
-        s.insert(b"text/livescript");
-        s.insert(b"text/x-ecmascript");
-        s.insert(b"text/x-javascript");
-        s
-    };
-}
 
 #[derive(Copy, Clone)]
 enum TagType {
@@ -167,7 +143,9 @@ pub fn process_tag(
                     .filter(|v| !JAVASCRIPT_MIME_TYPES.contains(&proc[*v]))
                     .is_none();
                 if script_tag_type_is_js {
-                    erase_attr = true;
+                    if &proc[value.unwrap()] != b"module" {
+                      erase_attr = true;
+                    };
                 } else {
                     // Tag does not contain JS, don't minify JS.
                     tag_type = TagType::ScriptData;

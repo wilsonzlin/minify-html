@@ -8,6 +8,7 @@ lazy_static! {
         s.insert(b"application/javascript");
         s.insert(b"application/x-ecmascript");
         s.insert(b"application/x-javascript");
+        s.insert(b"module");
         s.insert(b"text/ecmascript");
         s.insert(b"text/javascript");
         s.insert(b"text/javascript1.0");
