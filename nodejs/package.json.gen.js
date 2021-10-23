@@ -40,10 +40,16 @@ const specifics = {
   core: {
     name: "@minify-html/core",
     description: "Extremely fast and smart HTML minifier",
+    bin: {
+      "minify-html-core": "./cli.js",
+    },
   },
   js: {
     name: "@minify-html/js",
     description: "Extremely fast and smart HTML + JS + CSS minifier",
+    bin: {
+      "minify-html": "./cli.js",
+    },
   },
 }[process.argv[2]];
 
