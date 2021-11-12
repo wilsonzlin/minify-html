@@ -34,8 +34,6 @@ jobs:
       - name: Set up Python (macOS ARM64)
         if: runner.name == 'macos-arm64'
         run: |
-          eval "$(/opt/homebrew/bin/brew shellenv)"
-          export HOMEBREW_NO_INSTALL_CLEANUP=1
           brew unlink python
           brew link python@${{ matrix.python }}
 
@@ -99,9 +97,7 @@ jobs:
             eval "$(pyenv init --path)"
           fi
           if [[ "${{ runner.name }}" == macos-arm64 ]]; then
-            eval "$(/opt/homebrew/bin/brew shellenv)"
-            export HOMEBREW_NO_INSTALL_CLEANUP=1
-            pathToPython="$(which python3)"
+            pathToPython="/opt/homebrew/bin/python3"
           else
             pathToPython="$(which python)"
           fi
