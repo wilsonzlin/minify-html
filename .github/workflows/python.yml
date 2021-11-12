@@ -26,6 +26,9 @@ jobs:
       - name: Set up Python (Linux ARM64)
         if: runner.name == 'linux-arm64'
         run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
           pyenv install -s ${{ matrix.python }}:latest
           pyenv global $(pyenv versions --bare | grep -F '${{ matrix.python }}.')
       - name: Set up Python (macOS ARM64)
@@ -76,6 +79,11 @@ jobs:
           username = __token__
           password = ${{ secrets.PYPI_API_TOKEN }}
           EOF
+          if [[ "${{ runner.name }}" == linux-arm64 ]]; then
+            export PYENV_ROOT="$HOME/.pyenv"
+            export PATH="$PYENV_ROOT/bin:$PATH"
+            eval "$(pyenv init --path)"
+          fi
           maturin build --release --strip -i "$(which python)"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             twine upload target/wheels/*
