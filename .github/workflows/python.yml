@@ -98,6 +98,8 @@ jobs:
           fi
           if [[ "${{ runner.name }}" == macos-arm64 ]]; then
             pathToPython="/opt/homebrew/bin/python3"
+            # Ensure correct maturin and twine are used.
+            export PATH="/opt/homebrew/bin:$PATH"
           else
             pathToPython="$(which python)"
           fi
