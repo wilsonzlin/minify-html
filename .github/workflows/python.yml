@@ -63,12 +63,22 @@ jobs:
           python prepare.py ${{ matrix.feature }}
           cargo build --release
 
-      - name: Install Python build tools (macOS)
-        if: runner.os == 'macOS'
+      - name: Install Python build tools (macOS x64)
+        if: runner.os == 'macOS' && runner.name != 'macos-arm64'
         run: sudo pip install --upgrade maturin setuptools wheel twine
-      - name: Install Python build tools (Linux, Windows)
-        if: runner.os != 'macOS'
+      - name: Install Python build tools (Linux x64, Windows x64)
+        if: runner.os != 'macOS' && runner.name != 'linux-arm64'
         run: pip install --upgrade maturin setuptools wheel twine
+      - name: Install Python build tools (Linux ARM64)
+        if: runner.name == 'linux-arm64'
+        run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
+          pip3 install --upgrade maturin setuptools wheel twine
+      - name: Install Python build tools (macOS ARM64)
+        if: runner.name == 'macos-arm64'
+        run: pip3 install --upgrade maturin setuptools wheel twine
 
       - name: Pack and publish package
         shell: bash
