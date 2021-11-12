@@ -33,7 +33,7 @@ Precompiled binaries are available for Linux, macOS, and Windows.
 ### Get
 
 [Linux x64](https://wilsonl.in/minify-html/bin/0.7.0-linux-x86_64) |
-[Linux ARM](https://wilsonl.in/minify-html/bin/0.7.0-linux-arm64) |
+[Linux ARM64](https://wilsonl.in/minify-html/bin/0.7.0-linux-arm64) |
 [macOS x64](https://wilsonl.in/minify-html/bin/0.7.0-macos-x86_64) |
 [macOS ARM64](https://wilsonl.in/minify-html/bin/0.7.0-macos-arm64) |
 [Windows x64](https://wilsonl.in/minify-html/bin/0.7.0-windows-x86_64.exe)
