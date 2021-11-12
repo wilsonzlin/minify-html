@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted]
+        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64]
         include:
           - os: macos-11.0
             ARCH: macos-x86_64
@@ -25,7 +25,7 @@ jobs:
             ARCH: windows-x86_64
             MIME: application/vnd.microsoft.portable-executable
             EXT: '.exe'
-          - os: self-hosted
+          - os: self-hosted-linux-arm64
             ARCH: linux-arm64
             MIME: application/octet-stream
             EXT: ''

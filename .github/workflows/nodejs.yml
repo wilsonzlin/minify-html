@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         feature: [core, js]
-        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted]
+        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64, self-hosted-macos-arm64]
     steps:
       - uses: actions/checkout@v1
 
@@ -22,11 +22,13 @@ jobs:
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
 
       - name: Set up Node.js
+        if: runner.name != 'macos-arm64'
         uses: actions/setup-node@master
         with:
-          node-version: 15.x
+          node-version: 17.x
 
       - name: Set up Rust
+        if: runner.name != 'macos-arm64'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -38,6 +40,7 @@ jobs:
         run: .\.github\workflows\gcc.ps1
 
       - name: Set up Go
+        if: runner.name != 'macos-arm64'
         uses: actions/setup-go@v2
         with:
           go-version: '^1.14.0'
@@ -81,7 +84,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@master
         with:
-          node-version: 15.x
+          node-version: 17.x
       - name: Pack and publish package
         working-directory: ./nodejs
         run: |

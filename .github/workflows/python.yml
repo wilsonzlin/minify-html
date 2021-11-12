@@ -13,7 +13,7 @@ jobs:
       matrix:
         feature: [core, js]
         os: [macos-11.0, ubuntu-18.04, windows-2019]
-        python: [3.7, 3.8, 3.9]
+        python: [3.7, 3.8, 3.9, 3.10]
     steps:
       - uses: actions/checkout@v1
       - name: Set up Python
