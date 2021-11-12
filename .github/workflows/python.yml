@@ -18,16 +18,21 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Set up Python (x64)
-        if: runner.name != 'arm64' && runner.name != 'macos-arm64'
+        if: runner.name != 'linux-arm64' && runner.name != 'macos-arm64'
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
           architecture: 'x64'
       - name: Set up Python (Linux ARM64)
-        if: runner.name == 'arm64'
+        if: runner.name == 'linux-arm64'
         run: |
           pyenv install -s ${{ matrix.python }}:latest
           pyenv global $(pyenv versions --bare | grep -F '${{ matrix.python }}.')
+      - name: Set up Python (macOS ARM64)
+        if: runner.name == 'macos-arm64'
+        run: |
+          brew unlink python
+          brew link python@${{ matrix.python }}
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
