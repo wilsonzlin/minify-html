@@ -80,7 +80,7 @@ jobs:
           pip3 install --upgrade maturin setuptools wheel twine
       - name: Install Python build tools (macOS ARM64)
         if: runner.name == 'macos-arm64'
-        run: pip3 install --upgrade maturin setuptools wheel twine
+        run: /opt/homebrew/bin/pip3 install --upgrade maturin setuptools wheel twine
 
       - name: Pack and publish package
         shell: bash
