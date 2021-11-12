@@ -1,8 +1,11 @@
 # minify-html changelog
 
-## 0.6.11
+## 0.7.0
 
 - Fix Node.js library not including `cli.js`.
+- [CLI] Add support for macOS ARM64.
+- [Node.js] Add support for macOS ARM64.
+- [Python] Add support for Linux ARM64 and macOS ARM64. Drop support for Python 3.7 (breaking change).
 
 ## 0.6.10
 
