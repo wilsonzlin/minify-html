@@ -32,10 +32,11 @@ Precompiled binaries are available for Linux, macOS, and Windows.
 
 ### Get
 
-[Linux x86-64](https://wilsonl.in/minify-html/bin/0.6.10-linux-x86_64) |
+[Linux x64](https://wilsonl.in/minify-html/bin/0.6.10-linux-x86_64) |
 [Linux ARM](https://wilsonl.in/minify-html/bin/0.6.10-linux-arm64) |
-[macOS](https://wilsonl.in/minify-html/bin/0.6.10-macos-x86_64) |
-[Windows](https://wilsonl.in/minify-html/bin/0.6.10-windows-x86_64.exe)
+[macOS x64](https://wilsonl.in/minify-html/bin/0.6.10-macos-x86_64) |
+[macOS ARM64](https://wilsonl.in/minify-html/bin/0.6.10-macos-arm64) |
+[Windows x64](https://wilsonl.in/minify-html/bin/0.6.10-windows-x86_64.exe)
 
 ### Use
 
@@ -72,7 +73,7 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 
 - Package: [@minify-html/js](https://www.npmjs.com/package/@minify-html/js)
 - Binding: [N-API](https://nodejs.org/api/n-api.html)
-- Platforms: Linux (ARM64 and x86-64), macOS (x86-64), Windows (x86-64); Node.js 8.6.0 and higher
+- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Node.js 8.6.0 and higher
 
 ### Get
 
@@ -150,7 +151,7 @@ String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 
 - Package: [minify-html](https://pypi.org/project/minify-html)
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
-- Platforms: Linux, macOS, Windows; Python 3.7 and higher
+- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Python 3.8 to 3.10
 
 ### Get
 
