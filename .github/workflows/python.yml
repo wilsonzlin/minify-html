@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         feature: [core, js]
-        os: [macos-11.0, ubuntu-18.04, windows-2019]
+        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64]
         python: [3.7, 3.8, 3.9, 3.10]
     steps:
       - uses: actions/checkout@v1
@@ -50,10 +50,10 @@ jobs:
 
       - name: Install Python build tools (macOS)
         if: runner.os == 'macOS'
-        run: sudo pip install --upgrade maturin==0.9.4 setuptools wheel twine
+        run: sudo pip install --upgrade maturin setuptools wheel twine
       - name: Install Python build tools (Linux, Windows)
         if: runner.os != 'macOS'
-        run: pip install --upgrade maturin==0.9.4 setuptools wheel twine
+        run: pip install --upgrade maturin setuptools wheel twine
 
       - name: Pack and publish package
         shell: bash
@@ -67,4 +67,6 @@ jobs:
           maturin build --release --strip -i "$(which python)"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             twine upload target/wheels/*
+          else
+            ls -al target/wheels/*
           fi
