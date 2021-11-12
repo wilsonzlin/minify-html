@@ -13,14 +13,21 @@ jobs:
       matrix:
         feature: [core, js]
         os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64]
-        python: [3.7, 3.8, 3.9, 3.10]
+        python: [3.7, 3.8, 3.9, '3.10']
     steps:
       - uses: actions/checkout@v1
-      - name: Set up Python
+
+      - name: Set up Python (x64)
+        if: runner.name != 'arm64' && runner.name != 'macos-arm64'
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
           architecture: 'x64'
+      - name: Set up Python (Linux ARM64)
+        if: runner.name == 'arm64'
+        run: |
+          pyenv install -s ${{ matrix.python }}:latest
+          pyenv global $(pyenv versions --bare | grep -F '${{ matrix.python }}.')
 
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
