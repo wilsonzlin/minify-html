@@ -91,23 +91,17 @@ yarn add @minify-html/js
 
 ### Use
 
-```js
-const minifyHtml = require("@minify-html/js");
-
-// Refer to TypeScript definitions for details.
-const cfg = minifyHtml.createConfiguration({ keep_closing_tags: true, remove_bangs: false });
-const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
-```
-
-minify-html is also available for TypeScript:
+TypeScript definitions are available.
 
 ```ts
 import * as minifyHtml from "@minify-html/js";
-import * as fs from "fs";
+// Or `const minifyHtml = require("@minify-html/js")` if not using TS/ESM.
 
 const cfg = minifyHtml.createConfiguration({ keep_spaces_between_attributes: true, keep_comments: true });
 const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 ```
+
+All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available as snake_case properties on the object provided to `createConfiguration`; if any are not set, they default to `false`.
 
 </details>
 
