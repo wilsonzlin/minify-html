@@ -23,7 +23,7 @@ Comparison with [html-minfier](https://github.com/kangax/html-minifier) and [min
 
 The [onepass](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) variant is even more optimised for speed. See its [README](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) for more details.
 
-## Usage
+## Compatibility and usage
 
 <details>
 <summary><img width="24" src="https://wilsonl.in/minify-html/icon/cli.png"> <strong>CLI</strong></summary>
@@ -144,6 +144,8 @@ Configuration cfg = new Configuration.Builder()
 String minified = MinifyHtml.minify("<p>  Hello, world!  </p>", cfg);
 ```
 
+All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available as camelCase setter methods on the `Builder`; if any are not set, they default to `false`.
+
 </details>
 
 <details>
@@ -165,6 +167,8 @@ import minify_html
 minified = minify_html.minify("<p>  Hello, world!  </p>", minify_js=True, remove_processing_instructions=True)
 ```
 
+All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available as Python keyword arguments; if any are omitted, they default to `False`.
+
 </details>
 
 <details>
@@ -185,6 +189,8 @@ require 'minify_html'
 
 print MinifyHtml.minify("<p>  Hello, world!  </p>", { :keep_spaces_between_attributes => true, :minify_js => true })
 ```
+
+All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available; if any are omitted, they default to `false`.
 
 </details>
 
