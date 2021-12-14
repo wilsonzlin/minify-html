@@ -33,7 +33,7 @@
         }],
         ["OS=='win'", {
           "libraries": [
-            "advapi32.lib", "ws2_32.lib", "userenv.lib", "msvcrt.lib",
+            "kernel32.lib", "ws2_32.lib", "bcrypt.lib", "advapi32.lib", "userenv.lib", "kernel32.lib", "msvcrt.lib",
             "../native/target/release/minify_html_ffi.lib",
           ],
         }],
