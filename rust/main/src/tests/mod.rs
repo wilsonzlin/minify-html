@@ -123,6 +123,16 @@ fn test_attr_whatwg_unquoted_value_minification() {
 }
 
 #[test]
+fn test_alt_attr_minification() {
+    eval(br#"<img alt="  ">"#, br#"<img alt="  ">"#);
+    eval(br#"<img alt=" ">"#, br#"<img alt=" ">"#);
+    eval(br#"<img alt="">"#, br#"<img alt>"#);
+    eval(br#"<img alt=''>"#, br#"<img alt>"#);
+    eval(br#"<img alt>"#, br#"<img alt>"#);
+    eval(br#"<x-any-tag alt>"#, br#"<x-any-tag alt>"#);
+}
+
+#[test]
 fn test_viewport_attr_minification() {
     eval(
         b"<meta name=viewport content='width=device-width, initial-scale=1'>",
@@ -132,7 +142,7 @@ fn test_viewport_attr_minification() {
     eval_with_cfg(
         b"<meta name=viewport content='width=device-width, initial-scale=1'>",
         br#"<meta content="width=device-width,initial-scale=1" name=viewport>"#,
-        &spec_compliant_cfg
+        &spec_compliant_cfg,
     );
 }
 

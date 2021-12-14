@@ -144,7 +144,7 @@ pub fn process_tag(
                     .is_none();
                 if script_tag_type_is_js {
                     if &proc[value.unwrap()] != b"module" {
-                      erase_attr = true;
+                        erase_attr = true;
                     };
                 } else {
                     // Tag does not contain JS, don't minify JS.

@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.7.1
+
+- Do not remove `alt` tag when empty.
+
 ## 0.7.0
 
 - Fix Node.js library not including `cli.js`.
