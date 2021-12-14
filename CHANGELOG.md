@@ -2,7 +2,7 @@
 
 ## 0.7.1
 
-- Do not remove `alt` tag when empty.
+- Do not remove `alt` attribute when empty.
 
 ## 0.7.0
 
