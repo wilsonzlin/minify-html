@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.7.2
+
+- Fix Node.js library build process on Windows.
+
 ## 0.7.1
 
 - Do not remove `alt` attribute when empty.
