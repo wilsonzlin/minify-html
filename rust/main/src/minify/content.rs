@@ -5,6 +5,7 @@ use crate::ast::{NodeData, ScriptOrStyleLang};
 use crate::cfg::Cfg;
 use crate::common::gen::codepoints::TAG_NAME_CHAR;
 use crate::common::pattern::Replacer;
+use crate::common::spec::tag::ns::Namespace;
 use crate::common::spec::tag::whitespace::{
     get_whitespace_minification_for_tag, WhitespaceMinification,
 };
@@ -47,6 +48,7 @@ lazy_static! {
 pub fn minify_content(
     cfg: &Cfg,
     out: &mut Vec<u8>,
+    ns: Namespace,
     descendant_of_pre: bool,
     // Use empty slice if none.
     parent: &[u8],
@@ -56,7 +58,7 @@ pub fn minify_content(
         collapse,
         destroy_whole,
         trim,
-    } = get_whitespace_minification_for_tag(parent, descendant_of_pre);
+    } = get_whitespace_minification_for_tag(ns, parent, descendant_of_pre);
 
     // TODO Document or fix: even though bangs/comments/etc. don't affect layout, we don't collapse/destroy-whole/trim combined text nodes across bangs/comments/etc., as that's too complex and is ambiguous about which nodes should whitespace be deleted from.
     let mut found_first_text_or_elem = false;

@@ -64,7 +64,7 @@ pub fn process_content(
         collapse,
         destroy_whole,
         trim,
-    } = get_whitespace_minification_for_tag(proc.get_or_empty(parent), descendant_of_pre);
+    } = get_whitespace_minification_for_tag(ns, proc.get_or_empty(parent), descendant_of_pre);
 
     let handle_ws = collapse || destroy_whole || trim;
 

@@ -29,6 +29,10 @@ fn test_collapse_destroy_whole_and_trim_whitespace() {
         b"<ul>   \n&#32;a<pre></pre>   <pre></pre>b   </ul>",
         b"<ul>a<pre></pre><pre></pre>b</ul>",
     );
+    eval(
+        b"<svg> <path> </path> <path> </path> </svg>",
+        b"<svg><path></path><path></path></svg>",
+    );
     // Tag names should be case insensitive.
     eval(b"<uL>   \n&#32;a   b   </UL>", b"<ul>a b</ul>");
 }

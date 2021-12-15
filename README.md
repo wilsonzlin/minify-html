@@ -288,7 +288,7 @@ Remove any leading/trailing whitespace from any leading/trailing text nodes of a
 
 #### Element types
 
-minify-html recognises elements based on one of a few ways it assumes they are used. By making these assumptions, it can apply optimal whitespace minification strategies.
+minify-html assumes HTML and SVG elements are used in specific ways, based on standards and best practices. By making these assumptions, it can apply optimal whitespace minification strategies. If these assumptions do not hold, consider adjusting the HTML source or turning off whitespace minification.
 
 |Group|Elements|Expected children|
 |---|---|---|

@@ -105,6 +105,11 @@ pub fn minify_element(
     minify_content(
         cfg,
         out,
+        if tag_name == b"svg" {
+            Namespace::Svg
+        } else {
+            ns
+        },
         descendant_of_pre || (ns == Namespace::Html && tag_name == b"pre"),
         tag_name,
         children,

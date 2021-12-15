@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.8.0
+
+- Minify whitespace in SVG elements.
+
 ## 0.7.2
 
 - Fix Node.js library build process on Windows.
