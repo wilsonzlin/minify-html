@@ -1,15 +1,13 @@
-from typing import Optional
-
 def minify(
     code: str,
-    do_not_minify_doctype: Optional[bool],
-    ensure_spec_compliant_unquoted_attribute_values: Optional[bool],
-    keep_closing_tags: Optional[bool],
-    keep_comments: Optional[bool],
-    keep_html_and_head_opening_tags: Optional[bool],
-    keep_spaces_between_attributes: Optional[bool],
-    minify_css: Optional[bool],
-    minify_js: Optional[bool],
-    remove_bangs: Optional[bool],
-    remove_processing_instructions: Optional[bool],
+    do_not_minify_doctype: bool = False,
+    ensure_spec_compliant_unquoted_attribute_values: bool = False,
+    keep_closing_tags: bool = False,
+    keep_comments: bool = False,
+    keep_html_and_head_opening_tags: bool = False,
+    keep_spaces_between_attributes: bool = False,
+    minify_css: bool = False,
+    minify_js: bool = False,
+    remove_bangs: bool = False,
+    remove_processing_instructions: bool = False,
 ) -> str: ...
