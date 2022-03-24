@@ -292,10 +292,10 @@ minify-html assumes HTML and SVG elements are used in specific ways, based on st
 
 |Group|Elements|Expected children|
 |---|---|---|
-|Formatting|`a`, `strong`, [and others](./src/spec/tag/whitespace.rs)|Formatting elements, text.|
-|Content|`h1`, `p`, [and others](src/spec/tag/whitespace.rs)|Formatting elements, text.|
-|Layout|`div`, `ul`, [and others](./src/spec/tag/whitespace.rs)|Layout elements, content elements.|
-|Content-first|`label`, `li`, [and others](./src/spec/tag/whitespace.rs)|Like content but could be layout with only one child.|
+|Formatting|`a`, `strong`, [and others](./rust/common/spec/tag/whitespace.rs)|Formatting elements, text.|
+|Content|`h1`, `p`, [and others](rust/common/spec/tag/whitespace.rs)|Formatting elements, text.|
+|Layout|`div`, `ul`, [and others](./rust/common/spec/tag/whitespace.rs)|Layout elements, content elements.|
+|Content-first|`label`, `li`, [and others](./rust/common/spec/tag/whitespace.rs)|Like content but could be layout with only one child.|
 
 <details>
 <summary><strong>Formatting elements</strong></summary>

@@ -54,6 +54,7 @@ jobs:
         with:
           name: ${{ matrix.ARCH }}
           path: ./java/target/rust/release/${{ matrix.FILE }}
+          
   package:
     runs-on: ubuntu-18.04
     needs: build
