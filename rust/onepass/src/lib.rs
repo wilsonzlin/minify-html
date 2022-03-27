@@ -54,7 +54,7 @@ pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, Error> {
     proc.finish()
 }
 
-/// Minifies a str in-place and returns the new minified length.
+/// Minifies a str in-place and returns the new minified str.
 /// Any original code after the end of the minified code is left intact.
 ///
 /// # Arguments
