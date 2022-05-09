@@ -190,7 +190,14 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 ## Minification
 
-Note that some of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. These can be turned off via the `Cfg` object.
+Note that some of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by browsers.
+Essentially, browser laxness is taken advantage of, for better minification.
+
+To produce valid HTML, set the following options in the `Cfg` object:
+
+    do_not_minify_doctype=True
+    ensure_spec_compliant_unquoted_attribute_values=True
+    keep_spaces_between_attributes=True
 
 ### Whitespace
 
