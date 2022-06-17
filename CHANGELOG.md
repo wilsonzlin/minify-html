@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.8.2
+
+- Fix Python build pipeline to handle existing uploaded wheels from previous successful build attempts.
+
 ## 0.8.1
 
 - Create wrapper index.js for Node.js library to support ESM.

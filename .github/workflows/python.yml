@@ -106,7 +106,8 @@ jobs:
           # On macOS ARM64 this may emit a warning like "Couldn't find the symbol `PyInit_minify_html_core` in the native library. Python will fail to import this module." Ignore this message.
           maturin build --release --strip -i "$pathToPython"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
-            twine upload target/wheels/*
+            # For idempotency, ignore any existing built wheels that have already been successfully uploaded.
+            twine upload --skip-existing target/wheels/*
           else
             ls -al target/wheels/*
           fi
