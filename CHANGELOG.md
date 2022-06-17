@@ -1,5 +1,11 @@
 # minify-html changelog
 
+## 0.8.1
+
+- Create wrapper index.js for Node.js library to support ESM.
+- Do not consider empty `value` attributes on `option` elements as redundant.
+- Consider `crossorigin` attributes as boolean.
+
 ## 0.8.0
 
 - Minify whitespace in SVG elements.
