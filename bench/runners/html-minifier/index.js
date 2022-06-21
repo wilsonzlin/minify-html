@@ -27,4 +27,4 @@ const htmlMinifierCfg = {
   useShortDoctype: true,
 };
 
-run((src) => htmlMinifier.minify(src, htmlMinifierCfg));
+run((src) => htmlMinifier.minify(src.toString(), htmlMinifierCfg));

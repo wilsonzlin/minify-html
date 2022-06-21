@@ -3,7 +3,7 @@
 const lib = require(".");
 const fs = require("fs");
 
-const cfgObj = {};
+const cfg = {};
 let input;
 let output;
 const args = process.argv.slice(2);
@@ -14,13 +14,12 @@ while ((arg = args.shift()) !== undefined) {
     if (name === "output") {
       output = args.shift();
     } else {
-      cfgObj[name.replace(/-/g, "_")] = true;
+      cfg[name.replace(/-/g, "_")] = true;
     }
   } else {
     input = arg;
   }
 }
 
-const cfg = lib.createConfiguration(cfgObj);
 const min = lib.minify(fs.readFileSync(input), cfg);
 fs.writeFileSync(output, min);

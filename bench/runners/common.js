@@ -40,7 +40,7 @@ module.exports = {
     console.log(
       JSON.stringify(
         fs.readdirSync(inputDir).map((name) => {
-          const src = fs.readFileSync(path.join(inputDir, name), "utf8");
+          const src = fs.readFileSync(path.join(inputDir, name));
 
           const out = minifierFn(src);
           const len = Buffer.from(out).length;

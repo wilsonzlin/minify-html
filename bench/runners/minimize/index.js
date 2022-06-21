@@ -42,4 +42,4 @@ const plugins = htmlOnly ? [] : [jsCssPlugin];
 
 const minifier = new minimize({ plugins });
 
-run((src) => minifier.parse(src));
+run((src) => minifier.parse(src.toString()));
