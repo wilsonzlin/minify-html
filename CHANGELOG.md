@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.9.1
+
+- Fix Node.js postinstall script.
+
 ## 0.9.0
 
 - Replace esbuild with [minify-js](https://github.com/wilsonzlin/minify-js) as the JS minifier, a fast minifier written from scratch in Rust. This alleviates many of the problems with integrating with esbuild, including interference with process signals by the Go runtime, compatibility issues with C libraries other than glibc, use of threading libraries without actually threading, inability to compile to rarer Rust targets, dependency on the Go compiler, maintaining a [fork of esbuild](https://github.com/wilsonzlin/esbuild-rs), unsafe FFI, and more. CSS minification is now done by [css-minify](https://github.com/Mnwa/css-minify).
