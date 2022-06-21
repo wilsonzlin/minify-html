@@ -69,7 +69,7 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 <details>
 <summary><img width="24" src="https://wilsonl.in/minify-html/icon/deno.png"> <strong>Deno</strong></summary>
 
-- Package: [https://wilsonl.in/minify-html/deno/0.8.1/index.js]
+- Package: https://wilsonl.in/minify-html/deno/0.8.1/index.js
 - Binding: [WASM](https://webassembly.org/)
 - Platforms: All
 
@@ -221,7 +221,7 @@ A bundler may be required to use the WebAssembly module, see [this](https://rust
 ### Use
 
 ```ts
-import init, {minify} from "https://wilsonl.in/minify-html/deno/0.8.1/index.js";
+import init, {minify} from "@minify-html/wasm";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
