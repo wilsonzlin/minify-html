@@ -9,7 +9,7 @@
   "version": "0.8.1",
   "types": "index.d.ts",
   "scripts": {
-    "build": "npm_package_name=minify-html-node cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
+    "build": "cargo-cp-artifact --artifact cdylib minify-html-node index.node -- cargo build --message-format=json-render-diagnostics",
     "build-debug": "npm run build --",
     "build-release": "npm run build -- --release",
     "clean": "shx rm -rf target index.node",
