@@ -5,8 +5,10 @@
 - Replace esbuild with [minify-js](https://github.com/wilsonzlin/minify-js) as the JS minifier, a fast minifier written from scratch in Rust. This alleviates many of the problems with integrating with esbuild, including interference with process signals by the Go runtime, compatibility issues with C libraries other than glibc, use of threading libraries without actually threading, inability to compile to rarer Rust targets, dependency on the Go compiler, maintaining a [fork of esbuild](https://github.com/wilsonzlin/esbuild-rs), unsafe FFI, and more. CSS minification is now done by [css-minify](https://github.com/Mnwa/css-minify).
   - As minify-js is a relatively new library, any feedback, suggestions, and issues around JS minification is most welcome! Please report them to [the repo](https://github.com/wilsonzlin/minify-js).
 - Use [Neon](https://neon-bindings.com/) for the Node.js library instead of custom hand-written N-API bindings in C. This simplifies the code and makes it safer and easier to extend. It also allows building from source if a prebuilt binary is not available (the Rust compiler must be installed).
+  - The package has been renamed to `@minify-js/node`.
   - There is a slight API change: instead of calling `createConfiguration`, directly pass the JavaScript object to the `minify` function. The `minify` function also no longer takes a string.
 - Thanks to the change to the fully-Rust [minify-js](https://github.com/wilsonzlin/minify-js), we can now add support for Deno and WebAssembly.
+- Due to the dropping of esbuild, there is no more `core` variant for Node.js and Python, as the issues should no longer exist.
 
 ## 0.8.1
 
