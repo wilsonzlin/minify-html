@@ -101,10 +101,9 @@ for (const f of [
   `${RUST_MAIN_DIR}/Cargo.toml`,
   `${RUST_ONEPASS_DIR}/Cargo.toml`,
   "cli/Cargo.toml",
-  "nodejs/native/Cargo.toml",
+  "nodejs/Cargo.toml",
   "java/Cargo.toml",
   "python/Cargo.toml",
-  "python/Cargo.js.toml",
   "ruby/Cargo.toml",
 ]) {
   replaceInFile(

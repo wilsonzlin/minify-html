@@ -1,6 +1,6 @@
-/build/
+/Cargo.lock
 /index.node
-/native/Cargo.lock
-/native/target
 /package-lock.json
+/target/
 node_modules/
+npm-debug.log*

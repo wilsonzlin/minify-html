@@ -1,8 +1,8 @@
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
-const zlib = require("zlib");
 const pkg = require("./package.json");
+const cp = require("child_process");
 
 const MAX_DOWNLOAD_ATTEMPTS = 4;
 
@@ -36,12 +36,10 @@ const downloadNativeBinary = async () => {
     let binary;
     try {
       binary = await fetch(
-        `https://wilsonl.in/minify-html/bin/nodejs/${pkg.version}/${
-          pkg.name.split("/")[1]
-        }/${binaryName}.node.gz`
+        `https://wilsonl.in/minify-html/bin/nodejs/${pkg.version}/${binaryName}.node`
       );
     } catch (e) {
-      if (e instanceof StatusError && attempt < MAX_DOWNLOAD_ATTEMPTS) {
+      if (e instanceof StatusError && e.status !== 404 && attempt < MAX_DOWNLOAD_ATTEMPTS) {
         await wait(Math.random() * 2500 + 500);
         continue;
       }
@@ -60,8 +58,15 @@ if (
   downloadNativeBinary().then(
     () => console.log(`Downloaded ${pkg.name}`),
     (err) => {
-      console.error(`Failed to download ${pkg.name}: ${err}`);
-      process.exit(1);
+      console.error(`Failed to download ${pkg.name}, will build from source: ${err}`);
+      const out = cp.spawnSync("npm", ["run", "build-release"], {
+        cwd: __dirname,
+        stdio: ["ignore", "inherit", "inherit"],
+      });
+      process.exitCode = out.exitCode;
+      if (out.error) {
+        throw out.error;
+      }
     }
   );
 }

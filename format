@@ -15,7 +15,7 @@ for dir in \
   fuzz \
   fuzz/process \
   java \
-  nodejs/native \
+  nodejs \
   python \
   ruby \
   rust/main \

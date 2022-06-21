@@ -68,7 +68,7 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 <summary><img width="24" src="https://wilsonl.in/minify-html/icon/nodejs.png"> <strong>Node.js</strong></summary>
 
 - Package: [@minify-html/node](https://www.npmjs.com/package/@minify-html/node)
-- Binding: [N-API](https://nodejs.org/api/n-api.html)
+- Binding: [Neon](https://github.com/neon-bindings/neon)
 - Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Node.js 8.6.0 and higher
 
 ### Get
@@ -93,11 +93,10 @@ TypeScript definitions are available.
 import * as minifyHtml from "@minify-html/node";
 // Or `const minifyHtml = require("@minify-html/node")` if not using TS/ESM.
 
-const cfg = minifyHtml.createConfiguration({ keep_spaces_between_attributes: true, keep_comments: true });
-const minified = minifyHtml.minify("<p>  Hello, world!  </p>", cfg);
+const minified = minifyHtml.minify("<p>  Hello, world!  </p>", { keep_spaces_between_attributes: true, keep_comments: true });
 ```
 
-All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available as snake_case properties on the object provided to `createConfiguration`; if any are not set, they default to `false`.
+All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available as snake_case properties on the object provided as the second argument; if any are not set, they default to `false`.
 
 </details>
 

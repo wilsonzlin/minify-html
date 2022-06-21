@@ -1,0 +1,18 @@
+[package]
+name = "minify-html-node"
+publish = false
+version = "0.8.1"
+description = "Node.js bindings for minify-html"
+authors = ["Wilson Lin <npm@wilsonl.in>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+minify-html = "0.8.1"
+
+[dependencies.neon]
+version = "0.10"
+default-features = false
+features = ["napi-1"]

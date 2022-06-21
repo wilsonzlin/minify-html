@@ -4,18 +4,15 @@
   "bin": {
     "minify-html": "./cli.js"
   },
-  "version": "0.8.1",
   "main": "index.js",
+  "files": ["src/**", "Cargo.toml", "cli.js", "index.d.ts", "index.js", "README.md", "postinstall.js"],
+  "version": "0.8.1",
   "types": "index.d.ts",
-  "files": [
-    "cli.js",
-    "postinstall.js",
-    "index.d.ts",
-    "index.js"
-  ],
   "scripts": {
-    "build": "node-gyp build && shx mv build/Release/index.node index.node",
-    "clean": "cd native && cargo clean && cd .. && node-gyp clean && node-gyp configure && shx rm -f index.node",
+    "build": "npm_package_name=minify-html-node cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
+    "build-debug": "npm run build --",
+    "build-release": "npm run build -- --release",
+    "clean": "shx rm -rf target index.node",
     "postinstall": "node postinstall.js"
   },
   "repository": {
@@ -37,8 +34,8 @@
   "homepage": "https://github.com/wilsonzlin/minify-html#readme",
   "devDependencies": {
     "@types/node": "^14.6.0",
-    "node-gyp": "^7.0.0",
-    "shx": "^0.3.2"
+    "cargo-cp-artifact": "^0.1",
+    "shx": "^0.3.4"
   },
   "keywords": [
     "compress",
