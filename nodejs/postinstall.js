@@ -46,7 +46,7 @@ const downloadNativeBinary = async () => {
       throw e;
     }
 
-    fs.writeFileSync(binaryPath, zlib.gunzipSync(binary));
+    fs.writeFileSync(binaryPath, binary);
     break;
   }
 };

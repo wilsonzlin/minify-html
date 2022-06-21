@@ -32,9 +32,11 @@
     "node": ">= 8.6.0"
   },
   "homepage": "https://github.com/wilsonzlin/minify-html#readme",
+  "dependencies": {
+    "cargo-cp-artifact": "^0.1"
+  },
   "devDependencies": {
     "@types/node": "^14.6.0",
-    "cargo-cp-artifact": "^0.1",
     "shx": "^0.3.4"
   },
   "keywords": [
