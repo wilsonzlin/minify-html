@@ -20,6 +20,7 @@ for dir in \
   ruby \
   rust/main \
   rust/onepass \
+  wasm \
 ; do
   pushd "$dir" >/dev/null
   cargo fmt

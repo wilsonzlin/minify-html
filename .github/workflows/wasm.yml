@@ -1,0 +1,58 @@
+name: Build and publish WASM package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+
+      - name: Set up Rust
+        if: runner.name != 'macos-arm64'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Run prebuild steps
+        shell: bash
+        run: bash ./prebuild.sh
+
+      - name: Install wasm-pack
+        working-directory: ./wasm
+        shell: bash
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Build native module
+        working-directory: ./wasm
+        shell: bash
+        run: TARGET=bundle ./build
+
+      - name: Set up Node.js
+        uses: actions/setup-node@master
+        with:
+          node-version: 17.x
+
+      - name: Pack and publish package
+        working-directory: ./wasm/pkg
+        run: |
+          cat << 'EOF' > .npmrc
+          package-lock=false
+          //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
+          EOF
+          # npm refuses to work with symlinks.
+          cp ../../README.md .
+          if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
+            npm publish --access public
+          fi

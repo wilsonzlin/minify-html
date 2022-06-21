@@ -105,6 +105,7 @@ for (const f of [
   "java/Cargo.toml",
   "python/Cargo.toml",
   "ruby/Cargo.toml",
+  "wasm/Cargo.toml",
 ]) {
   replaceInFile(
     f,
@@ -124,7 +125,7 @@ for (const f of ["README.md"]) {
 for (const f of ["README.md"]) {
   replaceInFile(
     f,
-    /(wilsonl\.in\/minify-html\/bin\/)\d+\.\d+\.\d+/g,
+    /(wilsonl\.in\/minify-html\/(?:bin|deno)\/)\d+\.\d+\.\d+/g,
     `$1${NEW_VERSION}`
   );
 }

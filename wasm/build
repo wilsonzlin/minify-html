@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -Eeuxo pipefail
+
+pushd "$(dirname "$0")" >/dev/null
+
+target="${TARGET:-bundler}"
+
+rm -rf pkg
+wasm-pack build --target "$target"
+pushd pkg
+# `bundler` is for WASM/npm, `web` is for Deno.
+if [[ "$target" = "bundler" ]]; then
+  # Use -i.tmp to support macOS and Linux.
+  sed -i.tmp -E 's%"name": "index"%"name": "@minify-html/'$pkg_suffix'"%' package.json
+  rm package.json.tmp .gitignore
+elif [[ "$target" = "web" ]]; then
+  rm package.json .gitignore
+fi
+popd
+
+popd >/dev/null

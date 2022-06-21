@@ -32,15 +32,6 @@ jobs:
           profile: minimal
           default: true
 
-      - name: Set up GCC (Windows)
-        if: runner.os == 'Windows'
-        run: .\.github\workflows\gcc.ps1
-
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '^1.14.0'
-
       - name: Run prebuild steps
         shell: bash
         run: bash ./prebuild.sh
@@ -54,7 +45,7 @@ jobs:
         with:
           name: ${{ matrix.ARCH }}
           path: ./java/target/rust/release/${{ matrix.FILE }}
-          
+
   package:
     runs-on: ubuntu-18.04
     needs: build

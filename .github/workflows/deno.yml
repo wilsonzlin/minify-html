@@ -1,0 +1,50 @@
+name: Build and publish Deno package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Get version
+        id: version
+        shell: bash
+        run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+
+      - name: Set up Rust
+        if: runner.name != 'macos-arm64'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          default: true
+
+      - name: Run prebuild steps
+        shell: bash
+        run: bash ./prebuild.sh
+
+      - name: Install wasm-pack
+        working-directory: ./wasm
+        shell: bash
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Build native module
+        working-directory: ./wasm
+        shell: bash
+        run: TARGET=web ./build
+
+      - name: Install B2 CLI
+        run: |
+          wget -O b2 https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-linux
+          chmod +x b2
+
+      - name: Upload to B2
+        run: |
+          ./b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
+          ./b2 sync --compareVersions size --delete wasm/pkg/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/deno/${{ steps.version.outputs.VERSION }}/

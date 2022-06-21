@@ -1,11 +1,13 @@
 <h1>
 minify-html
 <img width="24" src="https://wilsonl.in/minify-html/icon/cli.png">
+<img width="24" src="https://wilsonl.in/minify-html/icon/deno.png">
 <img width="24" src="https://wilsonl.in/minify-html/icon/java.png">
 <img width="24" src="https://wilsonl.in/minify-html/icon/nodejs.png">
 <img width="24" src="https://wilsonl.in/minify-html/icon/python.png">
 <img width="24" src="https://wilsonl.in/minify-html/icon/ruby.png">
 <img width="24" src="https://wilsonl.in/minify-html/icon/rust.png">
+<img width="24" src="https://wilsonl.in/minify-html/icon/wasm.png">
 </h1>
 
 A Rust HTML minifier meticulously optimised for speed and effectiveness, with bindings for other languages.
@@ -61,6 +63,30 @@ minify-html = { version = "0.8.1" }
 ### Use
 
 Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
+
+</details>
+
+<details>
+<summary><img width="24" src="https://wilsonl.in/minify-html/icon/deno.png"> <strong>Deno</strong></summary>
+
+- Package: [https://wilsonl.in/minify-html/deno/0.8.1/index.js]
+- Binding: [WASM](https://webassembly.org/)
+- Platforms: All
+
+### Use
+
+```ts
+import init, {minify} from "https://wilsonl.in/minify-html/deno/0.8.1/index.js";
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+await init();
+
+const minified = decoder.decode(minify(encoder.encode("<p>  Hello, world!  </p>"), { keep_spaces_between_attributes: true, keep_comments: true }));
+```
+
+All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available as snake_case properties on the object provided as the second argument; if any are not set, they default to `false`.
 
 </details>
 
@@ -180,6 +206,32 @@ print MinifyHtml.minify("<p>  Hello, world!  </p>", { :keep_spaces_between_attri
 ```
 
 All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available; if any are omitted, they default to `false`.
+
+</details>
+
+<details>
+<summary><img width="24" src="https://wilsonl.in/minify-html/icon/wasm.png"> <strong>WASM</strong></summary>
+
+- Package: [@minify-html/wasm](https://npmjs.org/package/@minify-html/wasm)
+- Binding: [WASM](https://webassembly.org/)
+- Platforms: All
+
+A bundler may be required to use the WebAssembly module, see [this](https://rustwasm.github.io/wasm-bindgen/reference/deployment.html#bundlers) for more details.
+
+### Use
+
+```ts
+import init, {minify} from "https://wilsonl.in/minify-html/deno/0.8.1/index.js";
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+
+await init();
+
+const minified = decoder.decode(minify(encoder.encode("<p>  Hello, world!  </p>"), { keep_spaces_between_attributes: true, keep_comments: true }));
+```
+
+All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available as snake_case properties on the object provided as the second argument; if any are not set, they default to `false`.
 
 </details>
 

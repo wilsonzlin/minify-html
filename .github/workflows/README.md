@@ -6,7 +6,6 @@ This folder contains various GitHub Actions that are run upon every new version 
 
 GitHub currently doesn't provide ARM64 macOS and Linux runners, so we run self-hosted versions. Jobs run on self-hosted machines aren't isolated (e.g. files created during a job run persist on the real filesystem), and most @actions/* don't have ARM64 builds yet, so self-hosted machines should have tools preinstalled before starting the GitHub Actions runner. These include:
 
-- Go
 - Rust
 - Node.js
 - Python/pyenv
