@@ -25,14 +25,12 @@ pub fn eval_with_cfg(src: &'static [u8], expected: &'static [u8], cfg: &Cfg) {
     };
 }
 
-#[cfg(feature = "js-esbuild")]
 pub fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
     let mut cfg = Cfg::new();
     cfg.minify_js = true;
     eval_with_cfg(src, expected, &cfg);
 }
 
-#[cfg(feature = "js-esbuild")]
 pub fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
     let mut cfg = Cfg::new();
     cfg.minify_css = true;

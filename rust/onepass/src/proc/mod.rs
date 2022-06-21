@@ -5,12 +5,6 @@ use std::ops::{Index, IndexMut};
 use aho_corasick::AhoCorasick;
 use memchr::memchr;
 
-#[cfg(feature = "js-esbuild")]
-use {
-    crossbeam::sync::WaitGroup,
-    std::sync::{Arc, Mutex},
-};
-
 use crate::common::gen::codepoints::Lookup;
 use crate::common::spec::tag::EMPTY_SLICE;
 use crate::err::{debug_repr, Error, ErrorType, ProcessingResult};
@@ -51,12 +45,6 @@ pub enum MatchAction {
     MatchOnly,
 }
 
-#[cfg(feature = "js-esbuild")]
-pub struct EsbuildSection {
-    pub src: ProcessorRange,
-    pub escaped: Vec<u8>,
-}
-
 // Processing state of a file. Single use only; create one per processing.
 pub struct Processor<'d> {
     code: &'d mut [u8],
@@ -64,10 +52,6 @@ pub struct Processor<'d> {
     read_next: usize,
     // Index of the next unwritten space.
     write_next: usize,
-    #[cfg(feature = "js-esbuild")]
-    esbuild_wg: WaitGroup,
-    #[cfg(feature = "js-esbuild")]
-    esbuild_results: Arc<Mutex<Vec<EsbuildSection>>>,
 }
 
 impl<'d> Index<ProcessorRange> for Processor<'d> {
@@ -96,10 +80,6 @@ impl<'d> Processor<'d> {
             write_next: 0,
             read_next: 0,
             code,
-            #[cfg(feature = "js-esbuild")]
-            esbuild_wg: WaitGroup::new(),
-            #[cfg(feature = "js-esbuild")]
-            esbuild_results: Arc::new(Mutex::new(Vec::new())),
         }
     }
 
@@ -380,60 +360,11 @@ impl<'d> Processor<'d> {
         self._shift(count);
     }
 
-    #[cfg(feature = "js-esbuild")]
-    #[inline(always)]
-    pub fn new_esbuild_section(&self) -> (WaitGroup, Arc<Mutex<Vec<EsbuildSection>>>) {
-        (self.esbuild_wg.clone(), self.esbuild_results.clone())
-    }
-
     // Since we consume the Processor, we must provide a full Error with positions.
-    #[cfg(not(feature = "js-esbuild"))]
     #[inline(always)]
     pub fn finish(self) -> Result<usize, Error> {
         debug_assert!(self.at_end());
         Ok(self.write_next)
-    }
-
-    // Since we consume the Processor, we must provide a full Error with positions.
-    #[cfg(feature = "js-esbuild")]
-    #[inline(always)]
-    pub fn finish(self) -> Result<usize, Error> {
-        debug_assert!(self.at_end());
-        self.esbuild_wg.wait();
-        let mut results = Arc::try_unwrap(self.esbuild_results)
-            .unwrap_or_else(|_| panic!("failed to acquire esbuild results"))
-            .into_inner()
-            .unwrap();
-        results.sort_unstable_by_key(|r| r.src.start);
-        // As we write minified JS/CSS code for sections from left to right, we will be shifting code
-        // towards the left as previous source JS/CSS code sections shrink. We need to keep track of
-        // the write pointer after previous compaction.
-        // If there are no script sections, then we get self.write_next which will be returned.
-        let mut write_next = results.get(0).map_or(self.write_next, |r| r.src.start);
-        for (
-            i,
-            EsbuildSection {
-                escaped: min_code,
-                src,
-            },
-        ) in results.iter().enumerate()
-        {
-            // Resulting minified JS/CSS to write.
-            let min_len = if min_code.len() < src.len() {
-                self.code[write_next..write_next + min_code.len()].copy_from_slice(min_code);
-                min_code.len()
-            } else {
-                // If minified result is actually longer than source, then write source instead.
-                // NOTE: We still need to write source as previous iterations may have shifted code down.
-                self.code.copy_within(src.start..src.end, write_next);
-                src.len()
-            };
-            let write_end = write_next + min_len;
-            let next_start = results.get(i + 1).map_or(self.write_next, |r| r.src.start);
-            self.code.copy_within(src.end..next_start, write_end);
-            write_next = write_end + (next_start - src.end);
-        }
-        Ok(write_next)
     }
 }
 

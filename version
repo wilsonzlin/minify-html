@@ -93,9 +93,7 @@ if (
 cmd("git", "pull");
 cmd("bash", "./prebuild.sh");
 cmd("cargo", "test", { workingDir: RUST_MAIN_DIR });
-cmd("cargo", "test", "--features", "js-esbuild", {
-  workingDir: RUST_ONEPASS_DIR,
-});
+cmd("cargo", "test", { workingDir: RUST_ONEPASS_DIR });
 
 for (const f of [
   `${RUST_MAIN_DIR}/Cargo.toml`,
