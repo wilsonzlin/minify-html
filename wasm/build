@@ -12,7 +12,7 @@ pushd pkg
 # `bundler` is for WASM/npm, `web` is for Deno.
 if [[ "$target" = "bundler" ]]; then
   # Use -i.tmp to support macOS and Linux.
-  sed -i.tmp -E 's%"name": "index"%"name": "@minify-html/'$pkg_suffix'"%' package.json
+  sed -i.tmp -E 's%"name": "index"%"name": "@minify-html/wasm"%' package.json
   rm package.json.tmp .gitignore
 elif [[ "$target" = "web" ]]; then
   rm package.json .gitignore

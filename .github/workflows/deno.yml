@@ -47,4 +47,13 @@ jobs:
       - name: Upload to B2
         run: |
           ./b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          ./b2 sync --compareVersions size --delete wasm/pkg/ b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/deno/${{ steps.version.outputs.VERSION }}/
+          for f in wasm/pkg/*; do;
+            if [[ "$f" == *.js ]]; then
+              content_type='application/json'
+            elif [[ "$f" == *.wasm ]]; then
+              content_type='application/wasm'
+            else
+              content_type='application/octet-stream'
+            fi
+            ./b2 upload-file --contentType "$content_type" ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} "$f" "minify-html/deno/${{ steps.version.outputs.VERSION }}/$(basename "$f")"
+          done
