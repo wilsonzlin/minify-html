@@ -6,7 +6,7 @@
   },
   "main": "index.js",
   "files": ["src/**", "Cargo.toml", "cli.js", "index.d.ts", "index.js", "README.md", "postinstall.js"],
-  "version": "0.9.0",
+  "version": "0.9.1",
   "types": "index.d.ts",
   "scripts": {
     "build": "cargo-cp-artifact --artifact cdylib minify-html-node index.node -- cargo build --message-format=json-render-diagnostics",
