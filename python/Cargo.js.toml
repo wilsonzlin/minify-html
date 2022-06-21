@@ -15,7 +15,7 @@ name = "minify_html"
 crate-type = ["cdylib"]
 
 [dependencies]
-minify-html = { path = "../rust/main", features = ["js-esbuild"] }
+minify-html = { path = "../rust/main" }
 [dependencies.pyo3]
 version = "0.13.0"
 features = ["extension-module"]

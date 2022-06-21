@@ -6,7 +6,7 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-minify-html = { path = "../rust/main", features = ["js-esbuild"] }
+minify-html = { path = "../rust/main" }
 jni = "0.14.0"
 
 [lib]

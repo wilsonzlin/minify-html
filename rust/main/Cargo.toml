@@ -15,13 +15,9 @@ include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md"]
 [badges]
 maintenance = { status = "actively-developed" }
 
-[features]
-default = []
-js-esbuild = ["crossbeam", "esbuild-rs"]
-
 [dependencies]
 aho-corasick = "0.7"
-crossbeam = { version = "0.7", optional = true }
-esbuild-rs = { version = "0.13.8", optional = true }
+css-minify = "0.2.2"
+minify-js = "0.1.0"
 lazy_static = "1.4"
 memchr = "2"

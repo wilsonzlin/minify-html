@@ -8,14 +8,12 @@ pub fn eval_with_cfg(src: &'static [u8], expected: &'static [u8], cfg: &Cfg) {
     assert_eq!(from_utf8(&min).unwrap(), from_utf8(expected).unwrap(),);
 }
 
-#[cfg(feature = "js-esbuild")]
 pub fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
     let mut cfg = Cfg::new();
     cfg.minify_js = true;
     eval_with_cfg(src, expected, &cfg);
 }
 
-#[cfg(feature = "js-esbuild")]
 pub fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
     let mut cfg = Cfg::new();
     cfg.minify_css = true;
@@ -146,12 +144,11 @@ fn test_viewport_attr_minification() {
     );
 }
 
-#[cfg(feature = "js-esbuild")]
 #[test]
 fn test_style_attr_minification() {
     eval_with_css_min(
         br#"<div style="color: yellow;"></div>"#,
-        br#"<div style=color:#ff0></div>"#,
+        br#"<div style=color:yellow></div>"#,
     );
     // `style` attributes are removed if fully minified away.
     eval_with_css_min(br#"<div style="  /*  */   "></div>"#, br#"<div></div>"#);

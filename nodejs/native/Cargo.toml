@@ -10,13 +10,9 @@ edition = "2018"
 name = "minify_html_ffi"
 crate-type = ["staticlib"]
 
-[features]
-core = ["minify-html"]
-js = ["minify-html/js-esbuild"]
-
 [build-dependencies]
 cbindgen = "0.14"
 
 [dependencies]
 libc = "0.2"
-minify-html = { path = "../../rust/main", optional = true }
+minify-html = { path = "../../rust/main" }

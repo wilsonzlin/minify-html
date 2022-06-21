@@ -14,13 +14,10 @@ pub struct Cfg {
     pub keep_spaces_between_attributes: bool,
     /// Keep all comments.
     pub keep_comments: bool,
-    /// If enabled, CSS in `<style>` tags are minified using
-    /// [esbuild-rs](https://github.com/wilsonzlin/esbuild-rs). The `js-esbuild` feature must be
-    /// enabled; otherwise, this value has no effect.
+    /// If enabled, CSS in `<style>` tags and `style` attributes are minified.
     pub minify_css: bool,
     /// If enabled, JavaScript in `<script>` tags are minified using
-    /// [esbuild-rs](https://github.com/wilsonzlin/esbuild-rs). The `js-esbuild` feature must be
-    /// enabled; otherwise, this value has no effect.
+    /// [minify-js](https://github.com/wilsonzlin/minify-js).
     ///
     /// Only `<script>` tags with a valid or no
     /// [MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) is considered to

@@ -13,7 +13,7 @@ A Rust HTML minifier meticulously optimised for speed and effectiveness, with bi
 - Advanced minification strategy beats other minifiers while being much faster.
 - Uses SIMD searching, direct tries, and lookup tables.
 - Handles [invalid HTML](./notes/Parsing.md), with extensive testing and [fuzzing](./fuzz).
-- Natively binds to [esbuild](https://github.com/wilsonzlin/esbuild-rs) for super fast JS and CSS minification.
+- Uses [minify-js](https://github.com/wilsonzlin/minify-js) for super fast JS minification.
 
 ## Performance
 
@@ -55,12 +55,8 @@ minify-html --output /path/to/output.min.html --keep-closing-tags --minify-css /
 
 ```toml
 [dependencies]
-minify-html = { version = "0.8.1", features = ["js-esbuild"] }
+minify-html = { version = "0.8.1" }
 ```
-
-Building with the `js-esbuild` feature requires the Go compiler to be installed as well, to build the [JS and CSS minifier](https://github.com/wilsonzlin/esbuild-rs).
-
-If the `js-esbuild` feature is not enabled, `cfg.minify_js` and `cfg.minify_css` will have no effect.
 
 ### Use
 
@@ -190,7 +186,11 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 ## Minification
 
-Note that some of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. These can be turned off via the `Cfg` object.
+Note that some of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. To prevent this, refer to these configuration options:
+
+- `do_not_minify_doctype`
+- `ensure_spec_compliant_unquoted_attribute_values`
+- `keep_spaces_between_attributes`
 
 ### Whitespace
 

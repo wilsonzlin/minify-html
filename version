@@ -92,7 +92,7 @@ if (
 }
 cmd("git", "pull");
 cmd("bash", "./prebuild.sh");
-cmd("cargo", "test", "--features", "js-esbuild", { workingDir: RUST_MAIN_DIR });
+cmd("cargo", "test", { workingDir: RUST_MAIN_DIR });
 cmd("cargo", "test", "--features", "js-esbuild", {
   workingDir: RUST_ONEPASS_DIR,
 });

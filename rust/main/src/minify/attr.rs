@@ -1,10 +1,8 @@
-use aho_corasick::{AhoCorasickBuilder, MatchKind};
-use lazy_static::lazy_static;
+use std::str::from_utf8_unchecked;
 
-#[cfg(feature = "js-esbuild")]
-use {
-    crate::minify::css::MINIFY_CSS_TRANSFORM_OPTIONS, crate::minify::esbuild::minify_using_esbuild,
-};
+use aho_corasick::{AhoCorasickBuilder, MatchKind};
+use css_minify::optimizations::{Level, Minifier};
+use lazy_static::lazy_static;
 
 use crate::common::gen::attrs::ATTRS;
 use crate::common::gen::codepoints::DIGIT;
@@ -312,27 +310,25 @@ pub fn minify_attr(
         };
     };
 
-    #[cfg(feature = "js-esbuild")]
     if name == b"style" && cfg.minify_css {
-        let mut value_raw_wrapped = Vec::with_capacity(value_raw.len() + 3);
+        let mut value_raw_wrapped = String::with_capacity(value_raw.len() + 3);
         // TODO This isn't safe for invalid input e.g. `a}/*`.
-        value_raw_wrapped.extend_from_slice(b"x{");
-        value_raw_wrapped.extend_from_slice(&value_raw);
-        value_raw_wrapped.push(b'}');
-        let mut value_raw_wrapped_min = Vec::with_capacity(value_raw_wrapped.len());
-        minify_using_esbuild(
-            &mut value_raw_wrapped_min,
-            &value_raw_wrapped,
-            &MINIFY_CSS_TRANSFORM_OPTIONS.clone(),
-        );
-        // TODO If input was invalid, wrapper syntax may not exist anymore.
-        if value_raw_wrapped_min.starts_with(b"x{") {
-            value_raw_wrapped_min.drain(0..2);
+        value_raw_wrapped.push_str("x{");
+        value_raw_wrapped.push_str(unsafe { from_utf8_unchecked(&value_raw) });
+        value_raw_wrapped.push('}');
+        let result = Minifier::default().minify(&value_raw_wrapped, Level::Three);
+        // TODO Collect error as warning.
+        if let Ok(min) = result {
+            let mut value_raw_wrapped_min = min.into_bytes();
+            // TODO If input was invalid, wrapper syntax may not exist anymore.
+            if value_raw_wrapped_min.starts_with(b"x{") {
+                value_raw_wrapped_min.drain(0..2);
+            };
+            if value_raw_wrapped_min.ends_with(b"}") {
+                value_raw_wrapped_min.pop();
+            };
+            value_raw = value_raw_wrapped_min;
         };
-        if value_raw_wrapped_min.ends_with(b"}") {
-            value_raw_wrapped_min.pop();
-        };
-        value_raw = value_raw_wrapped_min;
     }
 
     // Make lowercase before checking against default value or JAVASCRIPT_MIME_TYPES.

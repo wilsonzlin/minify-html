@@ -1,6 +1,4 @@
 use crate::tests::eval;
-
-#[cfg(feature = "js-esbuild")]
 use crate::tests::{eval_with_css_min, eval_with_js_min};
 
 #[test]
@@ -460,25 +458,19 @@ fn test_processing_instructions() {
     eval(b"av<?xml 1.0 ?>g", b"av<?xml 1.0 ?>g");
 }
 
-#[cfg(feature = "js-esbuild")]
 #[test]
 fn test_js_minification() {
-    eval_with_js_min(b"<script>let a = 1;</script>", b"<script>let a=1;</script>");
+    eval_with_js_min(b"<script>let a = 1;</script>", b"<script>let a=1</script>");
     eval_with_js_min(
         b"<script type=text/javascript>let a = 1;</script>",
-        b"<script>let a=1;</script>",
-    );
-    // `export` statements are not allowed inline.
-    eval_with_js_min(
-        b"<script type=module>let a = 1; export a;</script>",
-        b"<script type=module></script>",
+        b"<script>let a=1</script>",
     );
     eval_with_js_min(
         br#"
         <script>let a = 1;</script>
         <script>let b = 2;</script>
     "#,
-        b"<script>let a=1;</script><script>let b=2;</script>",
+        b"<script>let a=1</script><script>let b=2</script>",
     );
     eval_with_js_min(
         b"<scRIPt type=text/plain>   alert(1.00000);   </scripT>",
@@ -491,39 +483,37 @@ fn test_js_minification() {
             let a = 1;
         </script>
     "#,
-        b"<script>let a=1;</script>",
+        b"<script>let a=1</script>",
     );
 }
 
-#[cfg(feature = "js-esbuild")]
+/* TODO Reenable once unintentional script closing tag escaping is implemented in minify-js.
 #[test]
 fn test_js_minification_unintentional_closing_tag() {
     eval_with_js_min(
         br#"<script>let a = "</" + "script>";</script>"#,
         br#"<script>let a="<\/script>";</script>"#,
     );
-    // TODO Reenable once esbuild handles closing tags case insensitively (evanw/esbuild#1509).
-    // eval_with_js_min(
-    //     br#"<script>let a = "</S" + "cRiPT>";</script>"#,
-    //     br#"<script>let a="<\/ScRiPT>";</script>"#,
-    // );
+    eval_with_js_min(
+        br#"<script>let a = "</S" + "cRiPT>";</script>"#,
+        br#"<script>let a="<\/ScRiPT>";</script>"#,
+    );
     eval_with_js_min(
         br#"<script>let a = "\u003c/script>";</script>"#,
         br#"<script>let a="<\/script>";</script>"#,
     );
-    // TODO Reenable once esbuild handles closing tags case insensitively (evanw/esbuild#1509).
-    // eval_with_js_min(
-    //     br#"<script>let a = "\u003c/scrIPt>";</script>"#,
-    //     br#"<script>let a="<\/scrIPt>";</script>"#,
-    // );
+    eval_with_js_min(
+        br#"<script>let a = "\u003c/scrIPt>";</script>"#,
+        br#"<script>let a="<\/scrIPt>";</script>"#,
+    );
 }
+*/
 
-#[cfg(feature = "js-esbuild")]
 #[test]
 fn test_style_element_minification() {
     // `<style>` contents.
     eval_with_css_min(
         b"<style>div { color: yellow }</style>",
-        b"<style>div{color:#ff0}</style>",
+        b"<style>div{color:yellow}</style>",
     );
 }

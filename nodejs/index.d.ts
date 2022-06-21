@@ -21,11 +21,11 @@ export function createConfiguration (options: {
   /** Keep all comments. */
   keep_comments?: boolean;
   /**
-   * If enabled, content in `<script>` tags with a JS or no [MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) will be minified using [esbuild-rs](https://github.com/wilsonzlin/esbuild-rs).
+   * If enabled, content in `<script>` tags with a JS or no [MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) will be minified using [minify-js](https://github.com/wilsonzlin/minify-js).
    */
   minify_js?: boolean;
   /**
-   * If enabled, CSS in `<style>` tags will be minified using [esbuild-rs](https://github.com/wilsonzlin/esbuild-rs).
+   * If enabled, CSS in `<style>` tags and `style` attributes will be minified.
    */
   minify_css?: boolean;
   /** Remove all bangs. */
