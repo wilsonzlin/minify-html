@@ -17,6 +17,8 @@ A Rust HTML minifier meticulously optimised for speed and effectiveness, with bi
 - Handles [invalid HTML](./notes/Parsing.md), with extensive testing and [fuzzing](./fuzz).
 - Uses [minify-js](https://github.com/wilsonzlin/minify-js) for super fast JS minification.
 
+View the [changelog](./CHANGELOG.md) to see the latest updates.
+
 ## Performance
 
 Comparison with [html-minifier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
