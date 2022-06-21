@@ -11,7 +11,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        feature: [core, js]
         os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64, self-hosted-macos-arm64]
         python: [3.8, 3.9, '3.10']
     steps:
@@ -61,9 +60,7 @@ jobs:
 
       - name: Build native module
         working-directory: ./python
-        run: |
-          python prepare.py ${{ matrix.feature }}
-          cargo build --release
+        run: cargo build --release
 
       - name: Install Python build tools (macOS x64)
         if: runner.os == 'macOS' && runner.name != 'macos-arm64'
@@ -103,7 +100,7 @@ jobs:
           else
             pathToPython="$(which python)"
           fi
-          # On macOS ARM64 this may emit a warning like "Couldn't find the symbol `PyInit_minify_html_core` in the native library. Python will fail to import this module." Ignore this message.
+          # On macOS ARM64 this may emit a warning like "Couldn't find the symbol `PyInit_minify_html` in the native library. Python will fail to import this module." Ignore this message.
           maturin build --release --strip -i "$pathToPython"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             # For idempotency, ignore any existing built wheels that have already been successfully uploaded.

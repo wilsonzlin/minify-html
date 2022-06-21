@@ -1,4 +1,4 @@
-const minifyHtml = require("@minify-html/js");
+const minifyHtml = require("@minify-html/node");
 const { htmlOnly, run } = require("../common");
 
 const minifyHtmlCfg = minifyHtml.createConfiguration({

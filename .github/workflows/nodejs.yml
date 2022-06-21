@@ -11,7 +11,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        feature: [core, js]
         os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64, self-hosted-macos-arm64]
     steps:
       - uses: actions/checkout@v1
@@ -54,7 +53,6 @@ jobs:
         id: module
         shell: bash
         run: |
-          node package.json.gen.js ${{ matrix.feature }}
           npm install
           npm run build
           node compress.js
@@ -70,9 +68,6 @@ jobs:
           file: ./nodejs/index.node.gz
 
   package:
-    strategy:
-      matrix:
-        feature: [core, js]
     runs-on: ubuntu-18.04
     needs: build
     steps:
@@ -93,7 +88,6 @@ jobs:
           //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
           EOF
           cp ../README.md .
-          node package.json.gen.js ${{ matrix.feature }}
           if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
             npm publish --access public
           fi

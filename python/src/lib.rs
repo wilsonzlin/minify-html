@@ -1,4 +1,4 @@
-use minify_html::{Cfg, minify as minify_html_native};
+use minify_html::{minify as minify_html_native, Cfg};
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use std::string::String;
@@ -14,7 +14,7 @@ use std::string::String;
     minify_css = "false",
     minify_js = "false",
     remove_bangs = "false",
-    remove_processing_instructions = "false",
+    remove_processing_instructions = "false"
 )]
 fn minify(
     code: String,
@@ -30,23 +30,26 @@ fn minify(
     remove_processing_instructions: bool,
 ) -> PyResult<String> {
     let code = code.into_bytes();
-    let out_code = minify_html_native(&code, &Cfg {
-        do_not_minify_doctype,
-        ensure_spec_compliant_unquoted_attribute_values,
-        keep_closing_tags,
-        keep_comments,
-        keep_html_and_head_opening_tags,
-        keep_spaces_between_attributes,
-        minify_css,
-        minify_js,
-        remove_bangs,
-        remove_processing_instructions,
-    });
+    let out_code = minify_html_native(
+        &code,
+        &Cfg {
+            do_not_minify_doctype,
+            ensure_spec_compliant_unquoted_attribute_values,
+            keep_closing_tags,
+            keep_comments,
+            keep_html_and_head_opening_tags,
+            keep_spaces_between_attributes,
+            minify_css,
+            minify_js,
+            remove_bangs,
+            remove_processing_instructions,
+        },
+    );
     Ok(String::from_utf8(out_code).unwrap())
 }
 
 #[pymodule]
-fn REPLACE_WITH_MODULE_NAME(_py: Python, m: &PyModule) -> PyResult<()> {
+fn minify_html(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pyfunction!(minify))?;
 
     Ok(())

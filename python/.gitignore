@@ -1,14 +1,8 @@
 /Cargo.lock
-/Cargo.toml
-/src/lib.rs
 /target/
 
 __pycache__/
 /venv/
-
-# Ignore locally built native modules.
-/hyperbuild/**/*.so
-/hyperbuild/**/*.pyd
 
 # Used by Python setuptools.
 /build/

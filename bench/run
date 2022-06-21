@@ -24,7 +24,11 @@ for r in *; do
   echo "Running $r..."
   pushd "$r" >/dev/null
   out="$results_dir/$r.json"
-  sudo --preserve-env=MHB_HTML_ONLY,PATH MHB_ITERATIONS="$iterations" MHB_INPUT_DIR="$input_dir" RUST_BACKTRACE=1 nice -n -20 taskset -c 1 ./run >"$out"
+  if [[ "$(uname -s)" = "Darwin" ]]; then
+    MHB_ITERATIONS="$iterations" MHB_INPUT_DIR="$input_dir" RUST_BACKTRACE=1 ./run >"$out"
+  else
+    sudo --preserve-env=MHB_HTML_ONLY,PATH MHB_ITERATIONS="$iterations" MHB_INPUT_DIR="$input_dir" RUST_BACKTRACE=1 nice -n -20 taskset -c 1 ./run >"$out"
+  fi
   popd >/dev/null
 done
 popd >/dev/null
