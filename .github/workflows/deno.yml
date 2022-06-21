@@ -49,7 +49,7 @@ jobs:
           ./b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
           for f in wasm/pkg/*; do
             if [[ "$f" == *.js ]]; then
-              content_type='application/json'
+              content_type='application/js'
             elif [[ "$f" == *.wasm ]]; then
               content_type='application/wasm'
             else
