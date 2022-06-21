@@ -37,7 +37,7 @@ jobs:
       - name: Build native module
         working-directory: ./wasm
         shell: bash
-        run: TARGET=bundle ./build
+        run: TARGET=bundler ./build
 
       - name: Set up Node.js
         uses: actions/setup-node@master
