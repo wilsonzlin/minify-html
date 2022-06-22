@@ -11,6 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        variant: [main, onepass]
         os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64, self-hosted-macos-arm64]
         python: [3.8, 3.9, '3.10']
     steps:
@@ -49,7 +50,7 @@ jobs:
         run: bash ./prebuild.sh
 
       - name: Build native module
-        working-directory: ./python
+        working-directory: ./python/${{ matrix.feature }}
         run: cargo build --release
 
       - name: Install Python build tools (macOS x64)
@@ -71,7 +72,7 @@ jobs:
 
       - name: Pack and publish package
         shell: bash
-        working-directory: ./python
+        working-directory: ./python/${{ matrix.feature }}
         run: |
           cat << 'EOF' > "$HOME/.pypirc"
           [pypi]

@@ -14,11 +14,10 @@ An HTML minifier that provides the functionality of [minify-html](https://github
 
 The API is different compared to minify-html; refer to per-package documentation for more details.
 
-- <img width="24" src="https://wilsonl.in/minify-html/icon/java.png"> [in.wilsonl.minifyhtmlonepass](https://search.maven.org/artifact/in.wilsonl.minifyhtmlonepass/minify-html-onepass)
-- <img width="24" src="https://wilsonl.in/minify-html/icon/nodejs.png"> [@minify-html/onepass](https://www.npmjs.com/package/@minify-html/onepass)
 - <img width="24" src="https://wilsonl.in/minify-html/icon/python.png"> [minify-html-onepass](https://pypi.org/project/minify-html-onepass)
-- <img width="24" src="https://wilsonl.in/minify-html/icon/ruby.png"> [minify_html_onepass](https://rubygems.org/gems/minify_html_onepass)
 - <img width="24" src="https://wilsonl.in/minify-html/icon/rust.png"> [minify-html-onepass](https://crates.io/crates/minify-html-onepass)
+
+If you don't see your preferred language here and the main library supports it, raise an issue.
 
 ## Parsing
 

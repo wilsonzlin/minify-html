@@ -3,6 +3,7 @@
 ## 0.9.2
 
 - Fix Node.js dependency version.
+- Create onepass variant for Python.
 
 ## 0.9.1
 

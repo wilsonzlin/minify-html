@@ -101,7 +101,8 @@ for (const f of [
   "cli/Cargo.toml",
   "nodejs/Cargo.toml",
   "java/Cargo.toml",
-  "python/Cargo.toml",
+  "python/main/Cargo.toml",
+  "python/onepass/Cargo.toml",
   "ruby/Cargo.toml",
   "wasm/Cargo.toml",
 ]) {

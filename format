@@ -4,7 +4,7 @@ set -Eeuxo pipefail
 
 pushd "$(dirname "$0")" >/dev/null
 
-npx prettier@2.3.2 -w 'version' 'bench/*.{js,json}' 'bench/runners/*.{js,json}' 'bench/runners/*/*.{js,json}' 'gen/*.{ts,json}'
+npx prettier@2.3.2 -w 'version' 'bench/*.{js,json}' 'bench/runners/*.{js,json}' 'bench/runners/*/*.{js,json}' 'gen/*.{ts,json}' 'nodejs/*.{js,json,ts}'
 
 for dir in \
   bench/runners/minify-html \
@@ -16,7 +16,8 @@ for dir in \
   fuzz/process \
   java \
   nodejs \
-  python \
+  python/main \
+  python/onepass \
   ruby \
   rust/main \
   rust/onepass \

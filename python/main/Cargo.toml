@@ -1,0 +1,21 @@
+[package]
+publish = false
+name = "minify_html"
+description = "Extremely fast and smart HTML + JS + CSS minifier"
+license = "MIT"
+homepage = "https://github.com/wilsonzlin/minify-html"
+readme = "README.md"
+repository = "https://github.com/wilsonzlin/minify-html.git"
+version = "0.9.1"
+authors = ["Wilson Lin <code@wilsonl.in>"]
+edition = "2018"
+
+[lib]
+name = "minify_html"
+crate-type = ["cdylib"]
+
+[dependencies]
+minify-html = { path = "../../rust/main" }
+[dependencies.pyo3]
+version = "0.13.0"
+features = ["extension-module"]

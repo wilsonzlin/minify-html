@@ -1,0 +1,10 @@
+/Cargo.lock
+/target/
+
+__pycache__/
+/venv/
+
+# Used by Python setuptools.
+/build/
+/dist/
+/*.egg-info/
