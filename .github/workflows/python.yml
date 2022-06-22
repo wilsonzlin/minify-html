@@ -50,7 +50,7 @@ jobs:
         run: bash ./prebuild.sh
 
       - name: Build native module
-        working-directory: ./python/${{ matrix.feature }}
+        working-directory: ./python/${{ matrix.variant }}
         run: cargo build --release
 
       - name: Install Python build tools (macOS x64)
@@ -72,7 +72,7 @@ jobs:
 
       - name: Pack and publish package
         shell: bash
-        working-directory: ./python/${{ matrix.feature }}
+        working-directory: ./python/${{ matrix.variant }}
         run: |
           cat << 'EOF' > "$HOME/.pypirc"
           [pypi]
