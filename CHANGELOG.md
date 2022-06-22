@@ -4,6 +4,7 @@
 
 - Fix Node.js dependency version.
 - Create onepass variant for Python.
+- Bump [minify-js](https://github.com/wilsonzlin/minify-js) to 0.1.1.
 
 ## 0.9.1
 
