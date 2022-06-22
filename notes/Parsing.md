@@ -25,7 +25,7 @@ If the input ends while in the middle of a tag or attribute value, that tag/attr
 |Attribute-like syntax in closing tags are parsed like attributes but ignored.|`<div></div x=">">5`|`<div></div>`|
 |If the character following `</` is not a valid tag name character, all code until the next `>` is dropped. It is not considered a closing tag, even as an invalid one.|`<div></   div x=">">5`|`<div>">5`|
 |If a closing tag represents a void element, the closing tag is dropped.|`<div><br>ax</br><img></img>i</div>`|`<div><br>ax<img>i</div>`|
-|If a closing tag does not match the opening tag, and the closing tag cannot be omitted as per the spec, the closing tag is reinterpreted as an opening tag. NOTE: Most browsers have far more complex logic.|`<div><span></div></span>5`|`<div><span><div><span>5`|
+|If a closing tag does not match the opening tag, and the closing tag cannot be omitted as per the spec, the closing tag is ignored. NOTE: Most browsers have far more complex logic.|`<div><span></div></span>5`|`<div><span><span>5`|
 |If an opening tag ends with `/>` instead of `>`, and it's an HTML tag, the `/` is ignored. If it's an SVG tag, it's self-closing.|`<div/>5<div></div>`|`<div>5<div></div>`|
 |A slash as the last character of an unquoted attribute value immediately preceding a `>` is not interpreted as part of the self-closing syntax `/>`, even for self-closable SVG elements.|`<circle r=1/>`|`<circle r="1/">`|
 |Any opening `html`, `head`, or `body` tags after the first are ignored.|`<html><head><meta><body><div><head><span><body>`|`<html><head><meta><body><div><span>`|

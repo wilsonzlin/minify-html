@@ -80,14 +80,14 @@ fn test_removal_of_html_and_head_opening_tags() {
 
 #[test]
 fn test_unmatched_closing_tag() {
-    eval(b"Hello</p>Goodbye", b"Hello<p>Goodbye");
+    eval(b"Hello</p>Goodbye", b"HelloGoodbye");
     eval(b"Hello<br></br>Goodbye", b"Hello<br>Goodbye");
-    eval(b"<div>Hello</p>Goodbye", b"<div>Hello<p>Goodbye");
-    eval(b"<ul><li>a</p>", b"<ul><li>a<p>");
-    eval(b"<ul><li><rt>a</p>", b"<ul><li><rt>a<p>");
+    eval(b"<div>Hello</p>Goodbye", b"<div>HelloGoodbye");
+    eval(b"<ul><li>a</p>", b"<ul><li>a");
+    eval(b"<ul><li><rt>a</p>", b"<ul><li><rt>a");
     eval(
         b"<html><head><body><ul><li><rt>a</p>",
-        b"<html><head><body><ul><li><rt>a<p>",
+        b"<html><head><body><ul><li><rt>a",
     );
 }
 

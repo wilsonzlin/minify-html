@@ -172,8 +172,8 @@ pub fn parse_content(
                     // Closing tag for void element, drop.
                     typ = IgnoredTag;
                 } else if parent.is_empty() || parent != name.as_slice() {
-                    // Closing tag mismatch, reinterpret as opening tag.
-                    typ = OpeningTag;
+                    // Closing tag mismatch, drop.
+                    typ = IgnoredTag;
                 };
             };
             typ = maybe_ignore_html_head_body(code, typ, parent, &name);

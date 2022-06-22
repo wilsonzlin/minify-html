@@ -124,8 +124,7 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
     }
 }
 
-// `<` or `</` must be next. If `</` is next, tag is reinterpreted as opening tag (i.e. `/` is ignored).
-// `parent` should be an empty slice if it doesn't exist.
+// `<` must be next. `parent` should be an empty slice if it doesn't exist.
 pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData {
     let ParsedTag {
         name: elem_name,

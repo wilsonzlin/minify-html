@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.10.0
+
+- Drop unmatched closing tags instead of reinterpreting them as opening tags. This avoids the possibility of unintentionally creating a large deep tree due to malformed inputs where there are repeated unmatched closing tags (e.g. broken HTML template).
+
 ## 0.9.2
 
 - Fix Node.js dependency version.
