@@ -1,5 +1,9 @@
 use std::fs::File;
 use std::io::{stdin, stdout, Read, Write};
+use std::path::PathBuf;
+use std::process::exit;
+use std::sync::Arc;
+use std::thread;
 
 use structopt::StructOpt;
 
@@ -12,9 +16,9 @@ use minify_html::{minify, Cfg};
 )]
 // WARNING: Keep descriptions in sync with Cfg.
 struct Cli {
-    /// File to minify; omit for stdin.
+    /// Files to minify; omit for stdin. If more than one is provided, they will be parallel minified in place, and --output must be omitted.
     #[structopt(parse(from_os_str))]
-    input: Option<std::path::PathBuf>,
+    inputs: Vec<std::path::PathBuf>,
 
     /// Output destination; omit for stdout.
     #[structopt(short, long, parse(from_os_str))]
@@ -62,12 +66,11 @@ struct Cli {
 }
 
 macro_rules! io_expect {
-    ($expr:expr, $msg:literal) => {
+    ($name:expr, $expr:expr, $msg:literal) => {
         match $expr {
             Ok(r) => r,
             Err(e) => {
-                eprintln!("Error: {}", $msg);
-                eprintln!("{}", e);
+                eprintln!("[{}] {}: {}", $name, $msg, e);
                 return;
             }
         }
@@ -76,37 +79,97 @@ macro_rules! io_expect {
 
 fn main() {
     let args = Cli::from_args();
-    let mut src_code = Vec::<u8>::new();
-    let mut src_file: Box<dyn Read> = match args.input {
-        Some(p) => Box::new(io_expect!(File::open(p), "could not open source file")),
-        None => Box::new(stdin()),
+    if args.output.is_some() && args.inputs.len() > 1 {
+        eprintln!("Cannot have --output when multiple inputs are provided.");
+        exit(1);
     };
-    io_expect!(
-        src_file.read_to_end(&mut src_code),
-        "could not load source code"
-    );
-    let out_code = minify(
-        &src_code,
-        &Cfg {
-            do_not_minify_doctype: args.do_not_minify_doctype,
-            ensure_spec_compliant_unquoted_attribute_values: args
-                .ensure_spec_compliant_unquoted_attribute_values,
-            keep_closing_tags: args.keep_closing_tags,
-            keep_comments: args.keep_comments,
-            keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,
-            keep_spaces_between_attributes: args.keep_spaces_between_attributes,
-            minify_css: args.minify_css,
-            minify_js: args.minify_js,
-            remove_bangs: args.remove_bangs,
-            remove_processing_instructions: args.remove_processing_instructions,
-        },
-    );
-    let mut out_file: Box<dyn Write> = match args.output {
-        Some(p) => Box::new(io_expect!(File::create(p), "could not open output file")),
-        None => Box::new(stdout()),
-    };
-    io_expect!(
-        out_file.write_all(&out_code),
-        "could not save minified code"
-    );
+
+    let cfg = Arc::new(Cfg {
+        do_not_minify_doctype: args.do_not_minify_doctype,
+        ensure_spec_compliant_unquoted_attribute_values: args
+            .ensure_spec_compliant_unquoted_attribute_values,
+        keep_closing_tags: args.keep_closing_tags,
+        keep_comments: args.keep_comments,
+        keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,
+        keep_spaces_between_attributes: args.keep_spaces_between_attributes,
+        minify_css: args.minify_css,
+        minify_js: args.minify_js,
+        remove_bangs: args.remove_bangs,
+        remove_processing_instructions: args.remove_processing_instructions,
+    });
+
+    if args.inputs.len() < 1 {
+        let input_name = args
+            .inputs
+            .get(0)
+            .map(|p| p.to_string_lossy().into_owned())
+            .unwrap_or("stdin".to_string());
+        let mut src_file: Box<dyn Read> = match args.inputs.get(0) {
+            Some(p) => Box::new(io_expect!(
+                input_name,
+                File::open(p),
+                "could not open source file"
+            )),
+            None => Box::new(stdin()),
+        };
+        let mut src_code = Vec::<u8>::new();
+        io_expect!(
+            input_name,
+            src_file.read_to_end(&mut src_code),
+            "could not load source code"
+        );
+        let out_code = minify(&src_code, &cfg);
+        let mut out_file: Box<dyn Write> = match args.output {
+            Some(p) => Box::new(io_expect!(
+                input_name,
+                File::create(p),
+                "could not open output file"
+            )),
+            None => Box::new(stdout()),
+        };
+        io_expect!(
+            input_name,
+            out_file.write_all(&out_code),
+            "could not save minified code"
+        );
+    } else {
+        let (mut tx, rx): (spmc::Sender<PathBuf>, spmc::Receiver<PathBuf>) = spmc::channel();
+        let mut handles = Vec::new();
+        for _ in 0..num_cpus::get() {
+            let rx = rx.clone();
+            let cfg = cfg.clone();
+            handles.push(thread::spawn(move || {
+                let input = rx.recv().unwrap();
+                let input_name = input.to_string_lossy().into_owned();
+
+                let mut src_file =
+                    io_expect!(input_name, File::open(&input), "could not open source file");
+                let mut src_code = Vec::<u8>::new();
+                io_expect!(
+                    input_name,
+                    src_file.read_to_end(&mut src_code),
+                    "could not load source code"
+                );
+                let out_code = minify(&src_code, &cfg);
+                let mut out_file = io_expect!(
+                    input_name,
+                    File::create(&input),
+                    "could not open output file"
+                );
+                io_expect!(
+                    input_name,
+                    out_file.write_all(&out_code),
+                    "could not save minified code"
+                );
+            }));
+        }
+
+        for i in args.inputs {
+            tx.send(i).unwrap();
+        }
+
+        for handle in handles {
+            handle.join().unwrap();
+        }
+    }
 }

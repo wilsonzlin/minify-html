@@ -50,6 +50,12 @@ Use the `--help` argument for more details.
 minify-html --output /path/to/output.min.html --keep-closing-tags --minify-css /path/to/src.html
 ```
 
+To quickly parallel process a batch of files in place:
+
+```bash
+minify-html --keep-closing-tags --minify-css /path/to/**/*.html
+```
+
 </details>
 
 <details>
