@@ -11,3 +11,13 @@ minify-html = { path = "../rust/main" }
 num_cpus = "1.13.1"
 spmc = "0.3.0"
 structopt = "0.3"
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1
+opt-level = 3
+
+[profile.release.package."*"]
+codegen-units = 1
+opt-level = 3
