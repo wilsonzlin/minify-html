@@ -80,7 +80,7 @@ macro_rules! io_expect {
 fn main() {
     let args = Cli::from_args();
     if args.output.is_some() && args.inputs.len() > 1 {
-        eprintln!("Cannot have --output when multiple inputs are provided.");
+        eprintln!("Cannot provide --output when multiple inputs are provided.");
         exit(1);
     };
 
@@ -108,7 +108,7 @@ fn main() {
             Some(p) => Box::new(io_expect!(
                 input_name,
                 File::open(p),
-                "could not open source file"
+                "Could not open source file"
             )),
             None => Box::new(stdin()),
         };
@@ -116,24 +116,24 @@ fn main() {
         io_expect!(
             input_name,
             src_file.read_to_end(&mut src_code),
-            "could not load source code"
+            "Could not load source code"
         );
         let out_code = minify(&src_code, &cfg);
         let mut out_file: Box<dyn Write> = match args.output {
             Some(p) => Box::new(io_expect!(
                 input_name,
                 File::create(p),
-                "could not open output file"
+                "Could not open output file"
             )),
             None => Box::new(stdout()),
         };
         io_expect!(
             input_name,
             out_file.write_all(&out_code),
-            "could not save minified code"
+            "Could not save minified code"
         );
     } else {
-        let (mut tx, rx): (spmc::Sender<PathBuf>, spmc::Receiver<PathBuf>) = spmc::channel();
+        let (mut tx, rx) = spmc::channel::<PathBuf>();
         let mut handles = Vec::new();
         for _ in 0..num_cpus::get() {
             let rx = rx.clone();
@@ -143,23 +143,23 @@ fn main() {
                 let input_name = input.to_string_lossy().into_owned();
 
                 let mut src_file =
-                    io_expect!(input_name, File::open(&input), "could not open source file");
+                    io_expect!(input_name, File::open(&input), "Could not open source file");
                 let mut src_code = Vec::<u8>::new();
                 io_expect!(
                     input_name,
                     src_file.read_to_end(&mut src_code),
-                    "could not load source code"
+                    "Could not load source code"
                 );
                 let out_code = minify(&src_code, &cfg);
                 let mut out_file = io_expect!(
                     input_name,
                     File::create(&input),
-                    "could not open output file"
+                    "Could not open output file"
                 );
                 io_expect!(
                     input_name,
                     out_file.write_all(&out_code),
-                    "could not save minified code"
+                    "Could not save minified code"
                 );
             }));
         }
