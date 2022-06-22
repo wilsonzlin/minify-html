@@ -39,7 +39,11 @@ const downloadNativeBinary = async () => {
         `https://wilsonl.in/minify-html/bin/nodejs/${pkg.version}/${binaryName}.node`
       );
     } catch (e) {
-      if (e instanceof StatusError && e.status !== 404 && attempt < MAX_DOWNLOAD_ATTEMPTS) {
+      if (
+        e instanceof StatusError &&
+        e.status !== 404 &&
+        attempt < MAX_DOWNLOAD_ATTEMPTS
+      ) {
         await wait(Math.random() * 2500 + 500);
         continue;
       }
@@ -58,7 +62,9 @@ if (
   downloadNativeBinary().then(
     () => console.log(`Downloaded ${pkg.name}`),
     (err) => {
-      console.error(`Failed to download ${pkg.name}, will build from source: ${err}`);
+      console.error(
+        `Failed to download ${pkg.name}, will build from source: ${err}`
+      );
       const out = cp.spawnSync("npm", ["run", "build-release"], {
         cwd: __dirname,
         stdio: ["ignore", "inherit", "inherit"],
