@@ -112,10 +112,10 @@ for (const f of [
   );
 }
 
-for (const f of ["README.md"]) {
+for (const f of ["README.md", "nodejs/Cargo.toml"]) {
   replaceInFile(
     f,
-    /^(minify-html = \{ version = )"\d+\.\d+\.\d+"/m,
+    /^(minify-html = )"\d+\.\d+\.\d+"/m,
     `$1"${NEW_VERSION}"`
   );
 }

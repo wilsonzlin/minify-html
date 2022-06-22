@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.9.2
+
+- Fix Node.js dependency version.
+
 ## 0.9.1
 
 - Fix Node.js postinstall script.

@@ -59,7 +59,7 @@ minify-html --output /path/to/output.min.html --keep-closing-tags --minify-css /
 
 ```toml
 [dependencies]
-minify-html = { version = "0.9.1" }
+minify-html = "0.9.1"
 ```
 
 ### Use
