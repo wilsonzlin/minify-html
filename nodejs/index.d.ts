@@ -1,5 +1,5 @@
 /**
- * Minifies a string containing HTML code.
+ * Minifies a Buffer containing UTF-8 HTML code.
  *
  * @param src - Source HTML code
  * @param cfg - Configurable minifier settings to use
