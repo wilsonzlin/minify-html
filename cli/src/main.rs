@@ -98,7 +98,7 @@ fn main() {
     });
 
     if args.inputs.len() <= 1 {
-        // single file mode or stdin mode
+        // Single file mode or stdin mode.
         let input_name = args
             .inputs
             .get(0)
@@ -155,6 +155,7 @@ fn main() {
                 out_file.write_all(&out_code),
                 "Could not save minified code"
             );
+            // Just print the name, since this is the default output and any prefix becomes redundant. It'd also allow piping into another command (quite nice for something like `minify-html *.html | xargs gzip`), copying as list of files, etc.
             println!("{}", input_name);
         });
     }

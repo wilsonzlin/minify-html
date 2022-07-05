@@ -3,6 +3,8 @@
 ## 0.10.0
 
 - Drop unmatched closing tags instead of reinterpreting them as opening tags. This avoids the possibility of unintentionally creating a large deep tree due to malformed inputs where there are repeated unmatched closing tags (e.g. broken HTML template).
+- Fix parallel minification in CLI mode, where some inputs were ignored.
+- Output file names as they're processed in parallel mode from the CLI.
 
 ## 0.9.2
 
