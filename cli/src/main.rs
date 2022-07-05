@@ -155,6 +155,7 @@ fn main() {
                 out_file.write_all(&out_code),
                 "Could not save minified code"
             );
+            println!("finish minifying {}", input_name);
         });
     }
 }
