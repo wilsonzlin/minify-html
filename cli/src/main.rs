@@ -97,7 +97,8 @@ fn main() {
         remove_processing_instructions: args.remove_processing_instructions,
     });
 
-    if args.inputs.is_empty() {
+    if args.inputs.len() <= 1 {
+        // single file mode or stdin mode
         let input_name = args
             .inputs
             .get(0)
