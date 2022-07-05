@@ -1,10 +1,9 @@
 use std::fs::File;
 use std::io::{stdin, stdout, Read, Write};
-use std::path::PathBuf;
 use std::process::exit;
 use std::sync::Arc;
-use std::thread;
 
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use structopt::StructOpt;
 
 use minify_html::{minify, Cfg};
@@ -98,12 +97,12 @@ fn main() {
         remove_processing_instructions: args.remove_processing_instructions,
     });
 
-    if args.inputs.len() < 1 {
+    if args.inputs.is_empty() {
         let input_name = args
             .inputs
             .get(0)
             .map(|p| p.to_string_lossy().into_owned())
-            .unwrap_or("stdin".to_string());
+            .unwrap_or_else(|| "stdin".to_string());
         let mut src_file: Box<dyn Read> = match args.inputs.get(0) {
             Some(p) => Box::new(io_expect!(
                 input_name,
@@ -133,43 +132,28 @@ fn main() {
             "Could not save minified code"
         );
     } else {
-        let (mut tx, rx) = spmc::channel::<PathBuf>();
-        let mut handles = Vec::new();
-        for _ in 0..num_cpus::get() {
-            let rx = rx.clone();
-            let cfg = cfg.clone();
-            handles.push(thread::spawn(move || {
-                let input = rx.recv().unwrap();
-                let input_name = input.to_string_lossy().into_owned();
+        args.inputs.par_iter().for_each(|input| {
+            let input_name = input.to_string_lossy().into_owned();
 
-                let mut src_file =
-                    io_expect!(input_name, File::open(&input), "Could not open source file");
-                let mut src_code = Vec::<u8>::new();
-                io_expect!(
-                    input_name,
-                    src_file.read_to_end(&mut src_code),
-                    "Could not load source code"
-                );
-                let out_code = minify(&src_code, &cfg);
-                let mut out_file = io_expect!(
-                    input_name,
-                    File::create(&input),
-                    "Could not open output file"
-                );
-                io_expect!(
-                    input_name,
-                    out_file.write_all(&out_code),
-                    "Could not save minified code"
-                );
-            }));
-        }
-
-        for i in args.inputs {
-            tx.send(i).unwrap();
-        }
-
-        for handle in handles {
-            handle.join().unwrap();
-        }
+            let mut src_file =
+                io_expect!(input_name, File::open(&input), "Could not open source file");
+            let mut src_code = Vec::<u8>::new();
+            io_expect!(
+                input_name,
+                src_file.read_to_end(&mut src_code),
+                "Could not load source code"
+            );
+            let out_code = minify(&src_code, &cfg);
+            let mut out_file = io_expect!(
+                input_name,
+                File::create(&input),
+                "Could not open output file"
+            );
+            io_expect!(
+                input_name,
+                out_file.write_all(&out_code),
+                "Could not save minified code"
+            );
+        });
     }
 }
