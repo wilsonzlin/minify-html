@@ -8,9 +8,8 @@ edition = "2018"
 
 [dependencies]
 minify-html = { path = "../rust/main" }
-num_cpus = "1.13.1"
-spmc = "0.3.0"
 structopt = "0.3"
+rayon = "1.5"
 
 [profile.release]
 lto = true
