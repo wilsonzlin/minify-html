@@ -10,6 +10,7 @@ edition = "2018"
 minify-html = { path = "../rust/main" }
 structopt = "0.3"
 rayon = "1.5"
+
 [profile.release]
 lto = true
 strip = true
