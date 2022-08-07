@@ -124,10 +124,11 @@ yarn add @minify-html/node
 TypeScript definitions are available.
 
 ```ts
+import { Buffer } from "node:buffer";
 import * as minifyHtml from "@minify-html/node";
 // Or `const minifyHtml = require("@minify-html/node")` if not using TS/ESM.
 
-const minified = minifyHtml.minify("<p>  Hello, world!  </p>", { keep_spaces_between_attributes: true, keep_comments: true });
+const minified = minifyHtml.minify(Buffer.from("<p>  Hello, world!  </p>"), { keep_spaces_between_attributes: true, keep_comments: true });
 ```
 
 All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available as snake_case properties on the object provided as the second argument; if any are not set, they default to `false`.
