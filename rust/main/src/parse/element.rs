@@ -132,6 +132,13 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
         self_closing,
     } = parse_tag(code);
 
+    // Embedded svg tags are immediately in the svg namespace and must be parsed as such.
+    let ns = if elem_name == b"svg" {
+        Namespace::Svg
+    } else {
+        ns
+    };
+
     // Only foreign elements can be self closed.
     if self_closing && ns != Namespace::Html {
         return NodeData::Element {
@@ -154,14 +161,6 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
         };
     };
 
-    // TODO Is "svg" itself in the SVG namespace? Does it matter?
-    // If it is and does, we need to update `namespace:` property of this function's return values.
-    let child_ns = if elem_name == b"svg" {
-        Namespace::Svg
-    } else {
-        ns
-    };
-
     let ParsedContent {
         closing_tag_omitted,
         children,
@@ -175,7 +174,7 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
         b"style" => parse_style_content(code),
         b"textarea" => parse_textarea_content(code),
         b"title" => parse_title_content(code),
-        _ => parse_content(code, child_ns, parent, &elem_name),
+        _ => parse_content(code, ns, parent, &elem_name),
     };
 
     if !closing_tag_omitted {
