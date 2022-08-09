@@ -39,7 +39,6 @@ Precompiled binaries are available for Linux, macOS, and Windows.
 [Linux x64](https://wilsonl.in/minify-html/bin/0.9.2-linux-x86_64) |
 [Linux ARM64](https://wilsonl.in/minify-html/bin/0.9.2-linux-arm64) |
 [macOS x64](https://wilsonl.in/minify-html/bin/0.9.2-macos-x86_64) |
-[macOS ARM64](https://wilsonl.in/minify-html/bin/0.9.2-macos-arm64) |
 [Windows x64](https://wilsonl.in/minify-html/bin/0.9.2-windows-x86_64.exe)
 
 ### Use
@@ -103,7 +102,7 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 - Package: [@minify-html/node](https://www.npmjs.com/package/@minify-html/node)
 - Binding: [Neon](https://github.com/neon-bindings/neon)
-- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Node.js 8.6.0 and higher
+- Platforms: Linux (ARM64 and x64), macOS (x64), Windows (x64); Node.js 8.6.0 and higher
 
 ### Get
 
@@ -177,7 +176,7 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 - Package: [minify-html](https://pypi.org/project/minify-html)
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
-- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Python 3.8 to 3.10
+- Platforms: Linux (ARM64 and x64), macOS (x64), Windows (x64); Python 3.8 to 3.10
 
 ### Get
 

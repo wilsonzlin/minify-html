@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64, self-hosted-macos-arm64]
+        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64]
         include:
           - os: macos-11.0
             ARCH: macos-x86_64
@@ -29,10 +29,6 @@ jobs:
             ARCH: linux-arm64
             MIME: application/octet-stream
             EXT: ''
-          - os: self-hosted-macos-arm64
-            ARCH: macos-arm64
-            MIME: application/octet-stream
-            EXT: ''
     steps:
       - uses: actions/checkout@v1
 
@@ -47,7 +43,6 @@ jobs:
         run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}-${{ matrix.ARCH }}${{ matrix.EXT }}
 
       - name: Set up Rust
-        if: runner.name != 'macos-arm64'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable

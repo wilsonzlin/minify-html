@@ -6,6 +6,7 @@
 - Fix parallel minification in CLI mode, where some inputs were ignored.
 - Output file names as they're processed in parallel mode from the CLI.
 - Allow self-closing `<svg>` tags.
+- Drop support for macOS ARM64 due to lack of GitHub Actions runners.
 
 ## 0.9.2
 
