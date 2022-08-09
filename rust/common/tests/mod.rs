@@ -517,3 +517,15 @@ fn test_style_element_minification() {
         b"<style>div{color:yellow}</style>",
     );
 }
+
+#[test]
+fn test_self_closing_svg() {
+    eval(
+        b"<a><svg viewBox=\"0 0 700 100\" /></a><footer></footer>",
+        b"<a><svg viewbox=\"0 0 700 100\"/></a><footer></footer>",
+    );
+    eval(
+        b"<a><svg viewBox=\"0 0 700 100\"></svg></a><footer></footer>",
+        b"<a><svg viewbox=\"0 0 700 100\"></svg></a><footer></footer>",
+    );
+}
