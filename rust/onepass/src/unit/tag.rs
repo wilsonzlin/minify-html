@@ -19,6 +19,7 @@ use crate::unit::style::process_style;
 #[derive(Copy, Clone)]
 enum TagType {
     ScriptJs,
+    ScriptJsModule,
     ScriptData,
     Style,
     Other,
@@ -138,14 +139,14 @@ pub fn process_tag(
         match (tag_type, &proc[name]) {
             // NOTE: We don't support multiple `type` attributes, so can't go from ScriptData => ScriptJs.
             (TagType::ScriptJs, b"type") => {
-                // It's JS if the value is empty or one of `JAVASCRIPT_MIME_TYPES`.
-                let script_tag_type_is_js = value
+                if value.filter(|v| &proc[*v] == b"module").is_some() {
+                    tag_type = TagType::ScriptJsModule;
+                } else if value
                     .filter(|v| !JAVASCRIPT_MIME_TYPES.contains(&proc[*v]))
-                    .is_none();
-                if script_tag_type_is_js {
-                    if &proc[value.unwrap()] != b"module" {
-                        erase_attr = true;
-                    };
+                    .is_none()
+                {
+                    // The value is empty or one of `JAVASCRIPT_MIME_TYPES`.
+                    erase_attr = true;
                 } else {
                     // Tag does not contain JS, don't minify JS.
                     tag_type = TagType::ScriptData;
@@ -205,8 +206,11 @@ pub fn process_tag(
 
     let mut closing_tag_omitted = false;
     match tag_type {
-        TagType::ScriptData => process_script(proc, cfg, false)?,
-        TagType::ScriptJs => process_script(proc, cfg, true)?,
+        TagType::ScriptData => process_script(proc, cfg, None)?,
+        TagType::ScriptJs => process_script(proc, cfg, Some(minify_js::TopLevelMode::Global))?,
+        TagType::ScriptJsModule => {
+            process_script(proc, cfg, Some(minify_js::TopLevelMode::Module))?
+        }
         TagType::Style => process_style(proc, cfg)?,
         _ => {
             closing_tag_omitted =

@@ -169,6 +169,9 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
             Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => {
                 parse_script_content(code, ScriptOrStyleLang::Data)
             }
+            Some(typ) if typ.as_slice() == b"module" => {
+                parse_script_content(code, ScriptOrStyleLang::JSModule)
+            }
             _ => parse_script_content(code, ScriptOrStyleLang::JS),
         },
         b"style" => parse_style_content(code),

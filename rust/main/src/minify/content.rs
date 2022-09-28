@@ -145,7 +145,12 @@ pub fn minify_content(
             NodeData::ScriptOrStyleContent { code, lang } => match lang {
                 ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
                 ScriptOrStyleLang::Data => out.extend_from_slice(&code),
-                ScriptOrStyleLang::JS => minify_js(cfg, out, &code),
+                ScriptOrStyleLang::JS => {
+                    minify_js(cfg, minify_js::TopLevelMode::Global, out, &code)
+                }
+                ScriptOrStyleLang::JSModule => {
+                    minify_js(cfg, minify_js::TopLevelMode::Module, out, &code)
+                }
             },
             NodeData::Text { value } => out
                 .extend_from_slice(&CHEVRON_REPLACER.replace_all(&encode_entities(&value, false))),

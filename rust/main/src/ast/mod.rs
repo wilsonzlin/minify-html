@@ -19,6 +19,7 @@ pub enum ScriptOrStyleLang {
     CSS,
     Data,
     JS,
+    JSModule,
 }
 
 pub struct AttrVal {

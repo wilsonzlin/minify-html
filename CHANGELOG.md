@@ -1,5 +1,10 @@
 # minify-html changelog
 
+## 0.10.1
+
+- Bump [minify-js](https://github.com/wilsonzlin/minify-js) to 0.2.
+- Minify JS as module instead of global script if `type` is `module`.
+
 ## 0.10.0
 
 - Drop unmatched closing tags instead of reinterpreting them as opening tags. This avoids the possibility of unintentionally creating a large deep tree due to malformed inputs where there are repeated unmatched closing tags (e.g. broken HTML template).
