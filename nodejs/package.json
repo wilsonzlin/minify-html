@@ -14,7 +14,7 @@
     "README.md",
     "postinstall.js"
   ],
-  "version": "0.10.1",
+  "version": "0.10.2",
   "types": "index.d.ts",
   "scripts": {
     "build": "cargo-cp-artifact --artifact cdylib minify-html-node index.node -- cargo build --message-format=json-render-diagnostics",
