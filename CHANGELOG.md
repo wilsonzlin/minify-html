@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.10.2
+
+- Bump [minify-js](https://github.com/wilsonzlin/minify-js) to 0.2.6.
+
 ## 0.10.1
 
 - Bump [minify-js](https://github.com/wilsonzlin/minify-js) to 0.2.
