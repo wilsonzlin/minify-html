@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- [Python] Add Python 3.11 support.
+
 ## 0.10.2
 
 - Bump [minify-js](https://github.com/wilsonzlin/minify-js) to 0.2.6.
