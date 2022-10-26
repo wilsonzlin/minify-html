@@ -1,4 +1,4 @@
-use minify_html::{minify as minify_html_native, Cfg};
+use ::minify_html::{minify as minify_html_native, Cfg};
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use std::string::String;
