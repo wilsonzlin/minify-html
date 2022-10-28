@@ -95,6 +95,8 @@ cmd("bash", "./prebuild.sh");
 cmd("cargo", "test", { workingDir: RUST_MAIN_DIR });
 cmd("cargo", "test", { workingDir: RUST_ONEPASS_DIR });
 
+replaceInFile("CHANGELOG.md", /^## Pending$/m, `## ${NEW_VERSION}`);
+
 for (const f of [
   `${RUST_MAIN_DIR}/Cargo.toml`,
   `${RUST_ONEPASS_DIR}/Cargo.toml`,
