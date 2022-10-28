@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.10.3
 
 - [Python] Add Python 3.11 support.
 - [Python] Build source distribution wheels that will compile on install when prebuilt variants are not available. The Rust compiler must be available.
