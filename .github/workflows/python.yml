@@ -13,13 +13,13 @@ jobs:
       matrix:
         variant: [main, onepass]
         os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64]
-        python: [3.8, 3.9, '3.10', '3.11']
+        python: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v1
 
       - name: Set up Python (x64)
         if: runner.name != 'linux-arm64'
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
           architecture: 'x64'
