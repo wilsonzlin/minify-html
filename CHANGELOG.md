@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Bump [minify-js](https://github.com/wilsonzlin/minify-js) to 0.4.2.
+
 ## 0.10.6
 
 - Improve handling of RCDATA text content in edge cases.
