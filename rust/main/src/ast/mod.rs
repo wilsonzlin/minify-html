@@ -48,6 +48,12 @@ impl PartialEq for AttrVal {
 
 impl Eq for AttrVal {}
 
+#[derive(Eq, PartialEq, Debug)]
+pub enum RcdataContentType {
+  Textarea,
+  Title,
+}
+
 // Derive Eq for testing.
 #[derive(Eq, PartialEq)]
 pub enum NodeData {
@@ -85,7 +91,8 @@ pub enum NodeData {
     },
     // <title> or <textarea> element contents.
     RcdataContent {
-        content: Vec<u8>,
+        typ: RcdataContentType,
+        text: Vec<u8>,
     },
     // Entities should not be decoded in ScriptOrStyleContent.
     ScriptOrStyleContent {
@@ -143,9 +150,10 @@ impl Debug for NodeData {
                 .field("code", &from_utf8(code).unwrap().to_string())
                 .field("ended", ended)
                 .finish(),
-            NodeData::RcdataContent { content } => f
+            NodeData::RcdataContent { typ, text } => f
                 .debug_struct("RcdataContent")
-                .field("content", &from_utf8(content).unwrap().to_string())
+                .field("typ", typ)
+                .field("text", &from_utf8(text).unwrap().to_string())
                 .finish(),
             NodeData::ScriptOrStyleContent { code, lang } => f
                 .debug_struct("ScriptOrStyleContent")

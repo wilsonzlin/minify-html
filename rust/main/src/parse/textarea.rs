@@ -1,4 +1,4 @@
-use crate::ast::NodeData;
+use crate::ast::{NodeData, RcdataContentType};
 use crate::entity::decode::decode_entities;
 use crate::parse::content::ParsedContent;
 use crate::parse::Code;
@@ -12,7 +12,8 @@ pub fn parse_textarea_content(code: &mut Code) -> ParsedContent {
     ParsedContent {
         closing_tag_omitted,
         children: vec![NodeData::RcdataContent {
-            content: decode_entities(code.slice_and_shift(len), false),
+            typ: RcdataContentType::Textarea,
+            text: decode_entities(code.slice_and_shift(len), false),
         }],
     }
 }

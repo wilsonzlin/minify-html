@@ -129,8 +129,8 @@ pub fn c14n_serialise_ast<T: Write>(out: &mut T, node: &NodeData) -> std::io::Re
             out.write_all(code)?;
             out.write_all(b"?>")?;
         }
-        NodeData::RcdataContent { content } => {
-            out.write_all(content)?;
+        NodeData::RcdataContent { typ, text } => {
+            out.write_all(&TEXT_REPLACER.replace_all(text))?;
         }
         NodeData::ScriptOrStyleContent { code, .. } => {
             out.write_all(code)?;

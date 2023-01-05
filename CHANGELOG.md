@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Improve handling of RCDATA text content in edge cases.
+
 ## 0.10.5
 
 - Do not encode entities in RCDATA text content (e.g. contents of `<textarea>` and `<title>`).
