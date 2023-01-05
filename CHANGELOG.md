@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.10.6
 
 - Improve handling of RCDATA text content in edge cases.
 
