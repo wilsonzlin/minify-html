@@ -17,7 +17,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 aho-corasick = "0.7"
-css-minify = "0.2.2"
+css-minify = "0.3.1"
 lazy_static = "1.4"
 memchr = "2"
 minify-js = "0.2.6"

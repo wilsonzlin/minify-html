@@ -3,6 +3,7 @@
 ## Pending
 
 - Use FxHasher for internal hash-based data structures.
+- Bump [css-minify](https://github.com/Mnwa/css-minify) to 0.3.1.
 
 ## 0.10.3
 
