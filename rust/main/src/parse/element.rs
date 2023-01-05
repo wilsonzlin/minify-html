@@ -164,8 +164,8 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
     let ParsedContent {
         closing_tag_omitted,
         children,
-    } = match elem_name.as_slice() {
-        b"script" => match attributes.get(b"type".as_ref()) {
+    } = match (ns, elem_name.as_slice()) {
+        (_, b"script") => match attributes.get(b"type".as_ref()) {
             Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => {
                 parse_script_content(code, ScriptOrStyleLang::Data)
             }
@@ -174,9 +174,9 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
             }
             _ => parse_script_content(code, ScriptOrStyleLang::JS),
         },
-        b"style" => parse_style_content(code),
-        b"textarea" => parse_textarea_content(code),
-        b"title" => parse_title_content(code),
+        (_, b"style") => parse_style_content(code),
+        (Namespace::Html, b"textarea") => parse_textarea_content(code),
+        (Namespace::Html, b"title") => parse_title_content(code),
         _ => parse_content(code, ns, parent, &elem_name),
     };
 

@@ -7,5 +7,6 @@ pub mod doctype;
 pub mod element;
 pub mod instruction;
 pub mod js;
+pub mod rcdata;
 #[cfg(test)]
 mod tests;

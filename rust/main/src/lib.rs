@@ -14,6 +14,7 @@ mod common;
 mod entity;
 mod minify;
 mod parse;
+mod tag;
 #[cfg(test)]
 mod tests;
 

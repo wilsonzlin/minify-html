@@ -83,6 +83,10 @@ pub enum NodeData {
         // If the source unexpectedly ended before `?>`, we can't add it, as otherwise output could be longer than source.
         ended: bool,
     },
+    // <title> or <textarea> element contents.
+    RcdataContent {
+        content: Vec<u8>,
+    },
     // Entities should not be decoded in ScriptOrStyleContent.
     ScriptOrStyleContent {
         code: Vec<u8>,
@@ -138,6 +142,10 @@ impl Debug for NodeData {
                 .debug_struct("Instruction")
                 .field("code", &from_utf8(code).unwrap().to_string())
                 .field("ended", ended)
+                .finish(),
+            NodeData::RcdataContent { content } => f
+                .debug_struct("RcdataContent")
+                .field("content", &from_utf8(content).unwrap().to_string())
                 .finish(),
             NodeData::ScriptOrStyleContent { code, lang } => f
                 .debug_struct("ScriptOrStyleContent")

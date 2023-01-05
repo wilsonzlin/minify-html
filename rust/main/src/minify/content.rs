@@ -19,6 +19,8 @@ use crate::minify::element::minify_element;
 use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
 
+use super::rcdata::minify_rcdata;
+
 fn build_chevron_replacer() -> Replacer {
     let mut patterns = Vec::<Vec<u8>>::new();
     let mut replacements = Vec::<Vec<u8>>::new();
@@ -142,6 +144,7 @@ pub fn minify_content(
                 children,
             ),
             NodeData::Instruction { code, ended } => minify_instruction(cfg, out, &code, ended),
+            NodeData::RcdataContent { content } => minify_rcdata(cfg, out, &content),
             NodeData::ScriptOrStyleContent { code, lang } => match lang {
                 ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
                 ScriptOrStyleLang::Data => out.extend_from_slice(&code),

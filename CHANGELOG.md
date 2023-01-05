@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Do not encode entities in RCDATA text content (e.g. contents of `<textarea>` and `<title>`).
+
 ## 0.10.4
 
 - Use FxHasher for internal hash-based data structures.
