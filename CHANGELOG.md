@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.10.5
 
 - Do not encode entities in RCDATA text content (e.g. contents of `<textarea>` and `<title>`).
 
