@@ -1,5 +1,5 @@
 use lazy_static::lazy_static;
-use std::collections::{HashMap, HashSet};
+use rustc_hash::{FxHashMap, FxHashSet};
 
 // Rules sourced from https://html.spec.whatwg.org/multipage/syntax.html#syntax-tag-omission.
 // TODO Opening tags
@@ -10,7 +10,7 @@ enum ClosingTagOmissionRuleIfLast {
     // Closing tag can never be omitted if it's the last node of its parent's children.
     Never,
     // Closing tag can be omitted if it's the last node of its parent's children and the parent tag name is not one of these.
-    ParentIsNot(HashSet<&'static [u8]>),
+    ParentIsNot(FxHashSet<&'static [u8]>),
 }
 
 // What this means in effect while parsing:
@@ -21,14 +21,14 @@ enum ClosingTagOmissionRuleIfLast {
 //     - If C is in followed_by, B is closed implicitly.
 struct ClosingTagOmissionRule {
     // Closing tag can be omitted if immediately followed by an element node with one of these tag names.
-    followed_by: HashSet<&'static [u8]>,
+    followed_by: FxHashSet<&'static [u8]>,
     // Closing tag can be omitted if it's the last node of its parent's children.
     is_last: ClosingTagOmissionRuleIfLast,
 }
 
 lazy_static! {
     static ref HTML_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
-        followed_by: HashSet::new(),
+        followed_by: FxHashSet::default(),
         is_last: ClosingTagOmissionRuleIfLast::Always,
     };
 }
@@ -36,7 +36,7 @@ lazy_static! {
 lazy_static! {
     static ref HEAD_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"body");
             s
         },
@@ -46,7 +46,7 @@ lazy_static! {
 
 lazy_static! {
     static ref BODY_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
-        followed_by: HashSet::new(),
+        followed_by: FxHashSet::default(),
         is_last: ClosingTagOmissionRuleIfLast::Always,
     };
 }
@@ -54,7 +54,7 @@ lazy_static! {
 lazy_static! {
     static ref LI_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"li");
             s
         },
@@ -65,7 +65,7 @@ lazy_static! {
 lazy_static! {
     static ref DT_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"dt");
             s.insert(b"dd");
             s
@@ -77,7 +77,7 @@ lazy_static! {
 lazy_static! {
     static ref DD_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"dd");
             s.insert(b"dt");
             s
@@ -88,7 +88,7 @@ lazy_static! {
 
 lazy_static! {
     static ref P_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = {
-        let mut followed_by = HashSet::<&'static [u8]>::new();
+        let mut followed_by = FxHashSet::<&'static [u8]>::default();
         followed_by.insert(b"address");
         followed_by.insert(b"article");
         followed_by.insert(b"aside");
@@ -120,7 +120,7 @@ lazy_static! {
         followed_by.insert(b"table");
         followed_by.insert(b"ul");
 
-        let mut is_last_tags = HashSet::<&'static [u8]>::new();
+        let mut is_last_tags = FxHashSet::<&'static [u8]>::default();
         is_last_tags.insert(b"a");
         is_last_tags.insert(b"audio");
         is_last_tags.insert(b"del");
@@ -139,7 +139,7 @@ lazy_static! {
 lazy_static! {
     static ref RT_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"rt");
             s.insert(b"rp");
             s
@@ -151,7 +151,7 @@ lazy_static! {
 lazy_static! {
     static ref RP_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"rt");
             s.insert(b"rp");
             s
@@ -164,7 +164,7 @@ lazy_static! {
     static ref OPTGROUP_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule =
         ClosingTagOmissionRule {
             followed_by: {
-                let mut s = HashSet::<&'static [u8]>::new();
+                let mut s = FxHashSet::<&'static [u8]>::default();
                 s.insert(b"optgroup");
                 s
             },
@@ -175,7 +175,7 @@ lazy_static! {
 lazy_static! {
     static ref OPTION_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"option");
             s.insert(b"optgroup");
             s
@@ -187,7 +187,7 @@ lazy_static! {
 lazy_static! {
     static ref THEAD_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"tbody");
             s.insert(b"tfoot");
             s
@@ -199,7 +199,7 @@ lazy_static! {
 lazy_static! {
     static ref TBODY_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"tbody");
             s.insert(b"tfoot");
             s
@@ -210,7 +210,7 @@ lazy_static! {
 
 lazy_static! {
     static ref TFOOT_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
-        followed_by: HashSet::<&'static [u8]>::new(),
+        followed_by: FxHashSet::<&'static [u8]>::default(),
         is_last: ClosingTagOmissionRuleIfLast::Always,
     };
 }
@@ -218,7 +218,7 @@ lazy_static! {
 lazy_static! {
     static ref TR_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"tr");
             s
         },
@@ -229,7 +229,7 @@ lazy_static! {
 lazy_static! {
     static ref TD_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"td");
             s.insert(b"th");
             s
@@ -241,7 +241,7 @@ lazy_static! {
 lazy_static! {
     static ref TH_CLOSING_TAG_OMISSION_RULE: ClosingTagOmissionRule = ClosingTagOmissionRule {
         followed_by: {
-            let mut s = HashSet::<&'static [u8]>::new();
+            let mut s = FxHashSet::<&'static [u8]>::default();
             s.insert(b"td");
             s.insert(b"th");
             s
@@ -251,8 +251,8 @@ lazy_static! {
 }
 
 lazy_static! {
-    static ref CLOSING_TAG_OMISSION_RULES: HashMap<&'static [u8], &'static ClosingTagOmissionRule> = {
-        let mut m = HashMap::<&'static [u8], &'static ClosingTagOmissionRule>::new();
+    static ref CLOSING_TAG_OMISSION_RULES: FxHashMap<&'static [u8], &'static ClosingTagOmissionRule> = {
+        let mut m = FxHashMap::<&'static [u8], &'static ClosingTagOmissionRule>::default();
         m.insert(b"html", &HTML_CLOSING_TAG_OMISSION_RULE);
         m.insert(b"head", &HEAD_CLOSING_TAG_OMISSION_RULE);
         m.insert(b"body", &BODY_CLOSING_TAG_OMISSION_RULE);

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use lazy_static::lazy_static;
 
@@ -15,8 +15,8 @@ use crate::proc::Processor;
 
 // See comment in `process_attr_value` for full description of why these intentionally do not have semicolons.
 lazy_static! {
-    static ref ENCODED: HashMap<u8, &'static [u8]> = {
-        let mut m = HashMap::<u8, &'static [u8]>::new();
+    static ref ENCODED: FxHashMap<u8, &'static [u8]> = {
+        let mut m = FxHashMap::<u8, &'static [u8]>::default();
         m.insert(b'\'', b"&#39");
         m.insert(b'"', b"&#34");
         m.insert(b'>', b"&gt");

@@ -1,9 +1,9 @@
 use lazy_static::lazy_static;
-use std::collections::HashSet;
+use rustc_hash::FxHashSet;
 
 lazy_static! {
-    pub static ref VOID_TAGS: HashSet<&'static [u8]> = {
-        let mut s = HashSet::<&'static [u8]>::new();
+    pub static ref VOID_TAGS: FxHashSet<&'static [u8]> = {
+        let mut s = FxHashSet::<&'static [u8]>::default();
         s.insert(b"area");
         s.insert(b"base");
         s.insert(b"br");

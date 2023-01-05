@@ -1,5 +1,5 @@
 use crate::common::spec::tag::ns::Namespace;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use lazy_static::lazy_static;
 
@@ -60,8 +60,8 @@ static DEFAULT_SVG: &WhitespaceMinification = &WhitespaceMinification {
 };
 
 lazy_static! {
-    static ref HTML_TAG_WHITESPACE_MINIFICATION: HashMap<&'static [u8], &'static WhitespaceMinification> = {
-        let mut m = HashMap::<&'static [u8], &'static WhitespaceMinification>::new();
+    static ref HTML_TAG_WHITESPACE_MINIFICATION: FxHashMap<&'static [u8], &'static WhitespaceMinification> = {
+        let mut m = FxHashMap::<&'static [u8], &'static WhitespaceMinification>::default();
         // Content tags.
         m.insert(b"address", CONTENT);
         m.insert(b"audio", CONTENT);
@@ -174,8 +174,8 @@ lazy_static! {
         m
     };
 
-    static ref SVG_TAG_WHITESPACE_MINIFICATION: HashMap<&'static [u8], &'static WhitespaceMinification> = {
-      let mut m = HashMap::<&'static [u8], &'static WhitespaceMinification>::new();
+    static ref SVG_TAG_WHITESPACE_MINIFICATION: FxHashMap<&'static [u8], &'static WhitespaceMinification> = {
+      let mut m = FxHashMap::<&'static [u8], &'static WhitespaceMinification>::default();
 
       // Content tags.
       m.insert(b"desc", CONTENT);

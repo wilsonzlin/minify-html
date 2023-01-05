@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 use crate::ast::{AttrVal, ElementClosingTag, NodeData, ScriptOrStyleLang};
 use crate::common::gen::codepoints::{
@@ -37,7 +37,7 @@ pub fn peek_tag_name(code: &mut Code) -> Vec<u8> {
 // Derive Eq for testing.
 #[derive(Eq, PartialEq)]
 pub struct ParsedTag {
-    pub attributes: HashMap<Vec<u8>, AttrVal>,
+    pub attributes: FxHashMap<Vec<u8>, AttrVal>,
     pub name: Vec<u8>,
     pub self_closing: bool,
 }
@@ -58,10 +58,10 @@ impl Debug for ParsedTag {
 }
 
 // While not valid, attributes in closing tags still need to be parsed (and then discarded) as attributes e.g. `</div x=">">`, which is why this function is used for both opening and closing tags.
-// TODO Use generics to create version that doesn't create a HashMap.
+// TODO Use generics to create version that doesn't create a FxHashMap.
 pub fn parse_tag(code: &mut Code) -> ParsedTag {
     let elem_name = parse_tag_name(code);
-    let mut attributes = HashMap::new();
+    let mut attributes = FxHashMap::default();
     let self_closing;
     loop {
         // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).

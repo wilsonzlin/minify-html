@@ -21,19 +21,19 @@ const rsTagAttr = ({
   `
 AttributeMinification {
     boolean: ${boolean},
-    case_insensitive: ${caseInsensitive}, 
-    collapse: ${collapse}, 
+    case_insensitive: ${caseInsensitive},
+    collapse: ${collapse},
     default_value: ${
       defaultValue == undefined ? "None" : `Some(b"${defaultValue}")`
     },
-    redundant_if_empty: ${redundantIfEmpty}, 
-    trim: ${trim}, 
+    redundant_if_empty: ${redundantIfEmpty},
+    trim: ${trim},
 }
 `;
 
 let code = `
 use lazy_static::lazy_static;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 use crate::common::spec::tag::ns::Namespace;
 
 pub struct AttributeMinification {
@@ -47,7 +47,7 @@ pub struct AttributeMinification {
 
 pub enum AttrMapEntry {
     AllNamespaceElements(AttributeMinification),
-    SpecificNamespaceElements(HashMap<&'static [u8], AttributeMinification>),
+    SpecificNamespaceElements(FxHashMap<&'static [u8], AttributeMinification>),
 }
 
 pub struct ByNamespace {
@@ -65,10 +65,10 @@ impl ByNamespace {
     }
 }
 
-pub struct AttrMap(HashMap<&'static [u8], ByNamespace>);
+pub struct AttrMap(FxHashMap<&'static [u8], ByNamespace>);
 
 impl AttrMap {
-    pub const fn new(map: HashMap<&'static [u8], ByNamespace>) -> AttrMap {
+    pub const fn new(map: FxHashMap<&'static [u8], ByNamespace>) -> AttrMap {
         AttrMap(map)
     }
 
@@ -85,7 +85,7 @@ impl AttrMap {
 code += `
 lazy_static! {
   pub static ref ATTRS: AttrMap = {
-    let mut m = HashMap::<&'static [u8], ByNamespace>::new();
+    let mut m = FxHashMap::<&'static [u8], ByNamespace>::default();
 ${[...Object.entries(htmlData.attributes)]
   .map(
     ([attr_name, namespaces]) => `    m.insert(b\"${attr_name}\", ByNamespace {
@@ -108,7 +108,7 @@ ${(["html", "svg"] as const)
         return `Some({
         let ${
           entries.length ? "mut" : ""
-        } m = HashMap::<&'static [u8], AttributeMinification>::new();
+        } m = FxHashMap::<&'static [u8], AttributeMinification>::default();
 ${entries
   .map(
     ([tagName, tagAttr]) =>

@@ -1,9 +1,9 @@
 use lazy_static::lazy_static;
-use std::collections::HashSet;
+use rustc_hash::FxHashSet;
 
 lazy_static! {
-    pub static ref JAVASCRIPT_MIME_TYPES: HashSet<&'static [u8]> = {
-        let mut s = HashSet::<&'static [u8]>::new();
+    pub static ref JAVASCRIPT_MIME_TYPES: FxHashSet<&'static [u8]> = {
+        let mut s = FxHashSet::<&'static [u8]>::default();
         s.insert(b"application/ecmascript");
         s.insert(b"application/javascript");
         s.insert(b"application/x-ecmascript");

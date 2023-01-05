@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Use FxHasher for internal hash-based data structures.
+
 ## 0.10.3
 
 - [Python] Add Python 3.11 support.
