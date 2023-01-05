@@ -23,7 +23,7 @@ View the [changelog](./CHANGELOG.md) to see the latest updates.
 
 Comparison with [html-minifier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
 
-<img width="400" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.10.6/core/average-speeds.png"><img width="400" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.10.6/core/average-sizes.png">
+<img width="400" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.10.7/core/average-speeds.png"><img width="400" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.10.7/core/average-sizes.png">
 
 The [onepass](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) variant is even more optimised for speed. See its [README](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) for more details.
 
@@ -36,10 +36,10 @@ Precompiled binaries are available for Linux, macOS, and Windows.
 
 ### Get
 
-[Linux x64](https://wilsonl.in/minify-html/bin/0.10.6-linux-x86_64) |
-[Linux ARM64](https://wilsonl.in/minify-html/bin/0.10.6-linux-arm64) |
-[macOS x64](https://wilsonl.in/minify-html/bin/0.10.6-macos-x86_64) |
-[Windows x64](https://wilsonl.in/minify-html/bin/0.10.6-windows-x86_64.exe)
+[Linux x64](https://wilsonl.in/minify-html/bin/0.10.7-linux-x86_64) |
+[Linux ARM64](https://wilsonl.in/minify-html/bin/0.10.7-linux-arm64) |
+[macOS x64](https://wilsonl.in/minify-html/bin/0.10.7-macos-x86_64) |
+[Windows x64](https://wilsonl.in/minify-html/bin/0.10.7-windows-x86_64.exe)
 
 ### Use
 
@@ -64,7 +64,7 @@ minify-html --keep-closing-tags --minify-css /path/to/**/*.html
 
 ```toml
 [dependencies]
-minify-html = "0.10.6"
+minify-html = "0.10.7"
 ```
 
 ### Use
@@ -76,14 +76,14 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 <details>
 <summary><img width="24" src="https://wilsonl.in/minify-html/icon/deno.png"> <strong>Deno</strong></summary>
 
-- Package: https://wilsonl.in/minify-html/deno/0.10.6/index.js
+- Package: https://wilsonl.in/minify-html/deno/0.10.7/index.js
 - Binding: [WASM](https://webassembly.org/)
 - Platforms: All
 
 ### Use
 
 ```ts
-import init, {minify} from "https://wilsonl.in/minify-html/deno/0.10.6/index.js";
+import init, {minify} from "https://wilsonl.in/minify-html/deno/0.10.7/index.js";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -149,7 +149,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.minifyhtml</groupId>
   <artifactId>minify-html</artifactId>
-  <version>0.10.6</version>
+  <version>0.10.7</version>
 </dependency>
 ```
 

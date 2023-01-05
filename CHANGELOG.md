@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.10.7
 
 - Bump [minify-js](https://github.com/wilsonzlin/minify-js) to 0.4.2.
 
