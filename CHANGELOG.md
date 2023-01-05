@@ -5,6 +5,7 @@
 - Use FxHasher for internal hash-based data structures.
 - Bump [css-minify](https://github.com/Mnwa/css-minify) to 0.3.1.
 - [WASM] Add `type` and `main` fields to package.json.
+- [Node.js] Improve invalid argument type error messages.
 
 ## 0.10.3
 
