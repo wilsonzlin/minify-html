@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.10.4
 
 - Use FxHasher for internal hash-based data structures.
 - Bump [css-minify](https://github.com/Mnwa/css-minify) to 0.3.1.
