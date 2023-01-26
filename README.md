@@ -124,7 +124,7 @@ TypeScript definitions are available.
 
 ```ts
 import { Buffer } from "node:buffer";
-import * as minifyHtml from "@minify-html/node";
+import minifyHtml from "@minify-html/node";
 // Or `const minifyHtml = require("@minify-html/node")` if not using TS/ESM.
 
 const minified = minifyHtml.minify(Buffer.from("<p>  Hello, world!  </p>"), { keep_spaces_between_attributes: true, keep_comments: true });
