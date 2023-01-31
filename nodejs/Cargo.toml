@@ -15,4 +15,4 @@ minify-html = "0.10.7"
 [dependencies.neon]
 version = "0.10"
 default-features = false
-features = ["napi-1"]
+features = ["napi-1", "try-catch-api"]

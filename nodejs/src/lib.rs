@@ -2,10 +2,10 @@ use neon::prelude::*;
 use neon::types::buffer::TypedArray;
 
 fn minify(mut cx: FunctionContext) -> JsResult<JsBuffer> {
-    let Ok(src) = cx.argument::<JsBuffer>(0) else {
+    let Ok(src) = cx.try_catch(|cx| cx.argument::<JsBuffer>(0)) else {
       return cx.throw_type_error("the first argument is not a Buffer");
     };
-    let Ok(opt) = cx.argument::<JsObject>(1) else {
+    let Ok(opt) = cx.try_catch(|cx| cx.argument::<JsObject>(1)) else {
       return cx.throw_type_error("the second argument is not an object");
     };
     let cfg = minify_html::Cfg {

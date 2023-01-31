@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- [Node.js] Fix assertion failure panic on invalid argument type.
+
 ## 0.10.7
 
 - Bump [minify-js](https://github.com/wilsonzlin/minify-js) to 0.4.2.
