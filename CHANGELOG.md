@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.10.8
 
 - [Node.js] Fix assertion failure panic on invalid argument type.
 - Do not consider empty `href` attributes as redundant.
