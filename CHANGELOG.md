@@ -3,6 +3,7 @@
 ## Pending
 
 - [Node.js] Fix assertion failure panic on invalid argument type.
+- Do not consider empty `href` attributes as redundant.
 
 ## 0.10.7
 
