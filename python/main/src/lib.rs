@@ -12,6 +12,9 @@ use std::string::String;
     keep_html_and_head_opening_tags = "false",
     keep_spaces_between_attributes = "false",
     minify_css = "false",
+    minify_css_level_1 = "false",
+    minify_css_level_2 = "false",
+    minify_css_level_3 = "false",
     minify_js = "false",
     remove_bangs = "false",
     remove_processing_instructions = "false"
