@@ -50,8 +50,8 @@ impl Eq for AttrVal {}
 
 #[derive(Eq, PartialEq, Debug)]
 pub enum RcdataContentType {
-  Textarea,
-  Title,
+    Textarea,
+    Title,
 }
 
 // Derive Eq for testing.

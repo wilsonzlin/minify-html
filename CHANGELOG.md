@@ -1,5 +1,10 @@
 # minify-html changelog
 
+## Pending
+
+- Change the default CSS minifier optimisation level to 1, as higher levels may perform dangerous optimisations.
+- Allow configuring the CSS minifier optimisation level.
+
 ## 0.10.8
 
 - [Node.js] Fix assertion failure panic on invalid argument type.

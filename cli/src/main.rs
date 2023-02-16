@@ -31,6 +31,18 @@ struct Cli {
     #[structopt(long)]
     minify_css: bool,
 
+    /// Use optimisation level 1 for the CSS minifier.
+    #[structopt(long)]
+    minify_css_level_1: bool,
+
+    /// Use optimisation level 2 for the CSS minifier. May perform some dangerous optimisations.
+    #[structopt(long)]
+    minify_css_level_2: bool,
+
+    /// Use optimisation level 3 for the CSS minifier. May perform many dangerous optimisations.
+    #[structopt(long)]
+    minify_css_level_3: bool,
+
     #[structopt(long)]
     /// Do not minify DOCTYPEs. Minified DOCTYPEs may not be spec compliant.
     do_not_minify_doctype: bool,
@@ -92,6 +104,9 @@ fn main() {
         keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,
         keep_spaces_between_attributes: args.keep_spaces_between_attributes,
         minify_css: args.minify_css,
+        minify_css_level_1: args.minify_css_level_1,
+        minify_css_level_2: args.minify_css_level_2,
+        minify_css_level_3: args.minify_css_level_3,
         minify_js: args.minify_js,
         remove_bangs: args.remove_bangs,
         remove_processing_instructions: args.remove_processing_instructions,
