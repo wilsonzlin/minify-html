@@ -1,6 +1,10 @@
-use std::slice;
+use std::{cell::RefCell, ptr, slice};
 
 use minify_html::Cfg;
+
+thread_local! {
+    static LAST_RESULT: RefCell<Option<Vec<u8>>> = RefCell::new(None);
+}
 
 #[no_mangle]
 pub extern "C" fn minify_html(
@@ -19,7 +23,7 @@ pub extern "C" fn minify_html(
     minify_js: bool,
     remove_bangs: bool,
     remove_processing_instructions: bool,
-) {
+) -> usize {
     let src = unsafe { slice::from_raw_parts(input, length) };
 
     let cfg = Cfg {
@@ -38,5 +42,22 @@ pub extern "C" fn minify_html(
         remove_processing_instructions,
     };
 
-    minify_html::minify(src, &cfg);
+    let result = minify_html::minify(src, &cfg);
+    let len = result.len();
+
+    LAST_RESULT.with(|v| *v.borrow_mut() = Some(result));
+    len
+}
+
+#[no_mangle]
+pub extern "C" fn get_last_result() -> *const u8 {
+    LAST_RESULT.with(|prev| match prev.borrow().as_ref() {
+        Some(bytes) => bytes.as_ptr(),
+        None => return ptr::null(),
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn clear_last_result() {
+    LAST_RESULT.with(|value| *value.borrow_mut() = None)
 }

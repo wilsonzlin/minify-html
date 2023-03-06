@@ -23,6 +23,10 @@ typedef minify_html_native = Int32 Function(
   Bool remove_processing_instructions,
 );
 
+typedef get_last_result_native = Pointer<Utf8> Function();
+
+typedef clear_last_result_native = Void Function();
+
 class MinifyHtmlBindings {
   late DynamicLibrary _library;
 
@@ -44,11 +48,21 @@ class MinifyHtmlBindings {
     bool remove_processing_instructions,
   ) minifyHtml;
 
+  late Pointer<Utf8> Function() getLastResult;
+
+  late void Function() clearLastResult;
+
   MinifyHtmlBindings() {
     _library = loadDynamicLibrary();
 
     minifyHtml = _library
         .lookup<NativeFunction<minify_html_native>>("minify_html")
+        .asFunction();
+    getLastResult = _library
+        .lookup<NativeFunction<get_last_result_native>>("get_last_result")
+        .asFunction();
+    clearLastResult = _library
+        .lookup<NativeFunction<clear_last_result_native>>("clear_last_result")
         .asFunction();
   }
 }

@@ -1,6 +1,6 @@
 name: minify_html
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
+description: Extremely fast and smart HTML + JS + CSS minifier
+version: 0.10.8
 # repository: https://github.com/my_org/my_repo
 
 environment:

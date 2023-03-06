@@ -27,7 +27,10 @@ String minifyHtml(String source, [Cfg? cfg]) {
       cfg.removeProcessingInstructions,
     );
 
-    return "";
+    final value = bindings.getLastResult().toDartString(length: length);
+    bindings.clearLastResult();
+
+    return value;
   } finally {
     srcC.free();
   }
