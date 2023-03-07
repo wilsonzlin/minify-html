@@ -19,8 +19,8 @@ class Utf8Resource implements Finalizable {
     final units = utf8.encode(source);
     length = units.length;
 
-    final Pointer<Uint8> result = malloc<Uint8>(units.length + 1);
-    final Uint8List nativeString = result.asTypedList(units.length + 1);
+    final Pointer<Uint8> result = malloc<Uint8>(units.length);
+    final Uint8List nativeString = result.asTypedList(units.length);
     nativeString.setAll(0, units);
     _cString = result.cast();
 
