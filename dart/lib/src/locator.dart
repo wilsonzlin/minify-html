@@ -63,22 +63,13 @@ const linuxLib = 'libminifyhtml.so';
 /// The expected name of the MinifyHtml library when compiled for Windows devices.
 const windowsLib = 'minifyhtml.dll';
 
-/// Returns the uri representing the target output directory of generated
-/// dynamic libraries.
-Uri libBuildOutDir(Uri root) {
-  final pkgRoot = _packageRootUri(root);
-  if (pkgRoot == null) {
-    throw ArgumentError('Could not find "$_pkgConfigFile" within "$root".');
-  }
-  return pkgRoot.resolve(_minifyhtmlToolDir);
-}
-
 const _minifyhtmlToolDir = '.dart_tool/minifyhtml/';
 
 const _pkgConfigFile = '.dart_tool/package_config.json';
 
 Uri? _packageRootUri(Uri root) {
   do {
+    print(root);
     if (FileSystemEntity.isFileSync(
       root.resolve(_pkgConfigFile).toFilePath(),
     )) {
