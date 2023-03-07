@@ -6,16 +6,22 @@ import 'dart:io';
 /// Throws [MinifyHtmlLocatorError] if the dynamic library could not be found.
 DynamicLibrary loadDynamicLibrary() {
   String locate(String libName) {
-    final dir = '$_minifyhtmlToolDir$libName';
-    final value = _packageRootUri(Platform.script.resolve('./')) ??
-        _packageRootUri(Directory.current.uri);
-    if (value != null) {
-      return value.resolve(dir).toFilePath();
-    } else {
-      throw MinifyHtmlLocatorError(
-        'MinifyHtml library not found. Did you run `$invocationString`?',
-      );
+    final path = _packageRootUri(Platform.script.resolve('./'), libName) ??
+        _packageRootUri(Directory.current.uri, libName);
+
+    if (path != null) {
+      return path;
     }
+
+    final toolLib = Directory.current.uri
+        .resolve("$_minifyhtmlToolDir$libName")
+        .toFilePath();
+
+    if (FileSystemEntity.isFileSync(toolLib)) {
+      return toolLib;
+    }
+
+    throw MinifyHtmlLocatorError('MinifyHtml library not found');
   }
 
   if (Platform.isIOS) {
@@ -65,15 +71,12 @@ const windowsLib = 'minifyhtml.dll';
 
 const _minifyhtmlToolDir = '.dart_tool/minifyhtml/';
 
-const _pkgConfigFile = '.dart_tool/package_config.json';
-
-Uri? _packageRootUri(Uri root) {
+String? _packageRootUri(Uri root, String libName) {
   do {
-    print(root);
-    if (FileSystemEntity.isFileSync(
-      root.resolve(_pkgConfigFile).toFilePath(),
-    )) {
-      return root;
+    final filePath = root.resolve(libName).toFilePath();
+    print(filePath);
+    if (FileSystemEntity.isFileSync(filePath)) {
+      return filePath;
     }
   } while (root != (root = root.resolve('..')));
   return null;
