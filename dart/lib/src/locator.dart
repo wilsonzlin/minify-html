@@ -74,7 +74,6 @@ const _minifyhtmlToolDir = '.dart_tool/minifyhtml/';
 String? _packageRootUri(Uri root, String libName) {
   do {
     final filePath = root.resolve(libName).toFilePath();
-    print(filePath);
     if (FileSystemEntity.isFileSync(filePath)) {
       return filePath;
     }
