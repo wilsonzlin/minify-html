@@ -5,33 +5,14 @@ import 'dart:io';
 ///
 /// Throws [MinifyHtmlLocatorError] if the dynamic library could not be found.
 DynamicLibrary loadDynamicLibrary() {
-  String locate(String libName) {
-    final path = _packageRootUri(Platform.script.resolve('./'), libName) ??
-        _packageRootUri(Directory.current.uri, libName);
-
-    if (path != null) {
-      return path;
-    }
-
-    final toolLib = Directory.current.uri
-        .resolve("$_minifyhtmlToolDir$libName")
-        .toFilePath();
-
-    if (FileSystemEntity.isFileSync(toolLib)) {
-      return toolLib;
-    }
-
-    throw MinifyHtmlLocatorError('MinifyHtml library not found');
-  }
-
   if (Platform.isIOS) {
     return DynamicLibrary.process();
   } else if (Platform.isMacOS) {
-    return DynamicLibrary.open(locate(appleLib));
+    return _locateOrError(appleLib);
   } else if (Platform.isWindows) {
-    return DynamicLibrary.open(locate(windowsLib));
+    return _locate(windowsLib) ?? DynamicLibrary.executable();
   } else if (Platform.isLinux) {
-    return DynamicLibrary.open(locate(linuxLib));
+    return _locateOrError(linuxLib);
   } else if (Platform.isAndroid) {
     return DynamicLibrary.open(linuxLib);
   } else if (Platform.isFuchsia) {
@@ -71,12 +52,25 @@ const windowsLib = 'minifyhtml.dll';
 
 const _minifyhtmlToolDir = '.dart_tool/minifyhtml/';
 
-String? _packageRootUri(Uri root, String libName) {
-  do {
-    final filePath = root.resolve(libName).toFilePath();
-    if (FileSystemEntity.isFileSync(filePath)) {
-      return filePath;
-    }
-  } while (root != (root = root.resolve('..')));
+DynamicLibrary? _locate(String libName) {
+  if (FileSystemEntity.isFileSync(libName)) {
+    return DynamicLibrary.open(libName);
+  }
+
+  final toolLib =
+      Directory.current.uri.resolve("$_minifyhtmlToolDir$libName").toFilePath();
+  if (FileSystemEntity.isFileSync(toolLib)) {
+    return DynamicLibrary.open(toolLib);
+  }
+
   return null;
+}
+
+DynamicLibrary _locateOrError(String libName) {
+  final value = _locate(libName);
+  if (value != null) {
+    return value;
+  } else {
+    throw MinifyHtmlLocatorError('MinifyHtml library not found');
+  }
 }
