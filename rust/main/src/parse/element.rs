@@ -170,9 +170,9 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
                 parse_script_content(code, ScriptOrStyleLang::Data)
             }
             Some(typ) if typ.as_slice() == b"module" => {
-                parse_script_content(code, ScriptOrStyleLang::JSModule)
+                parse_script_content(code, ScriptOrStyleLang::JsModule)
             }
-            _ => parse_script_content(code, ScriptOrStyleLang::JS),
+            _ => parse_script_content(code, ScriptOrStyleLang::Js),
         },
         (_, b"style") => parse_style_content(code),
         (Namespace::Html, b"textarea") => parse_textarea_content(code),

@@ -16,10 +16,10 @@ pub enum ElementClosingTag {
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum ScriptOrStyleLang {
-    CSS,
+    Css,
     Data,
-    JS,
-    JSModule,
+    Js,
+    JsModule,
 }
 
 pub struct AttrVal {

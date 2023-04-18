@@ -4,17 +4,17 @@ use crate::cfg::Cfg;
 use crate::minify;
 
 pub fn eval_with_cfg(src: &'static [u8], expected: &'static [u8], cfg: &Cfg) {
-    let min = minify(&src, cfg);
+    let min = minify(src, cfg);
     assert_eq!(from_utf8(&min).unwrap(), from_utf8(expected).unwrap(),);
 }
 
-pub fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
+pub fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) {
     let mut cfg = Cfg::new();
     cfg.minify_js = true;
     eval_with_cfg(src, expected, &cfg);
 }
 
-pub fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
+pub fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) {
     let mut cfg = Cfg::new();
     cfg.minify_css = true;
     eval_with_cfg(src, expected, &cfg);
@@ -27,7 +27,7 @@ pub fn eval(src: &'static [u8], expected: &'static [u8]) {
     eval_with_cfg(src, expected, &cfg);
 }
 
-fn eval_without_keep_html_head(src: &'static [u8], expected: &'static [u8]) -> () {
+fn eval_without_keep_html_head(src: &'static [u8], expected: &'static [u8]) {
     eval_with_cfg(src, expected, &Cfg::new());
 }
 

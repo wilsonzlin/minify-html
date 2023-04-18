@@ -9,7 +9,7 @@ use crate::parse::Code;
 lazy_static! {
     static ref END: AhoCorasick = AhoCorasickBuilder::new()
         .ascii_case_insensitive(true)
-        .build(&["</style"]);
+        .build(["</style"]);
 }
 
 pub fn parse_style_content(code: &mut Code) -> ParsedContent {
@@ -21,7 +21,7 @@ pub fn parse_style_content(code: &mut Code) -> ParsedContent {
         closing_tag_omitted,
         children: vec![NodeData::ScriptOrStyleContent {
             code: code.copy_and_shift(len),
-            lang: ScriptOrStyleLang::CSS,
+            lang: ScriptOrStyleLang::Css,
         }],
     }
 }

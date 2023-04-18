@@ -5,7 +5,7 @@ use crate::ast::NodeData;
 use crate::parse::Code;
 
 lazy_static! {
-    static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(&["?>"]);
+    static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(["?>"]);
 }
 
 pub fn parse_instruction(code: &mut Code) -> NodeData {
