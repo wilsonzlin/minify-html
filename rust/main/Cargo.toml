@@ -16,9 +16,9 @@ include = ["/src/**/*", "/Cargo.toml", "/LICENSE", "/README.md"]
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-aho-corasick = "0.7"
+aho-corasick = "0.7.20"
 css-minify = "0.3.1"
-lazy_static = "1.4"
-memchr = "2"
-minify-js = "0.4.2"
+lazy_static = "1.4.0"
+memchr = "2.5.0"
+minify-js = "0.5.6"
 rustc-hash = "1.1.0"

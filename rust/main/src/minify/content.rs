@@ -118,6 +118,8 @@ pub fn minify_content(
         };
     }
 
+    let mut session = minify_js::Session::new();
+
     for (i, c) in nodes.into_iter().enumerate() {
         match c {
             NodeData::Bang { code, ended } => minify_bang(cfg, out, &code, ended),
@@ -148,12 +150,20 @@ pub fn minify_content(
             NodeData::ScriptOrStyleContent { code, lang } => match lang {
                 ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
                 ScriptOrStyleLang::Data => out.extend_from_slice(&code),
-                ScriptOrStyleLang::JS => {
-                    minify_js(cfg, minify_js::TopLevelMode::Global, out, &code)
-                }
-                ScriptOrStyleLang::JSModule => {
-                    minify_js(cfg, minify_js::TopLevelMode::Module, out, &code)
-                }
+                ScriptOrStyleLang::JS => minify_js(
+                    cfg,
+                    &mut session,
+                    minify_js::TopLevelMode::Global,
+                    out,
+                    &code,
+                ),
+                ScriptOrStyleLang::JSModule => minify_js(
+                    cfg,
+                    &mut session,
+                    minify_js::TopLevelMode::Module,
+                    out,
+                    &code,
+                ),
             },
             NodeData::Text { value } => out
                 .extend_from_slice(&CHEVRON_REPLACER.replace_all(&encode_entities(&value, false))),
