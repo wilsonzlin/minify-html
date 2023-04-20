@@ -9,7 +9,7 @@ pub enum ErrorType {
 
 impl ErrorType {
     /// Generates an English message describing the error with any additional context.
-    pub fn message(self) -> String {
+    pub fn message(&self) -> String {
         match self {
             ErrorType::ClosingTagMismatch { expected, got } => {
                 format!(
@@ -37,6 +37,14 @@ pub struct Error {
     pub position: usize,
 }
 
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.error_type.message())
+    }
+}
+
+impl std::error::Error for Error {}
+
 /// User-friendly details about a minification failure, including an English message description of
 /// the reason, and generated printable contextual representation of the code where the error
 /// occurred.
@@ -46,6 +54,14 @@ pub struct FriendlyError {
     pub message: String,
     pub code_context: String,
 }
+
+impl std::fmt::Display for FriendlyError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+impl std::error::Error for FriendlyError {}
 
 pub type ProcessingResult<T> = Result<T, ErrorType>;
 
