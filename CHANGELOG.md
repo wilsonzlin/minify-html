@@ -4,6 +4,7 @@
 
 - Change the default CSS minifier optimisation level to 1, as higher levels may perform dangerous optimisations.
 - Allow configuring the CSS minifier optimisation level.
+- Fix building from source in Node.js postinstall.js script.
 
 ## 0.10.8
 
