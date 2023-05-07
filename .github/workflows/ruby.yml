@@ -11,10 +11,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, macos-11.0]
+        os: [ubuntu-20.04, macos-11.0]
         ruby: [2.5.7, 2.6.5, 2.7.0]
         include:
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             NAME: linux
             FILE: 'libminify_html_ruby_lib.so'
           - os: macos-11.0
@@ -85,7 +85,7 @@ jobs:
           b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./ruby/target/release/${{ matrix.FILE }} minify-html/bin/ruby/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
 
   package:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: build
     steps:
       - uses: actions/checkout@v1

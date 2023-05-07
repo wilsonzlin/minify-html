@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Bump GitHub Actions Ubuntu image version.
+
 ## 0.11.0
 
 - Change the default CSS minifier optimisation level to 1, as higher levels may perform dangerous optimisations.

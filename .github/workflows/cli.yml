@@ -11,13 +11,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64]
+        os: [macos-11.0, ubuntu-20.04, windows-2019, self-hosted-linux-arm64]
         include:
           - os: macos-11.0
             ARCH: macos-x86_64
             MIME: application/octet-stream
             EXT: ''
-          - os: ubuntu-18.04
+          - os: ubuntu-20.04
             ARCH: linux-x86_64
             MIME: application/octet-stream
             EXT: ''

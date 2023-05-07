@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         variant: [main, onepass]
-        os: [macos-11.0, ubuntu-18.04, windows-2019, self-hosted-linux-arm64]
+        os: [macos-11.0, ubuntu-20.04, windows-2019, self-hosted-linux-arm64]
         python: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: actions/checkout@v1
