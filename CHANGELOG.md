@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.11.1
 
 - Bump GitHub Actions Ubuntu image version.
 

@@ -1,7 +1,7 @@
 [package]
 name = "minify-html-node"
 publish = false
-version = "0.11.0"
+version = "0.11.1"
 description = "Node.js bindings for minify-html"
 authors = ["Wilson Lin <npm@wilsonl.in>"]
 edition = "2021"
@@ -10,7 +10,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-minify-html = "0.11.0"
+minify-html = "0.11.1"
 
 [dependencies.neon]
 version = "0.10"
