@@ -22,7 +22,11 @@ const fetch = (url) =>
   new Promise((resolve, reject) => {
     const stream = https.get(url, (resp) => {
       if (!resp.statusCode || resp.statusCode < 200 || resp.statusCode > 299) {
-        return reject(new StatusError(resp.statusCode));
+        reject(new StatusError(resp.statusCode));
+        // Destroy stream to allow Node.js to exit.
+        // Destroy after `reject` in case "error" handler is unintentionally triggered.
+        resp.destroy();
+        return;
       }
       const parts = [];
       resp.on("data", (chunk) => parts.push(chunk));
