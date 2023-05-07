@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.11.0
 
 - Change the default CSS minifier optimisation level to 1, as higher levels may perform dangerous optimisations.
 - Allow configuring the CSS minifier optimisation level.
