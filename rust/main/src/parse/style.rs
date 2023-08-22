@@ -21,7 +21,7 @@ pub fn parse_style_content(code: &mut Code) -> ParsedContent {
         closing_tag_omitted,
         children: vec![NodeData::ScriptOrStyleContent {
             code: code.copy_and_shift(len),
-            lang: ScriptOrStyleLang::Css,
+            lang: ScriptOrStyleLang::CSS,
         }],
     }
 }

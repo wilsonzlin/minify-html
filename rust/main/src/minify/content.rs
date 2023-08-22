@@ -146,12 +146,12 @@ pub fn minify_content(
             NodeData::Instruction { code, ended } => minify_instruction(cfg, out, &code, ended),
             NodeData::RcdataContent { typ, text } => minify_rcdata(out, typ, &text),
             NodeData::ScriptOrStyleContent { code, lang } => match lang {
-                ScriptOrStyleLang::Css => minify_css(cfg, out, &code),
+                ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
                 ScriptOrStyleLang::Data => out.extend_from_slice(&code),
-                ScriptOrStyleLang::Js => {
+                ScriptOrStyleLang::JS => {
                     minify_js(cfg, minify_js::TopLevelMode::Global, out, &code)
                 }
-                ScriptOrStyleLang::JsModule => {
+                ScriptOrStyleLang::JSModule => {
                     minify_js(cfg, minify_js::TopLevelMode::Module, out, &code)
                 }
             },

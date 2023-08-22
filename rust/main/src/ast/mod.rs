@@ -14,12 +14,13 @@ pub enum ElementClosingTag {
     Void,
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
 pub enum ScriptOrStyleLang {
-    Css,
+    CSS,
     Data,
-    Js,
-    JsModule,
+    JS,
+    JSModule,
 }
 
 pub struct AttrVal {
