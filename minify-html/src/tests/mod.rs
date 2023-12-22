@@ -56,6 +56,11 @@ fn test_minification_of_doctype() {
 }
 
 #[test]
+fn test_removal_of_empty_closing_tag() {
+  eval(b"<body><p>1</><p>2</body>", b"<body><p>1<p>2");
+}
+
+#[test]
 fn test_parsing_extra_head_tag() {
   // Extra `<head>` in `<label>` should be dropped, so whitespace around `<head>` should be joined and therefore trimmed due to `<label>` whitespace rules.
   eval(

@@ -13,7 +13,6 @@ use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
 use lazy_static::lazy_static;
-use memchr::memrchr;
 use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
 use minify_html_common::spec::tag::ns::Namespace;
 use minify_html_common::spec::tag::omission::can_omit_as_before;
@@ -190,7 +189,7 @@ pub fn parse_content(
       Bang => nodes.push(parse_bang(code)),
       Comment => nodes.push(parse_comment(code)),
       Doctype => nodes.push(parse_doctype(code)),
-      MalformedLeftChevronSlash => code.shift(match memrchr(b'>', code.as_slice()) {
+      MalformedLeftChevronSlash => code.shift(match memchr::memchr(b'>', code.as_slice()) {
         Some(m) => m + 1,
         None => code.rem(),
       }),

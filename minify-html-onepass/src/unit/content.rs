@@ -110,8 +110,7 @@ pub fn process_content(
       };
 
       // Next character is not whitespace, so handle any previously ignored whitespace.
-      #[allow(clippy::if_same_then_else)]
-      // Different branches (despite both having blank bodies) is for readability.
+      #[allow(clippy::if_same_then_else)] // For readability.
       if ws_skipped {
         if destroy_whole
           && last_written == ContentType::Tag
