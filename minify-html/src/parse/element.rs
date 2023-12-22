@@ -1,13 +1,13 @@
 use rustc_hash::FxHashMap;
 
 use crate::ast::{AttrVal, ElementClosingTag, NodeData, ScriptOrStyleLang};
-use crate::common::gen::codepoints::{
+use minify_html_common::gen::codepoints::{
     ATTR_QUOTE, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, TAG_NAME_CHAR, WHITESPACE,
     WHITESPACE_OR_SLASH, WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON,
 };
-use crate::common::spec::script::JAVASCRIPT_MIME_TYPES;
-use crate::common::spec::tag::ns::Namespace;
-use crate::common::spec::tag::void::VOID_TAGS;
+use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::void::VOID_TAGS;
 use crate::entity::decode::decode_entities;
 use crate::parse::content::{parse_content, ParsedContent};
 use crate::parse::script::parse_script_content;

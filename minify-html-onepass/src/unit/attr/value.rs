@@ -2,7 +2,7 @@ use rustc_hash::FxHashMap;
 
 use lazy_static::lazy_static;
 
-use crate::common::gen::codepoints::{
+use minify_html_common::gen::codepoints::{
     ATTR_QUOTE, DIGIT, DOUBLE_QUOTE, NOT_UNQUOTED_ATTR_VAL_CHAR, SINGLE_QUOTE, WHITESPACE,
 };
 use crate::err::ProcessingResult;

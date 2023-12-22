@@ -1,7 +1,7 @@
 use std::str::from_utf8_unchecked;
 
 use crate::cfg::Cfg;
-use crate::common::whitespace::trimmed;
+use minify_html_common::whitespace::trimmed;
 use css_minify::optimizations::{Level, Minifier};
 
 pub fn minify_css(cfg: &Cfg, out: &mut Vec<u8>, code: &[u8]) {

@@ -1,4 +1,4 @@
-use crate::common::spec::tag::ns::Namespace;
+use crate::spec::tag::ns::Namespace;
 use rustc_hash::FxHashMap;
 
 use lazy_static::lazy_static;

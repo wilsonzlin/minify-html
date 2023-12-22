@@ -1,4 +1,4 @@
-use crate::common::gen::codepoints::Lookup;
+use minify_html_common::gen::codepoints::Lookup;
 
 pub mod bang;
 pub mod comment;

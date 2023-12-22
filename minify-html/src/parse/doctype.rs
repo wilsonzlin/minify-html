@@ -1,7 +1,7 @@
 use memchr::memchr;
 
 use crate::ast::NodeData;
-use crate::common::gen::codepoints::WHITESPACE;
+use minify_html_common::gen::codepoints::WHITESPACE;
 use crate::parse::Code;
 
 pub fn parse_doctype(code: &mut Code) -> NodeData {

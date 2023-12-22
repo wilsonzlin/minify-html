@@ -3,10 +3,10 @@ use lazy_static::lazy_static;
 use memchr::memrchr;
 
 use crate::ast::NodeData;
-use crate::common::gen::codepoints::TAG_NAME_CHAR;
-use crate::common::spec::tag::ns::Namespace;
-use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
-use crate::common::spec::tag::void::VOID_TAGS;
+use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use minify_html_common::spec::tag::void::VOID_TAGS;
 use crate::entity::decode::decode_entities;
 use crate::parse::bang::parse_bang;
 use crate::parse::comment::parse_comment;

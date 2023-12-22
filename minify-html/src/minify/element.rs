@@ -2,8 +2,8 @@ use rustc_hash::FxHashMap;
 
 use crate::ast::{AttrVal, ElementClosingTag, NodeData};
 use crate::cfg::Cfg;
-use crate::common::spec::tag::ns::Namespace;
-use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
 use crate::minify::attr::{minify_attr, AttrMinified};
 use crate::minify::content::minify_content;
 

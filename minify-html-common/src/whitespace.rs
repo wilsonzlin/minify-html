@@ -1,4 +1,4 @@
-use crate::common::gen::codepoints::WHITESPACE;
+use crate::gen::codepoints::WHITESPACE;
 
 pub fn trimmed(val: &[u8]) -> &[u8] {
     let mut start = 0;

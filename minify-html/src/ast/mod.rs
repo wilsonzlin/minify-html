@@ -2,7 +2,7 @@ use rustc_hash::FxHashMap;
 use std::fmt::{Debug, Formatter};
 use std::str::from_utf8;
 
-use crate::common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::ns::Namespace;
 
 pub mod c14n;
 

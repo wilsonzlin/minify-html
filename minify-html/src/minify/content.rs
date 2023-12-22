@@ -3,13 +3,13 @@ use lazy_static::lazy_static;
 
 use crate::ast::{NodeData, ScriptOrStyleLang};
 use crate::cfg::Cfg;
-use crate::common::gen::codepoints::TAG_NAME_CHAR;
-use crate::common::pattern::Replacer;
-use crate::common::spec::tag::ns::Namespace;
-use crate::common::spec::tag::whitespace::{
+use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
+use minify_html_common::pattern::Replacer;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::whitespace::{
     get_whitespace_minification_for_tag, WhitespaceMinification,
 };
-use crate::common::whitespace::{collapse_whitespace, is_all_whitespace, left_trim, right_trim};
+use minify_html_common::whitespace::{collapse_whitespace, is_all_whitespace, left_trim, right_trim};
 use crate::entity::encode::encode_entities;
 use crate::minify::bang::minify_bang;
 use crate::minify::comment::minify_comment;

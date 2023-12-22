@@ -4,7 +4,7 @@ use aho_corasick::{AhoCorasickBuilder, MatchKind};
 use lazy_static::lazy_static;
 
 use crate::ast::{ElementClosingTag, NodeData};
-use crate::common::pattern::Replacer;
+use minify_html_common::pattern::Replacer;
 
 lazy_static! {
     static ref TEXT_REPLACER: Replacer = Replacer::new(

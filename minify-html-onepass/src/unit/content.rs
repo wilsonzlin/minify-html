@@ -1,8 +1,8 @@
 use crate::cfg::Cfg;
-use crate::common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
-use crate::common::spec::tag::ns::Namespace;
-use crate::common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
-use crate::common::spec::tag::whitespace::{
+use minify_html_common::gen::codepoints::{TAG_NAME_CHAR, WHITESPACE};
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::omission::{can_omit_as_before, can_omit_as_last_node};
+use minify_html_common::spec::tag::whitespace::{
     get_whitespace_minification_for_tag, WhitespaceMinification,
 };
 use crate::err::ProcessingResult;

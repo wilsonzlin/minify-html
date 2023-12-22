@@ -1,12 +1,11 @@
 pub use crate::cfg::Cfg;
-use crate::common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::ns::Namespace;
 use crate::err::debug_repr;
 pub use crate::err::{Error, ErrorType, FriendlyError};
 use crate::proc::Processor;
 use crate::unit::content::process_content;
 
 mod cfg;
-mod common;
 mod err;
 #[macro_use]
 mod proc;

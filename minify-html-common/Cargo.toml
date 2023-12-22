@@ -1,0 +1,27 @@
+[package]
+name = "minify-html-common"
+description = "Common code and data for minify-html*"
+license = "MIT"
+homepage = "https://github.com/wilsonzlin/minify-html"
+repository = "https://github.com/wilsonzlin/minify-html.git"
+version = "0.0.1"
+authors = ["Wilson Lin <code@wilsonl.in>"]
+edition = "2018"
+include = ["/src/**", "/Cargo.toml"]
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+[dependencies]
+aho-corasick = "0.7"
+css-minify = "0.3.1"
+lazy_static = "1.4"
+memchr = "2"
+minify-js = "0.4.2"
+rustc-hash = "1.1.0"
+
+[build-dependencies]
+itertools = "0.12.0"
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+serde = { version = "1.0.193", features = ["derive"] }
+serde_json = "1.0.108"

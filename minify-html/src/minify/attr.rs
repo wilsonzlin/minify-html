@@ -4,12 +4,12 @@ use aho_corasick::{AhoCorasickBuilder, MatchKind};
 use css_minify::optimizations::{Level, Minifier};
 use lazy_static::lazy_static;
 
-use crate::common::gen::attrs::ATTRS;
-use crate::common::gen::codepoints::DIGIT;
-use crate::common::pattern::Replacer;
-use crate::common::spec::script::JAVASCRIPT_MIME_TYPES;
-use crate::common::spec::tag::ns::Namespace;
-use crate::common::whitespace::{
+use minify_html_common::gen::attrs::ATTRS;
+use minify_html_common::gen::codepoints::DIGIT;
+use minify_html_common::pattern::Replacer;
+use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::whitespace::{
     collapse_whitespace, left_trim, remove_all_whitespace, right_trim,
 };
 use crate::entity::encode::encode_entities;

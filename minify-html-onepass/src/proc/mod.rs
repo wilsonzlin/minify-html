@@ -5,8 +5,8 @@ use std::ops::{Index, IndexMut};
 use aho_corasick::AhoCorasick;
 use memchr::memchr;
 
-use crate::common::gen::codepoints::Lookup;
-use crate::common::spec::tag::EMPTY_SLICE;
+use minify_html_common::gen::codepoints::Lookup;
+use minify_html_common::spec::tag::EMPTY_SLICE;
 use crate::err::{debug_repr, Error, ErrorType, ProcessingResult};
 use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;

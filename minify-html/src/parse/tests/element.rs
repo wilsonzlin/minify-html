@@ -1,8 +1,8 @@
 use rustc_hash::FxHashMap;
 
 use crate::ast::{AttrVal, ElementClosingTag, NodeData};
-use crate::common::spec::tag::ns::Namespace;
-use crate::common::spec::tag::EMPTY_SLICE;
+use minify_html_common::spec::tag::ns::Namespace;
+use minify_html_common::spec::tag::EMPTY_SLICE;
 use crate::parse::element::{parse_element, parse_tag, ParsedTag};
 use crate::parse::Code;
 

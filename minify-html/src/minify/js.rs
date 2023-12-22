@@ -1,5 +1,5 @@
 use crate::cfg::Cfg;
-use crate::common::whitespace::trimmed;
+use minify_html_common::whitespace::trimmed;
 use minify_js::{minify as minifier, TopLevelMode};
 
 pub fn minify_js(cfg: &Cfg, mode: TopLevelMode, out: &mut Vec<u8>, code: &[u8]) {
