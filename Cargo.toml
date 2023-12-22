@@ -8,6 +8,7 @@ members = [
   "minify-html-onepass",
   "minify-html-python",
   "minify-html-ruby",
+  "minify-html-wasm",
   "minify-html",
 ]
 

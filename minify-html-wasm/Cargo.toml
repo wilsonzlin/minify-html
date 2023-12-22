@@ -13,7 +13,7 @@ default = ["console_error_panic_hook"]
 
 [dependencies]
 js-sys = "0.3.58"
-minify-html = { path = "../rust/main" }
+minify-html = { path = "../minify-html" }
 wasm-bindgen = "0.2.63"
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
