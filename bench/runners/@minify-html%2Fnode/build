@@ -6,3 +6,5 @@ pushd ../../../minify-html-nodejs
 npm i
 npm run build
 popd
+
+npm i
