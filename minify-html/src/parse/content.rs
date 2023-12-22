@@ -140,7 +140,7 @@ pub fn parse_content(
   let mut closing_tag_omitted = true;
   let mut nodes = Vec::<NodeData>::new();
   loop {
-    let (text_len, mut typ) = match CONTENT_TYPE_MATCHER.0.find(&code.as_slice()) {
+    let (text_len, mut typ) = match CONTENT_TYPE_MATCHER.0.find(code.as_slice()) {
       Some(m) => (m.start(), CONTENT_TYPE_MATCHER.1[m.pattern()]),
       None => (code.rem(), Text),
     };
@@ -154,6 +154,7 @@ pub fn parse_content(
       };
     };
     // Check using Parsing.md tag rules.
+    #[allow(clippy::if_same_then_else)] // For readability.
     if typ == OpeningTag || typ == ClosingTag {
       let name = peek_tag_name(code);
       if typ == OpeningTag {
@@ -162,21 +163,19 @@ pub fn parse_content(
           // The upcoming opening tag implicitly closes the current element e.g. `<tr><td>(current position)<td>`.
           typ = OmittedClosingTag;
         };
-      } else {
-        if name.is_empty() {
-          // Malformed code, drop until and including next `>`.
-          typ = MalformedLeftChevronSlash;
-        } else if grandparent == name.as_slice() && can_omit_as_last_node(grandparent, parent) {
-          // The upcoming closing tag implicitly closes the current element e.g. `<tr><td>(current position)</tr>`.
-          // This DOESN'T handle when grandparent doesn't exist (represented by an empty slice). However, in that case it's irrelevant, as it would mean we would be at EOF, and our parser simply auto-closes everything anyway. (Normally we'd have to determine if `<p>Hello` is an error or allowed.)
-          typ = OmittedClosingTag;
-        } else if VOID_TAGS.contains(name.as_slice()) {
-          // Closing tag for void element, drop.
-          typ = IgnoredTag;
-        } else if parent.is_empty() || parent != name.as_slice() {
-          // Closing tag mismatch, drop.
-          typ = IgnoredTag;
-        };
+      } else if name.is_empty() {
+        // Malformed code, drop until and including next `>`.
+        typ = MalformedLeftChevronSlash;
+      } else if grandparent == name.as_slice() && can_omit_as_last_node(grandparent, parent) {
+        // The upcoming closing tag implicitly closes the current element e.g. `<tr><td>(current position)</tr>`.
+        // This DOESN'T handle when grandparent doesn't exist (represented by an empty slice). However, in that case it's irrelevant, as it would mean we would be at EOF, and our parser simply auto-closes everything anyway. (Normally we'd have to determine if `<p>Hello` is an error or allowed.)
+        typ = OmittedClosingTag;
+      } else if VOID_TAGS.contains(name.as_slice()) {
+        // Closing tag for void element, drop.
+        typ = IgnoredTag;
+      } else if parent.is_empty() || parent != name.as_slice() {
+        // Closing tag mismatch, drop.
+        typ = IgnoredTag;
       };
       typ = maybe_ignore_html_head_body(code, typ, parent, &name);
     };

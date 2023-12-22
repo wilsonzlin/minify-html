@@ -4,7 +4,7 @@ use aho_corasick::AhoCorasick;
 use lazy_static::lazy_static;
 
 lazy_static! {
-  static ref COMMENT_END: AhoCorasick = AhoCorasick::new(&["-->"]);
+  static ref COMMENT_END: AhoCorasick = AhoCorasick::new(["-->"]);
 }
 
 pub fn parse_comment(code: &mut Code) -> NodeData {

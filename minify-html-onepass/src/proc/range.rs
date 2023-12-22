@@ -43,7 +43,7 @@ impl ProcessorRange {
   }
 
   #[inline(always)]
-  pub fn expect(&self) -> () {
+  pub fn expect(&self) {
     debug_assert!(self.nonempty());
   }
 }

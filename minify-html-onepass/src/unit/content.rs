@@ -110,6 +110,8 @@ pub fn process_content(
       };
 
       // Next character is not whitespace, so handle any previously ignored whitespace.
+      #[allow(clippy::if_same_then_else)]
+      // Different branches (despite both having blank bodies) is for readability.
       if ws_skipped {
         if destroy_whole
           && last_written == ContentType::Tag
@@ -128,6 +130,7 @@ pub fn process_content(
           prev_sibling_closing_tag.write_if_exists(proc);
           // Current contiguous whitespace needs to be reduced to a single space character.
           proc.write(b' ');
+          // #[allow(unused_assignments)] It may not be used now but if it is in the future then it would be a logic error (and subtle bug) to not update here.
           last_written = ContentType::Text;
         } else {
           unreachable!();

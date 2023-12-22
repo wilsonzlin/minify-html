@@ -154,7 +154,7 @@ fn main() {
     args.inputs.par_iter().for_each(|input| {
       let input_name = input.to_string_lossy().into_owned();
 
-      let mut src_file = io_expect!(input_name, File::open(&input), "Could not open source file");
+      let mut src_file = io_expect!(input_name, File::open(input), "Could not open source file");
       let mut src_code = Vec::<u8>::new();
       io_expect!(
         input_name,
@@ -164,7 +164,7 @@ fn main() {
       let out_code = minify(&src_code, &cfg);
       let mut out_file = io_expect!(
         input_name,
-        File::create(&input),
+        File::create(input),
         "Could not open output file"
       );
       io_expect!(

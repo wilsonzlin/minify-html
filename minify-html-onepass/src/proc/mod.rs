@@ -104,7 +104,7 @@ impl<'d> Processor<'d> {
 
   #[inline(always)]
   fn _maybe_read_offset(&self, offset: usize) -> Option<u8> {
-    self.code.get(self.read_next + offset).map(|c| *c)
+    self.code.get(self.read_next + offset).copied()
   }
 
   #[inline(always)]
@@ -117,7 +117,7 @@ impl<'d> Processor<'d> {
   /// Move next `amount` characters to output.
   /// Panics. Does not check bounds for performance (e.g. already checked).
   #[inline(always)]
-  fn _shift(&mut self, amount: usize) -> () {
+  fn _shift(&mut self, amount: usize) {
     // Optimisation: Don't shift if already there (but still update offsets).
     if self.read_next != self.write_next {
       self
@@ -183,9 +183,9 @@ impl<'d> Processor<'d> {
       WhileInLookup(lookup) => self._many(|n| lookup[n]),
       WhileNotInLookup(lookup) => self._many(|n| !lookup[n]),
 
-      IsPred(p) => self._one(|n| p(n)),
+      IsPred(p) => self._one(p),
       IsNotPred(p) => self._one(|n| !p(n)),
-      WhilePred(p) => self._many(|n| p(n)),
+      WhilePred(p) => self._many(p),
       WhileNotPred(p) => self._many(|n| !p(n)),
 
       IsSeq(seq) => self
@@ -247,7 +247,7 @@ impl<'d> Processor<'d> {
   }
 
   #[inline(always)]
-  pub fn reserve_output(&mut self, amount: usize) -> () {
+  pub fn reserve_output(&mut self, amount: usize) {
     self.write_next += amount;
   }
 
@@ -284,13 +284,13 @@ impl<'d> Processor<'d> {
   }
 
   #[inline(always)]
-  pub fn skip_amount_expect(&mut self, amount: usize) -> () {
+  pub fn skip_amount_expect(&mut self, amount: usize) {
     debug_assert!(!self.at_end(), "skip known characters");
     self.read_next += amount;
   }
 
   #[inline(always)]
-  pub fn skip_expect(&mut self) -> () {
+  pub fn skip_expect(&mut self) {
     debug_assert!(!self.at_end(), "skip known character");
     self.read_next += 1;
   }
@@ -298,17 +298,17 @@ impl<'d> Processor<'d> {
   // Writing characters directly.
   /// Write `c` to output. Will panic if exceeds bounds.
   #[inline(always)]
-  pub fn write(&mut self, c: u8) -> () {
+  pub fn write(&mut self, c: u8) {
     self.code[self.write_next] = c;
     self.write_next += 1;
   }
 
   #[inline(always)]
-  pub fn make_lowercase(&mut self, range: ProcessorRange) -> () {
+  pub fn make_lowercase(&mut self, range: ProcessorRange) {
     self.code[range.start..range.end].make_ascii_lowercase();
   }
 
-  pub fn undo_write(&mut self, len: usize) -> () {
+  pub fn undo_write(&mut self, len: usize) {
     self.write_next -= len;
   }
 
@@ -326,13 +326,13 @@ impl<'d> Processor<'d> {
 
   /// Write `s` to output. Will panic if exceeds bounds.
   #[inline(always)]
-  pub fn write_slice(&mut self, s: &[u8]) -> () {
+  pub fn write_slice(&mut self, s: &[u8]) {
     self.code[self.write_next..self.write_next + s.len()].copy_from_slice(s);
     self.write_next += s.len();
   }
 
   #[inline(always)]
-  pub fn write_utf8(&mut self, c: char) -> () {
+  pub fn write_utf8(&mut self, c: char) {
     let mut encoded = [0u8; 4];
     self.write_slice(c.encode_utf8(&mut encoded).as_bytes());
   }
@@ -362,7 +362,7 @@ impl<'d> Processor<'d> {
   }
 
   #[inline(always)]
-  pub fn accept_amount_expect(&mut self, count: usize) -> () {
+  pub fn accept_amount_expect(&mut self, count: usize) {
     debug_assert!(self._in_bounds(count - 1));
     self._shift(count);
   }

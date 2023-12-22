@@ -9,7 +9,7 @@ use lazy_static::lazy_static;
 lazy_static! {
   static ref END: AhoCorasick = AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .build(&["</script"]);
+    .build(["</script"]);
 }
 
 pub fn parse_script_content(code: &mut Code, lang: ScriptOrStyleLang) -> ParsedContent {

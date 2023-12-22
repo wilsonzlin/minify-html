@@ -6,7 +6,7 @@ use aho_corasick::AhoCorasick;
 use lazy_static::lazy_static;
 
 lazy_static! {
-  static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(&["?>"]);
+  static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(["?>"]);
 }
 
 #[inline(always)]

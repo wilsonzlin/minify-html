@@ -10,7 +10,7 @@ pub fn minify_js(cfg: &Cfg, mode: TopLevelMode, out: &mut Vec<u8>, code: &[u8]) 
     let mut output = Vec::new();
     let result = minifier(mode, source, &mut output);
     // TODO Collect error as warning.
-    if !result.is_err() && output.len() < code.len() {
+    if result.is_ok() && output.len() < code.len() {
       out.extend_from_slice(output.as_slice());
       return;
     };

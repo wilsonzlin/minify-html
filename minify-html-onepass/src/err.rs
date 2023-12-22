@@ -20,12 +20,8 @@ impl ErrorType {
       ErrorType::NotFound(exp) => {
         format!("Expected {}.", exp)
       }
-      ErrorType::UnexpectedEnd => {
-        format!("Unexpected end of source code.")
-      }
-      ErrorType::UnexpectedClosingTag => {
-        format!("Unexpected closing tag.")
-      }
+      ErrorType::UnexpectedEnd => "Unexpected end of source code.".to_string(),
+      ErrorType::UnexpectedClosingTag => "Unexpected closing tag.".to_string(),
     }
   }
 }

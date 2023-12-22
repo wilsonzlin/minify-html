@@ -28,13 +28,13 @@ methods! {
 
     fn minify(source: RString, cfg_hash: Hash) -> RString {
         let code = source
-            .map_err(|e| VM::raise_ex(e) )
+            .map_err(VM::raise_ex)
             .unwrap()
             .to_string()
             .into_bytes();
 
         let cfg_hash = cfg_hash
-            .map_err(|e| VM::raise_ex(e) )
+            .map_err(VM::raise_ex)
             .unwrap();
 
         let cfg = &Cfg {

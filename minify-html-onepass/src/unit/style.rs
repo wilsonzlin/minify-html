@@ -1,5 +1,4 @@
 use crate::err::ProcessingResult;
-use crate::proc::checkpoint::WriteCheckpoint;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
@@ -14,12 +13,11 @@ use std::str::from_utf8_unchecked;
 lazy_static! {
   static ref STYLE_END: AhoCorasick = AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .build(&["</style"]);
+    .build(["</style"]);
 }
 
 #[inline(always)]
 pub fn process_style(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
-  let start = WriteCheckpoint::new(proc);
   proc.require_not_at_end()?;
   let src = proc.m(WhileNotSeq(&STYLE_END), Discard);
   // `process_tag` will require closing tag.

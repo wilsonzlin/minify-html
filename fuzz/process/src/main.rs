@@ -1,4 +1,3 @@
-use minify_html_onepass;
 use std::fs;
 use std::io::Write;
 use std::io::{self};

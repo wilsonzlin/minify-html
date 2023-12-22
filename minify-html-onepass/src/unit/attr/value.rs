@@ -61,17 +61,11 @@ impl CharType {
   }
 
   fn is_start(&self) -> bool {
-    match self {
-      CharType::Start => true,
-      _ => false,
-    }
+    matches!(self, CharType::Start)
   }
 
   fn is_end(&self) -> bool {
-    match self {
-      CharType::End => true,
-      _ => false,
-    }
+    matches!(self, CharType::End)
   }
 }
 
@@ -117,24 +111,21 @@ impl Metrics {
     // Replace all `>` chars with encoded versions.
     let raw_len = raw_len - self.count_gt + self.total_gt_encoded_length;
     // Replace first char with encoded version if necessary.
-    let raw_len = raw_len - (first_char_encoding_cost > 0) as usize + first_char_encoding_cost;
-    raw_len
+    raw_len - (first_char_encoding_cost > 0) as usize + first_char_encoding_cost
   }
 
   fn single_quoted_len(&self, raw_len: usize) -> usize {
     // Replace all single quote chars with encoded version.
     let raw_len = raw_len - self.count_single_quotation + self.total_single_quote_encoded_length;
     // Delimiter quotes.
-    let raw_len = raw_len + 2;
-    raw_len
+    raw_len + 2
   }
 
   fn double_quoted_len(&self, raw_len: usize) -> usize {
     // Replace all double quote chars with encoded version.
     let raw_len = raw_len - self.count_double_quotation + self.total_double_quote_encoded_length;
     // Delimiter quotes.
-    let raw_len = raw_len + 2;
-    raw_len
+    raw_len + 2
   }
 
   fn get_optimal_delimiter_type(&self, raw_val: &[u8]) -> (DelimiterType, usize) {
@@ -177,7 +168,7 @@ pub struct ProcessedAttrValue {
   pub value: Option<ProcessorRange>,
 }
 
-fn handle_whitespace_char_type(c: u8, proc: &mut Processor, metrics: &mut Metrics) -> () {
+fn handle_whitespace_char_type(c: u8, proc: &mut Processor, metrics: &mut Metrics) {
   proc.write(c);
   metrics.count_whitespace += 1;
   metrics.total_whitespace_encoded_length += ENCODED[&c].len();

@@ -6,6 +6,7 @@ pub struct WriteCheckpoint {
   write_next: usize,
 }
 
+#[allow(dead_code)]
 impl WriteCheckpoint {
   #[inline(always)]
   pub fn get_written_range_since(&self, amount: usize) -> ProcessorRange {
@@ -33,7 +34,7 @@ impl WriteCheckpoint {
 
   /// Discard characters written since checkpoint but keep source position.
   #[inline(always)]
-  pub fn erase_written(&self, proc: &mut Processor) -> () {
+  pub fn erase_written(&self, proc: &mut Processor) {
     proc.write_next = self.write_next;
   }
 
@@ -66,7 +67,7 @@ impl ReadCheckpoint {
   }
 
   #[inline(always)]
-  pub fn restore(&self, proc: &mut Processor) -> () {
+  pub fn restore(&self, proc: &mut Processor) {
     proc.read_next = self.read_next;
   }
 }

@@ -35,6 +35,7 @@ struct HtmlDataAttrConfig {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct HtmlData {
   tags: HashMap<HtmlDataNamespace, Vec<String>>,
   // attr => ns => tag => AttrConfig.
@@ -220,7 +221,7 @@ impl<I: IntoIterator<Item = u8>> Add<I> for CodePoints {
   type Output = Self;
 
   fn add(self, rhs: I) -> Self::Output {
-    let mut lut = self.0.clone();
+    let mut lut = self.0;
     for v in rhs {
       lut[v as usize] = true;
     }
@@ -228,21 +229,23 @@ impl<I: IntoIterator<Item = u8>> Add<I> for CodePoints {
   }
 }
 
+// I'd like to just use Add, but Rust doesn't allow implementing the same trait multiple times.
 impl BitAnd<u8> for CodePoints {
   type Output = Self;
 
   fn bitand(self, rhs: u8) -> Self::Output {
-    let mut lut = self.0.clone();
+    let mut lut = self.0;
     lut[rhs as usize] = true;
     CodePoints(lut)
   }
 }
 
+// I'd like to just use Add, but Rust doesn't allow implementing the same trait multiple times.
 impl BitOr<CodePoints> for CodePoints {
   type Output = Self;
 
   fn bitor(self, rhs: CodePoints) -> Self::Output {
-    let mut lut = self.0.clone();
+    let mut lut = self.0;
     for (i, v) in rhs.0.iter().enumerate() {
       if *v {
         lut[i] = true;
@@ -450,7 +453,7 @@ impl TrieBuilder {
           "#
         ));
         assert!(self.code_cache.insert(var_value, name.clone()).is_none());
-        return name;
+        name
       }
     }
     let mut s = State {
@@ -468,6 +471,7 @@ impl TrieBuilder {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct Entity {
   codepoints: Vec<u32>,
   characters: String,

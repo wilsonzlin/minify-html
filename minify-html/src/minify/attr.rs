@@ -251,7 +251,7 @@ pub fn encode_unquoted(val: &[u8], whatwg: bool) -> AttrMinifiedValue {
     }
   } else {
     let data = UNQUOTED_REPLACER.replace_all(val);
-    let prefix: &'static [u8] = match data.get(0) {
+    let prefix: &'static [u8] = match data.first() {
       Some(b'"') => match data.get(1) {
         Some(&c2) if DIGIT[c2] || c2 == b';' => b"&#34;",
         _ => b"&#34",

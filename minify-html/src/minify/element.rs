@@ -10,6 +10,7 @@ use minify_html_common::spec::tag::omission::can_omit_as_before;
 use minify_html_common::spec::tag::omission::can_omit_as_last_node;
 use rustc_hash::FxHashMap;
 
+#[allow(clippy::too_many_arguments)]
 pub fn minify_element(
   cfg: &Cfg,
   out: &mut Vec<u8>,
@@ -71,7 +72,7 @@ pub fn minify_element(
       if i == 0 || cfg.keep_spaces_between_attributes {
         out.push(b' ');
       };
-      out.extend_from_slice(&name);
+      out.extend_from_slice(name);
       out.push(b'=');
       debug_assert!(value.quoted());
       value.out(out);
@@ -80,10 +81,10 @@ pub fn minify_element(
       // Write a space between unquoted attributes,
       // or after the tag name if it wasn't written already during `quoted` processing,
       // or if forced by Cfg.
-      if i > 0 || (i == 0 && quoted.len() == 0) || cfg.keep_spaces_between_attributes {
+      if i > 0 || (i == 0 && quoted.is_empty()) || cfg.keep_spaces_between_attributes {
         out.push(b' ');
       };
-      out.extend_from_slice(&name);
+      out.extend_from_slice(name);
       if let AttrMinified::Value(v) = value {
         out.push(b'=');
         v.out(out);
@@ -92,7 +93,7 @@ pub fn minify_element(
 
     if closing_tag == ElementClosingTag::SelfClosing {
       // Write a space only if the last attribute is unquoted.
-      if unquoted.len() > 0 {
+      if !unquoted.is_empty() {
         out.push(b' ');
       };
       out.push(b'/');

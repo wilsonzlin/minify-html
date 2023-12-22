@@ -4,6 +4,7 @@ use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
 use std::string::String;
 
+#[allow(clippy::too_many_arguments)]
 #[pyfunction(
   py_args = "*",
   do_not_minify_doctype = "false",

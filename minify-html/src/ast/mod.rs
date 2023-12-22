@@ -15,6 +15,7 @@ pub enum ElementClosingTag {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
+#[allow(clippy::upper_case_acronyms)]
 pub enum ScriptOrStyleLang {
   CSS,
   Data,

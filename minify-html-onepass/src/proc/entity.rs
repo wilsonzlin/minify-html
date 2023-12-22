@@ -72,7 +72,7 @@ fn parse_numeric_entity(
   // Browsers decode to a replacement character (U+FFFD) if malformed.
   let char = Some(value)
     .filter(|_| digits <= max_digits)
-    .and_then(|v| from_u32(v))
+    .and_then(from_u32)
     .unwrap_or('\u{FFFD}');
   Parsed::Decoded {
     read_len: read_next - read_start,
@@ -207,7 +207,7 @@ pub fn maybe_normalise_entity(proc: &mut Processor, in_attr_val: bool) -> bool {
         };
       }
       Some(_) => {
-        let (new_node, new_read_next) = node.shortest_matching_prefix(&proc.code, read_next);
+        let (new_node, new_read_next) = node.shortest_matching_prefix(proc.code, read_next);
         let len = new_read_next - read_next;
         if len == 0 {
           break;
@@ -233,5 +233,5 @@ pub fn maybe_normalise_entity(proc: &mut Processor, in_attr_val: bool) -> bool {
   };
 
   proc.read_next = shifted_start;
-  return true;
+  true
 }

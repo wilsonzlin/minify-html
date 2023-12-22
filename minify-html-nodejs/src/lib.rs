@@ -36,7 +36,7 @@ fn minify(mut cx: FunctionContext) -> JsResult<JsBuffer> {
     remove_bangs: get_bool!(cx, opt, "remove_bangs"),
     remove_processing_instructions: get_bool!(cx, opt, "remove_processing_instructions"),
   };
-  let out = minify_html::minify(src.as_slice(&mut cx), &cfg);
+  let out = minify_html::minify(src.as_slice(&cx), &cfg);
   Ok(JsBuffer::external(&mut cx, out))
 }
 

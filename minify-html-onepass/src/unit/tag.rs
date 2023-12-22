@@ -42,7 +42,7 @@ impl MaybeClosingTag {
   }
 
   #[inline(always)]
-  pub fn write(&mut self, proc: &mut Processor) -> () {
+  pub fn write(&mut self, proc: &mut Processor) {
     proc.write_slice(b"</");
     proc.write_range(self.0.take().unwrap());
     proc.write(b'>');
@@ -76,7 +76,7 @@ impl MaybeClosingTag {
   }
 
   #[inline(always)]
-  pub fn replace(&mut self, tag: MaybeClosingTag) -> () {
+  pub fn replace(&mut self, tag: MaybeClosingTag) {
     self.0 = tag.0;
   }
 }
