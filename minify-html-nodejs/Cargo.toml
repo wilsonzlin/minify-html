@@ -10,7 +10,7 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-minify-html = "0.11.1"
+minify-html = { path = "../minify-html" }
 
 [dependencies.neon]
 version = "0.10"
