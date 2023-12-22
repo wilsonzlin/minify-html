@@ -7,7 +7,7 @@ const { spawnSync } = require("child_process");
 
 // Use minify-html as source of truth for current version value.
 const currentVersion = /^version = "(\d+)\.(\d+)\.(\d+)"\s*$/m
-  .exec(readFileSync(`${RUST_MAIN_DIR}/Cargo.toml`, "utf8"))
+  .exec(readFileSync(`${__dirname}/minify-html/Cargo.toml`, "utf8"))
   .slice(1)
   .map((n) => Number.parseInt(n, 10));
 
