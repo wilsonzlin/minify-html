@@ -1,5 +1,13 @@
 # minify-html changelog
 
+## Pending
+
+- Build and release for Python 3.12.
+- Restructure project to use top-level Cargo workspace instead of separate isolated crates.
+- Extract out common Rust code to separate published shared crate instead of symlinking.
+- Port `gen` code to `build.rs` in common Rust library to avoid requiring Node.js in order to build, and to ensure code stays in sync.
+- Rename library folders to `minify-html-*` to better distinguish them from other assorted project code.
+
 ## 0.11.1
 
 - Bump GitHub Actions Ubuntu image version.

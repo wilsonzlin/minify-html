@@ -74,7 +74,7 @@ jobs:
           maturin build --release --strip -i "$(which python)"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             # For idempotency, ignore any existing built wheels that have already been successfully uploaded.
-            twine upload --skip-existing target/wheels/*
+            twine upload --skip-existing ../target/wheels/*
           else
-            ls -al target/wheels/*
+            ls -al ../target/wheels/*
           fi
