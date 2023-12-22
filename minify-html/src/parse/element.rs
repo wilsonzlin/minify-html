@@ -172,11 +172,11 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
     children,
   } = match (ns, elem_name.as_slice()) {
     (_, b"script") => match attributes.get(b"type".as_ref()) {
-      Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => {
-        parse_script_content(code, ScriptOrStyleLang::Data)
-      }
       Some(typ) if typ.as_slice() == b"module" => {
         parse_script_content(code, ScriptOrStyleLang::JSModule)
+      }
+      Some(mime) if !JAVASCRIPT_MIME_TYPES.contains(mime.as_slice()) => {
+        parse_script_content(code, ScriptOrStyleLang::Data)
       }
       _ => parse_script_content(code, ScriptOrStyleLang::JS),
     },
