@@ -71,7 +71,7 @@ jobs:
             export PATH="$PYENV_ROOT/bin:$PATH"
             eval "$(pyenv init --path)"
           fi
-          maturin build --release --strip -i "$(which python)"
+          maturin build --release --sdist --strip -i "$(which python)"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             # For idempotency, ignore any existing built wheels that have already been successfully uploaded.
             twine upload --skip-existing ../target/wheels/*
