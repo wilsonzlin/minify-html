@@ -1,5 +1,11 @@
 Cargo.lock
 node_modules/
+npm-debug.log*
+package-lock.json
 target/
+
 # Java
 *.nativelib
+
+# Node.js
+index.node

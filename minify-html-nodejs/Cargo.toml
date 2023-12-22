@@ -1,5 +1,5 @@
 [package]
-name = "minify-html-node"
+name = "minify-html-nodejs"
 publish = false
 version = "0.11.1"
 description = "Node.js bindings for minify-html"
