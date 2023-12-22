@@ -9,13 +9,3 @@ edition = "2018"
 minify-html = { path = "../../../rust/main" }
 serde = { version = "1.0.104", features = ["derive"] }
 serde_json = "1.0.44"
-
-[profile.release]
-lto = true
-strip = true
-codegen-units = 1
-opt-level = 3
-
-[profile.release.package."*"]
-codegen-units = 1
-opt-level = 3
