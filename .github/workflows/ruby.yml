@@ -42,7 +42,7 @@ jobs:
 
       - name: Install rbenv dependencies (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt install -y autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm5 libgdbm-dev
+        run: sudo apt install -y autoconf patch build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
 
       - name: Install rbenv
         # rbenv-installer now uses Linux brew to install Ruby, which we do not want.
