@@ -2,4 +2,4 @@
 
 set -Eeuxo pipefail
 
-./target/release/minify-html-onepass-bench
+../../../target/release/minify-html-onepass-bench

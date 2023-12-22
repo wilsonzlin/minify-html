@@ -2,4 +2,4 @@
 
 set -Eeuxo pipefail
 
-./target/release/minify-html-bench
+../../../target/release/minify-html-bench

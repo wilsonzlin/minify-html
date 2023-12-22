@@ -8,9 +8,9 @@ cargo build --manifest-path c14n/Cargo.toml --release
 cargo build --manifest-path charlines/Cargo.toml --release
 
 for f in outputs/*/*; do
-  out=$(c14n/target/release/c14n < "$f")
+  out=$(../../target/release/c14n < "$f")
   if [[ "$CHARLINES" == "1" ]]; then
-    out=$(charlines/target/release/charlines <<< "$out")
+    out=$(../../target/release/charlines <<< "$out")
   fi
   cat <<< "$out" > "$f"
 done
