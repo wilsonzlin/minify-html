@@ -78,7 +78,7 @@ jobs:
       - name: Download checksums
         uses: actions/download-artifact@v1
         with:
-          pattern: *.sha512sum
+          pattern: '*.sha512sum'
           path: minify-html-node/checksums/
 
       - name: Pack and publish package
