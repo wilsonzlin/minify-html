@@ -79,7 +79,7 @@ const cmd = (...cfg) => {
 const replaceInFile = (path, pattern, replacement) =>
   writeFileSync(
     path,
-    readFileSync(`${__dirname}/path`, "utf8").replace(pattern, replacement)
+    readFileSync(`${__dirname}/${path}`, "utf8").replace(pattern, replacement)
   );
 
 if (
