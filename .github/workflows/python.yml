@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        variant: [main, onepass]
+        variant: ['', '-onepass']
         os: [macos-11.0, ubuntu-20.04, windows-2019, self-hosted-linux-arm64]
         python: ['3.8', '3.9', '3.10', '3.11']
     steps:
@@ -40,7 +40,7 @@ jobs:
           default: true
 
       - name: Build native module
-        working-directory: ./python/${{ matrix.variant }}
+        working-directory: ./minify-html${{ matrix.variant }}-python
         run: cargo build --release
 
       - name: Install Python build tools (macOS x64)
@@ -59,7 +59,7 @@ jobs:
 
       - name: Pack and publish package
         shell: bash
-        working-directory: ./python/${{ matrix.variant }}
+        working-directory: ./minify-html${{ matrix.variant }}-python
         run: |
           cat << 'EOF' > "$HOME/.pypirc"
           [pypi]

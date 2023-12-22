@@ -33,7 +33,7 @@ jobs:
           default: true
 
       - name: Build native module
-        working-directory: ./nodejs
+        working-directory: ./minify-html-nodejs
         id: module
         shell: bash
         run: |
@@ -48,23 +48,26 @@ jobs:
           uploadKey: minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ steps.module.outputs.BINARY_NAME }}.node
           keyId: ${{ secrets.CICD_CLI_B2_KEY_ID }}
           applicationKey: ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          file: ./nodejs/index.node
+          file: ./minify-html-nodejs/index.node
 
   package:
     runs-on: ubuntu-20.04
     needs: build
     steps:
       - uses: actions/checkout@v1
+
       - name: Get version
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+
       - name: Set up Node.js
         uses: actions/setup-node@master
         with:
           node-version: 17.x
+
       - name: Pack and publish package
-        working-directory: ./nodejs
+        working-directory: ./minify-html-nodejs
         run: |
           cat << 'EOF' > .npmrc
           package-lock=false

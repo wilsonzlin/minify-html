@@ -50,7 +50,7 @@ jobs:
           default: true
 
       - name: Build CLI
-        working-directory: ./cli
+        working-directory: ./minify-html-cli
         run: cargo build --release -vvv
 
       - name: Upload to B2
@@ -60,5 +60,5 @@ jobs:
           uploadKey: minify-html/bin/${{ steps.file.outputs.FILE }}
           keyId: ${{ secrets.CICD_CLI_B2_KEY_ID }}
           applicationKey: ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          file: ./cli/target/release/minify-html-cli${{ matrix.EXT }}
+          file: ./target/release/minify-html-cli${{ matrix.EXT }}
           contentType: ${{ matrix.MIME }}

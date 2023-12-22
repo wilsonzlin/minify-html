@@ -25,12 +25,12 @@ jobs:
           default: true
 
       - name: Install wasm-pack
-        working-directory: ./wasm
+        working-directory: ./minify-html-wasm
         shell: bash
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Build native module
-        working-directory: ./wasm
+        working-directory: ./minify-html-wasm
         shell: bash
         run: TARGET=bundler ./build
 
@@ -40,7 +40,7 @@ jobs:
           node-version: 17.x
 
       - name: Pack and publish package
-        working-directory: ./wasm/pkg
+        working-directory: ./minify-html-wasm/pkg
         run: |
           cat << 'EOF' > .npmrc
           package-lock=false

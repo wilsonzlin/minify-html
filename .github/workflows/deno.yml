@@ -25,12 +25,12 @@ jobs:
           default: true
 
       - name: Install wasm-pack
-        working-directory: ./wasm
+        working-directory: ./minify-html-wasm
         shell: bash
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Build native module
-        working-directory: ./wasm
+        working-directory: ./minify-html-wasm
         shell: bash
         run: TARGET=web ./build
 
@@ -42,7 +42,7 @@ jobs:
       - name: Upload to B2
         run: |
           ./b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          for f in wasm/pkg/*; do
+          for f in minify-html-wasm/pkg/*; do
             if [[ "$f" == *.js ]]; then
               content_type='text/javascript'
             elif [[ "$f" == *.wasm ]]; then

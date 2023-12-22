@@ -34,13 +34,13 @@ jobs:
 
       - name: Build Java native library
         run: cargo build --release
-        working-directory: ./java
+        working-directory: ./minify-html-java
 
       - name: Upload built library
         uses: actions/upload-artifact@v1
         with:
           name: ${{ matrix.ARCH }}
-          path: ./java/target/rust/release/${{ matrix.FILE }}
+          path: ./target/release/${{ matrix.FILE }}
 
   package:
     runs-on: ubuntu-20.04
@@ -59,23 +59,23 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: linux-x86_64
-          path: java/src/main/resources/linux-x86_64
+          path: minify-html-java/src/main/resources/linux-x86_64
 
       - name: Download macOS built library
         uses: actions/download-artifact@v1
         with:
           name: macos-x86_64
-          path: java/src/main/resources/macos-x86_64
+          path: minify-html-java/src/main/resources/macos-x86_64
 
       - name: Download Windows built library
         uses: actions/download-artifact@v1
         with:
           name: windows-x86_64
-          path: java/src/main/resources/windows-x86_64
+          path: minify-html-java/src/main/resources/windows-x86_64
 
       - name: Move native library files to correct location
         shell: bash
-        working-directory: ./java/src/main/resources
+        working-directory: ./minify-html-java/src/main/resources
         run: |
           for f in *; do
             mv $f/* "$f.nativelib"
@@ -83,7 +83,7 @@ jobs:
           done
 
       - name: Build, pack, and publish JAR
-        working-directory: ./java
+        working-directory: ./minify-html-java
         env:
           SONATYPE_GPG_PRIVATE_KEY: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
         run: |

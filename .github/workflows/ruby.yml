@@ -70,7 +70,7 @@ jobs:
           export PATH="$HOME/.rbenv/bin:$PATH"
           eval "$(rbenv init -)"
           cargo build -vvv --release
-        working-directory: ./ruby
+        working-directory: ./minify-html-ruby
 
       - name: Set up Backblaze B2 CLI
         uses: wilsonzlin/setup-b2@v3
@@ -78,25 +78,29 @@ jobs:
       - name: Upload to B2
         run: |
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./ruby/target/release/${{ matrix.FILE }} minify-html/bin/ruby/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
+          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./target/release/${{ matrix.FILE }} minify-html/bin/ruby/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
 
   package:
     runs-on: ubuntu-20.04
     needs: build
     steps:
       - uses: actions/checkout@v1
+
       - name: Get version
         id: version
         shell: bash
         run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+
       - name: Set up Ruby
         uses: actions/setup-ruby@v1
         with:
           ruby-version: '2.5'
+
       - name: Set up Backblaze B2 CLI
         uses: wilsonzlin/setup-b2@v3
+
       - name: Pack and publish gem
-        working-directory: ./ruby
+        working-directory: ./minify-html-ruby
         run: |
           cp ../README.md .
           b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
