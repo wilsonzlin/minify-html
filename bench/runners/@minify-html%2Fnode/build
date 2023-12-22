@@ -3,6 +3,7 @@
 set -Eeuxo pipefail
 
 pushd ../../../minify-html-nodejs
+# Ensure devdeps required for building are installed.
 npm i
 npm run build
 popd
