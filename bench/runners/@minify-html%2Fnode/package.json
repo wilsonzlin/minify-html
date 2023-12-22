@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "@minify-html/node": "file:../../../nodejs"
+    "@minify-html/node": "file:../../../minify-html-nodejs"
   }
 }
