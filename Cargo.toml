@@ -2,6 +2,7 @@
 members = [
   "minify-html-cli",
   "minify-html-common",
+  "minify-html-java",
   "minify-html-onepass",
   "minify-html",
 ]

@@ -6,7 +6,7 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-minify-html = { path = "../rust/main" }
+minify-html = { path = "../minify-html" }
 jni = "0.14.0"
 
 [lib]
