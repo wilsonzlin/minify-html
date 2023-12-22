@@ -5,4 +5,4 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-minify-html = { path = "../../rust/main" }
+minify-html-onepass = { path = "../../minify-html-onepass" }

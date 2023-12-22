@@ -6,26 +6,4 @@ pushd "$(dirname "$0")" >/dev/null
 
 npx prettier@2.3.2 -w 'version' 'bench/*.{js,json}' 'bench/runners/*.{js,json}' 'bench/runners/*/*.{js,json}' 'gen/*.{ts,json}' 'nodejs/*.{js,json,ts}'
 
-for dir in \
-  bench/runners/minify-html \
-  bench/runners/minify-html-onepass \
-  cli \
-  debug/diff/c14n \
-  debug/diff/charlines \
-  fuzz \
-  fuzz/process \
-  java \
-  nodejs \
-  python/main \
-  python/onepass \
-  ruby \
-  rust/main \
-  rust/onepass \
-  wasm \
-; do
-  pushd "$dir" >/dev/null
-  cargo fmt
-  popd >/dev/null
-done
-
-popd >/dev/null
+cargo +nightly fmt

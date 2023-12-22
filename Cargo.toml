@@ -1,5 +1,11 @@
 [workspace]
 members = [
+  "bench/runners/minify-html-onepass",
+  "bench/runners/minify-html",
+  "debug/diff/c14n",
+  "debug/diff/charlines",
+  "fuzz",
+  "fuzz/process",
   "minify-html-cli",
   "minify-html-common",
   "minify-html-java",

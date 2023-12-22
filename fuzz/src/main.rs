@@ -1,9 +1,9 @@
 use afl::fuzz;
-use minify_html::{minify, Cfg};
+use minify_html_onepass::{in_place, Cfg};
 
 fn main() {
     fuzz!(|data: &[u8]| {
-        let mut_data: Vec<u8> = data.iter().copied().collect();
-        let _ = minify(&mut_data, &Cfg::new());
+        let mut mut_data = data.to_vec();
+        let _ = in_place(&mut mut_data, &Cfg::new());
     });
 }
