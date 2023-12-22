@@ -266,7 +266,7 @@ There are three whitespace minification methods. When processing text content, m
 <details>
 <summary><strong>Collapse whitespace</strong></summary>
 
-> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/whitespace.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./minify-html-common/src/spec/tag/whitespace.rs) elements.
 
 Reduce a sequence of whitespace characters in text nodes to a single space (U+0020).
 
@@ -292,7 +292,7 @@ Reduce a sequence of whitespace characters in text nodes to a single space (U+00
 <details>
 <summary><strong>Destroy whole whitespace</strong></summary>
 
-> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/whitespace.rs), [content](src/spec/tag/whitespace.rs), [content-first](./src/spec/tag/whitespace.rs), and [formatting](./src/spec/tag/whitespace.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./minify-html-common/src/spec/tag/whitespace.rs), [content](src/spec/tag/whitespace.rs), [content-first](./minify-html-common/src/spec/tag/whitespace.rs), and [formatting](./minify-html-common/src/spec/tag/whitespace.rs) elements.
 
 Remove any text nodes between tags that only consist of whitespace characters.
 
@@ -320,7 +320,7 @@ Remove any text nodes between tags that only consist of whitespace characters.
 <details>
 <summary><strong>Trim whitespace</strong></summary>
 
-> **Applies to:** any element except [whitespace sensitive](./src/spec/tag/whitespace.rs) and [formatting](./src/spec/tag/whitespace.rs) elements.
+> **Applies to:** any element except [whitespace sensitive](./minify-html-common/src/spec/tag/whitespace.rs) and [formatting](./minify-html-common/src/spec/tag/whitespace.rs) elements.
 
 Remove any leading/trailing whitespace from any leading/trailing text nodes of a tag.
 
@@ -351,10 +351,10 @@ minify-html assumes HTML and SVG elements are used in specific ways, based on st
 
 |Group|Elements|Expected children|
 |---|---|---|
-|Formatting|`a`, `strong`, [and others](./rust/common/spec/tag/whitespace.rs)|Formatting elements, text.|
-|Content|`h1`, `p`, [and others](rust/common/spec/tag/whitespace.rs)|Formatting elements, text.|
-|Layout|`div`, `ul`, [and others](./rust/common/spec/tag/whitespace.rs)|Layout elements, content elements.|
-|Content-first|`label`, `li`, [and others](./rust/common/spec/tag/whitespace.rs)|Like content but could be layout with only one child.|
+|Formatting|`a`, `strong`, [and others](./minify-html-common/src/spec/tag/whitespace.rs)|Formatting elements, text.|
+|Content|`h1`, `p`, [and others](./minify-html-common/src/spec/tag/whitespace.rs)|Formatting elements, text.|
+|Layout|`div`, `ul`, [and others](./minify-html-common/src/spec/tag/whitespace.rs)|Layout elements, content elements.|
+|Content-first|`label`, `li`, [and others](./minify-html-common/src/spec/tag/whitespace.rs)|Like content but could be layout with only one child.|
 
 <details>
 <summary><strong>Formatting elements</strong></summary>
