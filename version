@@ -77,7 +77,10 @@ const cmd = (...cfg) => {
 };
 
 const replaceInFile = (path, pattern, replacement) =>
-  writeFileSync(path, readFileSync(`${__dirname}/path`, "utf8").replace(pattern, replacement));
+  writeFileSync(
+    path,
+    readFileSync(`${__dirname}/path`, "utf8").replace(pattern, replacement)
+  );
 
 if (
   cmd("git", "status", "--porcelain", {
@@ -122,7 +125,11 @@ for (const f of ["README.md"]) {
   );
 }
 
-for (const f of ["README.md", "bench/README.md", "minify-html-onepass/README.md"]) {
+for (const f of [
+  "README.md",
+  "bench/README.md",
+  "minify-html-onepass/README.md",
+]) {
   replaceInFile(
     f,
     /(wilsonl\.in\/minify-html\/bench\/)\d+\.\d+\.\d+/g,

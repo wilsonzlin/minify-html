@@ -1,7 +1,14 @@
-use std::{env::var_os, collections::HashMap, path::Path, ops::{Add, BitAnd, BitOr}, fmt::Write, cell::RefCell, rc::Rc};
-
 use itertools::Itertools;
 use serde::Deserialize;
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::env::var_os;
+use std::fmt::Write;
+use std::ops::Add;
+use std::ops::BitAnd;
+use std::ops::BitOr;
+use std::path::Path;
+use std::rc::Rc;
 
 #[derive(Deserialize, Hash, PartialEq, Eq, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
@@ -34,8 +41,20 @@ struct HtmlData {
   attributes: HashMap<String, HashMap<HtmlDataNamespace, HashMap<String, HtmlDataAttrConfig>>>,
 }
 
-fn gen_attr_min_struct(HtmlDataAttrConfig { boolean, case_insensitive, collapse, default_value, redundant_if_empty, trim }: &HtmlDataAttrConfig) -> String {
-  let default_value = default_value.as_ref().map(|v| format!(r#"Some(b"{v}")"#)).unwrap_or_else(|| "None".to_string());
+fn gen_attr_min_struct(
+  HtmlDataAttrConfig {
+    boolean,
+    case_insensitive,
+    collapse,
+    default_value,
+    redundant_if_empty,
+    trim,
+  }: &HtmlDataAttrConfig,
+) -> String {
+  let default_value = default_value
+    .as_ref()
+    .map(|v| format!(r#"Some(b"{v}")"#))
+    .unwrap_or_else(|| "None".to_string());
   format!(
     r#"
       AttributeMinification {{
@@ -113,37 +132,61 @@ fn gen_attrs_rs(html_data: &HtmlData) -> String {
         write!(&mut code, r#"{}:"#, match ns {
           HtmlDataNamespace::Html => "html",
           HtmlDataNamespace::Svg => "svg",
-        }).unwrap();
+        })
+        .unwrap();
         match namespaces.get(&ns) {
           None => write!(&mut code, "None").unwrap(),
           Some(tags_map) => match tags_map.get("*") {
-            Some(global_attr) => write!(&mut code, r#"Some(AttrMapEntry::AllNamespaceElements({}))"#, gen_attr_min_struct(global_attr)).unwrap(),
+            Some(global_attr) => write!(
+              &mut code,
+              r#"Some(AttrMapEntry::AllNamespaceElements({}))"#,
+              gen_attr_min_struct(global_attr)
+            )
+            .unwrap(),
             None => {
-              write!(&mut code, r#"
-                Some({{
-                  #[allow(unused_mut)]
-                  let mut m = FxHashMap::<&'static [u8], AttributeMinification>::default();
-              "#).unwrap();
+              write!(
+                &mut code,
+                r#"
+                  Some({{
+                    #[allow(unused_mut)]
+                    let mut m = FxHashMap::<&'static [u8], AttributeMinification>::default();
+                "#
+              )
+              .unwrap();
               for (tag_name, tag_attr) in tags_map {
-                write!(&mut code, r#"m.insert(b"{}", {});"#, tag_name, gen_attr_min_struct(tag_attr)).unwrap();
-              };
-              write!(&mut code, r#"
+                write!(
+                  &mut code,
+                  r#"m.insert(b"{}", {});"#,
+                  tag_name,
+                  gen_attr_min_struct(tag_attr)
+                )
+                .unwrap();
+              }
+              write!(
+                &mut code,
+                r#"
                   AttrMapEntry::SpecificNamespaceElements(m)
                 }})
-              "#).unwrap();
+              "#
+              )
+              .unwrap();
             }
-          }
+          },
         };
         write!(&mut code, ",").unwrap();
       }
     }
     write!(&mut code, "}});").unwrap();
   }
-  write!(&mut code, r#"
-        AttrMap::new(m)
-      }};
-    }}
-  "#).unwrap();
+  write!(
+    &mut code,
+    r#"
+          AttrMap::new(m)
+        }};
+      }}
+    "#
+  )
+  .unwrap();
   code
 }
 
@@ -163,19 +206,24 @@ impl CodePoints {
     self.0[v as usize]
   }
 
-  fn iter(&self) -> impl Iterator<Item=u8> + '_ {
-    self.0.iter().enumerate().filter(|(_, e)| **e).map(|(i, _)| i as u8)
+  fn iter(&self) -> impl Iterator<Item = u8> + '_ {
+    self
+      .0
+      .iter()
+      .enumerate()
+      .filter(|(_, e)| **e)
+      .map(|(i, _)| i as u8)
   }
 }
 
-impl<I: IntoIterator<Item=u8>> Add<I> for CodePoints {
+impl<I: IntoIterator<Item = u8>> Add<I> for CodePoints {
   type Output = Self;
 
   fn add(self, rhs: I) -> Self::Output {
     let mut lut = self.0.clone();
     for v in rhs {
       lut[v as usize] = true;
-    };
+    }
     CodePoints(lut)
   }
 }
@@ -199,12 +247,12 @@ impl BitOr<CodePoints> for CodePoints {
       if *v {
         lut[i] = true;
       }
-    };
+    }
     CodePoints(lut)
   }
 }
 
-impl<I: IntoIterator<Item=u8>> From<I> for CodePoints {
+impl<I: IntoIterator<Item = u8>> From<I> for CodePoints {
   fn from(value: I) -> Self {
     CodePoints::new() + value
   }
@@ -217,7 +265,7 @@ fn gen_codepoints_rs() -> String {
   // Also update gen/tries.json when changing whitespace definition.
   let whitespace: CodePoints = [0x09u8, 0x0a, 0x0c, 0x0d, 0x20].into();
   let c0_control: CodePoints = (0u8..=0x1f).into();
-  let control = c0_control+ (0x7f..=0x9f);
+  let control = c0_control + (0x7f..=0x9f);
   let digit: CodePoints = (b'0'..=b'9').into();
   let upper_hex_alpha: CodePoints = (b'A'..=b'F').into();
   let lower_hex_alpha: CodePoints = (b'a'..=b'f').into();
@@ -247,11 +295,13 @@ fn gen_codepoints_rs() -> String {
   // Official characters allowed in an attribute name.
   // NOTE: Unicode noncharacters not tested.
   // See https://html.spec.whatwg.org/multipage/syntax.html#syntax-attribute-name for spec.
-  let whatwg_attr_name_char: CodePoints = (0..=255).filter(|&c| match c {
-    b' ' | b'"' | b'\'' | b'>' | b'/' | b'=' => false,
-    c if control.contains(c) => false,
-    _ => true
-  }).into();
+  let whatwg_attr_name_char: CodePoints = (0..=255)
+    .filter(|&c| match c {
+      b' ' | b'"' | b'\'' | b'>' | b'/' | b'=' => false,
+      c if control.contains(c) => false,
+      _ => true,
+    })
+    .into();
   // Valid attribute quote characters.
   // See https://html.spec.whatwg.org/multipage/introduction.html#intro-early-example for spec.
   // Backtick is not a valid quote character according to spec.
@@ -280,7 +330,8 @@ fn gen_codepoints_rs() -> String {
         }
       }
     }
-  "#.to_string();
+  "#
+  .to_string();
 
   for (name, cp) in [
     ("WHITESPACE", whitespace),
@@ -289,24 +340,29 @@ fn gen_codepoints_rs() -> String {
     ("LOWER_HEX_ALPHA", lower_hex_alpha),
     ("HEX_DIGIT", hex_digit),
     ("ALPHANUMERIC_OR_EQUALS", alphanumeric_or_equals),
-
     ("WHITESPACE_OR_SLASH", whitespace_or_slash),
-    ("WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON", whitespace_or_slash_or_equals_or_right_chevron),
-
+    (
+      "WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON",
+      whitespace_or_slash_or_equals_or_right_chevron,
+    ),
     ("WHATWG_ATTR_NAME_CHAR", whatwg_attr_name_char),
     ("DOUBLE_QUOTE", double_quote),
     ("SINGLE_QUOTE", single_quote),
     ("ATTR_QUOTE", attr_quote),
     ("NOT_UNQUOTED_ATTR_VAL_CHAR", not_unquoted_attr_val_char),
-
     ("TAG_NAME_CHAR", tag_name_char),
   ] {
-    write!(&mut code, r#"
-      pub static {name}: &Lookup = &Lookup {{
-        table: {:?},
-      }};
-    "#, cp.0).unwrap();
-  };
+    write!(
+      &mut code,
+      r#"
+        pub static {name}: &Lookup = &Lookup {{
+          table: {:?},
+        }};
+      "#,
+      cp.0
+    )
+    .unwrap();
+  }
 
   code
 }
@@ -333,13 +389,13 @@ impl TrieBuilder {
           let mut cur_node_mut = cur_node.borrow_mut();
           let new_child = cur_node_mut.children.entry(c).or_default();
           next.push(new_child.clone());
-        };
-      };
+        }
+      }
       cur = next;
-    };
+    }
     for n in cur {
       n.borrow_mut().value = Some(value.clone());
-    };
+    }
   }
 
   pub fn generate(self, trie_name: &'static str, value_type: &'static str) -> String {
@@ -358,19 +414,28 @@ impl TrieBuilder {
         // bog down compile time and binary size for large trees with lots of nodes.
         // If array is empty, just use zero.
         let first_idx = node.borrow().children.keys().cloned().min().unwrap_or(0);
-        let children = (first_idx..=255).map(|c| match node.borrow().children.get(&c) {
-          Some(c) => format!("Some({})", self.generate_node(c.clone())),
-          None => "None".to_string(),
-        }).join(", ");
+        let children = (first_idx..=255)
+          .map(|c| match node.borrow().children.get(&c) {
+            Some(c) => format!("Some({})", self.generate_node(c.clone())),
+            None => "None".to_string(),
+          })
+          .join(", ");
 
-        let value = node.borrow().value.as_ref().map(|v| format!("Some({v})")).unwrap_or_else(|| "None".to_string());
-        let var_value = format!(r#"
-          &crate::pattern::TrieNode {{
-            offset: {first_idx},
-            value: {value},
-            children: &[{children}],
-          }}
-        "#);
+        let value = node
+          .borrow()
+          .value
+          .as_ref()
+          .map(|v| format!("Some({v})"))
+          .unwrap_or_else(|| "None".to_string());
+        let var_value = format!(
+          r#"
+            &crate::pattern::TrieNode {{
+              offset: {first_idx},
+              value: {value},
+              children: &[{children}],
+            }}
+          "#
+        );
         if let Some(existing_var_name) = self.code_cache.get(&var_value) {
           return existing_var_name.clone();
         };
@@ -379,9 +444,11 @@ impl TrieBuilder {
         self.next_id += 1;
         let name = format!("{}_NODE_{}", self.trie_name, id);
         let value_type = self.value_type;
-        self.variables.push(format!(r#"
-          static {name}: &crate::pattern::TrieNode<{value_type}> = {var_value};
-        "#));
+        self.variables.push(format!(
+          r#"
+            static {name}: &crate::pattern::TrieNode<{value_type}> = {var_value};
+          "#
+        ));
         assert!(self.code_cache.insert(var_value, name.clone()).is_none());
         return name;
       }
@@ -393,7 +460,10 @@ impl TrieBuilder {
     };
     let root_name = s.generate_node(self.root);
     // Make root node public and use proper name.
-    s.variables.join("\n\n").replace(&format!("static {root_name}"), &format!("pub static {trie_name}"))
+    s.variables.join("\n\n").replace(
+      &format!("static {root_name}"),
+      &format!("pub static {trie_name}"),
+    )
   }
 }
 
@@ -404,59 +474,78 @@ struct Entity {
 }
 
 fn gen_entities_rs() -> String {
-  let entities: HashMap<String, Entity> = serde_json::from_slice(include_bytes!("entities.json")).unwrap();
+  let entities: HashMap<String, Entity> =
+    serde_json::from_slice(include_bytes!("entities.json")).unwrap();
   let mut trie_builder = TrieBuilder::default();
-  trie_builder.add(vec![
-    c(b'&'),
-    c(b'#'),
-    (b'0'..=b'9').into(),
-  ], "EntityType::Dec".to_string());
-  trie_builder.add(vec![
-    c(b'&'),
-    c(b'#'),
-    c(b'x'),
-    CodePoints::new() + (b'0'..=b'9') + (b'a'..=b'f') + (b'A'..=b'F'),
-  ], "EntityType::Hex".to_string());
+  trie_builder.add(
+    vec![c(b'&'), c(b'#'), (b'0'..=b'9').into()],
+    "EntityType::Dec".to_string(),
+  );
+  trie_builder.add(
+    vec![
+      c(b'&'),
+      c(b'#'),
+      c(b'x'),
+      CodePoints::new() + (b'0'..=b'9') + (b'a'..=b'f') + (b'A'..=b'F'),
+    ],
+    "EntityType::Hex".to_string(),
+  );
   let mut shorter_encoded_entities = vec![];
   for (encoded, entity) in entities {
     let val = format!(r#"&{:?}"#, entity.characters.as_bytes());
-    trie_builder.add(encoded.as_bytes().iter().map(|&c| CodePoints::new() & c).collect_vec(), format!("EntityType::Named({})", val));
+    trie_builder.add(
+      encoded
+        .as_bytes()
+        .iter()
+        .map(|&c| CodePoints::new() & c)
+        .collect_vec(),
+      format!("EntityType::Named({})", val),
+    );
     // We should encode if encoded is shorter than decoded.
     if encoded.len() < entity.characters.len() {
       shorter_encoded_entities.push((format!(r#"&{:?}"#, encoded.as_bytes()), val));
     };
-  };
+  }
 
-  let shorter_encoded_entities_encoded_rs = shorter_encoded_entities.iter().map(|(e, _)| e).join(",\n  ");
-  let shorter_encoded_entities_decoded_rs = shorter_encoded_entities.iter().map(|(_, d)| d).join(",\n  ");
+  let shorter_encoded_entities_encoded_rs = shorter_encoded_entities
+    .iter()
+    .map(|(e, _)| e)
+    .join(",\n  ");
+  let shorter_encoded_entities_decoded_rs = shorter_encoded_entities
+    .iter()
+    .map(|(_, d)| d)
+    .join(",\n  ");
   let trie_rs = trie_builder.generate("ENTITY", "EntityType");
-  format!(r#"
-    pub static SHORTER_ENCODED_ENTITIES_ENCODED: &[&[u8]] = &[
-      {shorter_encoded_entities_encoded_rs}
-    ];
-    pub static SHORTER_ENCODED_ENTITIES_DECODED: &[&[u8]] = &[
-      {shorter_encoded_entities_decoded_rs}
-    ];
+  format!(
+    r#"
+      pub static SHORTER_ENCODED_ENTITIES_ENCODED: &[&[u8]] = &[
+        {shorter_encoded_entities_encoded_rs}
+      ];
+      pub static SHORTER_ENCODED_ENTITIES_DECODED: &[&[u8]] = &[
+        {shorter_encoded_entities_decoded_rs}
+      ];
 
-    #[derive(Clone, Copy)]
-    pub enum EntityType {{
-      Named(&'static [u8]),
-      Dec,
-      Hex,
-    }}
+      #[derive(Clone, Copy)]
+      pub enum EntityType {{
+        Named(&'static [u8]),
+        Dec,
+        Hex,
+      }}
 
-    {trie_rs}
-  "#)
+      {trie_rs}
+    "#
+  )
 }
 
 fn main() {
   let out_dir = var_os("OUT_DIR").unwrap();
   let out_dir = Path::new(&out_dir);
 
-  let html_data: HtmlData = reqwest::blocking::get("https://www.unpkg.com/@wzlin/html-data@2023013104.0.0/data.json")
-    .unwrap()
-    .json()
-    .unwrap();
+  let html_data: HtmlData =
+    reqwest::blocking::get("https://www.unpkg.com/@wzlin/html-data@2023013104.0.0/data.json")
+      .unwrap()
+      .json()
+      .unwrap();
 
   std::fs::write(out_dir.join("attrs.rs"), gen_attrs_rs(&html_data)).unwrap();
   std::fs::write(out_dir.join("codepoints.rs"), gen_codepoints_rs()).unwrap();

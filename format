@@ -4,6 +4,11 @@ set -Eeuxo pipefail
 
 pushd "$(dirname "$0")" >/dev/null
 
-npx prettier@2.3.2 -w 'version' 'bench/*.{js,json}' 'bench/runners/*.{js,json}' 'bench/runners/*/*.{js,json}' 'gen/*.{ts,json}' 'nodejs/*.{js,json,ts}'
+npx prettier@2.3.2 -w \
+  'bench/*.{js,json}' \
+  'bench/runners/*.{js,json}' \
+  'bench/runners/*/*.{js,json}' \
+  'minify-html-nodejs/*.{js,json,ts}' \
+  'version'
 
 cargo +nightly fmt

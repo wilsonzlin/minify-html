@@ -1,62 +1,61 @@
 use crate::spec::tag::ns::Namespace;
+use lazy_static::lazy_static;
 use rustc_hash::FxHashMap;
 
-use lazy_static::lazy_static;
-
 pub struct WhitespaceMinification {
-    pub collapse: bool,
-    pub destroy_whole: bool,
-    pub trim: bool,
+  pub collapse: bool,
+  pub destroy_whole: bool,
+  pub trim: bool,
 }
 
 static CONTENT: &WhitespaceMinification = &WhitespaceMinification {
-    collapse: true,
-    destroy_whole: false,
-    trim: true,
+  collapse: true,
+  destroy_whole: false,
+  trim: true,
 };
 
 static CONTENT_FIRST: &WhitespaceMinification = &WhitespaceMinification {
-    collapse: true,
-    destroy_whole: false,
-    trim: true,
+  collapse: true,
+  destroy_whole: false,
+  trim: true,
 };
 
 static FORMATTING: &WhitespaceMinification = &WhitespaceMinification {
-    collapse: true,
-    destroy_whole: false,
-    trim: false,
+  collapse: true,
+  destroy_whole: false,
+  trim: false,
 };
 
 static LAYOUT: &WhitespaceMinification = &WhitespaceMinification {
-    collapse: true,
-    destroy_whole: true,
-    trim: true,
+  collapse: true,
+  destroy_whole: true,
+  trim: true,
 };
 
 static WHITESPACE_SENSITIVE: &WhitespaceMinification = &WhitespaceMinification {
-    collapse: false,
-    destroy_whole: false,
-    trim: false,
+  collapse: false,
+  destroy_whole: false,
+  trim: false,
 };
 
 static ROOT: &WhitespaceMinification = &WhitespaceMinification {
-    collapse: true,
-    destroy_whole: true,
-    trim: true,
+  collapse: true,
+  destroy_whole: true,
+  trim: true,
 };
 
 static DEFAULT_HTML: &WhitespaceMinification = &WhitespaceMinification {
-    collapse: true,
-    destroy_whole: false,
-    trim: false,
+  collapse: true,
+  destroy_whole: false,
+  trim: false,
 };
 
 // SVG 2 spec requires unknown elements to be treated like <g>:
 // https://www.w3.org/TR/SVG2/struct.html#UnknownElement.
 static DEFAULT_SVG: &WhitespaceMinification = &WhitespaceMinification {
-    collapse: true,
-    destroy_whole: true,
-    trim: true,
+  collapse: true,
+  destroy_whole: true,
+  trim: true,
 };
 
 lazy_static! {
@@ -274,25 +273,25 @@ lazy_static! {
 }
 
 pub fn get_whitespace_minification_for_tag(
-    ns: Namespace,
-    // Use empty slice if root.
-    tag_name: &[u8],
-    descendant_of_pre: bool,
+  ns: Namespace,
+  // Use empty slice if root.
+  tag_name: &[u8],
+  descendant_of_pre: bool,
 ) -> &'static WhitespaceMinification {
-    match ns {
-        Namespace::Html => {
-            if descendant_of_pre {
-                WHITESPACE_SENSITIVE
-            } else if tag_name.is_empty() {
-                ROOT
-            } else {
-                HTML_TAG_WHITESPACE_MINIFICATION
-                    .get(tag_name)
-                    .unwrap_or(&DEFAULT_HTML)
-            }
-        }
-        Namespace::Svg => SVG_TAG_WHITESPACE_MINIFICATION
-            .get(tag_name)
-            .unwrap_or(&DEFAULT_SVG),
+  match ns {
+    Namespace::Html => {
+      if descendant_of_pre {
+        WHITESPACE_SENSITIVE
+      } else if tag_name.is_empty() {
+        ROOT
+      } else {
+        HTML_TAG_WHITESPACE_MINIFICATION
+          .get(tag_name)
+          .unwrap_or(&DEFAULT_HTML)
+      }
     }
+    Namespace::Svg => SVG_TAG_WHITESPACE_MINIFICATION
+      .get(tag_name)
+      .unwrap_or(&DEFAULT_SVG),
+  }
 }

@@ -1,9 +1,11 @@
 pub use crate::cfg::Cfg;
-use minify_html_common::spec::tag::ns::Namespace;
 use crate::err::debug_repr;
-pub use crate::err::{Error, ErrorType, FriendlyError};
+pub use crate::err::Error;
+pub use crate::err::ErrorType;
+pub use crate::err::FriendlyError;
 use crate::proc::Processor;
 use crate::unit::content::process_content;
+use minify_html_common::spec::tag::ns::Namespace;
 
 mod cfg;
 mod err;
@@ -37,20 +39,20 @@ mod unit;
 /// };
 /// ```
 pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, Error> {
-    let mut proc = Processor::new(code);
-    process_content(&mut proc, cfg, Namespace::Html, None, false)
-        .and_then(|_| {
-            if !proc.at_end() {
-                Err(ErrorType::UnexpectedClosingTag)
-            } else {
-                Ok(())
-            }
-        })
-        .map_err(|error_type| Error {
-            error_type,
-            position: proc.read_len(),
-        })?;
-    proc.finish()
+  let mut proc = Processor::new(code);
+  process_content(&mut proc, cfg, Namespace::Html, None, false)
+    .and_then(|_| {
+      if !proc.at_end() {
+        Err(ErrorType::UnexpectedClosingTag)
+      } else {
+        Ok(())
+      }
+    })
+    .map_err(|error_type| Error {
+      error_type,
+      position: proc.read_len(),
+    })?;
+  proc.finish()
 }
 
 /// Minifies a str in-place and returns the new minified str.
@@ -77,11 +79,11 @@ pub fn in_place(code: &mut [u8], cfg: &Cfg) -> Result<usize, Error> {
 /// };
 /// ```
 pub fn in_place_str<'s>(code: &'s mut str, cfg: &Cfg) -> Result<&'s str, Error> {
-    let bytes = unsafe { code.as_bytes_mut() };
-    match in_place(bytes, cfg) {
-        Ok(min_len) => Ok(unsafe { std::str::from_utf8_unchecked(&bytes[..min_len]) }),
-        Err(e) => Err(e),
-    }
+  let bytes = unsafe { code.as_bytes_mut() };
+  match in_place(bytes, cfg) {
+    Ok(min_len) => Ok(unsafe { std::str::from_utf8_unchecked(&bytes[..min_len]) }),
+    Err(e) => Err(e),
+  }
 }
 
 /// Minifies a Vec in-place, truncating it to the minified length.
@@ -107,13 +109,13 @@ pub fn in_place_str<'s>(code: &'s mut str, cfg: &Cfg) -> Result<&'s str, Error> 
 /// };
 /// ```
 pub fn truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), Error> {
-    match in_place(code, cfg) {
-        Ok(written_len) => {
-            code.truncate(written_len);
-            Ok(())
-        }
-        Err(e) => Err(e),
+  match in_place(code, cfg) {
+    Ok(written_len) => {
+      code.truncate(written_len);
+      Ok(())
     }
+    Err(e) => Err(e),
+  }
 }
 
 /// Copies a slice into a new Vec and minifies it, returning the Vec.
@@ -143,11 +145,11 @@ pub fn truncate(code: &mut Vec<u8>, cfg: &Cfg) -> Result<(), Error> {
 /// };
 /// ```
 pub fn copy(code: &[u8], cfg: &Cfg) -> Result<Vec<u8>, Error> {
-    let mut copy = code.to_vec();
-    match truncate(&mut copy, cfg) {
-        Ok(()) => Ok(copy),
-        Err(e) => Err(e),
-    }
+  let mut copy = code.to_vec();
+  match truncate(&mut copy, cfg) {
+    Ok(()) => Ok(copy),
+    Err(e) => Err(e),
+  }
 }
 
 /// Minifies a slice in-place and returns the new minified length.
@@ -186,9 +188,9 @@ pub fn copy(code: &[u8], cfg: &Cfg) -> Result<Vec<u8>, Error> {
 /// };
 /// ```
 pub fn with_friendly_error(code: &mut [u8], cfg: &Cfg) -> Result<usize, FriendlyError> {
-    in_place(code, cfg).map_err(|err| FriendlyError {
-        position: err.position,
-        message: err.error_type.message(),
-        code_context: debug_repr(code, err.position as isize, -1),
-    })
+  in_place(code, cfg).map_err(|err| FriendlyError {
+    position: err.position,
+    message: err.error_type.message(),
+    code_context: debug_repr(code, err.position as isize, -1),
+  })
 }

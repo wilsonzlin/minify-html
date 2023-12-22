@@ -1,14 +1,23 @@
-use minify_html::{minify as minify_html_native, Cfg};
-use rutie::{class, methods, Boolean, Class, Hash, Object, RString, Symbol, VM};
+use minify_html::minify as minify_html_native;
+use minify_html::Cfg;
+use rutie::class;
+use rutie::methods;
+use rutie::Boolean;
+use rutie::Class;
+use rutie::Hash;
+use rutie::Object;
+use rutie::RString;
+use rutie::Symbol;
+use rutie::VM;
 use std::str::from_utf8;
 
 macro_rules! get_cfg_hash_prop {
-    ($cfg_hash:ident, $prop:literal) => {
-        $cfg_hash
-            .at(&Symbol::new($prop))
-            .try_convert_to::<Boolean>()
-            .map_or(false, |v| v.to_bool())
-    };
+  ($cfg_hash:ident, $prop:literal) => {
+    $cfg_hash
+      .at(&Symbol::new($prop))
+      .try_convert_to::<Boolean>()
+      .map_or(false, |v| v.to_bool())
+  };
 }
 
 class!(MinifyHtml);
@@ -53,7 +62,7 @@ methods! {
 #[allow(non_snake_case)]
 #[no_mangle]
 pub extern "C" fn Init_minify_html() {
-    Class::new("MinifyHtml", None).define(|itself| {
-        itself.def_self("minify", minify);
-    });
+  Class::new("MinifyHtml", None).define(|itself| {
+    itself.def_self("minify", minify);
+  });
 }
