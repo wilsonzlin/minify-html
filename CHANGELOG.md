@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.11.2
 
 - Build and release for Python 3.12.
 - Restructure project to use top-level Cargo workspace instead of separate isolated crates.
