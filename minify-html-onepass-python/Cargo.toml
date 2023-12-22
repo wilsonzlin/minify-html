@@ -15,7 +15,7 @@ name = "minify_html_onepass"
 crate-type = ["cdylib"]
 
 [dependencies]
-minify-html-onepass = { path = "../../rust/onepass" }
+minify-html-onepass = { path = "../minify-html-onepass" }
 [dependencies.pyo3]
 version = "0.17.2"
 features = ["extension-module"]

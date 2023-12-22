@@ -1,4 +1,7 @@
+__pycache__/
+build/
 Cargo.lock
+dist/
 node_modules/
 npm-debug.log*
 package-lock.json
@@ -9,3 +12,6 @@ target/
 
 # Node.js
 index.node
+
+# Python
+*.egg-info/
