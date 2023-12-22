@@ -6,13 +6,14 @@
   },
   "main": "index.js",
   "files": [
-    "src/**",
     "Cargo.toml",
+    "checksums/**",
     "cli.js",
     "index.d.ts",
     "index.js",
+    "postinstall.js",
     "README.md",
-    "postinstall.js"
+    "src/**"
   ],
   "version": "0.11.2",
   "types": "index.d.ts",

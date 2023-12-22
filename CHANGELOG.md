@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Validate checksum when downloading Node.js binary from remote server.
+
 ## 0.11.2
 
 - Build and release for Python 3.12.

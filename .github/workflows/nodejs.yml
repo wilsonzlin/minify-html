@@ -50,6 +50,15 @@ jobs:
           applicationKey: ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
           file: ./minify-html-nodejs/index.node
 
+      - name: Calculate checksum
+        run: sha512sum ./minify-html-nodejs/index.node | awk '{print $1}' > index.node.sha512sum
+
+      - name: Upload checksum
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ steps.module.outputs.BINARY_NAME }}.sha512sum
+          path: index.node.sha512sum
+
   package:
     runs-on: ubuntu-20.04
     needs: build
@@ -65,6 +74,12 @@ jobs:
         uses: actions/setup-node@master
         with:
           node-version: 17.x
+
+      - name: Download checksums
+        uses: actions/download-artifact@v1
+        with:
+          pattern: *.sha512sum
+          path: minify-html-node/checksums/
 
       - name: Pack and publish package
         working-directory: ./minify-html-nodejs

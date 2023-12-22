@@ -2,6 +2,7 @@ const fs = require("fs");
 const https = require("https");
 const path = require("path");
 const pkg = require("./package.json");
+const crypto = require("crypto");
 const cp = require("child_process");
 
 const MAX_DOWNLOAD_ATTEMPTS = 4;
@@ -35,6 +36,8 @@ const fetch = (url) =>
     stream.on("error", reject);
   });
 
+class InvalidChecksumError extends Error {}
+
 const downloadNativeBinary = async () => {
   for (let attempt = 0; ; attempt++) {
     let binary;
@@ -57,6 +60,17 @@ const downloadNativeBinary = async () => {
     fs.writeFileSync(binaryPath, binary);
     break;
   }
+  const hasher = crypto.createHash("sha512");
+  hasher.update(fs.readFileSync(binaryPath));
+  const gotHash = hasher.digest();
+  const expectedHashHex = fs.readFileSync(path.join(__dirname, "checksum", `${binaryName}.sha512sum`), "utf8").trim();
+  if (!/^[a-fA-F0-9]{128}$/.test(expectedHashHex)) {
+    throw new Error(`Invalid expected hash: ${expectedHashHex}`);
+  }
+  const expectedHash = Buffer.from(expectedHashHex, "hex");
+  if (!gotHash.equals(expectedHash)) {
+    throw new InvalidChecksumError(`WARNING: Downloaded binary does not match expected hash. This may be caused by a temporary network or server error, programming bug, or malicious activity.`);
+  }
 };
 
 if (
@@ -66,8 +80,16 @@ if (
   downloadNativeBinary().then(
     () => console.log(`Downloaded ${pkg.name}`),
     (err) => {
+      if (err instanceof InvalidChecksumError) {
+        console.error(err.message);
+        return;
+      }
       console.error(
         `Failed to download ${pkg.name}, will build from source: ${err}`
+      );
+      fs.writeFileSync(
+        `${__dirname}/Cargo.toml`,
+        fs.readFileSync(`${__dirname}/Cargo.toml`, "utf8").replace(/^minify-html = \{.*$/m, () => `minify-html = "${pkg.version}"`),
       );
       const out = cp.spawnSync("npm", ["run", "build-release"], {
         cwd: __dirname,
