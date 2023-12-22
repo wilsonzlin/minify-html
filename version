@@ -91,7 +91,6 @@ if (
   throw new Error("Working directory not clean");
 }
 cmd("git", "pull");
-cmd("bash", "./prebuild.sh");
 cmd("cargo", "test", { workingDir: RUST_MAIN_DIR });
 cmd("cargo", "test", { workingDir: RUST_ONEPASS_DIR });
 

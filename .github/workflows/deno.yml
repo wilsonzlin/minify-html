@@ -24,10 +24,6 @@ jobs:
           profile: minimal
           default: true
 
-      - name: Run prebuild steps
-        shell: bash
-        run: bash ./prebuild.sh
-
       - name: Install wasm-pack
         working-directory: ./wasm
         shell: bash

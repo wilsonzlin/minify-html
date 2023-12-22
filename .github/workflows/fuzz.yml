@@ -16,10 +16,6 @@ jobs:
           profile: minimal
           default: true
 
-      - name: Run prebuild steps
-        shell: bash
-        run: bash ./prebuild.sh
-
       - name: Build fuzz target
         working-directory: ./fuzz
         run: |

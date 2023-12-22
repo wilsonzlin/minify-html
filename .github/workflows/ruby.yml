@@ -65,10 +65,6 @@ jobs:
           profile: minimal
           default: true
 
-      - name: Run prebuild steps
-        shell: bash
-        run: bash ./prebuild.sh
-
       - name: Build Ruby native library
         run: |
           export PATH="$HOME/.rbenv/bin:$PATH"

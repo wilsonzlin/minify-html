@@ -49,10 +49,6 @@ jobs:
           profile: minimal
           default: true
 
-      - name: Run prebuild steps
-        shell: bash
-        run: bash ./prebuild.sh
-
       - name: Build CLI
         working-directory: ./cli
         run: cargo build --release -vvv
