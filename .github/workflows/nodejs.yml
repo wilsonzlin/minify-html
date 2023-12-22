@@ -54,7 +54,7 @@ jobs:
         run: sha512sum ./minify-html-nodejs/index.node | awk '{print $1}' > index.node.sha512sum
 
       - name: Upload checksum
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.module.outputs.BINARY_NAME }}.sha512sum
           path: index.node.sha512sum
@@ -76,7 +76,7 @@ jobs:
           node-version: 17.x
 
       - name: Download checksums
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           pattern: '*.sha512sum'
           path: minify-html-node/checksums/
