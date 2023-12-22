@@ -2,6 +2,9 @@ use crate::cfg::Cfg;
 use crate::err::ErrorType;
 use crate::in_place;
 use crate::with_friendly_error;
+use minify_html_common::tests::create_common_css_test_data;
+use minify_html_common::tests::create_common_js_test_data;
+use minify_html_common::tests::create_common_test_data;
 use std::str::from_utf8;
 
 pub fn eval_with_cfg(src: &'static [u8], expected: &'static [u8], cfg: &Cfg) {
@@ -52,6 +55,19 @@ fn eval_error(src: &'static [u8], expected: ErrorType) -> () {
     .error_type,
     expected
   );
+}
+
+#[test]
+fn test_common() {
+  for (a, b) in create_common_test_data() {
+    eval(a, b);
+  }
+  for (a, b) in create_common_css_test_data() {
+    eval_with_css_min(a, b);
+  }
+  for (a, b) in create_common_js_test_data() {
+    eval_with_js_min(a, b);
+  }
 }
 
 #[test]

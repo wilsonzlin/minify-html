@@ -1,5 +1,8 @@
 use crate::cfg::Cfg;
 use crate::minify;
+use minify_html_common::tests::create_common_css_test_data;
+use minify_html_common::tests::create_common_js_test_data;
+use minify_html_common::tests::create_common_test_data;
 use std::str::from_utf8;
 
 pub fn eval_with_cfg(src: &'static [u8], expected: &'static [u8], cfg: &Cfg) {
@@ -28,6 +31,19 @@ pub fn eval(src: &'static [u8], expected: &'static [u8]) {
 
 fn eval_without_keep_html_head(src: &'static [u8], expected: &'static [u8]) -> () {
   eval_with_cfg(src, expected, &Cfg::new());
+}
+
+#[test]
+fn test_common() {
+  for (a, b) in create_common_test_data() {
+    eval(a, b);
+  }
+  for (a, b) in create_common_css_test_data() {
+    eval_with_css_min(a, b);
+  }
+  for (a, b) in create_common_js_test_data() {
+    eval_with_js_min(a, b);
+  }
 }
 
 #[test]
