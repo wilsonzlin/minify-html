@@ -5,9 +5,6 @@
 const { readFileSync, writeFileSync } = require("fs");
 const { spawnSync } = require("child_process");
 
-const RUST_MAIN_DIR = `${__dirname}/rust/main`;
-const RUST_ONEPASS_DIR = `${__dirname}/rust/onepass`;
-
 // Use minify-html as source of truth for current version value.
 const currentVersion = /^version = "(\d+)\.(\d+)\.(\d+)"\s*$/m
   .exec(readFileSync(`${RUST_MAIN_DIR}/Cargo.toml`, "utf8"))
@@ -80,7 +77,7 @@ const cmd = (...cfg) => {
 };
 
 const replaceInFile = (path, pattern, replacement) =>
-  writeFileSync(path, readFileSync(path, "utf8").replace(pattern, replacement));
+  writeFileSync(path, readFileSync(`${__dirname}/path`, "utf8").replace(pattern, replacement));
 
 if (
   cmd("git", "status", "--porcelain", {
@@ -91,21 +88,20 @@ if (
   throw new Error("Working directory not clean");
 }
 cmd("git", "pull");
-cmd("cargo", "test", { workingDir: RUST_MAIN_DIR });
-cmd("cargo", "test", { workingDir: RUST_ONEPASS_DIR });
+cmd("cargo", "test");
 
 replaceInFile("CHANGELOG.md", /^## Pending$/m, `## ${NEW_VERSION}`);
 
 for (const f of [
-  `${RUST_MAIN_DIR}/Cargo.toml`,
-  `${RUST_ONEPASS_DIR}/Cargo.toml`,
-  "cli/Cargo.toml",
-  "nodejs/Cargo.toml",
-  "java/Cargo.toml",
-  "python/main/Cargo.toml",
-  "python/onepass/Cargo.toml",
-  "ruby/Cargo.toml",
-  "wasm/Cargo.toml",
+  "minify-html-cli/Cargo.toml",
+  "minify-html-java/Cargo.toml",
+  "minify-html-nodejs/Cargo.toml",
+  "minify-html-onepass-python/Cargo.toml",
+  "minify-html-onepass/Cargo.toml",
+  "minify-html-python/Cargo.toml",
+  "minify-html-ruby/Cargo.toml",
+  "minify-html-wasm/Cargo.toml",
+  "minify-html/Cargo.toml",
 ]) {
   replaceInFile(
     f,
@@ -114,7 +110,7 @@ for (const f of [
   );
 }
 
-for (const f of ["README.md", "nodejs/Cargo.toml"]) {
+for (const f of ["README.md", "minify-html-nodejs/Cargo.toml"]) {
   replaceInFile(f, /^(minify-html = )"\d+\.\d+\.\d+"/m, `$1"${NEW_VERSION}"`);
 }
 
@@ -126,7 +122,7 @@ for (const f of ["README.md"]) {
   );
 }
 
-for (const f of ["README.md", "bench/README.md", "rust/onepass/README.md"]) {
+for (const f of ["README.md", "bench/README.md", "minify-html-onepass/README.md"]) {
   replaceInFile(
     f,
     /(wilsonl\.in\/minify-html\/bench\/)\d+\.\d+\.\d+/g,
@@ -134,7 +130,7 @@ for (const f of ["README.md", "bench/README.md", "rust/onepass/README.md"]) {
   );
 }
 
-for (const f of ["java/pom.xml", "README.md"]) {
+for (const f of ["minify-html-java/pom.xml", "README.md"]) {
   replaceInFile(
     f,
     /(<artifactId>minify-html<\/artifactId>\s*<version>)\d+\.\d+\.\d+(<\/version>)/,
@@ -142,7 +138,7 @@ for (const f of ["java/pom.xml", "README.md"]) {
   );
 }
 
-for (const f of ["nodejs/package.json"]) {
+for (const f of ["minify-html-nodejs/package.json"]) {
   replaceInFile(
     f,
     /^(\s*"version": )"\d+\.\d+\.\d+",\s*$/m,
@@ -150,7 +146,7 @@ for (const f of ["nodejs/package.json"]) {
   );
 }
 
-for (const f of ["ruby/minify_html.gemspec"]) {
+for (const f of ["minify-html-ruby/minify_html.gemspec"]) {
   replaceInFile(
     f,
     /^(\s*spec\.version\s*=\s*)"\d+\.\d+\.\d+"\s*$/m,
@@ -158,12 +154,10 @@ for (const f of ["ruby/minify_html.gemspec"]) {
   );
 }
 
-cmd("cargo", "generate-lockfile", { workingDir: RUST_MAIN_DIR });
-cmd("cargo", "generate-lockfile", { workingDir: RUST_ONEPASS_DIR });
+cmd("cargo", "generate-lockfile");
 cmd("git", "add", "-A");
 cmd("git", "commit", "-m", NEW_VERSION);
 cmd("git", "tag", "-a", `v${NEW_VERSION}`, "-m", "");
-// We have generated but ignored in `rust/common/gen`.
-cmd("cargo", "publish", "--allow-dirty", { workingDir: RUST_MAIN_DIR });
-cmd("cargo", "publish", "--allow-dirty", { workingDir: RUST_ONEPASS_DIR });
+cmd("cargo", "publish", { workingDir: `${__dirname}/minify-html` });
+cmd("cargo", "publish", { workingDir: `${__dirname}/minify-html-onepass` });
 cmd("git", "push", "--follow-tags");
