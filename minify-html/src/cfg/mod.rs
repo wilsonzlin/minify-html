@@ -1,6 +1,6 @@
 /// Configuration settings that can be adjusted and passed to a minification function to change the
 /// minification approach.
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Cfg {
   /// Do not minify DOCTYPEs. Minified DOCTYPEs may not be spec compliant.
   pub do_not_minify_doctype: bool,
