@@ -37,6 +37,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Patches
+        shell: bash
         run: |
           # Maturin uses Cargo.toml name for Python name: https://www.maturin.rs/#usage.
           # We edit it here instead of just updating our repo code as Cargo workspace names must be different.

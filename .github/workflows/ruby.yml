@@ -32,6 +32,8 @@ jobs:
         members = ["ext/minify_html"]
         EOD
 
+        cp ./README.md ./minify-html-ruby/.
+
     # https://github.com/oxidize-rb/actions/tree/main/cross-gem
     - name: Set up Ruby and Rust
       uses: oxidize-rb/actions/setup-ruby-and-rust@main
@@ -74,13 +76,12 @@ jobs:
       - name: Download built libraries
         uses: actions/download-artifact@v4
         with:
-          path: ./minify-html-ruby/lib
+          path: ./minify-html-ruby/pkg
+          merge-multiple: true
 
       - name: Pack and publish gem
         working-directory: ./minify-html-ruby
         run: |
-          cp ../README.md .
-          gem build minify_html.gemspec
           mkdir -p "$HOME/.gem"
           cat << 'EOF' > "$HOME/.gem/credentials"
           ---
@@ -88,7 +89,7 @@ jobs:
           EOF
           chmod 0600 "$HOME/.gem/credentials"
           if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
-            gem push minify_html-${{ steps.version.outputs.VERSION }}.gem
+            gem push pkg/*.gem
           else
             tree
           fi
