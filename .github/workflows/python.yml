@@ -40,7 +40,9 @@ jobs:
         run: |
           # Maturin uses Cargo.toml name for Python name: https://www.maturin.rs/#usage.
           # We edit it here instead of just updating our repo code as Cargo workspace names must be different.
-          sed -i.bak 's%^name = ".*$%name = "minify-html${{ matrix.variant }}"%' ./minify-html${{ matrix.variant }}-python/Cargo.toml
+          newName=minify-html-${{ matrix.variant }}
+          newName=${newName//-/_}
+          sed -i.bak 's%^name = ".*$%name = "'$newName'"%' ./minify-html${{ matrix.variant }}-python/Cargo.toml
           rm ./minify-html${{ matrix.variant }}-python/Cargo.toml.bak
 
       - name: Build wheels
