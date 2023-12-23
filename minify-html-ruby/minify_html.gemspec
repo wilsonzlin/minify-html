@@ -4,7 +4,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Wilson Lin"]
   spec.email         = ["code@wilsonl.in"]
   spec.license       = "MIT"
-  spec.files         = Dir["lib/**", "ext/**", "README.md"]
+  # Cargo.toml represents workspace created during CI workflow, required for building native extension from source.
+  spec.files         = Dir["lib/**", "ext/**", "Cargo.toml", "README.md"]
   spec.summary       = "Extremely fast and smart HTML + JS + CSS minifier"
   spec.homepage      = "https://github.com/wilsonzlin/minify-html"
 
