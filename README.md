@@ -176,7 +176,7 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 - Package: [minify-html](https://pypi.org/project/minify-html)
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
-- Platforms: Linux (ARM64 and x64), macOS (x64), Windows (x64); Python 3.8 to 3.10
+- Platforms: Linux (ARM64 and x64), macOS (ARM64, x64), Windows (x64); Python 3.8 to 3.12
 
 ### Get
 
