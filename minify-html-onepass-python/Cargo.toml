@@ -1,6 +1,6 @@
 [package]
 publish = false
-name = "minify_html_onepass"
+name = "minify-html-onepass-python"
 description = "Even faster version of minify-html"
 license = "MIT"
 homepage = "https://github.com/wilsonzlin/minify-html"
@@ -11,7 +11,6 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [lib]
-name = "minify_html_onepass"
 crate-type = ["cdylib"]
 
 [dependencies]

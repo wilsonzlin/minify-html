@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
-require "rake/extensiontask"
+# https://oxidize-rb.github.io/rb-sys/tutorial/publishing/cross-compilation.html#github-actions
 
-Rake::ExtensionTask.new("minify_html")
+require "bundler/gem_tasks"
+require "rake/testtask"
+require "rb_sys/extensiontask"
+
+GEMSPEC = Gem::Specification.load("minify_html.gemspec")
+
+RbSys::ExtensionTask.new("minify_html", GEMSPEC)
+
+desc "Build native extension for a given platform (i.e. `rake 'native[x86_64-linux]'`)"
+task :native, [:platform] do |_t, platform:|
+  sh "bundle", "exec", "rb-sys-dock", "--platform", platform, "--build"
+end

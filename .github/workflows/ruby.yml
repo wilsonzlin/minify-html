@@ -8,77 +8,49 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-11.0]
-        ruby: [2.5.7, 2.6.5, 2.7.0]
-        include:
-          - os: ubuntu-20.04
-            NAME: linux
-            FILE: 'libminify_html_ruby_lib.so'
-          - os: macos-11.0
-            NAME: macos
-            FILE: 'libminify_html_ruby_lib.dylib'
+        platform:
+        - x86_64-linux
+        - aarch64-linux
+        - x86_64-darwin
+        - arm64-darwin
+        - x64-mingw-ucrt
     steps:
-      - uses: actions/checkout@v1
+    - uses: actions/checkout@v3
 
-      - name: Get version
-        id: version
-        shell: bash
-        run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
+    - name: Patches
+      run: |
+        # Name must match or else `RbSys::PackageNotFoundError: Could not find Cargo package metadata for nil. Please check that nil matches the crate name in your Cargo.toml.`
+        # We edit it here instead of just updating our repo code as Cargo workspace names must be different.
+        sed -i 's%^name = ".*$%name = "minify_html"%' ./minify-html-ruby/ext/minify_html/Cargo.toml
 
-      - name: Get native module file name
-        id: native_file
-        shell: bash
-        env:
-          RUBY_VERSION: ${{ matrix.ruby }}
-        run: echo ::set-output name=NAME::${{ matrix.NAME }}-ruby${RUBY_VERSION%.*}
+        # This is required or else `error: could not find `Cargo.toml` in `/home/runner/work/.../minify-html-ruby` or any parent directory`.
+        cat <<'EOD'>./minify-html-ruby/Cargo.toml
+        [workspace]
+        members = ["ext/minify_html"]
+        EOD
 
-      # Install Ruby manually as actions/setup-ruby@v1 does not compile with `--enable-shared`.
-      - name: Install rbenv dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: brew install openssl libyaml libffi
+    - name: gem
+      uses: oxidize-rb/actions/setup-ruby-and-rust@main
+      with:
+        ruby-version: "3.2"
+        bundler-cache: false
+        cargo-cache: true
+        cargo-vendor: true
+        cache-version: v0-${{ matrix.platform }}
 
-      - name: Install rbenv dependencies (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt install -y autoconf patch build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libgmp-dev libncurses5-dev libffi-dev libgdbm6 libgdbm-dev libdb-dev uuid-dev
-
-      - name: Install rbenv
-        # rbenv-installer now uses Linux brew to install Ruby, which we do not want.
-        run: |
-          git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-          mkdir -p "$HOME/.rbenv/plugins"
-          git clone https://github.com/rbenv/ruby-build.git "$HOME/.rbenv/plugins/ruby-build"
-
-      - name: Set up Ruby
-        run: |
-          export PATH="$HOME/.rbenv/bin:$PATH"
-          eval "$(rbenv init -)"
-          rbenv install ${{ matrix.ruby }}
-          rbenv global ${{ matrix.ruby }}
-
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          default: true
-
-      - name: Build Ruby native library
-        run: |
-          export PATH="$HOME/.rbenv/bin:$PATH"
-          eval "$(rbenv init -)"
-          cargo build -vvv --release
+    - uses: oxidize-rb/actions/cross-gem@v1
+      with:
+        platform: ${{ matrix.platform }}
+        ruby-versions: "2.7,3.0,3.1,3.2"
         working-directory: ./minify-html-ruby
 
-      - name: Set up Backblaze B2 CLI
-        uses: wilsonzlin/setup-b2@v3
-
-      - name: Upload to B2
-        run: |
-          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 upload-file ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} ./target/release/${{ matrix.FILE }} minify-html/bin/ruby/${{ steps.version.outputs.VERSION }}/${{ steps.native_file.outputs.NAME }}
+    - uses: actions/upload-artifact@v4
+      with:
+        name: minify_html_${{ matrix.platform }}
+        path: ${{ steps.gem.outputs.gem-path }}
 
   package:
     runs-on: ubuntu-20.04
@@ -96,15 +68,15 @@ jobs:
         with:
           ruby-version: '2.5'
 
-      - name: Set up Backblaze B2 CLI
-        uses: wilsonzlin/setup-b2@v3
+      - name: Download built libraries
+        uses: actions/download-artifact@v4
+        with:
+          path: ./minify-html-ruby/lib
 
       - name: Pack and publish gem
         working-directory: ./minify-html-ruby
         run: |
           cp ../README.md .
-          b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          b2 sync b2://${{ secrets.CICD_CLI_B2_BUCKET_NAME }}/minify-html/bin/ruby/${{ steps.version.outputs.VERSION }}/ ./lib/.
           gem build minify_html.gemspec
           mkdir -p "$HOME/.gem"
           cat << 'EOF' > "$HOME/.gem/credentials"
@@ -114,4 +86,6 @@ jobs:
           chmod 0600 "$HOME/.gem/credentials"
           if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
             gem push minify_html-${{ steps.version.outputs.VERSION }}.gem
+          else
+            tree
           fi

@@ -1,6 +1,6 @@
 [package]
 publish = false
-name = "minify_html"
+name = "minify-html-python"
 description = "Extremely fast and smart HTML + JS + CSS minifier"
 license = "MIT"
 homepage = "https://github.com/wilsonzlin/minify-html"
@@ -11,7 +11,6 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [lib]
-name = "minify_html"
 crate-type = ["cdylib"]
 
 [dependencies]

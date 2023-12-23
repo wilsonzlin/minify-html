@@ -6,9 +6,9 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [lib]
-name = "minify_html_ruby_lib"
 crate-type = ["cdylib"]
 
 [dependencies]
-minify-html = { path = "../../../minify-html" }
+# rb-sys-dock doesn't support local path deps: https://github.com/oxidize-rb/rb-sys/issues/296
+minify-html = "0.11.2"
 magnus = "0.6"

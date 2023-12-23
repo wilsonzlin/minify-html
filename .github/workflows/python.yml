@@ -36,6 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - run: |
+          # Maturin uses Cargo.toml name for Python name: https://www.maturin.rs/#usage.
+          # We edit it here instead of just updating our repo code as Cargo workspace names must be different.
+          sed -i 's%^name = ".*$%name = "minify-html${{ matrix.variant }}"%' ./minify-html${{ matrix.variant }}-python/Cargo.toml
+
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
