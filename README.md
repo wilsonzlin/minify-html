@@ -198,8 +198,8 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 <summary><img width="24" src="https://wilsonl.in/minify-html/icon/ruby.png"> <strong>Ruby</strong></summary>
 
 - Package: [minify_html](https://rubygems.org/gems/minify_html)
-- Binding: [Rutie](https://github.com/danielpclark/rutie)
-- Platforms: Linux, macOS; Ruby 2.5 and higher
+- Binding: [rb-sys](https://github.com/oxidize-rb/rb-sys) and [magnus](https://github.com/matsadler/magnus)
+- Platforms: Linux (ARM64 and x64), macOS (ARM64, x64), Windows (x64); Ruby 2.7 to 3.2
 
 ### Get
 

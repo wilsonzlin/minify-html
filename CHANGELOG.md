@@ -7,6 +7,7 @@
 - Derive `Clone` for `Cfg` in minify-html.
 - Fix parsing of malformed closing tags.
 - Cross compile Python library for macOS ARM64.
+- Migrate to rb-sys and magnus for Ruby library, which adds support for up to Ruby 3.2 and more platforms.
 
 ## 0.11.2
 
