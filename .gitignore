@@ -10,6 +10,7 @@ out/
 package-lock.json
 perf.data*
 target/
+tmp/
 wasm-pack.log
 
 # Bench

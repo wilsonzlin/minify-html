@@ -10,5 +10,5 @@ name = "minify_html_ruby_lib"
 crate-type = ["cdylib"]
 
 [dependencies]
-minify-html = { path = "../minify-html" }
-rutie = "0.7.0"
+minify-html = { path = "../../../minify-html" }
+magnus = "0.6"
