@@ -32,7 +32,8 @@ jobs:
         members = ["ext/minify_html"]
         EOD
 
-    - name: gem
+    # https://github.com/oxidize-rb/actions/tree/main/cross-gem
+    - name: Set up Ruby and Rust
       uses: oxidize-rb/actions/setup-ruby-and-rust@main
       with:
         ruby-version: "3.2"
@@ -41,7 +42,9 @@ jobs:
         cargo-vendor: true
         cache-version: v0-${{ matrix.platform }}
 
-    - uses: oxidize-rb/actions/cross-gem@v1
+    - name: Cross compile
+      id: gem
+      uses: oxidize-rb/actions/cross-gem@v1
       with:
         platform: ${{ matrix.platform }}
         ruby-versions: "2.7,3.0,3.1,3.2"
