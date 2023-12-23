@@ -15,6 +15,11 @@ on:
 #   - It may be against Apple's terms to build macOS binaries from other platforms.
 # - On Windows, the action appears to just use the host binary. Cross compilation to a different arch doesn't seem to be yet supported.
 # - On macOS, the action appears to be able to target aarch64 just fine despite running on an Intel Mac.
+# - We don't need to set up Rust, the action will do so itself.
+# - We don't need to set up Python:
+#   - On macOS, the action auto finds all versions: https://github.com/PyO3/maturin-action/blob/a3013db91b2ef2e51420cfe99ee619c8e72a17e6/src/index.ts#L732
+#   - On Linux, a Docker container is used which has its own Rust, Python, etc.
+#   - On Windows, we use the "generate-import-lib" feature on pyo3: https://www.maturin.rs/distribution#cross-compile-to-windows
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -31,21 +36,14 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      # This is only necessary in Windows.
-      # - On macOS, the action auto finds all versions: https://github.com/PyO3/maturin-action/blob/a3013db91b2ef2e51420cfe99ee619c8e72a17e6/src/index.ts#L732
-      # - On Linux, a Docker container is used which has its own Rust, Python, etc.
-      - name: Set up Python
-        if: runner.os == 'Windows'
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python }}
-
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
           manylinux: auto
+          # https://github.com/PyO3/maturin-action/issues/49#issuecomment-1166242843
           args: --release --sdist --strip -m ./minify-html${{ matrix.variant }}-python/Cargo.toml -i ${{ matrix.python }}
+          sccache: true
 
       - name: Install Python build tools (macOS)
         if: runner.os == 'macOS'
