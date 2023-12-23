@@ -6,56 +6,53 @@ on:
       - 'v*'
   workflow_dispatch:
 
+# How cross compilation works with PyO3/maturin-action:
+# - For Linux targets, it uses Docker.
+# - For other targets, it runs on the host (Docker mostly only supports Linux containers).
+# - Even if targeting another platform (e.g. Windows from Linux) was possible, this is likely problematic and suboptimal:
+#   - Working with libraries and headers for another OS is likely very tricky.
+#   - Usually the host compilers (e.g. Xcode on macOS, MSVC on Windows) are the most optimal in terms of correctness and performance.
+#   - It may be against Apple's terms to build macOS binaries from other platforms.
+# - On Windows, the action appears to just use the host binary. Cross compilation to a different arch doesn't seem to be yet supported.
+# - On macOS, the action appears to be able to target aarch64 just fine despite running on an Intel Mac.
 jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-11.0, windows-2019]
         variant: ['', '-onepass']
-        os: [macos-11.0, ubuntu-20.04, windows-2019, self-hosted-linux-arm64]
+        target: [x86_64, aarch64]
         python: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        exclude:
+          # Building for Windows aarch64 isn't ready yet.
+          - os: windows-2019
+            target: aarch64
     steps:
       - uses: actions/checkout@v1
 
-      - name: Set up Python (x64)
-        if: runner.name != 'linux-arm64'
+      # This is only necessary in Windows.
+      # - On macOS, the action auto finds all versions: https://github.com/PyO3/maturin-action/blob/a3013db91b2ef2e51420cfe99ee619c8e72a17e6/src/index.ts#L732
+      # - On Linux, a Docker container is used which has its own Rust, Python, etc.
+      - name: Set up Python
+        if: runner.os == 'Windows'
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
-          architecture: 'x64'
-      - name: Set up Python (Linux ARM64)
-        if: runner.name == 'linux-arm64'
-        run: |
-          export PYENV_ROOT="$HOME/.pyenv"
-          export PATH="$PYENV_ROOT/bin:$PATH"
-          eval "$(pyenv init --path)"
-          pyenv install -s ${{ matrix.python }}:latest
-          pyenv global $(pyenv versions --bare | grep -F '${{ matrix.python }}.')
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
         with:
-          toolchain: stable
-          profile: minimal
-          default: true
+          target: ${{ matrix.target }}
+          manylinux: auto
+          args: --release --sdist --strip -m ./minify-html${{ matrix.variant }}-python/Cargo.toml -i ${{ matrix.python }}
 
-      - name: Build native module
-        working-directory: ./minify-html${{ matrix.variant }}-python
-        run: cargo build --release
-
-      - name: Install Python build tools (macOS x64)
+      - name: Install Python build tools (macOS)
         if: runner.os == 'macOS'
-        run: sudo pip install --upgrade maturin setuptools wheel twine
-      - name: Install Python build tools (Linux x64, Windows x64)
-        if: runner.os != 'macOS' && runner.name != 'linux-arm64'
-        run: pip install --upgrade maturin setuptools wheel twine
-      - name: Install Python build tools (Linux ARM64)
-        if: runner.name == 'linux-arm64'
-        run: |
-          export PYENV_ROOT="$HOME/.pyenv"
-          export PATH="$PYENV_ROOT/bin:$PATH"
-          eval "$(pyenv init --path)"
-          pip3 install --upgrade maturin setuptools wheel twine
+        run: sudo pip install --upgrade twine
+      - name: Install Python build tools (Linux, Windows)
+        if: runner.os != 'macOS'
+        run: pip install --upgrade twine
 
       - name: Pack and publish package
         shell: bash
@@ -66,12 +63,6 @@ jobs:
           username = __token__
           password = ${{ secrets.PYPI_API_TOKEN }}
           EOF
-          if [[ "${{ runner.name }}" == linux-arm64 ]]; then
-            export PYENV_ROOT="$HOME/.pyenv"
-            export PATH="$PYENV_ROOT/bin:$PATH"
-            eval "$(pyenv init --path)"
-          fi
-          maturin build --release --sdist --strip -i "$(which python)"
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             # For idempotency, ignore any existing built wheels that have already been successfully uploaded.
             twine upload --skip-existing ../target/wheels/*
