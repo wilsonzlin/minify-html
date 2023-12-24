@@ -102,7 +102,7 @@ for (const f of [
   "minify-html-onepass-python/Cargo.toml",
   "minify-html-onepass/Cargo.toml",
   "minify-html-python/Cargo.toml",
-  "minify-html-ruby/Cargo.toml",
+  "minify-html-ruby/ext/minify_html/Cargo.toml",
   "minify-html-wasm/Cargo.toml",
   "minify-html/Cargo.toml",
 ]) {
