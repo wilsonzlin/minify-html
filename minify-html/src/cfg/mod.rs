@@ -14,6 +14,8 @@ pub struct Cfg {
   pub keep_spaces_between_attributes: bool,
   /// Keep all comments.
   pub keep_comments: bool,
+  /// Keep `type=text` attribute name and value on `<input>` elements.
+  pub keep_input_type_text_attr: bool,
   /// Keep SSI comments.
   pub keep_ssi_comments: bool,
   /// When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.

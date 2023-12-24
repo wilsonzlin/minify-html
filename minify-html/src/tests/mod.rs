@@ -55,6 +55,14 @@ fn test_keep_ssi_comments() {
 }
 
 #[test]
+fn test_keep_input_type_text_attr() {
+  eval(b"<input type=\"text\">", b"<input>");
+  let mut cfg = Cfg::default();
+  cfg.keep_input_type_text_attr = true;
+  eval_with_cfg(b"<input type=\"TExt\">", b"<input type=text>", &cfg);
+}
+
+#[test]
 fn test_preserve_template_brace_syntax() {
   eval_with_js_min(
     b"<p> {{   hello    world! %}  {%}{#} echo '  </p><P><script>  let x = 1; //'  }} </p>",
