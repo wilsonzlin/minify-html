@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.13.3
 
 - Avoid downloading html-data JSON from network on build.
 
