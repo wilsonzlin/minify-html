@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.15.0
 
 - Add `keep_input_type_text_attr` option to keep `type=text` on `<input>` elements.
 - [Java] The `Configuration` class constructor has been made private to enforce the use of the builder. The constructor has a lot of params which can easily cause bugs due to ordering and confusion.
