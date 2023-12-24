@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.14.0
 
 - Add new options to parse and preserve common templating syntax in content source code. NOTE: The parsing is "dumb" and merely looks for the next subsequence in the source code that matches the closing delimiter characters. This means that literal closing delimiter characters (e.g. strings) and nesting may cause parsing to be incorrect.
   - `preserve_brace_template_syntax`: When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
