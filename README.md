@@ -102,7 +102,7 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 - Package: [@minify-html/node](https://www.npmjs.com/package/@minify-html/node)
 - Binding: [Neon](https://github.com/neon-bindings/neon)
-- Platforms: Linux (ARM64 and x64), macOS (x64), Windows (x64); Node.js 8.6.0 and higher
+- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Node.js 8.6.0 and higher
 
 ### Get
 
