@@ -1,0 +1,3829 @@
+{
+  "attributes": {
+    "alt": {
+      "html": {
+        "*": {}
+      },
+      "svg": {
+        "*": {}
+      }
+    },
+    "crossorigin": {
+      "html": {
+        "*": {
+          "boolean": true
+        }
+      },
+      "svg": {
+        "*": {
+          "boolean": true
+        }
+      }
+    },
+    "accesskey": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "class": {
+      "html": {
+        "*": {
+          "collapse": true,
+          "redundantIfEmpty": true,
+          "trim": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "contenteditable": {
+      "html": {
+        "*": {}
+      },
+      "svg": {}
+    },
+    "contextmenu": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "dir": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "draggable": {
+      "html": {
+        "*": {}
+      },
+      "svg": {}
+    },
+    "hidden": {
+      "html": {
+        "*": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "id": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "lang": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "placeholder": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "slot": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "spellcheck": {
+      "html": {
+        "*": {}
+      },
+      "svg": {}
+    },
+    "style": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true,
+          "trim": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true,
+          "trim": true
+        }
+      }
+    },
+    "tabindex": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "title": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "translate": {
+      "html": {
+        "*": {}
+      },
+      "svg": {}
+    },
+    "radiogroup": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "role": {
+      "html": {
+        "*": {}
+      },
+      "svg": {
+        "*": {}
+      }
+    },
+    "about": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "datatype": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "inlist": {
+      "html": {
+        "*": {}
+      },
+      "svg": {}
+    },
+    "prefix": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "property": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "resource": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "typeof": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "vocab": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "autocapitalize": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "autocorrect": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "autosave": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "color": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "itemprop": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "itemscope": {
+      "html": {
+        "*": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "itemtype": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "itemid": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "itemref": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "results": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "security": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "unselectable": {
+      "html": {
+        "*": {}
+      },
+      "svg": {}
+    },
+    "inputmode": {
+      "html": {
+        "*": {}
+      },
+      "svg": {}
+    },
+    "is": {
+      "html": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "download": {
+      "html": {
+        "a": {},
+        "area": {}
+      },
+      "svg": {}
+    },
+    "href": {
+      "html": {
+        "a": {},
+        "area": {},
+        "base": {},
+        "link": {}
+      },
+      "svg": {
+        "*": {}
+      }
+    },
+    "hreflang": {
+      "html": {
+        "a": {
+          "redundantIfEmpty": true
+        },
+        "area": {
+          "redundantIfEmpty": true
+        },
+        "link": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "media": {
+      "html": {
+        "a": {
+          "redundantIfEmpty": true
+        },
+        "area": {
+          "redundantIfEmpty": true
+        },
+        "link": {
+          "redundantIfEmpty": true
+        },
+        "meta": {
+          "redundantIfEmpty": true
+        },
+        "source": {
+          "redundantIfEmpty": true
+        },
+        "style": {
+          "defaultValue": "all",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "ping": {
+      "html": {
+        "a": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "rel": {
+      "html": {
+        "a": {
+          "redundantIfEmpty": true
+        },
+        "area": {
+          "redundantIfEmpty": true
+        },
+        "link": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "target": {
+      "html": {
+        "a": {
+          "defaultValue": "_self"
+        },
+        "area": {
+          "redundantIfEmpty": true
+        },
+        "base": {
+          "redundantIfEmpty": true
+        },
+        "form": {
+          "defaultValue": "_self",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "type": {
+      "html": {
+        "a": {
+          "redundantIfEmpty": true
+        },
+        "button": {
+          "caseInsensitive": true,
+          "defaultValue": "submit",
+          "trim": true
+        },
+        "embed": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "caseInsensitive": true,
+          "defaultValue": "text",
+          "redundantIfEmpty": true
+        },
+        "link": {
+          "defaultValue": "text/css",
+          "redundantIfEmpty": true
+        },
+        "menu": {
+          "redundantIfEmpty": true
+        },
+        "object": {
+          "redundantIfEmpty": true
+        },
+        "ol": {},
+        "script": {
+          "caseInsensitive": true,
+          "redundantIfEmpty": true,
+          "trim": true
+        },
+        "source": {
+          "redundantIfEmpty": true
+        },
+        "style": {
+          "defaultValue": "text/css",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "referrerpolicy": {
+      "html": {
+        "a": {},
+        "area": {},
+        "iframe": {
+          "defaultValue": "no-referrer-when-downgrade"
+        },
+        "img": {
+          "defaultValue": "no-referrer-when-downgrade"
+        },
+        "link": {},
+        "script": {}
+      },
+      "svg": {}
+    },
+    "coords": {
+      "html": {
+        "area": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "shape": {
+      "html": {
+        "area": {
+          "defaultValue": "rect",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "cite": {
+      "html": {
+        "blockquote": {
+          "redundantIfEmpty": true
+        },
+        "del": {
+          "redundantIfEmpty": true
+        },
+        "ins": {
+          "redundantIfEmpty": true
+        },
+        "quote": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "autofocus": {
+      "html": {
+        "button": {
+          "boolean": true
+        },
+        "input": {
+          "boolean": true
+        },
+        "keygen": {
+          "boolean": true
+        },
+        "select": {
+          "boolean": true
+        },
+        "textarea": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "disabled": {
+      "html": {
+        "button": {
+          "boolean": true
+        },
+        "fieldset": {
+          "boolean": true
+        },
+        "input": {
+          "boolean": true
+        },
+        "keygen": {
+          "boolean": true
+        },
+        "optgroup": {
+          "boolean": true
+        },
+        "option": {
+          "boolean": true
+        },
+        "select": {
+          "boolean": true
+        },
+        "textarea": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "form": {
+      "html": {
+        "button": {
+          "redundantIfEmpty": true
+        },
+        "fieldset": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "keygen": {
+          "redundantIfEmpty": true
+        },
+        "label": {
+          "redundantIfEmpty": true
+        },
+        "meter": {
+          "redundantIfEmpty": true
+        },
+        "object": {
+          "redundantIfEmpty": true
+        },
+        "output": {
+          "redundantIfEmpty": true
+        },
+        "select": {
+          "redundantIfEmpty": true
+        },
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "formaction": {
+      "html": {
+        "button": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "formenctype": {
+      "html": {
+        "button": {
+          "defaultValue": "application/x-www-form-urlencoded",
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "defaultValue": "application/x-www-form-urlencoded",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "formmethod": {
+      "html": {
+        "button": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "formnovalidate": {
+      "html": {
+        "button": {
+          "boolean": true
+        },
+        "input": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "formtarget": {
+      "html": {
+        "button": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "name": {
+      "html": {
+        "button": {
+          "redundantIfEmpty": true
+        },
+        "fieldset": {
+          "redundantIfEmpty": true
+        },
+        "form": {
+          "redundantIfEmpty": true
+        },
+        "iframe": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "keygen": {
+          "redundantIfEmpty": true
+        },
+        "map": {
+          "redundantIfEmpty": true
+        },
+        "meta": {
+          "redundantIfEmpty": true
+        },
+        "object": {
+          "redundantIfEmpty": true
+        },
+        "output": {
+          "redundantIfEmpty": true
+        },
+        "param": {
+          "redundantIfEmpty": true
+        },
+        "select": {
+          "redundantIfEmpty": true
+        },
+        "slot": {
+          "redundantIfEmpty": true
+        },
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "value": {
+      "html": {
+        "button": {
+          "redundantIfEmpty": true
+        },
+        "data": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "li": {
+          "redundantIfEmpty": true
+        },
+        "meter": {
+          "redundantIfEmpty": true
+        },
+        "option": {},
+        "param": {
+          "redundantIfEmpty": true
+        },
+        "progress": {
+          "redundantIfEmpty": true
+        },
+        "select": {
+          "redundantIfEmpty": true
+        },
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "height": {
+      "html": {
+        "canvas": {
+          "redundantIfEmpty": true
+        },
+        "embed": {
+          "redundantIfEmpty": true
+        },
+        "iframe": {
+          "defaultValue": "150",
+          "redundantIfEmpty": true
+        },
+        "img": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "object": {
+          "redundantIfEmpty": true
+        },
+        "td": {
+          "redundantIfEmpty": true
+        },
+        "video": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "width": {
+      "html": {
+        "canvas": {
+          "redundantIfEmpty": true
+        },
+        "col": {
+          "redundantIfEmpty": true
+        },
+        "embed": {
+          "redundantIfEmpty": true
+        },
+        "iframe": {
+          "defaultValue": "300",
+          "redundantIfEmpty": true
+        },
+        "img": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "object": {
+          "redundantIfEmpty": true
+        },
+        "table": {
+          "redundantIfEmpty": true
+        },
+        "td": {
+          "redundantIfEmpty": true
+        },
+        "video": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "span": {
+      "html": {
+        "col": {
+          "defaultValue": "1",
+          "redundantIfEmpty": true
+        },
+        "colgroup": {
+          "defaultValue": "1",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "datetime": {
+      "html": {
+        "del": {
+          "redundantIfEmpty": true
+        },
+        "ins": {
+          "redundantIfEmpty": true
+        },
+        "time": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "open": {
+      "html": {
+        "details": {
+          "boolean": true
+        },
+        "dialog": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "ontoggle": {
+      "html": {
+        "details": {}
+      },
+      "svg": {}
+    },
+    "src": {
+      "html": {
+        "embed": {
+          "redundantIfEmpty": true
+        },
+        "iframe": {
+          "redundantIfEmpty": true
+        },
+        "img": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "media": {
+          "redundantIfEmpty": true
+        },
+        "script": {
+          "redundantIfEmpty": true
+        },
+        "source": {
+          "redundantIfEmpty": true
+        },
+        "track": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "acceptcharset": {
+      "html": {
+        "form": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "action": {
+      "html": {
+        "form": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "autocomplete": {
+      "html": {
+        "form": {
+          "redundantIfEmpty": true
+        },
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "select": {
+          "redundantIfEmpty": true
+        },
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "enctype": {
+      "html": {
+        "form": {
+          "defaultValue": "application/x-www-form-urlencoded",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "method": {
+      "html": {
+        "form": {
+          "defaultValue": "get",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "novalidate": {
+      "html": {
+        "form": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "manifest": {
+      "html": {
+        "html": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "allow": {
+      "html": {
+        "iframe": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "allowfullscreen": {
+      "html": {
+        "iframe": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "allowtransparency": {
+      "html": {
+        "iframe": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "frameborder": {
+      "html": {
+        "iframe": {
+          "defaultValue": "1",
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "loading": {
+      "html": {
+        "iframe": {
+          "defaultValue": "eager"
+        },
+        "img": {
+          "defaultValue": "eager"
+        }
+      },
+      "svg": {}
+    },
+    "marginheight": {
+      "html": {
+        "iframe": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "marginwidth": {
+      "html": {
+        "iframe": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "sandbox": {
+      "html": {
+        "iframe": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "scrolling": {
+      "html": {
+        "iframe": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "seamless": {
+      "html": {
+        "iframe": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "srcdoc": {
+      "html": {
+        "iframe": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "decoding": {
+      "html": {
+        "img": {
+          "defaultValue": "auto"
+        }
+      },
+      "svg": {}
+    },
+    "sizes": {
+      "html": {
+        "img": {
+          "redundantIfEmpty": true
+        },
+        "link": {
+          "redundantIfEmpty": true
+        },
+        "source": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "srcset": {
+      "html": {
+        "img": {
+          "redundantIfEmpty": true
+        },
+        "source": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "usemap": {
+      "html": {
+        "img": {
+          "redundantIfEmpty": true
+        },
+        "object": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "accept": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "capture": {
+      "html": {
+        "input": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "checked": {
+      "html": {
+        "input": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "enterkeyhint": {
+      "html": {
+        "input": {}
+      },
+      "svg": {}
+    },
+    "list": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "max": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "meter": {
+          "redundantIfEmpty": true
+        },
+        "progress": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "maxlength": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "min": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "meter": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "minlength": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "multiple": {
+      "html": {
+        "input": {
+          "boolean": true
+        },
+        "select": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "pattern": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "readonly": {
+      "html": {
+        "input": {
+          "boolean": true
+        },
+        "textarea": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "required": {
+      "html": {
+        "input": {
+          "boolean": true
+        },
+        "select": {
+          "boolean": true
+        },
+        "textarea": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "size": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        },
+        "select": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "step": {
+      "html": {
+        "input": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "onchange": {
+      "html": {
+        "input": {},
+        "select": {},
+        "textarea": {}
+      },
+      "svg": {}
+    },
+    "challenge": {
+      "html": {
+        "keygen": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "keytype": {
+      "html": {
+        "keygen": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "keyparams": {
+      "html": {
+        "keygen": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "htmlfor": {
+      "html": {
+        "label": {
+          "redundantIfEmpty": true
+        },
+        "output": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "as": {
+      "html": {
+        "link": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "integrity": {
+      "html": {
+        "link": {
+          "redundantIfEmpty": true
+        },
+        "script": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "charset": {
+      "html": {
+        "link": {
+          "redundantIfEmpty": true
+        },
+        "meta": {
+          "redundantIfEmpty": true
+        },
+        "script": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "autoplay": {
+      "html": {
+        "media": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "controls": {
+      "html": {
+        "media": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "controlslist": {
+      "html": {
+        "media": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "loop": {
+      "html": {
+        "media": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "mediagroup": {
+      "html": {
+        "media": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "muted": {
+      "html": {
+        "media": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "playsinline": {
+      "html": {
+        "media": {
+          "boolean": true
+        },
+        "video": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "preload": {
+      "html": {
+        "media": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "content": {
+      "html": {
+        "meta": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "httpequiv": {
+      "html": {
+        "meta": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "high": {
+      "html": {
+        "meter": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "low": {
+      "html": {
+        "meter": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "optimum": {
+      "html": {
+        "meter": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "classid": {
+      "html": {
+        "object": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "data": {
+      "html": {
+        "object": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "wmode": {
+      "html": {
+        "object": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "reversed": {
+      "html": {
+        "ol": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "start": {
+      "html": {
+        "ol": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "label": {
+      "html": {
+        "optgroup": {
+          "redundantIfEmpty": true
+        },
+        "option": {
+          "redundantIfEmpty": true
+        },
+        "track": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "selected": {
+      "html": {
+        "option": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "async": {
+      "html": {
+        "script": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "defer": {
+      "html": {
+        "script": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "nomodule": {
+      "html": {
+        "script": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "nonce": {
+      "html": {
+        "script": {
+          "redundantIfEmpty": true
+        },
+        "style": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "scoped": {
+      "html": {
+        "style": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "cellpadding": {
+      "html": {
+        "table": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "cellspacing": {
+      "html": {
+        "table": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "summary": {
+      "html": {
+        "table": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "align": {
+      "html": {
+        "td": {},
+        "th": {}
+      },
+      "svg": {}
+    },
+    "colspan": {
+      "html": {
+        "td": {
+          "redundantIfEmpty": true
+        },
+        "th": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "headers": {
+      "html": {
+        "td": {
+          "redundantIfEmpty": true
+        },
+        "th": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "rowspan": {
+      "html": {
+        "td": {
+          "redundantIfEmpty": true
+        },
+        "th": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "scope": {
+      "html": {
+        "td": {
+          "redundantIfEmpty": true
+        },
+        "th": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "abbr": {
+      "html": {
+        "td": {
+          "redundantIfEmpty": true
+        },
+        "th": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "valign": {
+      "html": {
+        "td": {}
+      },
+      "svg": {}
+    },
+    "cols": {
+      "html": {
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "dirname": {
+      "html": {
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "rows": {
+      "html": {
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "wrap": {
+      "html": {
+        "textarea": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "default": {
+      "html": {
+        "track": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "kind": {
+      "html": {
+        "track": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "srclang": {
+      "html": {
+        "track": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "poster": {
+      "html": {
+        "video": {
+          "redundantIfEmpty": true
+        }
+      },
+      "svg": {}
+    },
+    "disablepictureinpicture": {
+      "html": {
+        "video": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "disableremoteplayback": {
+      "html": {
+        "video": {
+          "boolean": true
+        }
+      },
+      "svg": {}
+    },
+    "accentheight": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "accumulate": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "additive": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "alignmentbaseline": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "allowreorder": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "alphabetic": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "amplitude": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "arabicform": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "ascent": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "attributename": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "attributetype": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "autoreverse": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "azimuth": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "basefrequency": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "baselineshift": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "baseprofile": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "bbox": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "begin": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "bias": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "by": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "calcmode": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "capheight": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "clip": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "clippath": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "clippathunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "cliprule": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "colorinterpolation": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "colorinterpolationfilters": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "colorprofile": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "colorrendering": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "contentscripttype": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "contentstyletype": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "cursor": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "cx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "cy": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "d": {
+      "html": {},
+      "svg": {
+        "*": {
+          "collapse": true,
+          "redundantIfEmpty": true,
+          "trim": true
+        }
+      }
+    },
+    "decelerate": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "descent": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "diffuseconstant": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "direction": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "display": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "divisor": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "dominantbaseline": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "dur": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "dx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "dy": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "edgemode": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "elevation": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "enablebackground": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "end": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "exponent": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "externalresourcesrequired": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "fill": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fillopacity": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fillrule": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "filter": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "filterres": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "filterunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "floodcolor": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "floodopacity": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "focusable": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "fontfamily": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fontsize": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fontsizeadjust": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fontstretch": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fontstyle": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fontvariant": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fontweight": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "format": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "from": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "fy": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "g1": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "g2": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "glyphname": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "glyphorientationhorizontal": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "glyphorientationvertical": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "glyphref": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "gradienttransform": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "gradientunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "hanging": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "horizadvx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "horizoriginx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "ideographic": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "imagerendering": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "in2": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "in": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "intercept": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "k1": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "k2": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "k3": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "k4": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "k": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "kernelmatrix": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "kernelunitlength": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "kerning": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "keypoints": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "keysplines": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "keytimes": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "lengthadjust": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "letterspacing": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "lightingcolor": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "limitingconeangle": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "local": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "markerend": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "markerheight": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "markermid": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "markerstart": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "markerunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "markerwidth": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "mask": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "maskcontentunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "maskunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "mathematical": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "mode": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "numoctaves": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "offset": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "opacity": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "operator": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "order": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "orient": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "orientation": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "origin": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "overflow": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "overlineposition": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "overlinethickness": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "paintorder": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "panose1": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "path": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "pathlength": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "patterncontentunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "patterntransform": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "patternunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "pointerevents": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "points": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "pointsatx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "pointsaty": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "pointsatz": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "preservealpha": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "preserveaspectratio": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "primitiveunits": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "r": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "radius": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "refx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "refy": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "renderingintent": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "repeatcount": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "repeatdur": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "requiredextensions": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "requiredfeatures": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "restart": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "result": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "rotate": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "rx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "ry": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "scale": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "seed": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "shaperendering": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "slope": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "spacing": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "specularconstant": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "specularexponent": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "speed": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "spreadmethod": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "startoffset": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "stddeviation": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "stemh": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "stemv": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "stitchtiles": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "stopcolor": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "stopopacity": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "strikethroughposition": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "strikethroughthickness": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "string": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "stroke": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "strokedasharray": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "strokedashoffset": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "strokelinecap": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "strokelinejoin": {
+      "html": {},
+      "svg": {
+        "*": {}
+      }
+    },
+    "strokemiterlimit": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "strokeopacity": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "strokewidth": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "surfacescale": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "systemlanguage": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "tablevalues": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "targetx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "targety": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "textanchor": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "textdecoration": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "textlength": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "textrendering": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "to": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "transform": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "u1": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "u2": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "underlineposition": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "underlinethickness": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "unicode": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "unicodebidi": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "unicoderange": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "unitsperem": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "valphabetic": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "values": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "vectoreffect": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "version": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "vertadvy": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "vertoriginx": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "vertoriginy": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "vhanging": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "videographic": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "viewbox": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "viewtarget": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "visibility": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "vmathematical": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "widths": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "wordspacing": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "writingmode": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "x1": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "x2": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "x": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xchannelselector": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xheight": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xlinkactuate": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xlinkarcrole": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xlinkhref": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xlinkrole": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xlinkshow": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xlinktitle": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xlinktype": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xmlbase": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xmllang": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xmlns": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xmlnsxlink": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "xmlspace": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "y1": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "y2": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "y": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "ychannelselector": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "z": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    },
+    "zoomandpan": {
+      "html": {},
+      "svg": {
+        "*": {
+          "redundantIfEmpty": true
+        }
+      }
+    }
+  },
+  "tags": {
+    "html": [
+      "a",
+      "abbr",
+      "address",
+      "area",
+      "article",
+      "aside",
+      "audio",
+      "b",
+      "base",
+      "bdi",
+      "bdo",
+      "big",
+      "blockquote",
+      "body",
+      "br",
+      "button",
+      "canvas",
+      "caption",
+      "cite",
+      "code",
+      "col",
+      "colgroup",
+      "data",
+      "datalist",
+      "dd",
+      "del",
+      "details",
+      "dfn",
+      "dialog",
+      "div",
+      "dl",
+      "dt",
+      "em",
+      "embed",
+      "fieldset",
+      "figcaption",
+      "figure",
+      "footer",
+      "form",
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "head",
+      "header",
+      "hgroup",
+      "hr",
+      "html",
+      "i",
+      "iframe",
+      "img",
+      "input",
+      "ins",
+      "kbd",
+      "keygen",
+      "label",
+      "legend",
+      "li",
+      "link",
+      "main",
+      "map",
+      "mark",
+      "menu",
+      "menuitem",
+      "meta",
+      "meter",
+      "nav",
+      "noindex",
+      "noscript",
+      "object",
+      "ol",
+      "optgroup",
+      "option",
+      "output",
+      "p",
+      "param",
+      "picture",
+      "pre",
+      "progress",
+      "q",
+      "rp",
+      "rt",
+      "ruby",
+      "s",
+      "samp",
+      "script",
+      "section",
+      "select",
+      "slot",
+      "small",
+      "source",
+      "span",
+      "strong",
+      "style",
+      "sub",
+      "summary",
+      "sup",
+      "table",
+      "tbody",
+      "td",
+      "template",
+      "textarea",
+      "tfoot",
+      "th",
+      "thead",
+      "time",
+      "title",
+      "tr",
+      "track",
+      "u",
+      "ul",
+      "video",
+      "wbr"
+    ],
+    "svg": [
+      "animate",
+      "animateMotion",
+      "animateTransform",
+      "circle",
+      "clipPath",
+      "defs",
+      "desc",
+      "ellipse",
+      "feBlend",
+      "feColorMatrix",
+      "feComponentTransfer",
+      "feComposite",
+      "feConvolveMatrix",
+      "feDiffuseLighting",
+      "feDisplacementMap",
+      "feDistantLight",
+      "feDropShadow",
+      "feFlood",
+      "feFuncA",
+      "feFuncB",
+      "feFuncG",
+      "feFuncR",
+      "feGaussianBlur",
+      "feImage",
+      "feMerge",
+      "feMergeNode",
+      "feMorphology",
+      "feOffset",
+      "fePointLight",
+      "feSpecularLighting",
+      "feSpotLight",
+      "feTile",
+      "feTurbulence",
+      "filter",
+      "foreignObject",
+      "g",
+      "image",
+      "line",
+      "linearGradient",
+      "marker",
+      "mask",
+      "metadata",
+      "mpath",
+      "path",
+      "pattern",
+      "polygon",
+      "polyline",
+      "radialGradient",
+      "rect",
+      "stop",
+      "svg",
+      "switch",
+      "symbol",
+      "text",
+      "textPath",
+      "tspan",
+      "use",
+      "view"
+    ]
+  }
+}

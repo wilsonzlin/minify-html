@@ -545,11 +545,7 @@ fn main() {
   let out_dir = var_os("OUT_DIR").unwrap();
   let out_dir = Path::new(&out_dir);
 
-  let html_data: HtmlData =
-    reqwest::blocking::get("https://www.unpkg.com/@wzlin/html-data@2023013104.0.0/data.json")
-      .unwrap()
-      .json()
-      .unwrap();
+  let html_data: HtmlData = serde_json::from_slice(include_bytes!("html-data_2023013104.0.0.json")).unwrap();
 
   std::fs::write(out_dir.join("attrs.rs"), gen_attrs_rs(&html_data)).unwrap();
   std::fs::write(out_dir.join("codepoints.rs"), gen_codepoints_rs()).unwrap();
