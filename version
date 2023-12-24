@@ -148,7 +148,7 @@ for (const f of ["minify-html-java/pom.xml", "README.md"]) {
 for (const f of ["minify-html-nodejs/package.json"]) {
   replaceInFile(
     f,
-    /(\s*"(?:version|@minify-html\/node-.*?)": )"\d+\.\d+\.\d+"(,?\s*)$/m,
+    /(\s*"(?:version|@minify-html\/node-.*?)": )"\d+\.\d+\.\d+"(,?\s*)$/gm,
     `$1"${NEW_VERSION}"$2`
   );
 }
