@@ -4,6 +4,7 @@ package in.wilsonl.minifyhtml;
  * Class representing minification configuration.
  */
 public class Configuration {
+  // DEV: Add any new options here. Keep this sorted.
   public final boolean do_not_minify_doctype;
   public final boolean ensure_spec_compliant_unquoted_attribute_values;
   public final boolean keep_closing_tags;
@@ -20,6 +21,7 @@ public class Configuration {
   public final boolean remove_processing_instructions;
 
   private Configuration(
+    // DEV: Add any new options here. Keep this sorted.
     boolean do_not_minify_doctype,
     boolean ensure_spec_compliant_unquoted_attribute_values,
     boolean keep_closing_tags,
@@ -35,6 +37,7 @@ public class Configuration {
     boolean remove_bangs,
     boolean remove_processing_instructions
   ) {
+    // DEV: Add any new options here. Keep this sorted.
     this.do_not_minify_doctype = do_not_minify_doctype;
     this.ensure_spec_compliant_unquoted_attribute_values = ensure_spec_compliant_unquoted_attribute_values;
     this.keep_closing_tags = keep_closing_tags;
@@ -55,6 +58,7 @@ public class Configuration {
    * Builder to help create configuration.
    */
   public static class Builder {
+    // DEV: Add any new options here. Keep this sorted.
     private boolean do_not_minify_doctype = false;
     private boolean ensure_spec_compliant_unquoted_attribute_values = false;
     private boolean keep_closing_tags = false;
@@ -70,78 +74,25 @@ public class Configuration {
     private boolean remove_bangs = false;
     private boolean remove_processing_instructions = false;
 
-    public Builder setDoNotMinifyDoctype(boolean val) {
-      this.do_not_minify_doctype = val;
-      return this;
-    }
-
-    public Builder setEnsureSpecCompliantUnquotedAttributeValues(boolean val) {
-      this.ensure_spec_compliant_unquoted_attribute_values = val;
-      return this;
-    }
-
-    public Builder setKeepClosingTags(boolean val) {
-      this.keep_closing_tags = val;
-      return this;
-    }
-
-    public Builder setKeepComments(boolean val) {
-      this.keep_comments = val;
-      return this;
-    }
-
-    public Builder setKeepInputTypeTextAttr(boolean val) {
-      this.keep_input_type_text_attr = val;
-      return this;
-    }
-
-    public Builder setKeepSsiComments(boolean val) {
-      this.keep_ssi_comments = val;
-      return this;
-    }
-
-    public Builder setKeepHtmlAndHeadOpeningTags(boolean val) {
-      this.keep_html_and_head_opening_tags = val;
-      return this;
-    }
-
-    public Builder setKeepSpacesBetweenAttributes(boolean val) {
-      this.keep_spaces_between_attributes = val;
-      return this;
-    }
-
-    public Builder setMinifyCss(boolean val) {
-      this.minify_css = val;
-      return this;
-    }
-
-    public Builder setMinifyJs(boolean val) {
-      this.minify_js = val;
-      return this;
-    }
-
-    public Builder setRemoveBangs(boolean val) {
-      this.remove_bangs = val;
-      return this;
-    }
-
-    public Builder setPreserveBraceTemplateSyntax(boolean val) {
-      this.preserve_brace_template_syntax = val;
-      return this;
-    }
-
-    public Builder setPreserveChevronPercentTemplateSyntax(boolean val) {
-      this.preserve_chevron_percent_template_syntax = val;
-      return this;
-    }
-
-    public Builder setRemoveProcessingInstructions(boolean val) {
-      this.remove_processing_instructions = val;
-      return this;
-    }
+    // DEV: Add any new options here. Keep this sorted.
+    public Builder setDoNotMinifyDoctype(boolean val) { this.do_not_minify_doctype = val; return this; }
+    public Builder setEnsureSpecCompliantUnquotedAttributeValues(boolean val) { this.ensure_spec_compliant_unquoted_attribute_values = val; return this; }
+    public Builder setKeepClosingTags(boolean val) { this.keep_closing_tags = val; return this; }
+    public Builder setKeepComments(boolean val) { this.keep_comments = val; return this; }
+    public Builder setKeepHtmlAndHeadOpeningTags(boolean val) { this.keep_html_and_head_opening_tags = val; return this; }
+    public Builder setKeepInputTypeTextAttr(boolean val) { this.keep_input_type_text_attr = val; return this; }
+    public Builder setKeepSpacesBetweenAttributes(boolean val) { this.keep_spaces_between_attributes = val; return this; }
+    public Builder setKeepSsiComments(boolean val) { this.keep_ssi_comments = val; return this; }
+    public Builder setMinifyCss(boolean val) { this.minify_css = val; return this; }
+    public Builder setMinifyJs(boolean val) { this.minify_js = val; return this; }
+    public Builder setPreserveBraceTemplateSyntax(boolean val) { this.preserve_brace_template_syntax = val; return this; }
+    public Builder setPreserveChevronPercentTemplateSyntax(boolean val) { this.preserve_chevron_percent_template_syntax = val; return this; }
+    public Builder setRemoveBangs(boolean val) { this.remove_bangs = val; return this; }
+    public Builder setRemoveProcessingInstructions(boolean val) { this.remove_processing_instructions = val; return this; }
 
     public Configuration build() {
       return new Configuration(
+        // DEV: Add any new options here. Keep this sorted.
         this.do_not_minify_doctype,
         this.ensure_spec_compliant_unquoted_attribute_values,
         this.keep_closing_tags,
