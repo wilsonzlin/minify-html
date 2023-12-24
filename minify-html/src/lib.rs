@@ -1,3 +1,5 @@
+#![deny(unsafe_code)]
+
 use crate::ast::c14n::c14n_serialise_ast;
 pub use crate::cfg::Cfg;
 use crate::minify::content::minify_content;

@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- [Rust] Deny unsafe code.
+
 ## 0.15.0
 
 - Add `keep_input_type_text_attr` option to keep `type=text` on `<input>` elements.

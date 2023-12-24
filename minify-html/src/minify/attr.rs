@@ -16,7 +16,7 @@ use minify_html_common::whitespace::collapse_whitespace;
 use minify_html_common::whitespace::left_trim;
 use minify_html_common::whitespace::remove_all_whitespace;
 use minify_html_common::whitespace::right_trim;
-use std::str::from_utf8_unchecked;
+use std::str::from_utf8;
 
 fn build_double_quoted_replacer() -> Replacer {
   let mut patterns = Vec::<Vec<u8>>::new();
@@ -292,7 +292,10 @@ pub fn minify_attr(
 ) -> AttrMinified {
   let attr_cfg = ATTRS.get(ns, tag, name);
 
-  let do_not_omit = cfg.keep_input_type_text_attr && tag == b"input" && name == b"type" && value_raw.eq_ignore_ascii_case(b"text");
+  let do_not_omit = cfg.keep_input_type_text_attr
+    && tag == b"input"
+    && name == b"type"
+    && value_raw.eq_ignore_ascii_case(b"text");
 
   let should_collapse = attr_cfg.filter(|attr| attr.collapse).is_some();
   let should_trim = attr_cfg.filter(|attr| attr.trim).is_some();
@@ -317,7 +320,7 @@ pub fn minify_attr(
 
   if name == b"style" && cfg.minify_css {
     let result = match StyleAttribute::parse(
-      unsafe { from_utf8_unchecked(&value_raw) },
+      from_utf8(&value_raw).expect("`style` attribute value contains non-UTF-8"),
       ParserOptions::default(),
     ) {
       Ok(mut sty) => {
@@ -343,11 +346,13 @@ pub fn minify_attr(
     value_raw.make_ascii_lowercase();
   };
 
-  if !do_not_omit && (
-    (value_raw.is_empty() && redundant_if_empty)
+  if !do_not_omit
+    && ((value_raw.is_empty() && redundant_if_empty)
       || default_value.filter(|dv| dv == &value_raw).is_some()
-      || (tag == b"script" && name == b"type" && JAVASCRIPT_MIME_TYPES.contains(value_raw.as_slice()))
-  ) {
+      || (tag == b"script"
+        && name == b"type"
+        && JAVASCRIPT_MIME_TYPES.contains(value_raw.as_slice())))
+  {
     return AttrMinified::Redundant;
   };
 
