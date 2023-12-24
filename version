@@ -116,7 +116,7 @@ for (const f of [
 for (const f of ["minhtml/Cargo.toml"]) {
   replaceInFile(
     f,
-    /^minify-html = \{ version = "\d+\.\d+\.\d+"/,
+    /^minify-html = \{ version = "\d+\.\d+\.\d+"/m,
     `minify-html = { version = "${NEW_VERSION}"`
   );
 }
@@ -174,4 +174,5 @@ cmd("git", "commit", "-m", NEW_VERSION);
 cmd("git", "tag", "-a", `v${NEW_VERSION}`, "-m", "");
 cmd("cargo", "publish", { workingDir: `${__dirname}/minify-html` });
 cmd("cargo", "publish", { workingDir: `${__dirname}/minify-html-onepass` });
+cmd("cargo", "publish", { workingDir: `${__dirname}/minhtml` }); // This must come after the above as it depends on the just-published version of those.
 cmd("git", "push", "--follow-tags");
