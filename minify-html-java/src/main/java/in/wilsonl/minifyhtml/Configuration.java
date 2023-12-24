@@ -58,6 +58,7 @@ public class Configuration {
     private boolean do_not_minify_doctype = false;
     private boolean ensure_spec_compliant_unquoted_attribute_values = false;
     private boolean keep_closing_tags = false;
+    private boolean keep_comments = false;
     private boolean keep_ssi_comments = false;
     private boolean keep_html_and_head_opening_tags = false;
     private boolean keep_spaces_between_attributes = false;
@@ -146,6 +147,7 @@ public class Configuration {
         this.ensure_spec_compliant_unquoted_attribute_values,
         this.keep_closing_tags,
         this.keep_comments,
+        this.keep_ssi_comments,
         this.keep_html_and_head_opening_tags,
         this.keep_spaces_between_attributes,
         this.minify_css,
