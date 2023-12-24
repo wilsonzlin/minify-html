@@ -64,7 +64,7 @@ jobs:
           mv -v ../target/${{ matrix.target }}/release/${{ matrix.buildfile }} ${{ matrix.resfile }}
 
       - name: Upload built library
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.resfile }}
           path: minify-html-java/${{ matrix.resfile }}
