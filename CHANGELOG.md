@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.11.4
 
 - Bump minify-js version.
 - Fix Node.js native package names.
