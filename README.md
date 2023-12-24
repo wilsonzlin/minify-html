@@ -15,7 +15,7 @@ A Rust HTML minifier meticulously optimised for speed and effectiveness, with bi
 - Advanced minification strategy beats other minifiers while being much faster.
 - Uses SIMD searching, direct tries, and lookup tables.
 - Handles [invalid HTML](./notes/Parsing.md), with extensive testing and [fuzzing](./fuzz).
-- Uses [minify-js](https://github.com/wilsonzlin/minify-js) for super fast JS minification.
+- Uses [minify-js](https://github.com/wilsonzlin/minify-js) and [lightningcss](https://github.com/parcel-bundler/lightningcss) for super fast JS and CSS minification.
 
 View the [changelog](./CHANGELOG.md) to see the latest updates.
 
