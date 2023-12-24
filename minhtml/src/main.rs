@@ -13,7 +13,7 @@ use structopt::StructOpt;
 
 #[derive(StructOpt)]
 #[structopt(
-  name = "minify-html",
+  name = "minhtml",
   about = "Extremely fast and smart HTML + JS + CSS minifier"
 )]
 // WARNING: Keep descriptions in sync with Cfg.

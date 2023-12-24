@@ -6,7 +6,7 @@ members = [
   "debug/diff/charlines",
   "fuzz",
   "fuzz/process",
-  "minify-html-cli",
+  "minhtml",
   "minify-html-common",
   "minify-html-java",
   "minify-html-nodejs",

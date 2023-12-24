@@ -1,7 +1,6 @@
 [package]
-publish = false
-name = "minify-html-cli"
-description = "Extremely fast and smart HTML + JS + CSS minifier"
+name = "minhtml"
+description = "[CLI] Extremely fast and smart HTML + JS + CSS minifier"
 version = "0.11.5"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"

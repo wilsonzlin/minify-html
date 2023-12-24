@@ -11,24 +11,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0, ubuntu-20.04, windows-2019, self-hosted-linux-arm64]
+        target:
+          - aarch64-unknown-linux-gnu
+          - x86_64-unknown-linux-gnu
+          - aarch64-apple-darwin
+          - x86_64-apple-darwin
+          - x86_64-pc-windows-msvc
         include:
-          - os: macos-11.0
-            ARCH: macos-x86_64
-            MIME: application/octet-stream
-            EXT: ''
-          - os: ubuntu-20.04
-            ARCH: linux-x86_64
-            MIME: application/octet-stream
-            EXT: ''
-          - os: windows-2019
-            ARCH: windows-x86_64
-            MIME: application/vnd.microsoft.portable-executable
-            EXT: '.exe'
-          - os: self-hosted-linux-arm64
-            ARCH: linux-arm64
-            MIME: application/octet-stream
-            EXT: ''
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-20.04
+            ext: ''
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-20.04
+            ext: ''
+          - target: aarch64-apple-darwin
+            os: macos-11.0
+            ext: ''
+          - target: x86_64-apple-darwin
+            os: macos-11.0
+            ext: ''
+          - target: x86_64-pc-windows-msvc
+            os: windows-2019
+            ext: '.exe'
     steps:
       - uses: actions/checkout@v1
 
@@ -40,25 +44,19 @@ jobs:
       - name: Get file name
         id: file
         shell: bash
-        run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}-${{ matrix.ARCH }}${{ matrix.EXT }}
+        run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}-${{ matrix.target }}${{ matrix.ext }}
 
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          profile: minimal
-          default: true
+          targets: ${{ matrix.target }}
 
       - name: Build CLI
-        working-directory: ./minify-html-cli
+        working-directory: ./minhtml
         run: cargo build --release -vvv
 
-      - name: Upload to B2
-        uses: wilsonzlin/b2-upload-action@v1.0.0
+      - name: Upload
+        uses: actions/upload-artifact@v4
         with:
-          bucket: ${{ secrets.CICD_CLI_B2_BUCKET_NAME }}
-          uploadKey: minify-html/bin/${{ steps.file.outputs.FILE }}
-          keyId: ${{ secrets.CICD_CLI_B2_KEY_ID }}
-          applicationKey: ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          file: ./target/release/minify-html-cli${{ matrix.EXT }}
-          contentType: ${{ matrix.MIME }}
+          name: ${{ steps.file.outputs.FILE }}
+          path: ./target/release/minhtml${{ matrix.EXT }}

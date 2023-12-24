@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Change CLI name to `minhtml` as it's a more concise command name and allows for `cargo install minhtml`.
+
 ## 0.11.5
 
 - Omit Rust source files from Node.js package.
