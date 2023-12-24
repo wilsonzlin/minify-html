@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.13.1
+
+- [CLI] Add missing Cargo metadata.
+
 ## 0.13.0
 
 - Use [lightningcss](https://github.com/parcel-bundler/lightningcss) instead of css-minify, which is better maintained.
