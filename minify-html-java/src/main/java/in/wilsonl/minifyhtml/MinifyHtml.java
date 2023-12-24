@@ -19,13 +19,18 @@ public class MinifyHtml {
     String osArch = System.getProperty("os.arch").toLowerCase();
 
     String nativeLibNameOs = osName.startsWith("windows")
-      ? "windows"
+      ? "win"
       : osName.startsWith("linux")
         ? "linux"
         : osName.startsWith("mac")
-          ? "macos"
+          ? "mac"
           : null;
-    String nativeLibNameArch = osArch.equals("amd64") || osArch.equals("x86_64") ? "x86_64" : null;
+    String nativeLibNameArch =
+      osArch.equals("amd64") || osArch.equals("x86_64")
+      ? "x64"
+        osArch.equals("arm64") || osArch.equals("aarch64")
+        ? "aarch64"
+        : null;
 
     if (nativeLibNameOs == null || nativeLibNameArch == null) {
       throw new RuntimeException(format("Platform not supported (os.name=%s, os.arch=%s)", osName, osArch));

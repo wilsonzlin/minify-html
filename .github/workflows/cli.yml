@@ -51,10 +51,16 @@ jobs:
         with:
           targets: ${{ matrix.target }}
 
+      - name: Set up cross compiler
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: sudo apt install -y gcc-aarch64-linux-gnu
+
       - name: Build CLI
         working-directory: ./minhtml
+        shell: bash
         run: |
-          cargo build --release -vvv
+          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=/usr/bin/aarch64-linux-gnu-gcc
+          cargo build --release --target ${{ matrix.target }}
           # upload-artifact does not rename the file, so when we download if we don't rename all files will have the same name.
           mv -v ../target/release/minhtml${{ matrix.EXT }} ${{ steps.file.outputs.FILE }}
 

@@ -11,36 +11,63 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0, ubuntu-20.04, windows-2019]
+        target:
+          - aarch64-unknown-linux-gnu
+          - x86_64-unknown-linux-gnu
+          - aarch64-apple-darwin
+          - x86_64-apple-darwin
+          - x86_64-pc-windows-msvc
         include:
-          - os: macos-11.0
-            ARCH: macos-x86_64
-            FILE: 'libminify_html_java.dylib'
-          - os: ubuntu-20.04
-            ARCH: linux-x86_64
-            FILE: 'libminify_html_java.so'
-          - os: windows-2019
-            ARCH: windows-x86_64
-            FILE: 'minify_html_java.dll'
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-20.04
+            buildfile: 'libminify_html_java.so'
+            resfile: 'linux-aarch64.nativelib'
+
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-20.04
+            buildfile: 'libminify_html_java.so'
+            resfile: 'linux-x64.nativelib'
+
+          - target: aarch64-apple-darwin
+            os: macos-11.0
+            buildfile: 'libminify_html_java.dylib'
+            resfile: 'mac-aarch64.nativelib'
+
+          - target: x86_64-apple-darwin
+            os: macos-11.0
+            buildfile: 'libminify_html_java.dylib'
+            resfile: 'mac-x64.nativelib'
+
+          - target: x86_64-pc-windows-msvc
+            os: windows-2019
+            buildfile: 'minify_html_java.dll'
+            resfile: 'win-x64.nativelib'
     steps:
       - uses: actions/checkout@v1
 
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          profile: minimal
-          default: true
+          targets: ${{ matrix.target }}
+
+      - name: Set up cross compiler
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        run: sudo apt install -y gcc-aarch64-linux-gnu
 
       - name: Build Java native library
-        run: cargo build --release
         working-directory: ./minify-html-java
+        shell: bash
+        run: |
+          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=/usr/bin/aarch64-linux-gnu-gcc
+          cargo build --release --target ${{ matrix.target }}
+          # upload-artifact does not rename the file, so when we download if we don't rename all files will have the same name.
+          mv -v ../target/release/${{ matrix.buildfile }} ${{ matrix.resfile }}
 
       - name: Upload built library
         uses: actions/upload-artifact@v1
         with:
-          name: ${{ matrix.ARCH }}
-          path: ./target/release/${{ matrix.FILE }}
+          name: ${{ matrix.resfile }}
+          path: minify-html-java/${{ matrix.resfile }}
 
   package:
     runs-on: ubuntu-20.04
@@ -55,32 +82,10 @@ jobs:
           java-package: jdk
           architecture: x64
 
-      - name: Download Linux built library
-        uses: actions/download-artifact@v1
+      - uses: actions/download-artifact@v4
         with:
-          name: linux-x86_64
-          path: minify-html-java/src/main/resources/linux-x86_64
-
-      - name: Download macOS built library
-        uses: actions/download-artifact@v1
-        with:
-          name: macos-x86_64
-          path: minify-html-java/src/main/resources/macos-x86_64
-
-      - name: Download Windows built library
-        uses: actions/download-artifact@v1
-        with:
-          name: windows-x86_64
-          path: minify-html-java/src/main/resources/windows-x86_64
-
-      - name: Move native library files to correct location
-        shell: bash
-        working-directory: ./minify-html-java/src/main/resources
-        run: |
-          for f in *; do
-            mv $f/* "$f.nativelib"
-            rmdir "$f"
-          done
+          path: 'minify-html-java/src/main/resources/'
+          merge-multiple: true
 
       - name: Build, pack, and publish JAR
         working-directory: ./minify-html-java
