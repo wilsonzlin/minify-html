@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Omit Rust source files from Node.js package.
+
 ## 0.11.4
 
 - Bump minify-js version.

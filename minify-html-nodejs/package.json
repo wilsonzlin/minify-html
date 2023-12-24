@@ -6,14 +6,10 @@
   },
   "main": "index.js",
   "files": [
-    "Cargo.toml",
-    "checksums/**",
     "cli.js",
     "index.d.ts",
     "index.js",
-    "postinstall.js",
-    "README.md",
-    "src/**"
+    "README.md"
   ],
   "version": "0.11.4",
   "types": "index.d.ts",
@@ -40,9 +36,6 @@
     "node": ">= 8.6.0"
   },
   "homepage": "https://github.com/wilsonzlin/minify-html#readme",
-  "dependencies": {
-    "cargo-cp-artifact": "^0.1"
-  },
   "optionalDependencies": {
     "@minify-html/node-darwin-arm64": "0.11.2",
     "@minify-html/node-darwin-x64": "0.11.2",
@@ -52,6 +45,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.6.0",
+    "cargo-cp-artifact": "^0.1",
     "shx": "^0.3.4"
   },
   "keywords": [
