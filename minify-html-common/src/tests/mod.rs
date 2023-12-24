@@ -431,7 +431,12 @@ pub fn create_common_css_test_data() -> HashMap<&'static [u8], &'static [u8]> {
 pub fn create_common_js_test_data() -> HashMap<&'static [u8], &'static [u8]> {
   let mut t = HashMap::<&'static [u8], &'static [u8]>::new();
 
+  // intentionally malformed
+  t.insert(b"<script><script></script></script>", b"<script><script></script><script>");
+
   // js minification
+  t.insert(b"<script></script>", b"<script></script>");
+  t.insert(b"<script> </script>", b"<script></script>");
   t.insert(b"<script>let a = 1;</script>", b"<script>let a=1</script>");
   t.insert(
     b"<script type=text/javascript>let a = 1;</script>",
