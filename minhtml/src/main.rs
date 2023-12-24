@@ -63,9 +63,11 @@ struct Cli {
   keep_ssi_comments: bool,
 
   /// When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
+  #[structopt(long)]
   preserve_brace_template_syntax: bool,
 
   /// When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched.
+  #[structopt(long)]
   preserve_chevron_percent_template_syntax: bool,
 
   /// Remove all bangs.
