@@ -4,6 +4,8 @@
 
 - Change CLI name to `minhtml` as it's a more concise command name and allows for `cargo install minhtml`.
 - Add `keep_ssi_comments` to preserve SSI comments.
+- [Ruby] BREAKING: The class method is now a global function, so call `minify_html` instead of `MinifyHtml.minify`. All else remains the same. This is due to migrating from Rutie (see [0.11.3](#0113)).
+  - This change was inadvertently released in patch version bumps from `0.11.3` to `0.11.5`; these gems have been yanked.
 
 ## 0.11.5
 
