@@ -136,7 +136,7 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 - Package: [in.wilsonl.minifyhtml](https://search.maven.org/artifact/in.wilsonl.minifyhtml/minify-html)
 - Binding: [JNI](https://github.com/jni-rs/jni-rs)
-- Platforms: Linux, macOS, Windows; Java 7 and higher
+- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Java 7 and higher
 
 ### Get
 
