@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 /// Represents the type of minification error.
 #[derive(Debug, Eq, PartialEq)]
 pub enum ErrorType {
@@ -9,7 +11,7 @@ pub enum ErrorType {
 
 impl ErrorType {
   /// Generates an English message describing the error with any additional context.
-  pub fn message(self) -> String {
+  pub fn message(&self) -> String {
     match self {
       ErrorType::ClosingTagMismatch { expected, got } => {
         format!(
@@ -32,6 +34,19 @@ pub struct Error {
   pub error_type: ErrorType,
   pub position: usize,
 }
+
+impl Display for Error {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(
+      f,
+      "{} [position {}]",
+      self.error_type.message(),
+      self.position
+    )
+  }
+}
+
+impl std::error::Error for Error {}
 
 /// User-friendly details about a minification failure, including an English message description of
 /// the reason, and generated printable contextual representation of the code where the error
@@ -123,3 +138,11 @@ pub fn debug_repr(code: &[u8], read_pos: isize, write_pos: isize) -> String {
   }
   res
 }
+
+impl Display for FriendlyError {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{} [position {}]", self.message, self.position)
+  }
+}
+
+impl std::error::Error for FriendlyError {}
