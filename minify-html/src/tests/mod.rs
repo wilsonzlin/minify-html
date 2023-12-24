@@ -47,6 +47,14 @@ fn test_common() {
 }
 
 #[test]
+fn test_keep_ssi_comments() {
+  eval(b"<!--#include >", b"");
+  let mut cfg = Cfg::default();
+  cfg.keep_ssi_comments = true;
+  eval_with_cfg(b"<!--#include >", b"<!--#include >", &cfg);
+}
+
+#[test]
 fn test_minification_of_doctype() {
   eval(b"<!DOCTYPE html><html>", b"<!doctypehtml><html>");
   eval(

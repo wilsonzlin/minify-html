@@ -14,6 +14,7 @@ fn minify_html(source: String, cfg: RHash) -> String {
     keep_html_and_head_opening_tags: cfg.aref(StaticSymbol::new("keep_html_and_head_opening_tags")).unwrap_or_default(),
     keep_spaces_between_attributes: cfg.aref(StaticSymbol::new("keep_spaces_between_attributes")).unwrap_or_default(),
     keep_comments: cfg.aref(StaticSymbol::new("keep_comments")).unwrap_or_default(),
+    keep_ssi_comments: cfg.aref(StaticSymbol::new("keep_ssi_comments")).unwrap_or_default(),
     minify_css: cfg.aref(StaticSymbol::new("minify_css")).unwrap_or_default(),
     minify_css_level_1: cfg.aref(StaticSymbol::new("minify_css_level_1")).unwrap_or_default(),
     minify_css_level_2: cfg.aref(StaticSymbol::new("minify_css_level_2")).unwrap_or_default(),

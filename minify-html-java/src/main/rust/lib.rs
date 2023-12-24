@@ -29,6 +29,11 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
       .unwrap()
       .z()
       .unwrap(),
+    keep_ssi_comments: env
+      .get_field(*obj, "keep_ssi_comments", "Z")
+      .unwrap()
+      .z()
+      .unwrap(),
     keep_html_and_head_opening_tags: env
       .get_field(*obj, "keep_html_and_head_opening_tags", "Z")
       .unwrap()

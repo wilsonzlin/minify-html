@@ -14,6 +14,8 @@ pub struct Cfg {
   pub keep_spaces_between_attributes: bool,
   /// Keep all comments.
   pub keep_comments: bool,
+  /// Keep SSI comments.
+  pub keep_ssi_comments: bool,
   /// Minify CSS in `<style>` tags and `style` attributes using [https://github.com/Mnwa/css-minify](css-minify). By default, the optimisation level is 1 as specified by the CSS minifier, but this can be adjusted by the minify_css_level_* settings.
   pub minify_css: bool,
   /// Use optimisation level 1 for the CSS minifier. This is currently the default, but may change in the future if higher levels become safe.

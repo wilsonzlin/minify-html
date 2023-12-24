@@ -28,6 +28,7 @@ fn minify(mut cx: FunctionContext) -> JsResult<JsBuffer> {
     keep_html_and_head_opening_tags: get_bool!(cx, opt, "keep_html_and_head_opening_tags"),
     keep_spaces_between_attributes: get_bool!(cx, opt, "keep_spaces_between_attributes"),
     keep_comments: get_bool!(cx, opt, "keep_comments"),
+    keep_ssi_comments: get_bool!(cx, opt, "keep_ssi_comments"),
     minify_css: get_bool!(cx, opt, "minify_css"),
     minify_css_level_1: get_bool!(cx, opt, "minify_css_level_1"),
     minify_css_level_2: get_bool!(cx, opt, "minify_css_level_2"),

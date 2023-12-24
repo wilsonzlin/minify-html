@@ -20,6 +20,7 @@ minhtml [FLAGS] [OPTIONS] [inputs]...
 |-h, --help|Prints help information|
 |--keep-closing-tags|Do not omit closing tags when possible|
 |--keep-comments|Keep all comments|
+|--keep-ssi-comments|Keep SSI comments|
 |--keep-html-and-head-opening-tags|Do not omit `<html>` and `<head>` opening tags when they don't have attributes|
 |--keep-spaces-between-attributes|Keep spaces between attributes when possible to conform to HTML standards|
 |--minify-css|Minify CSS in `<style>` tags and `style` attributes|

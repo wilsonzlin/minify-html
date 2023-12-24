@@ -8,6 +8,7 @@ public class Configuration {
   public final boolean ensure_spec_compliant_unquoted_attribute_values;
   public final boolean keep_closing_tags;
   public final boolean keep_comments;
+  public final boolean keep_ssi_comments;
   public final boolean keep_html_and_head_opening_tags;
   public final boolean keep_spaces_between_attributes;
   public final boolean minify_css;
@@ -23,6 +24,7 @@ public class Configuration {
     boolean ensure_spec_compliant_unquoted_attribute_values,
     boolean keep_closing_tags,
     boolean keep_comments,
+    boolean keep_ssi_comments,
     boolean keep_html_and_head_opening_tags,
     boolean keep_spaces_between_attributes,
     boolean minify_css,
@@ -37,6 +39,7 @@ public class Configuration {
     this.ensure_spec_compliant_unquoted_attribute_values = ensure_spec_compliant_unquoted_attribute_values;
     this.keep_closing_tags = keep_closing_tags;
     this.keep_comments = keep_comments;
+    this.keep_ssi_comments = keep_ssi_comments;
     this.keep_html_and_head_opening_tags = keep_html_and_head_opening_tags;
     this.keep_spaces_between_attributes = keep_spaces_between_attributes;
     this.minify_css = minify_css;
@@ -55,7 +58,7 @@ public class Configuration {
     private boolean do_not_minify_doctype = false;
     private boolean ensure_spec_compliant_unquoted_attribute_values = false;
     private boolean keep_closing_tags = false;
-    private boolean keep_comments = false;
+    private boolean keep_ssi_comments = false;
     private boolean keep_html_and_head_opening_tags = false;
     private boolean keep_spaces_between_attributes = false;
     private boolean minify_css = false;
@@ -83,6 +86,11 @@ public class Configuration {
 
     public Builder setKeepComments(boolean val) {
       this.keep_comments = val;
+      return this;
+    }
+
+    public Builder setKeepSsiComments(boolean val) {
+      this.keep_ssi_comments = val;
       return this;
     }
 

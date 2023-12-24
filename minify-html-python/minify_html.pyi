@@ -4,6 +4,7 @@ def minify(
     ensure_spec_compliant_unquoted_attribute_values: bool = False,
     keep_closing_tags: bool = False,
     keep_comments: bool = False,
+    keep_ssi_comments: bool = False,
     keep_html_and_head_opening_tags: bool = False,
     keep_spaces_between_attributes: bool = False,
     minify_css: bool = False,

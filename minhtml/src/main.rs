@@ -70,6 +70,10 @@ struct Cli {
   #[structopt(long)]
   keep_comments: bool,
 
+  /// Keep SSI comments.
+  #[structopt(long)]
+  keep_ssi_comments: bool,
+
   /// Remove all bangs.
   #[structopt(long)]
   remove_bangs: bool,
@@ -104,6 +108,7 @@ fn main() {
       .ensure_spec_compliant_unquoted_attribute_values,
     keep_closing_tags: args.keep_closing_tags,
     keep_comments: args.keep_comments,
+    keep_ssi_comments: args.keep_ssi_comments,
     keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,
     keep_spaces_between_attributes: args.keep_spaces_between_attributes,
     minify_css: args.minify_css,

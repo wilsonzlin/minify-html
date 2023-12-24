@@ -30,6 +30,7 @@ pub fn minify(code: &[u8], cfg: &JsValue) -> Vec<u8> {
     keep_html_and_head_opening_tags: get_prop!(cfg, "keep_html_and_head_opening_tags"),
     keep_spaces_between_attributes: get_prop!(cfg, "keep_spaces_between_attributes"),
     keep_comments: get_prop!(cfg, "keep_comments"),
+    keep_ssi_comments: get_prop!(cfg, "keep_ssi_comments"),
     minify_css: get_prop!(cfg, "minify_css"),
     minify_css_level_1: get_prop!(cfg, "minify_css_level_1"),
     minify_css_level_2: get_prop!(cfg, "minify_css_level_2"),

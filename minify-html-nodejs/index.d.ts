@@ -20,6 +20,8 @@ export function minify(
     keep_spaces_between_attributes?: boolean;
     /** Keep all comments. */
     keep_comments?: boolean;
+    /** Keep SSI comments. */
+    keep_ssi_comments?: boolean;
     /**
      * If enabled, content in `<script>` tags with a JS or no [MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) will be minified using [minify-js](https://github.com/wilsonzlin/minify-js).
      */
