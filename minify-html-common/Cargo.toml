@@ -4,7 +4,7 @@ description = "Common code and data for minify-html*"
 license = "MIT"
 homepage = "https://github.com/wilsonzlin/minify-html"
 repository = "https://github.com/wilsonzlin/minify-html.git"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
