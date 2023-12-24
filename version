@@ -113,6 +113,14 @@ for (const f of [
   );
 }
 
+for (const f of ["minhtml/Cargo.toml"]) {
+  replaceInFile(
+    f,
+    /^minify-html = \{ version = "\d+\.\d+\.\d+"/,
+    `minify-html = { version = "${NEW_VERSION}"`
+  );
+}
+
 for (const f of ["README.md", "minify-html-ruby/ext/minify_html/Cargo.toml"]) {
   replaceInFile(f, /^(minify-html = )"\d+\.\d+\.\d+"/m, `$1"${NEW_VERSION}"`);
 }

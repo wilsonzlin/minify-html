@@ -32,27 +32,24 @@ The [onepass](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass
 <details>
 <summary><img width="24" src="https://wilsonl.in/minify-html/icon/cli.png"> <strong>CLI</strong></summary>
 
-Precompiled binaries are available for Linux, macOS, and Windows.
+The CLI is called [minhtml](./minhtml).
+Precompiled binaries are available for Linux (ARM64 and x64), macOS (ARM64 and x64), and Windows (x64).
+You can download them in the GitHub release.
 
-### Get
-
-[Linux x64](https://wilsonl.in/minify-html/bin/0.12.0-linux-x86_64) |
-[Linux ARM64](https://wilsonl.in/minify-html/bin/0.12.0-linux-arm64) |
-[macOS x64](https://wilsonl.in/minify-html/bin/0.12.0-macos-x86_64) |
-[Windows x64](https://wilsonl.in/minify-html/bin/0.12.0-windows-x86_64.exe)
+If you have Cargo installed, you can also build and install from source: `cargo install minhtml`.
 
 ### Use
 
 Use the `--help` argument for more details.
 
 ```bash
-minify-html --output /path/to/output.min.html --keep-closing-tags --minify-css /path/to/src.html
+minhtml --output /path/to/output.min.html --keep-closing-tags --minify-css /path/to/src.html
 ```
 
 To quickly parallel process a batch of files in place:
 
 ```bash
-minify-html --keep-closing-tags --minify-css /path/to/**/*.html
+minhtml --keep-closing-tags --minify-css /path/to/**/*.html
 ```
 
 </details>

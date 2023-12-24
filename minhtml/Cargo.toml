@@ -6,6 +6,6 @@ authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 
 [dependencies]
-minify-html = { path = "../minify-html" }
+minify-html = { version = "0.12.0", path = "../minify-html" }
 rayon = "1.5"
 structopt = "0.3"
