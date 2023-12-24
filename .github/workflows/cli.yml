@@ -58,7 +58,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.file.outputs.FILE }}
+          name: minhtml-${{ steps.file.outputs.FILE }}
           path: ./target/release/minhtml${{ matrix.EXT }}
 
   release:
