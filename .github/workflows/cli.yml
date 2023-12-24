@@ -44,7 +44,7 @@ jobs:
       - name: Get file name
         id: file
         shell: bash
-        run: echo ::set-output name=FILE::${{ steps.version.outputs.VERSION }}-${{ matrix.target }}${{ matrix.ext }}
+        run: echo ::set-output name=FILE::minhtml-${{ steps.version.outputs.VERSION }}-${{ matrix.target }}${{ matrix.ext }}
 
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
@@ -53,13 +53,16 @@ jobs:
 
       - name: Build CLI
         working-directory: ./minhtml
-        run: cargo build --release -vvv
+        run: |
+          cargo build --release -vvv
+          # upload-artifact does not rename the file, so when we download if we don't rename all files will have the same name.
+          mv -v ../target/release/minhtml${{ matrix.EXT }} ${{ steps.file.outputs.FILE }}
 
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: minhtml-${{ steps.file.outputs.FILE }}
-          path: ./target/release/minhtml${{ matrix.EXT }}
+          name: ${{ steps.file.outputs.FILE }}
+          path: minhtml/${{ steps.file.outputs.FILE }}
 
   release:
     runs-on: ubuntu-latest
