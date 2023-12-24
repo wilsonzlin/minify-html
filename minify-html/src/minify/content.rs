@@ -154,6 +154,7 @@ pub fn minify_content(
       NodeData::Text { value } => {
         out.extend_from_slice(&CHEVRON_REPLACER.replace_all(&encode_entities(&value, false)))
       }
+      NodeData::Opaque { raw_source } => out.extend_from_slice(&raw_source),
     };
   }
 }

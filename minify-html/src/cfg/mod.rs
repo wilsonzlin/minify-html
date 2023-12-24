@@ -16,6 +16,10 @@ pub struct Cfg {
   pub keep_comments: bool,
   /// Keep SSI comments.
   pub keep_ssi_comments: bool,
+  /// When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
+  pub preserve_brace_template_syntax: bool,
+  /// When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched.
+  pub preserve_chevron_percent_template_syntax: bool,
   /// Minify CSS in `<style>` tags and `style` attributes using [https://github.com/parcel-bundler/lightningcss](lightningcss).
   pub minify_css: bool,
   /// Minify JavaScript in `<script>` tags using
