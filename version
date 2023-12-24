@@ -96,7 +96,7 @@ cmd("cargo", "test");
 replaceInFile("CHANGELOG.md", /^## Pending$/m, `## ${NEW_VERSION}`);
 
 for (const f of [
-  "minify-html-cli/Cargo.toml",
+  "minhtml/Cargo.toml",
   "minify-html-java/Cargo.toml",
   "minify-html-nodejs/Cargo.toml",
   "minify-html-onepass-python/Cargo.toml",
