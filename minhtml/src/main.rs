@@ -62,6 +62,12 @@ struct Cli {
   #[structopt(long)]
   keep_ssi_comments: bool,
 
+  /// When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
+  preserve_brace_template_syntax: bool,
+
+  /// When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched.
+  preserve_chevron_percent_template_syntax: bool,
+
   /// Remove all bangs.
   #[structopt(long)]
   remove_bangs: bool,
@@ -90,17 +96,19 @@ fn main() {
     exit(1);
   };
 
+  #[rustfmt::skip]
   let cfg = Arc::new(Cfg {
     do_not_minify_doctype: args.do_not_minify_doctype,
-    ensure_spec_compliant_unquoted_attribute_values: args
-      .ensure_spec_compliant_unquoted_attribute_values,
+    ensure_spec_compliant_unquoted_attribute_values: args.ensure_spec_compliant_unquoted_attribute_values,
     keep_closing_tags: args.keep_closing_tags,
     keep_comments: args.keep_comments,
-    keep_ssi_comments: args.keep_ssi_comments,
     keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,
     keep_spaces_between_attributes: args.keep_spaces_between_attributes,
+    keep_ssi_comments: args.keep_ssi_comments,
     minify_css: args.minify_css,
     minify_js: args.minify_js,
+    preserve_brace_template_syntax: args.preserve_brace_template_syntax,
+    preserve_chevron_percent_template_syntax: args.preserve_chevron_percent_template_syntax,
     remove_bangs: args.remove_bangs,
     remove_processing_instructions: args.remove_processing_instructions,
   });

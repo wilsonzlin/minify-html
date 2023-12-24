@@ -17,13 +17,10 @@ fn minify(mut cx: FunctionContext) -> JsResult<JsBuffer> {
   let Ok(opt) = cx.try_catch(|cx| cx.argument::<JsObject>(1)) else {
     return cx.throw_type_error("the second argument is not an object");
   };
+  #[rustfmt::skip]
   let cfg = minify_html::Cfg {
     do_not_minify_doctype: get_bool!(cx, opt, "do_not_minify_doctype"),
-    ensure_spec_compliant_unquoted_attribute_values: get_bool!(
-      cx,
-      opt,
-      "ensure_spec_compliant_unquoted_attribute_values"
-    ),
+    ensure_spec_compliant_unquoted_attribute_values: get_bool!(cx, opt, "ensure_spec_compliant_unquoted_attribute_values"),
     keep_closing_tags: get_bool!(cx, opt, "keep_closing_tags"),
     keep_html_and_head_opening_tags: get_bool!(cx, opt, "keep_html_and_head_opening_tags"),
     keep_spaces_between_attributes: get_bool!(cx, opt, "keep_spaces_between_attributes"),
@@ -31,6 +28,8 @@ fn minify(mut cx: FunctionContext) -> JsResult<JsBuffer> {
     keep_ssi_comments: get_bool!(cx, opt, "keep_ssi_comments"),
     minify_css: get_bool!(cx, opt, "minify_css"),
     minify_js: get_bool!(cx, opt, "minify_js"),
+    preserve_brace_template_syntax: get_bool!(cx, opt, "preserve_brace_template_syntax"),
+    preserve_chevron_percent_template_syntax: get_bool!(cx, opt, "preserve_chevron_percent_template_syntax"),
     remove_bangs: get_bool!(cx, opt, "remove_bangs"),
     remove_processing_instructions: get_bool!(cx, opt, "remove_processing_instructions"),
   };

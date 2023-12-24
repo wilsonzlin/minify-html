@@ -13,6 +13,8 @@ public class Configuration {
   public final boolean keep_spaces_between_attributes;
   public final boolean minify_css;
   public final boolean minify_js;
+  public final boolean preserve_brace_template_syntax;
+  public final boolean preserve_chevron_percent_template_syntax;
   public final boolean remove_bangs;
   public final boolean remove_processing_instructions;
 
@@ -38,6 +40,8 @@ public class Configuration {
     this.keep_spaces_between_attributes = keep_spaces_between_attributes;
     this.minify_css = minify_css;
     this.minify_js = minify_js;
+    this.preserve_brace_template_syntax = preserve_brace_template_syntax;
+    this.preserve_chevron_percent_template_syntax = preserve_chevron_percent_template_syntax;
     this.remove_bangs = remove_bangs;
     this.remove_processing_instructions = remove_processing_instructions;
   }
@@ -55,6 +59,8 @@ public class Configuration {
     private boolean keep_spaces_between_attributes = false;
     private boolean minify_css = false;
     private boolean minify_js = false;
+    private boolean preserve_brace_template_syntax = preserve_brace_template_syntax;
+    private boolean preserve_chevron_percent_template_syntax = preserve_chevron_percent_template_syntax;
     private boolean remove_bangs = false;
     private boolean remove_processing_instructions = false;
 
@@ -108,11 +114,20 @@ public class Configuration {
       return this;
     }
 
+    public Builder setPreserveBraceTemplateSyntax(boolean val) {
+      this.preserve_brace_template_syntax = val;
+      return this;
+    }
+
+    public Builder setPreserveChevronPercentTemplateSyntax(boolean val) {
+      this.preserve_chevron_percent_template_syntax = val;
+      return this;
+    }
+
     public Builder setRemoveProcessingInstructions(boolean val) {
       this.remove_processing_instructions = val;
       return this;
     }
-
 
     public Configuration build() {
       return new Configuration(
@@ -125,6 +140,8 @@ public class Configuration {
         this.keep_spaces_between_attributes,
         this.minify_css,
         this.minify_js,
+        this.preserve_brace_template_syntax,
+        this.preserve_chevron_percent_template_syntax,
         this.remove_bangs,
         this.remove_processing_instructions
       );

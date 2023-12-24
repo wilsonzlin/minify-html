@@ -35,7 +35,7 @@ enum ContentType {
   OpaqueBraceBrace,
   OpaqueBraceHash,
   OpaqueBracePercent,
-  // Sailfish, JSP, EJS
+  // Sailfish, JSP, EJS, ERB.
   OpaqueChevronPercent,
 }
 

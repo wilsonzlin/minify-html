@@ -9,6 +9,8 @@ def minify(
     keep_spaces_between_attributes: bool = False,
     minify_css: bool = False,
     minify_js: bool = False,
+    preserve_brace_template_syntax: bool = False,
+    preserve_chevron_percent_template_syntax: bool = False,
     remove_bangs: bool = False,
     remove_processing_instructions: bool = False,
 ) -> str: ...

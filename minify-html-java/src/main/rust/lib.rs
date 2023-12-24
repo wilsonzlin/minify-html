@@ -46,6 +46,16 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
       .unwrap(),
     minify_css: env.get_field(*obj, "minify_css", "Z").unwrap().z().unwrap(),
     minify_js: env.get_field(*obj, "minify_js", "Z").unwrap().z().unwrap(),
+    preserve_brace_template_syntax: env
+      .get_field(*obj, "preserve_brace_template_syntax", "Z")
+      .unwrap()
+      .z()
+      .unwrap(),
+    preserve_chevron_percent_template_syntax: env
+      .get_field(*obj, "preserve_chevron_percent_template_syntax", "Z")
+      .unwrap()
+      .z()
+      .unwrap(),
     remove_bangs: env
       .get_field(*obj, "remove_bangs", "Z")
       .unwrap()
