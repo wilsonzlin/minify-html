@@ -22,15 +22,15 @@ macro_rules! get_prop {
 pub fn minify(code: &[u8], cfg: &JsValue) -> Vec<u8> {
   #[rustfmt::skip]
   let cfg = minify_html::Cfg {
-    do_not_minify_doctype: get_prop!(cfg, "do_not_minify_doctype"),
-    ensure_spec_compliant_unquoted_attribute_values: get_prop!(cfg, "ensure_spec_compliant_unquoted_attribute_values"),
+    allow_noncompliant_unquoted_attribute_values: get_prop!(cfg, "allow_noncompliant_unquoted_attribute_values"),
+    allow_removing_spaces_between_attributes: get_prop!(cfg, "allow_removing_spaces_between_attributes"),
     keep_closing_tags: get_prop!(cfg, "keep_closing_tags"),
     keep_comments: get_prop!(cfg, "keep_comments"),
     keep_html_and_head_opening_tags: get_prop!(cfg, "keep_html_and_head_opening_tags"),
     keep_input_type_text_attr: get_prop!(cfg, "keep_input_type_text_attr"),
-    keep_spaces_between_attributes: get_prop!(cfg, "keep_spaces_between_attributes"),
     keep_ssi_comments: get_prop!(cfg, "keep_ssi_comments"),
     minify_css: get_prop!(cfg, "minify_css"),
+    minify_doctype: get_prop!(cfg, "minify_doctype"),
     minify_js: get_prop!(cfg, "minify_js"),
     preserve_brace_template_syntax: get_prop!(cfg, "preserve_brace_template_syntax"),
     preserve_chevron_percent_template_syntax: get_prop!(cfg, "preserve_chevron_percent_template_syntax"),

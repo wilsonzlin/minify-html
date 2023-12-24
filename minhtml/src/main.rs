@@ -26,45 +26,50 @@ struct Cli {
   #[structopt(short, long, parse(from_os_str))]
   output: Option<std::path::PathBuf>,
 
-  /// Minify JS in `<script>` tags that have a valid or no `type` attribute value.
+  /// Allow unquoted attribute values in the output to contain characters prohibited by the [WHATWG specification](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2). These will still be parsed correctly by almost all browsers.
   #[structopt(long)]
-  minify_js: bool,
+  allow_noncompliant_unquoted_attribute_values: bool,
 
-  /// Minify CSS in `<style>` tags and `style` attributes.
+  /// Allow removing_spaces between attributes when possible, which may not be spec compliant. These will still be parsed correctly by almost all browsers.
   #[structopt(long)]
-  minify_css: bool,
-
-  #[structopt(long)]
-  /// Do not minify DOCTYPEs. Minified DOCTYPEs may not be spec compliant.
-  do_not_minify_doctype: bool,
-
-  /// Ensure all unquoted attribute values in the output do not contain any characters prohibited by the WHATWG specification.
-  #[structopt(long)]
-  ensure_spec_compliant_unquoted_attribute_values: bool,
+  allow_removing_spaces_between_attributes: bool,
 
   /// Do not omit closing tags when possible.
   #[structopt(long)]
   keep_closing_tags: bool,
 
-  /// Do not omit `<html>` and `<head>` opening tags when they don't have attributes.
-  #[structopt(long)]
-  keep_html_and_head_opening_tags: bool,
-
-  /// Keep spaces between attributes when possible to conform to HTML standards.
-  #[structopt(long)]
-  keep_spaces_between_attributes: bool,
-
   /// Keep all comments.
   #[structopt(long)]
   keep_comments: bool,
 
+  /// Do not omit `<html>` and `<head>` opening tags when they don't have attributes.
+  #[structopt(long)]
+  keep_html_and_head_opening_tags: bool,
+
   /// Keep `type=text` attribute name and value on `<input>` elements.
   #[structopt(long)]
-  pub keep_input_type_text_attr: bool,
+  keep_input_type_text_attr: bool,
 
   /// Keep SSI comments.
   #[structopt(long)]
   keep_ssi_comments: bool,
+
+  /// Minify CSS in `<style>` tags and `style` attributes using [https://github.com/parcel-bundler/lightningcss](lightningcss).
+  #[structopt(long)]
+  minify_css: bool,
+
+  /// Minify DOCTYPEs. Minified DOCTYPEs may not be spec compliant, but will still be parsed correctly by almost all browsers.
+  #[structopt(long)]
+  minify_doctype: bool,
+
+  /// Minify JavaScript in `<script>` tags using
+  /// [minify-js](https://github.com/wilsonzlin/minify-js).
+  ///
+  /// Only `<script>` tags with a valid or no
+  /// [MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) is considered to
+  /// contain JavaScript, as per the specification.
+  #[structopt(long)]
+  minify_js: bool,
 
   /// When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
   #[structopt(long)]
@@ -78,7 +83,7 @@ struct Cli {
   #[structopt(long)]
   remove_bangs: bool,
 
-  /// Remove all processing_instructions.
+  /// Remove all processing instructions.
   #[structopt(long)]
   remove_processing_instructions: bool,
 }
@@ -104,15 +109,15 @@ fn main() {
 
   #[rustfmt::skip]
   let cfg = Arc::new(Cfg {
-    do_not_minify_doctype: args.do_not_minify_doctype,
-    ensure_spec_compliant_unquoted_attribute_values: args.ensure_spec_compliant_unquoted_attribute_values,
+    allow_noncompliant_unquoted_attribute_values: args.allow_noncompliant_unquoted_attribute_values,
+    allow_removing_spaces_between_attributes: args.allow_removing_spaces_between_attributes,
     keep_closing_tags: args.keep_closing_tags,
     keep_comments: args.keep_comments,
     keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,
     keep_input_type_text_attr: args.keep_input_type_text_attr,
-    keep_spaces_between_attributes: args.keep_spaces_between_attributes,
     keep_ssi_comments: args.keep_ssi_comments,
     minify_css: args.minify_css,
+    minify_doctype: args.minify_doctype,
     minify_js: args.minify_js,
     preserve_brace_template_syntax: args.preserve_brace_template_syntax,
     preserve_chevron_percent_template_syntax: args.preserve_chevron_percent_template_syntax,

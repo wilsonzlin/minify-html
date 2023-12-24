@@ -19,6 +19,7 @@ fn main() {
 
   let mut results: Vec<(String, usize, usize, f64)> = Vec::new();
   let mut cfg = Cfg::new();
+  cfg.enable_possibly_noncompliant();
   if !html_only {
     cfg.minify_css = true;
     cfg.minify_js = true;

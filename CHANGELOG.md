@@ -3,6 +3,11 @@
 ## Pending
 
 - [Rust] Deny unsafe code.
+- BREAKING: Cfg options have changed such that spec compliance is the default, to avoid confusion with users:
+  - `do_not_minify_doctype` => `minify_doctype`
+  - `ensure_spec_compliant_unquoted_attribute_values` => `allow_noncompliant_unquoted_attribute_values`
+  - `keep_spaces_between_attributes` => `allow_removing_spaces_between_attributes`
+  - `Cfg::spec_compliant()` => `Cfg::enable_possibly_noncompliant(&mut self)`
 
 ## 0.15.0
 

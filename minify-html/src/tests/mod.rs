@@ -2,12 +2,19 @@ use crate::cfg::Cfg;
 use crate::minify;
 use minify_html_common::tests::create_common_css_test_data;
 use minify_html_common::tests::create_common_js_test_data;
+use minify_html_common::tests::create_common_noncompliant_test_data;
 use minify_html_common::tests::create_common_test_data;
 use std::str::from_utf8;
 
 pub fn eval_with_cfg(src: &'static [u8], expected: &'static [u8], cfg: &Cfg) {
   let min = minify(&src, cfg);
   assert_eq!(from_utf8(&min).unwrap(), from_utf8(expected).unwrap(),);
+}
+
+pub fn eval_with_noncompliant(src: &'static [u8], expected: &'static [u8]) {
+  let mut cfg = Cfg::new();
+  cfg.enable_possibly_noncompliant();
+  eval_with_cfg(src, expected, &cfg)
 }
 
 pub fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
@@ -29,14 +36,13 @@ pub fn eval(src: &'static [u8], expected: &'static [u8]) {
   eval_with_cfg(src, expected, &cfg);
 }
 
-fn eval_without_keep_html_head(src: &'static [u8], expected: &'static [u8]) -> () {
-  eval_with_cfg(src, expected, &Cfg::new());
-}
-
 #[test]
 fn test_common() {
   for (a, b) in create_common_test_data() {
     eval(a, b);
+  }
+  for (a, b) in create_common_noncompliant_test_data() {
+    eval_with_noncompliant(a, b);
   }
   for (a, b) in create_common_css_test_data() {
     eval_with_css_min(a, b);
@@ -100,10 +106,13 @@ fn test_preserve_template_chevron_percent_syntax() {
 
 #[test]
 fn test_minification_of_doctype() {
-  eval(b"<!DOCTYPE html><html>", b"<!doctypehtml><html>");
-  eval(
-    b"<!DOCTYPE html SYSTEM 'about:legacy-compat'><html>",
-    b"<!doctypehtml SYSTEM 'about:legacy-compat'><html>",
+  let mut cfg = Cfg::new();
+  cfg.minify_doctype = true;
+  eval_with_cfg(b"<!DOCTYPE html><div>", b"<!doctypehtml><div>", &cfg);
+  eval_with_cfg(
+    b"<!DOCTYPE html SYSTEM 'about:legacy-compat'><div>",
+    b"<!doctypehtml SYSTEM 'about:legacy-compat'><div>",
+    &cfg,
   );
 }
 
@@ -134,17 +143,17 @@ fn test_parsing_extra_head_tag() {
 #[test]
 fn test_removal_of_html_and_head_opening_tags() {
   // Even though `<head>` is dropped, it's still parsed, so its content is still subject to `<head>` whitespace minification rules.
-  eval_without_keep_html_head(
+  eval_with_noncompliant(
     b"<!DOCTYPE html><html><head>  <meta> <body>",
     b"<!doctypehtml><meta><body>",
   );
   // The tag should not be dropped if it has attributes.
-  eval_without_keep_html_head(
+  eval_with_noncompliant(
     b"<!DOCTYPE html><html lang=en><head>  <meta> <body>",
     b"<!doctypehtml><html lang=en><meta><body>",
   );
   // The tag should be dropped if it has no attributes after minification.
-  eval_without_keep_html_head(
+  eval_with_noncompliant(
     b"<!DOCTYPE html><html style='  '><head>  <meta> <body>",
     b"<!doctypehtml><meta><body>",
   );
@@ -166,30 +175,24 @@ fn test_unmatched_closing_tag() {
 #[test]
 // NOTE: Keep inputs in sync with onepass variant. Outputs are different as main variant reorders attributes.
 fn test_space_between_attrs_minification() {
-  eval(
+  eval_with_noncompliant(
     b"<div a=\" \" b=\" \"></div>",
     b"<div a=\" \"b=\" \"></div>",
   );
-  eval(b"<div a=' ' b=\" \"></div>", b"<div a=\" \"b=\" \"></div>");
-  eval(
+  eval_with_noncompliant(b"<div a=' ' b=\" \"></div>", b"<div a=\" \"b=\" \"></div>");
+  eval_with_noncompliant(
     b"<div a=&#x20 b=\" \"></div>",
     b"<div a=\" \"b=\" \"></div>",
   );
-  eval(b"<div a=\"1\" b=\" \"></div>", b"<div b=\" \"a=1></div>");
-  eval(b"<div a='1' b=\" \"></div>", b"<div b=\" \"a=1></div>");
-  eval(b"<div a=\"a\"b=\"b\"></div>", b"<div a=a b=b></div>");
+  eval_with_noncompliant(b"<div a=\"1\" b=\" \"></div>", b"<div b=\" \"a=1></div>");
+  eval_with_noncompliant(b"<div a='1' b=\" \"></div>", b"<div b=\" \"a=1></div>");
+  eval_with_noncompliant(b"<div a=\"a\"b=\"b\"></div>", b"<div a=a b=b></div>");
 }
 
 #[test]
 fn test_attr_whatwg_unquoted_value_minification() {
-  let mut cfg = Cfg::new();
-  cfg.ensure_spec_compliant_unquoted_attribute_values = true;
-  eval_with_cfg(b"<a b==></a>", br#"<a b="="></a>"#, &cfg);
-  eval_with_cfg(
-    br#"<a b=`'"<<==/`/></a>"#,
-    br#"<a b="`'&#34<<==/`/"></a>"#,
-    &cfg,
-  );
+  eval(b"<a b==></a>", br#"<a b="="></a>"#);
+  eval(br#"<a b=`'"<<==/`/></a>"#, br#"<a b="`'&#34<<==/`/"></a>"#);
 }
 
 #[test]
@@ -204,15 +207,13 @@ fn test_alt_attr_minification() {
 
 #[test]
 fn test_viewport_attr_minification() {
-  eval(
+  eval_with_noncompliant(
     b"<meta name=viewport content='width=device-width, initial-scale=1'>",
     b"<meta content=width=device-width,initial-scale=1 name=viewport>",
   );
-  let spec_compliant_cfg = Cfg::spec_compliant();
-  eval_with_cfg(
+  eval(
     b"<meta name=viewport content='width=device-width, initial-scale=1'>",
     br#"<meta content="width=device-width,initial-scale=1" name=viewport>"#,
-    &spec_compliant_cfg,
   );
 }
 

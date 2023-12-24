@@ -250,11 +250,15 @@ Note that in all of these syntax, the parsing is "dumb": it will simply look for
 
 ## Minification
 
-Note that some of the minification done can result in HTML that will not pass validation, but remain interpreted and rendered correctly by the browser; essentially, the laxness of the browser is taken advantage of for better minification. To prevent this, refer to these configuration options:
+### Spec compliance
 
-- `do_not_minify_doctype`
-- `ensure_spec_compliant_unquoted_attribute_values`
-- `keep_spaces_between_attributes`
+To minify even further, it's possible to enable options that may output HTML that doesn't fully comply with the specs. This is almost 100% safe on all browsers, as browsers have consistent interpretation and rendering behaviour even for such HTML, which can be taken advantage of for better minification. Refer to these options:
+
+- `allow_noncompliant_unquoted_attribute_values`
+- `allow_removing_spaces_between_attributes`
+- `minify_doctype`
+
+In Rust, `Cfg::enable_possibly_noncompliant` can enable all of these at once.
 
 ### Whitespace
 

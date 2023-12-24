@@ -368,10 +368,7 @@ pub fn minify_attr(
   if sq.len() < min.len() {
     min = sq;
   };
-  let uq = encode_unquoted(
-    &encoded,
-    cfg.ensure_spec_compliant_unquoted_attribute_values,
-  );
+  let uq = encode_unquoted(&encoded, !cfg.allow_noncompliant_unquoted_attribute_values);
   if uq.len() < min.len() {
     min = uq;
   };

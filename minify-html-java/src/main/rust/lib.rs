@@ -11,15 +11,15 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
   #[rustfmt::skip]
   // This is a statement because "attributes on expressions are experimental".
   let cfg = Cfg {
-    do_not_minify_doctype: env.get_field(*obj, "do_not_minify_doctype", "Z").unwrap().z().unwrap(),
-    ensure_spec_compliant_unquoted_attribute_values: env.get_field(*obj, "ensure_spec_compliant_unquoted_attribute_values", "Z").unwrap().z().unwrap(),
+    allow_noncompliant_unquoted_attribute_values: env.get_field(*obj, "allow_noncompliant_unquoted_attribute_values", "Z").unwrap().z().unwrap(),
+    allow_removing_spaces_between_attributes: env.get_field(*obj, "allow_removing_spaces_between_attributes", "Z").unwrap().z().unwrap(),
     keep_closing_tags: env.get_field(*obj, "keep_closing_tags", "Z").unwrap().z().unwrap(),
     keep_comments: env.get_field(*obj, "keep_comments", "Z").unwrap().z().unwrap(),
     keep_html_and_head_opening_tags: env.get_field(*obj, "keep_html_and_head_opening_tags", "Z").unwrap().z().unwrap(),
     keep_input_type_text_attr: env.get_field(*obj, "keep_input_type_text_attr", "Z").unwrap().z().unwrap(),
-    keep_spaces_between_attributes: env.get_field(*obj, "keep_spaces_between_attributes", "Z").unwrap().z().unwrap(),
     keep_ssi_comments: env.get_field(*obj, "keep_ssi_comments", "Z").unwrap().z().unwrap(),
     minify_css: env.get_field(*obj, "minify_css", "Z").unwrap().z().unwrap(),
+    minify_doctype: env.get_field(*obj, "minify_doctype", "Z").unwrap().z().unwrap(),
     minify_js: env.get_field(*obj, "minify_js", "Z").unwrap().z().unwrap(),
     preserve_brace_template_syntax: env.get_field(*obj, "preserve_brace_template_syntax", "Z").unwrap().z().unwrap(),
     preserve_chevron_percent_template_syntax: env.get_field(*obj, "preserve_chevron_percent_template_syntax", "Z").unwrap().z().unwrap(),

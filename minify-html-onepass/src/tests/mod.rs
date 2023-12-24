@@ -4,6 +4,7 @@ use crate::in_place;
 use crate::with_friendly_error;
 use minify_html_common::tests::create_common_css_test_data;
 use minify_html_common::tests::create_common_js_test_data;
+use minify_html_common::tests::create_common_noncompliant_test_data;
 use minify_html_common::tests::create_common_test_data;
 use std::str::from_utf8;
 
@@ -60,6 +61,9 @@ fn eval_error(src: &'static [u8], expected: ErrorType) -> () {
 #[test]
 fn test_common() {
   for (a, b) in create_common_test_data() {
+    eval(a, b);
+  }
+  for (a, b) in create_common_noncompliant_test_data() {
     eval(a, b);
   }
   for (a, b) in create_common_css_test_data() {

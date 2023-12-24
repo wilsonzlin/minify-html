@@ -19,15 +19,15 @@ fn minify(mut cx: FunctionContext) -> JsResult<JsBuffer> {
   };
   #[rustfmt::skip]
   let cfg = minify_html::Cfg {
-    do_not_minify_doctype: get_bool!(cx, opt, "do_not_minify_doctype"),
-    ensure_spec_compliant_unquoted_attribute_values: get_bool!(cx, opt, "ensure_spec_compliant_unquoted_attribute_values"),
+    allow_noncompliant_unquoted_attribute_values: get_bool!(cx, opt, "allow_noncompliant_unquoted_attribute_values"),
+    allow_removing_spaces_between_attributes: get_bool!(cx, opt, "allow_removing_spaces_between_attributes"),
     keep_closing_tags: get_bool!(cx, opt, "keep_closing_tags"),
     keep_comments: get_bool!(cx, opt, "keep_comments"),
     keep_html_and_head_opening_tags: get_bool!(cx, opt, "keep_html_and_head_opening_tags"),
     keep_input_type_text_attr: get_bool!(cx, opt, "keep_input_type_text_attr"),
-    keep_spaces_between_attributes: get_bool!(cx, opt, "keep_spaces_between_attributes"),
     keep_ssi_comments: get_bool!(cx, opt, "keep_ssi_comments"),
     minify_css: get_bool!(cx, opt, "minify_css"),
+    minify_doctype: get_bool!(cx, opt, "minify_doctype"),
     minify_js: get_bool!(cx, opt, "minify_js"),
     preserve_brace_template_syntax: get_bool!(cx, opt, "preserve_brace_template_syntax"),
     preserve_chevron_percent_template_syntax: get_bool!(cx, opt, "preserve_chevron_percent_template_syntax"),

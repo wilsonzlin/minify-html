@@ -69,10 +69,9 @@ pub fn create_common_test_data() -> HashMap<&'static [u8], &'static [u8]> {
   // parsing omitted closing tag
   t.insert(b"<html>", b"<html>");
   t.insert(b" <html>\n", b"<html>");
-  t.insert(b" <!doctypehtml> <html>\n", b"<!doctypehtml><html>");
   t.insert(
-    b"<!doctypehtml><html><div> <p>Foo</div></html>",
-    b"<!doctypehtml><html><div><p>Foo</div>",
+    b"<html><div> <p>Foo</div></html>",
+    b"<html><div><p>Foo</div>",
   );
 
   // self closing svg tag whitespace removal
@@ -146,8 +145,6 @@ pub fn create_common_test_data() -> HashMap<&'static [u8], &'static [u8]> {
   );
 
   // attr unquoted value minification
-  t.insert(b"<a b==></a>", b"<a b==></a>");
-  t.insert(b"<a b=`'\"<<==/`/></a>", b"<a b=`'\"<<==/`/></a>");
   t.insert(b"<a b=\"hello\"></a>", b"<a b=hello></a>");
   t.insert(b"<a b='hello'></a>", b"<a b=hello></a>");
   t.insert(b"<a b=/&gt></a>", br#"<a b="/>"></a>"#);
@@ -480,6 +477,16 @@ pub fn create_common_js_test_data() -> HashMap<&'static [u8], &'static [u8]> {
       br#"<script>let a="<\/scrIPt>";</script>"#,
   );
   */
+
+  t
+}
+
+pub fn create_common_noncompliant_test_data() -> HashMap<&'static [u8], &'static [u8]> {
+  let mut t = HashMap::<&'static [u8], &'static [u8]>::new();
+
+  // attr unquoted value minification
+  t.insert(b"<a b==></a>", b"<a b==></a>");
+  t.insert(b"<a b=`'\"<<==/`/></a>", b"<a b=`'\"<<==/`/></a>");
 
   t
 }
