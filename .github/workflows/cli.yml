@@ -62,7 +62,7 @@ jobs:
           export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=/usr/bin/aarch64-linux-gnu-gcc
           cargo build --release --target ${{ matrix.target }}
           # upload-artifact does not rename the file, so when we download if we don't rename all files will have the same name.
-          mv -v ../target/${{ matrix.target }}/release/minhtml${{ matrix.EXT }} ${{ steps.file.outputs.FILE }}
+          mv -v ../target/${{ matrix.target }}/release/minhtml${{ matrix.ext }} ${{ steps.file.outputs.FILE }}
 
       - name: Upload
         uses: actions/upload-artifact@v4
