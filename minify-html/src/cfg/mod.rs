@@ -16,14 +16,8 @@ pub struct Cfg {
   pub keep_comments: bool,
   /// Keep SSI comments.
   pub keep_ssi_comments: bool,
-  /// Minify CSS in `<style>` tags and `style` attributes using [https://github.com/Mnwa/css-minify](css-minify). By default, the optimisation level is 1 as specified by the CSS minifier, but this can be adjusted by the minify_css_level_* settings.
+  /// Minify CSS in `<style>` tags and `style` attributes using [https://github.com/parcel-bundler/lightningcss](lightningcss).
   pub minify_css: bool,
-  /// Use optimisation level 1 for the CSS minifier. This is currently the default, but may change in the future if higher levels become safe.
-  pub minify_css_level_1: bool,
-  /// Use optimisation level 2 for the CSS minifier. This is mostly safe, but may perform some dangerous optimisations.
-  pub minify_css_level_2: bool,
-  /// Use optimisation level 3 for the CSS minifier. This performs many dangerous optimisations, so ensure any input works with this level.
-  pub minify_css_level_3: bool,
   /// Minify JavaScript in `<script>` tags using
   /// [minify-js](https://github.com/wilsonzlin/minify-js).
   ///

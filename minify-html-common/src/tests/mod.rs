@@ -425,7 +425,7 @@ pub fn create_common_css_test_data() -> HashMap<&'static [u8], &'static [u8]> {
   // style element minification
   t.insert(
     b"<style>div { color: yellow }</style>",
-    b"<style>div{color:yellow}</style>",
+    b"<style>div{color:#ff0}</style>",
   );
 
   t

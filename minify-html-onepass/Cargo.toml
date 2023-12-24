@@ -16,8 +16,8 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 aho-corasick = "0.7"
-css-minify = "0.3.1"
 lazy_static = "1.4"
+lightningcss = "1.0.0-alpha.51"
 memchr = "2"
 minify-html-common = { version = "0.0.1", path = "../minify-html-common" }
 minify-js = "0.5.6"

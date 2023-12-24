@@ -30,18 +30,6 @@ export function minify(
      * If enabled, CSS in `<style>` tags and `style` attributes will be minified.
      */
     minify_css?: boolean;
-    /**
-     * Use optimisation level 1 for the CSS minifier. This is currently the default, but may change in the future if higher levels become safe.
-     */
-    minify_css_level_1?: boolean;
-    /**
-     * Use optimisation level 2 for the CSS minifier. This is mostly safe, but may perform some dangerous optimisations.
-     */
-    minify_css_level_2?: boolean;
-    /**
-     * Use optimisation level 3 for the CSS minifier. This performs many dangerous optimisations, so ensure any input works with this level.
-     */
-    minify_css_level_3?: boolean;
     /** Remove all bangs. */
     remove_bangs?: boolean;
     /** Remove all processing_instructions. */

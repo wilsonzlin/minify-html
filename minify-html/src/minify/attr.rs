@@ -2,9 +2,11 @@ use crate::entity::encode::encode_entities;
 use crate::Cfg;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
-use css_minify::optimizations::Level;
-use css_minify::optimizations::Minifier;
 use lazy_static::lazy_static;
+use lightningcss::stylesheet::MinifyOptions;
+use lightningcss::stylesheet::ParserOptions;
+use lightningcss::stylesheet::PrinterOptions;
+use lightningcss::stylesheet::StyleAttribute;
 use minify_html_common::gen::attrs::ATTRS;
 use minify_html_common::gen::codepoints::DIGIT;
 use minify_html_common::pattern::Replacer;
@@ -312,23 +314,25 @@ pub fn minify_attr(
   };
 
   if name == b"style" && cfg.minify_css {
-    let mut value_raw_wrapped = String::with_capacity(value_raw.len() + 3);
-    // TODO This isn't safe for invalid input e.g. `a}/*`.
-    value_raw_wrapped.push_str("x{");
-    value_raw_wrapped.push_str(unsafe { from_utf8_unchecked(&value_raw) });
-    value_raw_wrapped.push('}');
-    let result = Minifier::default().minify(&value_raw_wrapped, Level::Three);
-    // TODO Collect error as warning.
-    if let Ok(min) = result {
-      let mut value_raw_wrapped_min = min.into_bytes();
-      // TODO If input was invalid, wrapper syntax may not exist anymore.
-      if value_raw_wrapped_min.starts_with(b"x{") {
-        value_raw_wrapped_min.drain(0..2);
-      };
-      if value_raw_wrapped_min.ends_with(b"}") {
-        value_raw_wrapped_min.pop();
-      };
-      value_raw = value_raw_wrapped_min;
+    let result = match StyleAttribute::parse(
+      unsafe { from_utf8_unchecked(&value_raw) },
+      ParserOptions::default(),
+    ) {
+      Ok(mut sty) => {
+        sty.minify(MinifyOptions::default());
+        let mut popt = PrinterOptions::default();
+        popt.minify = true;
+        match sty.to_css(popt) {
+          Ok(out) => Some(out.code),
+          // TODO Collect error as warning.
+          Err(_err) => None,
+        }
+      }
+      // TODO Collect error as warning.
+      Err(_err) => None,
+    };
+    if let Some(min) = result {
+      value_raw = min.into_bytes();
     };
   }
 

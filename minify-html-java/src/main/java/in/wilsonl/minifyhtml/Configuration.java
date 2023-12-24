@@ -12,9 +12,6 @@ public class Configuration {
   public final boolean keep_html_and_head_opening_tags;
   public final boolean keep_spaces_between_attributes;
   public final boolean minify_css;
-  public final boolean minify_css_level_1;
-  public final boolean minify_css_level_2;
-  public final boolean minify_css_level_3;
   public final boolean minify_js;
   public final boolean remove_bangs;
   public final boolean remove_processing_instructions;
@@ -28,9 +25,6 @@ public class Configuration {
     boolean keep_html_and_head_opening_tags,
     boolean keep_spaces_between_attributes,
     boolean minify_css,
-    boolean minify_css_level_1,
-    boolean minify_css_level_2,
-    boolean minify_css_level_3,
     boolean minify_js,
     boolean remove_bangs,
     boolean remove_processing_instructions
@@ -43,9 +37,6 @@ public class Configuration {
     this.keep_html_and_head_opening_tags = keep_html_and_head_opening_tags;
     this.keep_spaces_between_attributes = keep_spaces_between_attributes;
     this.minify_css = minify_css;
-    this.minify_css_level_1 = minify_css_level_1;
-    this.minify_css_level_2 = minify_css_level_2;
-    this.minify_css_level_3 = minify_css_level_3;
     this.minify_js = minify_js;
     this.remove_bangs = remove_bangs;
     this.remove_processing_instructions = remove_processing_instructions;
@@ -63,9 +54,6 @@ public class Configuration {
     private boolean keep_html_and_head_opening_tags = false;
     private boolean keep_spaces_between_attributes = false;
     private boolean minify_css = false;
-    private boolean minify_css_level_1 = false;
-    private boolean minify_css_level_2 = false;
-    private boolean minify_css_level_3 = false;
     private boolean minify_js = false;
     private boolean remove_bangs = false;
     private boolean remove_processing_instructions = false;
@@ -110,21 +98,6 @@ public class Configuration {
       return this;
     }
 
-    public Builder setMinifyCssLevel1(boolean val) {
-      this.minify_css_level_1 = val;
-      return this;
-    }
-
-    public Builder setMinifyCssLevel2(boolean val) {
-      this.minify_css_level_2 = val;
-      return this;
-    }
-
-    public Builder setMinifyCssLevel3(boolean val) {
-      this.minify_css_level_3 = val;
-      return this;
-    }
-
     public Builder setMinifyJs(boolean val) {
       this.minify_js = val;
       return this;
@@ -151,9 +124,6 @@ public class Configuration {
         this.keep_html_and_head_opening_tags,
         this.keep_spaces_between_attributes,
         this.minify_css,
-        this.minify_css_level_1,
-        this.minify_css_level_2,
-        this.minify_css_level_3,
         this.minify_js,
         this.remove_bangs,
         this.remove_processing_instructions

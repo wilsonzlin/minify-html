@@ -5,9 +5,11 @@ use crate::proc::Processor;
 use crate::Cfg;
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
-use css_minify::optimizations::Level;
-use css_minify::optimizations::Minifier;
 use lazy_static::lazy_static;
+use lightningcss::stylesheet::MinifyOptions;
+use lightningcss::stylesheet::ParserOptions;
+use lightningcss::stylesheet::PrinterOptions;
+use lightningcss::stylesheet::StyleSheet;
 use std::str::from_utf8_unchecked;
 
 lazy_static! {
@@ -23,10 +25,24 @@ pub fn process_style(proc: &mut Processor, cfg: &Cfg) -> ProcessingResult<()> {
   // `process_tag` will require closing tag.
 
   if cfg.minify_css {
-    let result = Minifier::default()
-      .minify(unsafe { from_utf8_unchecked(&proc[src]) }, Level::Three)
-      .ok();
-    // TODO Collect error as warning.
+    let mut popt = PrinterOptions::default();
+    popt.minify = true;
+    let result = match StyleSheet::parse(
+      unsafe { from_utf8_unchecked(&proc[src]) },
+      ParserOptions::default(),
+    ) {
+      Ok(mut sty) => match sty.minify(MinifyOptions::default()) {
+        Ok(()) => match sty.to_css(popt) {
+          Ok(out) => Some(out.code),
+          // TODO Collect error as warning.
+          Err(_err) => None,
+        },
+        // TODO Collect error as warning.
+        Err(_err) => None,
+      },
+      // TODO Collect error as warning.
+      Err(_err) => None,
+    };
     if result.as_ref().filter(|r| r.len() < src.len()).is_some() {
       proc.write_slice(result.unwrap().as_bytes());
     } else {

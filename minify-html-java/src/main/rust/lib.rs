@@ -45,21 +45,6 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
       .z()
       .unwrap(),
     minify_css: env.get_field(*obj, "minify_css", "Z").unwrap().z().unwrap(),
-    minify_css_level_1: env
-      .get_field(*obj, "minify_css_level_1", "Z")
-      .unwrap()
-      .z()
-      .unwrap(),
-    minify_css_level_2: env
-      .get_field(*obj, "minify_css_level_2", "Z")
-      .unwrap()
-      .z()
-      .unwrap(),
-    minify_css_level_3: env
-      .get_field(*obj, "minify_css_level_3", "Z")
-      .unwrap()
-      .z()
-      .unwrap(),
     minify_js: env.get_field(*obj, "minify_js", "Z").unwrap().z().unwrap(),
     remove_bangs: env
       .get_field(*obj, "remove_bangs", "Z")
