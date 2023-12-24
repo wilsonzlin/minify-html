@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "minify_html"
-  spec.version       = "0.11.4"
+  spec.version       = "0.11.5"
   spec.authors       = ["Wilson Lin"]
   spec.email         = ["code@wilsonl.in"]
   spec.license       = "MIT"
