@@ -210,7 +210,7 @@ Add the library as a dependency to `Gemfile` or `*.gemspec`.
 ```ruby
 require 'minify_html'
 
-print MinifyHtml.minify("<p>  Hello, world!  </p>", { :keep_spaces_between_attributes => true, :minify_js => true })
+print minify_html("<p>  Hello, world!  </p>", { :keep_spaces_between_attributes => true, :minify_js => true })
 ```
 
 All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.html) are available; if any are omitted, they default to `false`.
