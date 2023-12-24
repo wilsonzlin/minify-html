@@ -8,9 +8,10 @@ public class Configuration {
   public final boolean ensure_spec_compliant_unquoted_attribute_values;
   public final boolean keep_closing_tags;
   public final boolean keep_comments;
-  public final boolean keep_ssi_comments;
   public final boolean keep_html_and_head_opening_tags;
+  public final boolean keep_input_type_text_attr;
   public final boolean keep_spaces_between_attributes;
+  public final boolean keep_ssi_comments;
   public final boolean minify_css;
   public final boolean minify_js;
   public final boolean preserve_brace_template_syntax;
@@ -18,16 +19,19 @@ public class Configuration {
   public final boolean remove_bangs;
   public final boolean remove_processing_instructions;
 
-  public Configuration(
+  private Configuration(
     boolean do_not_minify_doctype,
     boolean ensure_spec_compliant_unquoted_attribute_values,
     boolean keep_closing_tags,
     boolean keep_comments,
-    boolean keep_ssi_comments,
     boolean keep_html_and_head_opening_tags,
+    boolean keep_input_type_text_attr,
     boolean keep_spaces_between_attributes,
+    boolean keep_ssi_comments,
     boolean minify_css,
     boolean minify_js,
+    boolean preserve_brace_template_syntax,
+    boolean preserve_chevron_percent_template_syntax,
     boolean remove_bangs,
     boolean remove_processing_instructions
   ) {
@@ -35,9 +39,10 @@ public class Configuration {
     this.ensure_spec_compliant_unquoted_attribute_values = ensure_spec_compliant_unquoted_attribute_values;
     this.keep_closing_tags = keep_closing_tags;
     this.keep_comments = keep_comments;
-    this.keep_ssi_comments = keep_ssi_comments;
     this.keep_html_and_head_opening_tags = keep_html_and_head_opening_tags;
+    this.keep_input_type_text_attr = keep_input_type_text_attr;
     this.keep_spaces_between_attributes = keep_spaces_between_attributes;
+    this.keep_ssi_comments = keep_ssi_comments;
     this.minify_css = minify_css;
     this.minify_js = minify_js;
     this.preserve_brace_template_syntax = preserve_brace_template_syntax;
@@ -54,13 +59,14 @@ public class Configuration {
     private boolean ensure_spec_compliant_unquoted_attribute_values = false;
     private boolean keep_closing_tags = false;
     private boolean keep_comments = false;
-    private boolean keep_ssi_comments = false;
     private boolean keep_html_and_head_opening_tags = false;
+    private boolean keep_input_type_text_attr = false;
     private boolean keep_spaces_between_attributes = false;
+    private boolean keep_ssi_comments = false;
     private boolean minify_css = false;
     private boolean minify_js = false;
-    private boolean preserve_brace_template_syntax = preserve_brace_template_syntax;
-    private boolean preserve_chevron_percent_template_syntax = preserve_chevron_percent_template_syntax;
+    private boolean preserve_brace_template_syntax = false;
+    private boolean preserve_chevron_percent_template_syntax = false;
     private boolean remove_bangs = false;
     private boolean remove_processing_instructions = false;
 
@@ -81,6 +87,11 @@ public class Configuration {
 
     public Builder setKeepComments(boolean val) {
       this.keep_comments = val;
+      return this;
+    }
+
+    public Builder setKeepInputTypeTextAttr(boolean val) {
+      this.keep_input_type_text_attr = val;
       return this;
     }
 
@@ -135,9 +146,10 @@ public class Configuration {
         this.ensure_spec_compliant_unquoted_attribute_values,
         this.keep_closing_tags,
         this.keep_comments,
-        this.keep_ssi_comments,
         this.keep_html_and_head_opening_tags,
+        this.keep_input_type_text_attr,
         this.keep_spaces_between_attributes,
+        this.keep_ssi_comments,
         this.minify_css,
         this.minify_js,
         this.preserve_brace_template_syntax,

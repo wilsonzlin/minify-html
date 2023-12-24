@@ -58,6 +58,10 @@ struct Cli {
   #[structopt(long)]
   keep_comments: bool,
 
+  /// Keep `type=text` attribute name and value on `<input>` elements.
+  #[structopt(long)]
+  pub keep_input_type_text_attr: bool,
+
   /// Keep SSI comments.
   #[structopt(long)]
   keep_ssi_comments: bool,
@@ -105,6 +109,7 @@ fn main() {
     keep_closing_tags: args.keep_closing_tags,
     keep_comments: args.keep_comments,
     keep_html_and_head_opening_tags: args.keep_html_and_head_opening_tags,
+    keep_input_type_text_attr: args.keep_input_type_text_attr,
     keep_spaces_between_attributes: args.keep_spaces_between_attributes,
     keep_ssi_comments: args.keep_ssi_comments,
     minify_css: args.minify_css,
