@@ -11,7 +11,7 @@
     "index.js",
     "README.md"
   ],
-  "version": "0.13.1",
+  "version": "0.13.2",
   "types": "index.d.ts",
   "scripts": {
     "build": "cargo-cp-artifact --artifact cdylib minify-html-nodejs index.node -- cargo build --message-format=json-render-diagnostics",
@@ -37,11 +37,11 @@
   },
   "homepage": "https://github.com/wilsonzlin/minify-html#readme",
   "optionalDependencies": {
-    "@minify-html/node-darwin-arm64": "0.13.1",
-    "@minify-html/node-darwin-x64": "0.13.1",
-    "@minify-html/node-linux-arm64": "0.13.1",
-    "@minify-html/node-linux-x64": "0.13.1",
-    "@minify-html/node-win32-x64": "0.13.1"
+    "@minify-html/node-darwin-arm64": "0.13.2",
+    "@minify-html/node-darwin-x64": "0.13.2",
+    "@minify-html/node-linux-arm64": "0.13.2",
+    "@minify-html/node-linux-x64": "0.13.2",
+    "@minify-html/node-win32-x64": "0.13.2"
   },
   "devDependencies": {
     "@types/node": "^14.6.0",

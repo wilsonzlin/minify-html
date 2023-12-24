@@ -23,7 +23,7 @@ View the [changelog](./CHANGELOG.md) to see the latest updates.
 
 Comparison with [html-minifier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
 
-<img width="400" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.13.1/core/average-speeds.png"><img width="400" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.13.1/core/average-sizes.png">
+<img width="400" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.13.2/core/average-speeds.png"><img width="400" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.13.2/core/average-sizes.png">
 
 The [onepass](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) variant is even more optimised for speed. See its [README](https://github.com/wilsonzlin/minify-html/tree/master/rust/onepass) for more details.
 
@@ -61,7 +61,7 @@ minhtml --keep-closing-tags --minify-css /path/to/**/*.html
 
 ```toml
 [dependencies]
-minify-html = "0.13.1"
+minify-html = "0.13.2"
 ```
 
 ### Use
@@ -73,14 +73,14 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 <details>
 <summary><img width="24" src="https://wilsonl.in/minify-html/icon/deno.png"> <strong>Deno</strong></summary>
 
-- Package: https://wilsonl.in/minify-html/deno/0.13.1/index.js
+- Package: https://wilsonl.in/minify-html/deno/0.13.2/index.js
 - Binding: [WASM](https://webassembly.org/)
 - Platforms: All
 
 ### Use
 
 ```ts
-import init, {minify} from "https://wilsonl.in/minify-html/deno/0.13.1/index.js";
+import init, {minify} from "https://wilsonl.in/minify-html/deno/0.13.2/index.js";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -146,7 +146,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.minifyhtml</groupId>
   <artifactId>minify-html</artifactId>
-  <version>0.13.1</version>
+  <version>0.13.2</version>
 </dependency>
 ```
 
