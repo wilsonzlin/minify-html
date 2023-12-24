@@ -6,6 +6,10 @@ on:
       - 'v*'
   workflow_dispatch:
 
+# https://github.com/oxidize-rb/actions/tree/main/cross-gem
+# https://github.com/gjtorikian/commonmarker/blob/main/.github/workflows/tag_and_release.yml
+# https://github.com/yettoapp/actions/blob/main/.github/workflows/ruby_gem_release.yml
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -34,7 +38,6 @@ jobs:
 
         cp ./README.md ./minify-html-ruby/.
 
-    # https://github.com/oxidize-rb/actions/tree/main/cross-gem
     - name: Set up Ruby and Rust
       uses: oxidize-rb/actions/setup-ruby-and-rust@main
       with:
@@ -52,44 +55,13 @@ jobs:
         ruby-versions: "2.7,3.0,3.1,3.2"
         working-directory: ./minify-html-ruby
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: minify_html_${{ matrix.platform }}
-        path: ${{ steps.gem.outputs.gem-path }}
-
-  package:
-    runs-on: ubuntu-20.04
-    needs: build
-    steps:
-      - uses: actions/checkout@v1
-
-      - name: Get version
-        id: version
-        shell: bash
-        run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
-
-      - name: Set up Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.5'
-
-      - name: Download built libraries
-        uses: actions/download-artifact@v4
-        with:
-          path: ./minify-html-ruby/pkg
-          merge-multiple: true
-
-      - name: Pack and publish gem
-        working-directory: ./minify-html-ruby
-        run: |
-          mkdir -p "$HOME/.gem"
-          cat << 'EOF' > "$HOME/.gem/credentials"
-          ---
-          :rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}
-          EOF
-          chmod 0600 "$HOME/.gem/credentials"
-          if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
-            gem push pkg/*.gem
-          else
-            tree
-          fi
+    - name: Publish gem
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        mkdir -p "$HOME/.gem"
+        cat << 'EOF' > "$HOME/.gem/credentials"
+        ---
+        :rubygems_api_key: ${{ secrets.RUBYGEMS_API_KEY }}
+        EOF
+        chmod 0600 "$HOME/.gem/credentials"
+        gem push ${{ steps.gem.outputs.gem-path }}

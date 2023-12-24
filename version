@@ -113,7 +113,7 @@ for (const f of [
   );
 }
 
-for (const f of ["README.md"]) {
+for (const f of ["README.md", "minify-html-ruby/ext/minify_html/Cargo.toml"]) {
   replaceInFile(f, /^(minify-html = )"\d+\.\d+\.\d+"/m, `$1"${NEW_VERSION}"`);
 }
 
@@ -148,8 +148,8 @@ for (const f of ["minify-html-java/pom.xml", "README.md"]) {
 for (const f of ["minify-html-nodejs/package.json"]) {
   replaceInFile(
     f,
-    /^(\s*"version": )"\d+\.\d+\.\d+",\s*$/m,
-    `$1"${NEW_VERSION}",`
+    /^(\s*"(?:version|@minify-html\/node-.*?)": )"\d+\.\d+\.\d+"(,?\s*)$/m,
+    `$1"${NEW_VERSION}"$2`
   );
 }
 

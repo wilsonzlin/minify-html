@@ -11,14 +11,25 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-11.0, ubuntu-20.04, windows-2019, self-hosted-linux-arm64]
+        target:
+          - aarch64-unknown-linux-gnu
+          - x86_64-unknown-linux-gnu
+          - aarch64-apple-darwin
+          - x86_64-apple-darwin
+          - x86_64-pc-windows-msvc
+        include:
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-20.04
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-20.04
+          - target: aarch64-apple-darwin
+            os: macos-11.0
+          - target: x86_64-apple-darwin
+            os: macos-11.0
+          - target: x86_64-pc-windows-msvc
+            os: windows-2019
     steps:
       - uses: actions/checkout@v1
-
-      - name: Get version
-        id: version
-        shell: bash
-        run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
 
       - name: Set up Node.js
         uses: actions/setup-node@master
@@ -26,70 +37,48 @@ jobs:
           node-version: 17.x
 
       - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          profile: minimal
-          default: true
+          targets: ${{ matrix.target }}
+
+      - name: Set up cross compiler
+        if: ${{ matrix.target == 'aarch64-unknown-linux-gnu' }}
+        working-directory: ./minify-html-nodejs
+        run: |
+          sudo apt install -y gcc-aarch64-linux-gnu
 
       - name: Build native module
         working-directory: ./minify-html-nodejs
-        id: module
         shell: bash
         run: |
           npm install
-          npm run build-release
-          echo ::set-output name=BINARY_NAME::"$(node -e 'console.log([process.platform, process.arch].join("__"))')"
+          export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=/usr/bin/aarch64-linux-gnu-gcc
+          npm run build-release -- --target ${{ matrix.target }}
+          mv -v index.node plat-pkg/.
+          TARGET=${{ matrix.target }} node plat-pkg/package.json.gen.js
 
-      - name: Upload to B2
-        uses: wilsonzlin/b2-upload-action@v1.0.0
+      - name: Create and publish native package
+        uses: JS-DevTools/npm-publish@v3
+        if: startsWith(github.ref, 'refs/tags/v')
         with:
-          bucket: ${{ secrets.CICD_CLI_B2_BUCKET_NAME }}
-          uploadKey: minify-html/bin/nodejs/${{ steps.version.outputs.VERSION }}/${{ steps.module.outputs.BINARY_NAME }}.node
-          keyId: ${{ secrets.CICD_CLI_B2_KEY_ID }}
-          applicationKey: ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          file: ./minify-html-nodejs/index.node
-
-      - name: Calculate checksum
-        run: sha512sum ./minify-html-nodejs/index.node | awk '{print $1}' > index.node.sha512sum
-
-      - name: Upload checksum
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.module.outputs.BINARY_NAME }}.sha512sum
-          path: index.node.sha512sum
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
+          package: ./minify-html-nodejs/plat-pkg
 
   package:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: build
     steps:
       - uses: actions/checkout@v1
 
-      - name: Get version
-        id: version
-        shell: bash
-        run: echo ::set-output name=VERSION::"$([[ "$GITHUB_REF" == refs/tags/v* ]] && echo ${GITHUB_REF#refs/tags/v} || echo '0.0.0')"
-
-      - name: Set up Node.js
-        uses: actions/setup-node@master
-        with:
-          node-version: 17.x
-
-      - name: Download checksums
-        uses: actions/download-artifact@v4
-        with:
-          pattern: '*.sha512sum'
-          path: minify-html-node/checksums/
-
-      - name: Pack and publish package
+      - name: Prepare package
         working-directory: ./minify-html-nodejs
         run: |
-          cat << 'EOF' > .npmrc
-          package-lock=false
-          //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
-          EOF
           # npm refuses to work with symlinks.
           cp ../README.md .
-          if [[ "${{ steps.version.outputs.VERSION }}" != "0.0.0" ]]; then
-            npm publish --access public
-          fi
+
+      - name: Pack and publish package
+        uses: JS-DevTools/npm-publish@v3
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
+          package: ./minify-html-nodejs
