@@ -7,6 +7,7 @@ package in.wilsonl.minifyhtml;
  */
 public class Configuration {
   public final boolean allow_noncompliant_unquoted_attribute_values;
+  public final boolean allow_optimal_entities;
   public final boolean allow_removing_spaces_between_attributes;
   public final boolean keep_closing_tags;
   public final boolean keep_comments;
@@ -23,6 +24,7 @@ public class Configuration {
 
   private Configuration(
     boolean allow_noncompliant_unquoted_attribute_values,
+    boolean allow_optimal_entities,
     boolean allow_removing_spaces_between_attributes,
     boolean keep_closing_tags,
     boolean keep_comments,
@@ -38,6 +40,7 @@ public class Configuration {
     boolean remove_processing_instructions
   ) {
     this.allow_noncompliant_unquoted_attribute_values = allow_noncompliant_unquoted_attribute_values;
+    this.allow_optimal_entities = allow_optimal_entities;
     this.allow_removing_spaces_between_attributes = allow_removing_spaces_between_attributes;
     this.keep_closing_tags = keep_closing_tags;
     this.keep_comments = keep_comments;
@@ -58,6 +61,7 @@ public class Configuration {
    */
   public static class Builder {
     private boolean allow_noncompliant_unquoted_attribute_values = false;
+    private boolean allow_optimal_entities = false;
     private boolean allow_removing_spaces_between_attributes = false;
     private boolean keep_closing_tags = false;
     private boolean keep_comments = false;
@@ -74,6 +78,10 @@ public class Configuration {
 
     public Builder setAllowNoncompliantUnquotedAttributeValues(boolean v) {
       this.allow_noncompliant_unquoted_attribute_values = v;
+      return this;
+    }
+    public Builder setAllowOptimalEntities(boolean v) {
+      this.allow_optimal_entities = v;
       return this;
     }
     public Builder setAllowRemovingSpacesBetweenAttributes(boolean v) {
@@ -132,6 +140,7 @@ public class Configuration {
     public Configuration build() {
       return new Configuration(
         this.allow_noncompliant_unquoted_attribute_values,
+        this.allow_optimal_entities,
         this.allow_removing_spaces_between_attributes,
         this.keep_closing_tags,
         this.keep_comments,

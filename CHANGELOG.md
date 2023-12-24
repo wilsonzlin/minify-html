@@ -8,6 +8,7 @@
   - `ensure_spec_compliant_unquoted_attribute_values` => `allow_noncompliant_unquoted_attribute_values`
   - `keep_spaces_between_attributes` => `allow_removing_spaces_between_attributes`
   - `Cfg::spec_compliant()` => `Cfg::enable_possibly_noncompliant(&mut self)`
+- BREAKING: Some entity minifications are now classified as "possibly noncompliant" and can be enabled via the `allow_optimal_entities` option but won't be performed by default.
 
 ## 0.15.0
 

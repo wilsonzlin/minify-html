@@ -12,6 +12,7 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
   // This is a statement because "attributes on expressions are experimental".
   let cfg = Cfg {
     allow_noncompliant_unquoted_attribute_values: env.get_field(*obj, "allow_noncompliant_unquoted_attribute_values", "Z").unwrap().z().unwrap(),
+    allow_optimal_entities: env.get_field(*obj, "allow_optimal_entities", "Z").unwrap().z().unwrap(),
     allow_removing_spaces_between_attributes: env.get_field(*obj, "allow_removing_spaces_between_attributes", "Z").unwrap().z().unwrap(),
     keep_closing_tags: env.get_field(*obj, "keep_closing_tags", "Z").unwrap().z().unwrap(),
     keep_comments: env.get_field(*obj, "keep_comments", "Z").unwrap().z().unwrap(),

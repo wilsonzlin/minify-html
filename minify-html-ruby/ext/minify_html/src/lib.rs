@@ -9,6 +9,7 @@ fn minify_html(source: String, cfg: RHash) -> String {
   #[rustfmt::skip]
   let out_code = minify_html_native(source.as_bytes(), &CfgNative {
     allow_noncompliant_unquoted_attribute_values: cfg.aref(StaticSymbol::new("allow_noncompliant_unquoted_attribute_values")).unwrap_or_default(),
+    allow_optimal_entities: cfg.aref(StaticSymbol::new("allow_optimal_entities")).unwrap_or_default(),
     allow_removing_spaces_between_attributes: cfg.aref(StaticSymbol::new("allow_removing_spaces_between_attributes")).unwrap_or_default(),
     keep_closing_tags: cfg.aref(StaticSymbol::new("keep_closing_tags")).unwrap_or_default(),
     keep_comments: cfg.aref(StaticSymbol::new("keep_comments")).unwrap_or_default(),

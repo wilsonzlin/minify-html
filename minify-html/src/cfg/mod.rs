@@ -4,6 +4,8 @@
 pub struct Cfg {
   /// Allow unquoted attribute values in the output to contain characters prohibited by the [WHATWG specification](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2). These will still be parsed correctly by almost all browsers.
   pub allow_noncompliant_unquoted_attribute_values: bool,
+  /// Allow some minifications around entities that may not pass validation, but will still be parsed correctly by almost all browsers.
+  pub allow_optimal_entities: bool,
   /// Allow removing_spaces between attributes when possible, which may not be spec compliant. These will still be parsed correctly by almost all browsers.
   pub allow_removing_spaces_between_attributes: bool,
   /// Do not omit closing tags when possible.
@@ -20,12 +22,7 @@ pub struct Cfg {
   pub minify_css: bool,
   /// Minify DOCTYPEs. Minified DOCTYPEs may not be spec compliant, but will still be parsed correctly by almost all browsers.
   pub minify_doctype: bool,
-  /// Minify JavaScript in `<script>` tags using
-  /// [minify-js](https://github.com/wilsonzlin/minify-js).
-  ///
-  /// Only `<script>` tags with a valid or no
-  /// [MIME type](https://mimesniff.spec.whatwg.org/#javascript-mime-type) is considered to
-  /// contain JavaScript, as per the specification.
+  /// Minify JavaScript in `<script>` tags using [minify-js](https://github.com/wilsonzlin/minify-js).
   pub minify_js: bool,
   /// When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
   pub preserve_brace_template_syntax: bool,
@@ -44,6 +41,7 @@ impl Cfg {
 
   pub fn enable_possibly_noncompliant(&mut self) {
     self.allow_noncompliant_unquoted_attribute_values = true;
+    self.allow_optimal_entities = true;
     self.allow_removing_spaces_between_attributes = true;
     self.minify_doctype = true;
   }

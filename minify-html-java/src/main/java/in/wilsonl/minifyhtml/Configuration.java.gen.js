@@ -16,6 +16,8 @@ for (const [_, snake] of cfgRs.matchAll(/^\s*pub ([a-zA-Z0-9_]+): bool,?\s*$/gm)
 const java = `
 package in.wilsonl.minifyhtml;
 
+// WARNING: Do not manually edit, use Configuration.java.gen.js.
+
 /**
  * Class representing minification configuration.
  */

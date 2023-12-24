@@ -8,6 +8,7 @@ use std::string::String;
 #[pyfunction(
   py_args = "*",
   allow_noncompliant_unquoted_attribute_values = "false",
+  allow_optimal_entities = "false",
   allow_removing_spaces_between_attributes = "false",
   keep_closing_tags = "false",
   keep_comments = "false",
@@ -25,6 +26,7 @@ use std::string::String;
 fn minify(
   code: String,
   allow_noncompliant_unquoted_attribute_values: bool,
+  allow_optimal_entities: bool,
   allow_removing_spaces_between_attributes: bool,
   keep_closing_tags: bool,
   keep_comments: bool,
@@ -42,6 +44,7 @@ fn minify(
   let code = code.into_bytes();
   let out_code = minify_html_native(&code, &Cfg {
     allow_noncompliant_unquoted_attribute_values,
+    allow_optimal_entities,
     allow_removing_spaces_between_attributes,
     keep_closing_tags,
     keep_comments,

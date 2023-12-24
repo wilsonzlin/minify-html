@@ -30,6 +30,10 @@ struct Cli {
   #[structopt(long)]
   allow_noncompliant_unquoted_attribute_values: bool,
 
+  /// Allow some minifications around entities that may not pass validation, but will still be parsed correctly by almost all browsers.
+  #[structopt(long)]
+  allow_optimal_entities: bool,
+
   /// Allow removing_spaces between attributes when possible, which may not be spec compliant. These will still be parsed correctly by almost all browsers.
   #[structopt(long)]
   allow_removing_spaces_between_attributes: bool,
@@ -110,6 +114,7 @@ fn main() {
   #[rustfmt::skip]
   let cfg = Arc::new(Cfg {
     allow_noncompliant_unquoted_attribute_values: args.allow_noncompliant_unquoted_attribute_values,
+    allow_optimal_entities: args.allow_optimal_entities,
     allow_removing_spaces_between_attributes: args.allow_removing_spaces_between_attributes,
     keep_closing_tags: args.keep_closing_tags,
     keep_comments: args.keep_comments,

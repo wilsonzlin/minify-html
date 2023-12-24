@@ -23,7 +23,7 @@ use minify_html_common::whitespace::is_all_whitespace;
 use minify_html_common::whitespace::left_trim;
 use minify_html_common::whitespace::right_trim;
 
-fn build_chevron_replacer() -> Replacer {
+fn build_optimal_chevron_replacer() -> Replacer {
   let mut patterns = Vec::<Vec<u8>>::new();
   let mut replacements = Vec::<Vec<u8>>::new();
 
@@ -45,8 +45,15 @@ fn build_chevron_replacer() -> Replacer {
   )
 }
 
+fn build_whatwg_chevron_replacer() -> Replacer {
+  Replacer::new(AhoCorasickBuilder::new().dfa(true).build(["<"]), vec![
+    "&lt;".into(),
+  ])
+}
+
 lazy_static! {
-  static ref CHEVRON_REPLACER: Replacer = build_chevron_replacer();
+  static ref OPTIMAL_CHEVRON_REPLACER: Replacer = build_optimal_chevron_replacer();
+  static ref WHATWG_CHEVRON_REPLACER: Replacer = build_whatwg_chevron_replacer();
 }
 
 pub fn minify_content(
@@ -144,7 +151,7 @@ pub fn minify_content(
         children,
       ),
       NodeData::Instruction { code, ended } => minify_instruction(cfg, out, &code, ended),
-      NodeData::RcdataContent { typ, text } => minify_rcdata(out, typ, &text),
+      NodeData::RcdataContent { typ, text } => minify_rcdata(cfg, out, typ, &text),
       NodeData::ScriptOrStyleContent { code, lang } => match lang {
         ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
         ScriptOrStyleLang::Data => out.extend_from_slice(&code),
@@ -152,7 +159,13 @@ pub fn minify_content(
         ScriptOrStyleLang::JSModule => minify_js(cfg, minify_js::TopLevelMode::Module, out, &code),
       },
       NodeData::Text { value } => {
-        out.extend_from_slice(&CHEVRON_REPLACER.replace_all(&encode_entities(&value, false)))
+        let min = encode_entities(&value, false, !cfg.allow_optimal_entities);
+        let min = if cfg.allow_optimal_entities {
+          OPTIMAL_CHEVRON_REPLACER.replace_all(&min)
+        } else {
+          WHATWG_CHEVRON_REPLACER.replace_all(&min)
+        };
+        out.extend_from_slice(&min);
       }
       NodeData::Opaque { raw_source } => out.extend_from_slice(&raw_source),
     };

@@ -19,7 +19,12 @@ lazy_static! {
 
 // Encodes ampersands when necessary, as well as UTF-8 sequences that are shorter encoded.
 // Does not handle context-specific escaping e.g. `>`, `'`, `"`.
-pub fn encode_entities(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
+// Set {@param must_end_with_semicolon} to true to pass validation.
+pub fn encode_entities(
+  mut code: &[u8],
+  in_attr_val: bool,
+  must_end_with_semicolon: bool,
+) -> Vec<u8> {
   let mut res = Vec::<u8>::new();
   while !code.is_empty() {
     let (before, matched) = match memchr(b'&', code) {
@@ -37,17 +42,18 @@ pub fn encode_entities(mut code: &[u8], in_attr_val: bool) -> Vec<u8> {
             EntityType::Named(_)
               if in_attr_val
                 && code[len - 1] != b';'
-                && code
-                  .get(len)
-                  .filter(|&&c| ALPHANUMERIC_OR_EQUALS[c])
-                  .is_some() =>
+                && code.get(len).is_some_and(|&c| ALPHANUMERIC_OR_EQUALS[c]) =>
             {
               // A named entity inside an attribute value that doesn't end with semicolon but is followed by an alphanumeric or `=` character is not decoded, so we don't need to encode.
               // https://html.spec.whatwg.org/multipage/parsing.html#named-character-reference-state.
               0
             }
             _ => {
-              res.extend_from_slice(b"&amp");
+              if must_end_with_semicolon {
+                res.extend_from_slice(b"&amp;");
+              } else {
+                res.extend_from_slice(b"&amp");
+              };
               // Skip the leading ampersand, as it will be replaced by `&amp`.
               1
             }

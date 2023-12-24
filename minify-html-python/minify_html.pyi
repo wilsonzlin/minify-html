@@ -1,6 +1,7 @@
 def minify(
     code: str,
     allow_noncompliant_unquoted_attribute_values: bool = False,
+    allow_optimal_entities: bool = False,
     allow_removing_spaces_between_attributes: bool = False,
     keep_closing_tags: bool = False,
     keep_comments: bool = False,

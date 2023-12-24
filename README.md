@@ -252,9 +252,12 @@ Note that in all of these syntax, the parsing is "dumb": it will simply look for
 
 ### Spec compliance
 
-To minify even further, it's possible to enable options that may output HTML that doesn't fully comply with the specs. This is almost 100% safe on all browsers, as browsers have consistent interpretation and rendering behaviour even for such HTML, which can be taken advantage of for better minification. Refer to these options:
+WHATWG is the current HTML standard and [obsoletes all previous standards](https://www.w3.org/html/). WHATWG lists suggested validators [here](https://whatwg.org/validator/).
+
+To minify even further, it's possible to enable options that may output HTML that doesn't fully pass validation, but is still interpreted and rendered correctly according to the [WHATWG parsing specification](https://html.spec.whatwg.org/multipage/parsing.html), which major browser engines (Firefox, Chrome, Safari) implement. Refer to these options:
 
 - `allow_noncompliant_unquoted_attribute_values`
+- `allow_optimal_entities`
 - `allow_removing_spaces_between_attributes`
 - `minify_doctype`
 

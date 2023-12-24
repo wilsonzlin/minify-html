@@ -20,6 +20,7 @@ fn minify(mut cx: FunctionContext) -> JsResult<JsBuffer> {
   #[rustfmt::skip]
   let cfg = minify_html::Cfg {
     allow_noncompliant_unquoted_attribute_values: get_bool!(cx, opt, "allow_noncompliant_unquoted_attribute_values"),
+    allow_optimal_entities: get_bool!(cx, opt, "allow_optimal_entities"),
     allow_removing_spaces_between_attributes: get_bool!(cx, opt, "allow_removing_spaces_between_attributes"),
     keep_closing_tags: get_bool!(cx, opt, "keep_closing_tags"),
     keep_comments: get_bool!(cx, opt, "keep_comments"),
