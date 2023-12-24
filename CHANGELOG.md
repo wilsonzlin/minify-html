@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.12.0
 
 - Change CLI name to `minhtml` as it's a more concise command name and allows for `cargo install minhtml`.
 - Add `keep_ssi_comments` to preserve SSI comments.

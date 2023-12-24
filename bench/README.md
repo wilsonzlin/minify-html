@@ -30,7 +30,7 @@ For more information on how the inputs are fetched, see [fetch.js](./fetch.js).
 
 On this [project's README](../README.md), average graphs are shown. Graphs showing per-input results are shown below:
 
-<img width="435" alt="Chart showing speed of HTML minifiers per input" src="https://wilsonl.in/minify-html/bench/0.11.5/core/speeds.png"><img width="435" alt="Chart showing effectiveness of HTML minifiers per input" src="https://wilsonl.in/minify-html/bench/0.11.5/core/sizes.png">
+<img width="435" alt="Chart showing speed of HTML minifiers per input" src="https://wilsonl.in/minify-html/bench/0.12.0/core/speeds.png"><img width="435" alt="Chart showing effectiveness of HTML minifiers per input" src="https://wilsonl.in/minify-html/bench/0.12.0/core/sizes.png">
 
 Results depend on the input, so charts show performance relative to minify-html as a percentage.
 
