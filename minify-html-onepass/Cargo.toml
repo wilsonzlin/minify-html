@@ -19,6 +19,6 @@ aho-corasick = "0.7"
 lazy_static = "1.4"
 lightningcss = "1.0.0-alpha.51"
 memchr = "2"
-minify-html-common = { version = "0.0.1", path = "../minify-html-common" }
+minify-html-common = { version = "0.0.2", path = "../minify-html-common" }
 minify-js = "0.5.6"
 rustc-hash = "1.1.0"

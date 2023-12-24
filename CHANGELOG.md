@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Avoid downloading html-data JSON from network on build.
+
 ## 0.13.2
 
 - [Java] Set up cross compilation for macOS and Linux ARM64 builds.
