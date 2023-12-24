@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.11.3
 
 - Validate checksum when downloading Node.js binary from remote server.
 - Fix detection of module type scripts.
