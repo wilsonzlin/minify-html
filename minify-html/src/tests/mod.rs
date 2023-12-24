@@ -36,6 +36,11 @@ pub fn eval(src: &'static [u8], expected: &'static [u8]) {
   eval_with_cfg(src, expected, &cfg);
 }
 
+// NOTE: This is different to `eval` as that enables `keep_html_and_head_opening_tags`.
+fn eval_without_keep_html_head(src: &'static [u8], expected: &'static [u8]) -> () {
+  eval_with_cfg(src, expected, &Cfg::new());
+}
+
 #[test]
 fn test_common() {
   for (a, b) in create_common_test_data() {
@@ -143,19 +148,19 @@ fn test_parsing_extra_head_tag() {
 #[test]
 fn test_removal_of_html_and_head_opening_tags() {
   // Even though `<head>` is dropped, it's still parsed, so its content is still subject to `<head>` whitespace minification rules.
-  eval_with_noncompliant(
+  eval_without_keep_html_head(
     b"<!DOCTYPE html><html><head>  <meta> <body>",
-    b"<!doctypehtml><meta><body>",
+    b"<!doctype html><meta><body>",
   );
   // The tag should not be dropped if it has attributes.
-  eval_with_noncompliant(
+  eval_without_keep_html_head(
     b"<!DOCTYPE html><html lang=en><head>  <meta> <body>",
-    b"<!doctypehtml><html lang=en><meta><body>",
+    b"<!doctype html><html lang=en><meta><body>",
   );
   // The tag should be dropped if it has no attributes after minification.
-  eval_with_noncompliant(
+  eval_without_keep_html_head(
     b"<!DOCTYPE html><html style='  '><head>  <meta> <body>",
-    b"<!doctypehtml><meta><body>",
+    b"<!doctype html><meta><body>",
   );
 }
 
