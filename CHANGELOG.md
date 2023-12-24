@@ -1,5 +1,13 @@
 # minify-html changelog
 
+## Pending
+
+- Add new options to parse and preserve common templating syntax in content source code. NOTE: The parsing is "dumb" and merely looks for the next subsequence in the source code that matches the closing delimiter characters. This means that literal closing delimiter characters (e.g. strings) and nesting may cause parsing to be incorrect.
+  - `preserve_brace_template_syntax`: When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
+    - Templating engines: Pebble, Mustache, Django, Go, Jinja, Twix, Nunjucks, Handlebars, Liquid.
+  - `preserve_chevron_percent_template_syntax`: When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched.
+    - Templating engines: Sailfish, JSP, EJS, ERB.
+
 ## 0.13.3
 
 - Avoid downloading html-data JSON from network on build.

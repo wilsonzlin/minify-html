@@ -31,7 +31,7 @@ enum ContentType {
   OmittedClosingTag,
   OpeningTag,
   Text,
-  // Pebble, Mustache, Django, Go.
+  // Pebble, Mustache, Django, Go, Jinja, Twix, Nunjucks, Handlebars, Liquid.
   OpaqueBraceBrace,
   OpaqueBraceHash,
   OpaqueBracePercent,
