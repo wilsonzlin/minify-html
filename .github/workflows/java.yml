@@ -87,8 +87,7 @@ jobs:
         env:
           SONATYPE_GPG_PRIVATE_KEY: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
         run: |
-          echo "$SONATYPE_GPG_PRIVATE_KEY" | base64 -d > sonatype-gpg-private-key.asc
-          gpg --import sonatype-gpg-private-key.asc
+          echo "$SONATYPE_GPG_PRIVATE_KEY" | gpg --allow-secret-key-import --import
           mkdir -p "$HOME/.m2"
           cat << 'EOF' > "$HOME/.m2/settings.xml"
           <settings>
