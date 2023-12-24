@@ -8,7 +8,7 @@ An HTML minifier that provides the functionality of [minify-html](https://github
 
 ## Performance
 
-<img width="600" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.12.0/core/average-speeds.png">
+<img width="600" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.13.0/core/average-speeds.png">
 
 ## Usage
 

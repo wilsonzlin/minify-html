@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.13.0
 
 - Use [lightningcss](https://github.com/parcel-bundler/lightningcss) instead of css-minify, which is better maintained.
   - BREAKING: The `minify_css_level_*` Cfg options no longer apply and have been removed.
