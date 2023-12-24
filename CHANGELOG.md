@@ -1,8 +1,12 @@
 # minify-html changelog
 
+## Pending
+
+- Bump minify-js version.
+- Fix Node.js native package names.
+
 ## 0.11.3
 
-- Validate checksum when downloading Node.js binary from remote server.
 - Fix detection of module type scripts.
 - Derive `Clone` for `Cfg` in minify-html.
 - Fix parsing of malformed closing tags.

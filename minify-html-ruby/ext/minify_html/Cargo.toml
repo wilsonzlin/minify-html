@@ -9,6 +9,5 @@ edition = "2018"
 crate-type = ["cdylib"]
 
 [dependencies]
-# rb-sys-dock doesn't support local path deps: https://github.com/oxidize-rb/rb-sys/issues/296
-minify-html = "0.11.3"
+minify-html = { path = "../../../minify-html" }
 magnus = "0.6"

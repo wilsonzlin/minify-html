@@ -30,6 +30,10 @@ jobs:
         # We edit it here instead of just updating our repo code as Cargo workspace names must be different.
         sed -i 's%^name = ".*$%name = "minify_html"%' ./minify-html-ruby/ext/minify_html/Cargo.toml
 
+        # rb-sys-dock doesn't support local path deps: https://github.com/oxidize-rb/rb-sys/issues/296
+        ver=$(jq -r .version minify-html-nodejs/package.json)
+        sed -i 's%^minify-html = .*$%minify-html = "'$ver'"%' ./minify-html-ruby/ext/minify_html/Cargo.toml
+
         # This is required or else `error: could not find `Cargo.toml` in `/home/runner/work/.../minify-html-ruby` or any parent directory`.
         cat <<'EOD'>./minify-html-ruby/Cargo.toml
         [workspace]

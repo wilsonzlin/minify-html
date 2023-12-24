@@ -7,9 +7,9 @@ const {platform, arch} = {
 }[process.env.TARGET];
 const {version} = require("../package.json");
 require("fs").writeFileSync(`${__dirname}/package.json`, JSON.stringify({
-  name: `@minify-js/node-${platform}-${arch}`,
+  name: `@minify-html/node-${platform}-${arch}`,
   version,
-  description: `@minify-js/node native module build for ${platform}-${arch}`,
+  description: `@minify-html/node native module build for ${platform}-${arch}`,
   main: "index.node",
   files: ["README.md", "index.node"],
   repository: "wilsonzlin/minify-html",

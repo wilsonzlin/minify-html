@@ -6,6 +6,7 @@ use crate::proc::Processor;
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
 use lazy_static::lazy_static;
+use minify_js::Session;
 
 lazy_static! {
   static ref SCRIPT_END: AhoCorasick = AhoCorasickBuilder::new()
@@ -27,7 +28,8 @@ pub fn process_script(
   if cfg.minify_js && mode.is_some() {
     // TODO Write to `out` directly, but only if we can guarantee that the length will never exceed the input.
     let mut output = Vec::new();
-    let result = minify_js::minify(mode.unwrap(), proc[src].to_vec(), &mut output);
+    let session = Session::new();
+    let result = minify_js::minify(&session, mode.unwrap(), &proc[src], &mut output);
     // TODO Collect error as warning.
     if result.is_ok() && output.len() < src.len() {
       proc.write_slice(output.as_slice());
