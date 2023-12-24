@@ -61,6 +61,7 @@ jobs:
         uses: JS-DevTools/npm-publish@v3
         if: startsWith(github.ref, 'refs/tags/v')
         with:
+          access: public
           token: ${{ secrets.NPM_AUTH_TOKEN }}
           package: ./minify-html-nodejs/plat-pkg
 
@@ -80,5 +81,6 @@ jobs:
         uses: JS-DevTools/npm-publish@v3
         if: startsWith(github.ref, 'refs/tags/v')
         with:
+          access: public
           token: ${{ secrets.NPM_AUTH_TOKEN }}
           package: ./minify-html-nodejs
