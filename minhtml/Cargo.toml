@@ -4,6 +4,12 @@ description = "[CLI] Extremely fast and smart HTML + JS + CSS minifier"
 version = "0.13.0"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
+license = "MIT"
+homepage = "https://github.com/wilsonzlin/minify-html"
+readme = "README.md"
+keywords = ["html", "compress", "minifier", "js", "css"]
+categories = ["compression", "command-line-utilities", "development-tools::build-utils", "web-programming"]
+repository = "https://github.com/wilsonzlin/minify-html.git"
 
 [dependencies]
 minify-html = { version = "0.13.0", path = "../minify-html" }
