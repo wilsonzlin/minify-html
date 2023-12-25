@@ -1,11 +1,9 @@
 use crate::ast::NodeData;
 use crate::parse::Code;
 use aho_corasick::AhoCorasick;
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 
-lazy_static! {
-  static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(["?>"]);
-}
+static INSTRUCTION_END: Lazy<AhoCorasick> = Lazy::new(|| AhoCorasick::new(["?>"]));
 
 pub fn parse_instruction(code: &mut Code) -> NodeData {
   debug_assert!(code.as_slice().starts_with(b"<?"));

@@ -1,12 +1,14 @@
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 
-lazy_static! {
-  pub static ref TAG_TEXTAREA_END: AhoCorasick = AhoCorasickBuilder::new()
+pub static TAG_TEXTAREA_END: Lazy<AhoCorasick> = Lazy::new(|| {
+  AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .build(["</textarea"]);
-  pub static ref TAG_TITLE_END: AhoCorasick = AhoCorasickBuilder::new()
+    .build(["</textarea"])
+});
+pub static TAG_TITLE_END: Lazy<AhoCorasick> = Lazy::new(|| {
+  AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .build(["</title"]);
-}
+    .build(["</title"])
+});

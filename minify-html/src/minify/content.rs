@@ -12,7 +12,6 @@ use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
-use lazy_static::lazy_static;
 use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
 use minify_html_common::pattern::Replacer;
 use minify_html_common::spec::tag::ns::Namespace;
@@ -22,6 +21,7 @@ use minify_html_common::whitespace::collapse_whitespace;
 use minify_html_common::whitespace::is_all_whitespace;
 use minify_html_common::whitespace::left_trim;
 use minify_html_common::whitespace::right_trim;
+use once_cell::sync::Lazy;
 
 fn build_optimal_chevron_replacer() -> Replacer {
   let mut patterns = Vec::<Vec<u8>>::new();
@@ -51,10 +51,8 @@ fn build_whatwg_chevron_replacer() -> Replacer {
   ])
 }
 
-lazy_static! {
-  static ref OPTIMAL_CHEVRON_REPLACER: Replacer = build_optimal_chevron_replacer();
-  static ref WHATWG_CHEVRON_REPLACER: Replacer = build_whatwg_chevron_replacer();
-}
+static OPTIMAL_CHEVRON_REPLACER: Lazy<Replacer> = Lazy::new(|| build_optimal_chevron_replacer());
+static WHATWG_CHEVRON_REPLACER: Lazy<Replacer> = Lazy::new(|| build_whatwg_chevron_replacer());
 
 pub fn minify_content(
   cfg: &Cfg,

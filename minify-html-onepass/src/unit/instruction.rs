@@ -3,11 +3,9 @@ use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use aho_corasick::AhoCorasick;
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 
-lazy_static! {
-  static ref INSTRUCTION_END: AhoCorasick = AhoCorasick::new(["?>"]);
-}
+static INSTRUCTION_END: Lazy<AhoCorasick> = Lazy::new(|| AhoCorasick::new(["?>"]));
 
 #[inline(always)]
 pub fn process_instruction(proc: &mut Processor) -> ProcessingResult<()> {

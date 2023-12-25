@@ -2,7 +2,6 @@ use crate::entity::encode::encode_entities;
 use crate::Cfg;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
-use lazy_static::lazy_static;
 use lightningcss::stylesheet::MinifyOptions;
 use lightningcss::stylesheet::ParserOptions;
 use lightningcss::stylesheet::PrinterOptions;
@@ -16,6 +15,7 @@ use minify_html_common::whitespace::collapse_whitespace;
 use minify_html_common::whitespace::left_trim;
 use minify_html_common::whitespace::remove_all_whitespace;
 use minify_html_common::whitespace::right_trim;
+use once_cell::sync::Lazy;
 use std::str::from_utf8;
 
 fn build_double_quoted_replacer() -> Replacer {
@@ -241,15 +241,16 @@ fn build_whatwg_unquoted_replacer() -> Replacer {
   )
 }
 
-lazy_static! {
-  static ref DOUBLE_QUOTED_REPLACER: Replacer = build_double_quoted_replacer();
-  static ref SINGLE_QUOTED_REPLACER: Replacer = build_single_quoted_replacer();
-  static ref UNQUOTED_REPLACER: Replacer = build_unquoted_replacer();
-  static ref SEMI_WHATWG_UNQUOTED_REPLACER: Replacer = build_semi_whatwg_unquoted_replacer();
-  static ref WHATWG_DOUBLE_QUOTED_REPLACER: Replacer = build_whatwg_double_quoted_replacer();
-  static ref WHATWG_SINGLE_QUOTED_REPLACER: Replacer = build_whatwg_single_quoted_replacer();
-  static ref WHATWG_UNQUOTED_REPLACER: Replacer = build_whatwg_unquoted_replacer();
-}
+static DOUBLE_QUOTED_REPLACER: Lazy<Replacer> = Lazy::new(|| build_double_quoted_replacer());
+static SINGLE_QUOTED_REPLACER: Lazy<Replacer> = Lazy::new(|| build_single_quoted_replacer());
+static UNQUOTED_REPLACER: Lazy<Replacer> = Lazy::new(|| build_unquoted_replacer());
+static SEMI_WHATWG_UNQUOTED_REPLACER: Lazy<Replacer> =
+  Lazy::new(|| build_semi_whatwg_unquoted_replacer());
+static WHATWG_DOUBLE_QUOTED_REPLACER: Lazy<Replacer> =
+  Lazy::new(|| build_whatwg_double_quoted_replacer());
+static WHATWG_SINGLE_QUOTED_REPLACER: Lazy<Replacer> =
+  Lazy::new(|| build_whatwg_single_quoted_replacer());
+static WHATWG_UNQUOTED_REPLACER: Lazy<Replacer> = Lazy::new(|| build_whatwg_unquoted_replacer());
 
 pub struct AttrMinifiedValue {
   quoted: bool,

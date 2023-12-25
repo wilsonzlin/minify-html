@@ -5,31 +5,29 @@ use crate::proc::range::ProcessorRange;
 use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
-use lazy_static::lazy_static;
+use ahash::AHashMap;
 use minify_html_common::gen::codepoints::ATTR_QUOTE;
 use minify_html_common::gen::codepoints::DIGIT;
 use minify_html_common::gen::codepoints::DOUBLE_QUOTE;
 use minify_html_common::gen::codepoints::NOT_UNQUOTED_ATTR_VAL_CHAR;
 use minify_html_common::gen::codepoints::SINGLE_QUOTE;
 use minify_html_common::gen::codepoints::WHITESPACE;
-use rustc_hash::FxHashMap;
+use once_cell::sync::Lazy;
 
 // See comment in `process_attr_value` for full description of why these intentionally do not have semicolons.
-lazy_static! {
-    static ref ENCODED: FxHashMap<u8, &'static [u8]> = {
-        let mut m = FxHashMap::<u8, &'static [u8]>::default();
-        m.insert(b'\'', b"&#39");
-        m.insert(b'"', b"&#34");
-        m.insert(b'>', b"&gt");
-        // Whitespace characters as defined by spec in crate::common::spec::codepoint::is_whitespace.
-        m.insert(b'\x09', b"&#9");
-        m.insert(b'\x0a', b"&#10");
-        m.insert(b'\x0c', b"&#12");
-        m.insert(b'\x0d', b"&#13");
-        m.insert(b'\x20', b"&#32");
-        m
-    };
-}
+static ENCODED: Lazy<AHashMap<u8, &'static [u8]>> = Lazy::new(|| {
+  let mut m = AHashMap::<u8, &'static [u8]>::default();
+  m.insert(b'\'', b"&#39");
+  m.insert(b'"', b"&#34");
+  m.insert(b'>', b"&gt");
+  // Whitespace characters as defined by spec in crate::common::spec::codepoint::is_whitespace.
+  m.insert(b'\x09', b"&#9");
+  m.insert(b'\x0a', b"&#10");
+  m.insert(b'\x0c', b"&#12");
+  m.insert(b'\x0d', b"&#13");
+  m.insert(b'\x20', b"&#32");
+  m
+});
 
 #[derive(Clone, Copy)]
 enum CharType {

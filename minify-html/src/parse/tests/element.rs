@@ -5,9 +5,9 @@ use crate::parse::element::parse_element;
 use crate::parse::element::parse_tag;
 use crate::parse::element::ParsedTag;
 use crate::parse::Code;
+use ahash::AHashMap;
 use minify_html_common::spec::tag::ns::Namespace;
 use minify_html_common::spec::tag::EMPTY_SLICE;
-use rustc_hash::FxHashMap;
 
 fn val(v: &[u8]) -> AttrVal {
   AttrVal {
@@ -28,7 +28,7 @@ fn test_parse_tag() {
   let tag = parse_tag(&mut code);
   assert_eq!(tag, ParsedTag {
     attributes: {
-      let mut map = FxHashMap::<Vec<u8>, AttrVal>::default();
+      let mut map = AHashMap::<Vec<u8>, AttrVal>::default();
       map.insert(b"type".to_vec(), val(b"password"));
       map.insert(b"\"a\"".to_vec(), val(b"  b  "));
       map.insert(b":cd".to_vec(), val(b""));
@@ -55,7 +55,7 @@ fn test_parse_element() {
   let elem = parse_element(&mut code, Namespace::Html, EMPTY_SLICE);
   assert_eq!(elem, NodeData::Element {
     attributes: {
-      let mut map = FxHashMap::<Vec<u8>, AttrVal>::default();
+      let mut map = AHashMap::<Vec<u8>, AttrVal>::default();
       map.insert(b"b".to_vec(), val(br#"\"c\""#));
       map
     },

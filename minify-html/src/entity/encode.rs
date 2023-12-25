@@ -1,7 +1,6 @@
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
-use lazy_static::lazy_static;
 use memchr::memchr;
 use minify_html_common::gen::codepoints::ALPHANUMERIC_OR_EQUALS;
 use minify_html_common::gen::entities::EntityType;
@@ -9,13 +8,14 @@ use minify_html_common::gen::entities::ENTITY;
 use minify_html_common::gen::entities::SHORTER_ENCODED_ENTITIES_DECODED;
 use minify_html_common::gen::entities::SHORTER_ENCODED_ENTITIES_ENCODED;
 use minify_html_common::pattern::TrieNodeMatch;
+use once_cell::sync::Lazy;
 
-lazy_static! {
-  static ref SHORTER_ENCODED_ENTITIES_ENCODED_SEARCHER: AhoCorasick = AhoCorasickBuilder::new()
+static SHORTER_ENCODED_ENTITIES_ENCODED_SEARCHER: Lazy<AhoCorasick> = Lazy::new(|| {
+  AhoCorasickBuilder::new()
     .dfa(true)
     .match_kind(MatchKind::LeftmostLongest)
-    .build(SHORTER_ENCODED_ENTITIES_DECODED);
-}
+    .build(SHORTER_ENCODED_ENTITIES_DECODED)
+});
 
 // Encodes ampersands when necessary, as well as UTF-8 sequences that are shorter encoded.
 // Does not handle context-specific escaping e.g. `>`, `'`, `"`.

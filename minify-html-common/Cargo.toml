@@ -12,10 +12,10 @@ edition = "2018"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
+ahash = "0.8.6"
 aho-corasick = "0.7"
-lazy_static = "1.4"
 memchr = "2"
-rustc-hash = "1.1.0"
+once_cell = "1.19.0"
 
 [build-dependencies]
 itertools = "0.12.0"

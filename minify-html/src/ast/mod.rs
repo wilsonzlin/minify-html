@@ -1,5 +1,5 @@
+use ahash::AHashMap;
 use minify_html_common::spec::tag::ns::Namespace;
-use rustc_hash::FxHashMap;
 use std::fmt::Debug;
 use std::fmt::Formatter;
 use std::str::from_utf8;
@@ -74,7 +74,7 @@ pub enum NodeData {
     ended: bool,
   },
   Element {
-    attributes: FxHashMap<Vec<u8>, AttrVal>,
+    attributes: AHashMap<Vec<u8>, AttrVal>,
     children: Vec<NodeData>,
     // If the source doesn't have a closing tag, then we can't add one, as otherwise output could be longer than source.
     closing_tag: ElementClosingTag,

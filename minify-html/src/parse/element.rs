@@ -10,6 +10,7 @@ use crate::parse::style::parse_style_content;
 use crate::parse::textarea::parse_textarea_content;
 use crate::parse::title::parse_title_content;
 use crate::parse::Code;
+use ahash::AHashMap;
 use minify_html_common::gen::codepoints::ATTR_QUOTE;
 use minify_html_common::gen::codepoints::DOUBLE_QUOTE;
 use minify_html_common::gen::codepoints::NOT_UNQUOTED_ATTR_VAL_CHAR;
@@ -21,7 +22,6 @@ use minify_html_common::gen::codepoints::WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_
 use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
 use minify_html_common::spec::tag::ns::Namespace;
 use minify_html_common::spec::tag::void::VOID_TAGS;
-use rustc_hash::FxHashMap;
 use std::fmt::Debug;
 use std::fmt::Formatter;
 use std::str::from_utf8;
@@ -45,7 +45,7 @@ pub fn peek_tag_name(code: &mut Code) -> Vec<u8> {
 // Derive Eq for testing.
 #[derive(Eq, PartialEq)]
 pub struct ParsedTag {
-  pub attributes: FxHashMap<Vec<u8>, AttrVal>,
+  pub attributes: AHashMap<Vec<u8>, AttrVal>,
   pub name: Vec<u8>,
   pub self_closing: bool,
 }
@@ -66,10 +66,10 @@ impl Debug for ParsedTag {
 }
 
 // While not valid, attributes in closing tags still need to be parsed (and then discarded) as attributes e.g. `</div x=">">`, which is why this function is used for both opening and closing tags.
-// TODO Use generics to create version that doesn't create a FxHashMap.
+// TODO Use generics to create version that doesn't create an AHashMap.
 pub fn parse_tag(code: &mut Code) -> ParsedTag {
   let elem_name = parse_tag_name(code);
-  let mut attributes = FxHashMap::default();
+  let mut attributes = AHashMap::default();
   let self_closing;
   loop {
     // At the beginning of this loop, the last parsed unit was either the tag name or an attribute (including its value, if it had one).

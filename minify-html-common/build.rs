@@ -72,8 +72,8 @@ fn gen_attr_min_struct(
 
 fn gen_attrs_rs(html_data: &HtmlData) -> String {
   let mut code = r#"
-    use lazy_static::lazy_static;
-    use rustc_hash::FxHashMap;
+    use once_cell::sync::Lazy;
+    use ahash::AHashMap;
     use crate::spec::tag::ns::Namespace;
 
     pub struct AttributeMinification {
@@ -87,7 +87,7 @@ fn gen_attrs_rs(html_data: &HtmlData) -> String {
 
     pub enum AttrMapEntry {
         AllNamespaceElements(AttributeMinification),
-        SpecificNamespaceElements(FxHashMap<&'static [u8], AttributeMinification>),
+        SpecificNamespaceElements(AHashMap<&'static [u8], AttributeMinification>),
     }
 
     pub struct ByNamespace {
@@ -105,10 +105,10 @@ fn gen_attrs_rs(html_data: &HtmlData) -> String {
         }
     }
 
-    pub struct AttrMap(FxHashMap<&'static [u8], ByNamespace>);
+    pub struct AttrMap(AHashMap<&'static [u8], ByNamespace>);
 
     impl AttrMap {
-        pub const fn new(map: FxHashMap<&'static [u8], ByNamespace>) -> AttrMap {
+        pub const fn new(map: AHashMap<&'static [u8], ByNamespace>) -> AttrMap {
             AttrMap(map)
         }
 
@@ -120,10 +120,9 @@ fn gen_attrs_rs(html_data: &HtmlData) -> String {
         }
     }
 
-    lazy_static! {
-      pub static ref ATTRS: AttrMap = {
-        #[allow(unused_mut)]
-        let mut m = FxHashMap::<&'static [u8], ByNamespace>::default();
+    pub static ATTRS: Lazy<AttrMap> = Lazy::new(|| {
+      #[allow(unused_mut)]
+      let mut m = AHashMap::<&'static [u8], ByNamespace>::default();
   "#.to_string();
 
   for (attr_name, namespaces) in html_data.attributes.iter() {
@@ -150,7 +149,7 @@ fn gen_attrs_rs(html_data: &HtmlData) -> String {
                 r#"
                   Some({{
                     #[allow(unused_mut)]
-                    let mut m = FxHashMap::<&'static [u8], AttributeMinification>::default();
+                    let mut m = AHashMap::<&'static [u8], AttributeMinification>::default();
                 "#
               )
               .unwrap();
@@ -182,9 +181,8 @@ fn gen_attrs_rs(html_data: &HtmlData) -> String {
   write!(
     &mut code,
     r#"
-          AttrMap::new(m)
-        }};
-      }}
+        AttrMap::new(m)
+      }});
     "#
   )
   .unwrap();

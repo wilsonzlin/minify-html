@@ -9,6 +9,7 @@
   - `keep_spaces_between_attributes` => `allow_removing_spaces_between_attributes`
   - `Cfg::spec_compliant()` => `Cfg::enable_possibly_noncompliant(&mut self)`
 - BREAKING: Some entity minifications are now classified as "possibly noncompliant" and can be enabled via the `allow_optimal_entities` option but won't be performed by default.
+- [Internal] Migrate to [aHash](https://github.com/tkaitchuck/aHash/blob/master/compare/readme.md) for faster more consistent performance and once_cell for modern ergonomics.
 
 ## 0.15.0
 

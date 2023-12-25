@@ -4,13 +4,13 @@ use crate::parse::content::ParsedContent;
 use crate::parse::Code;
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
-use lazy_static::lazy_static;
+use once_cell::sync::Lazy;
 
-lazy_static! {
-  static ref END: AhoCorasick = AhoCorasickBuilder::new()
+static END: Lazy<AhoCorasick> = Lazy::new(|| {
+  AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .build(["</style"]);
-}
+    .build(["</style"])
+});
 
 pub fn parse_style_content(code: &mut Code) -> ParsedContent {
   let (len, closing_tag_omitted) = match END.find(code.as_slice()) {

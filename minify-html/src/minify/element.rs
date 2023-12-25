@@ -5,10 +5,10 @@ use crate::cfg::Cfg;
 use crate::minify::attr::minify_attr;
 use crate::minify::attr::AttrMinified;
 use crate::minify::content::minify_content;
+use ahash::AHashMap;
 use minify_html_common::spec::tag::ns::Namespace;
 use minify_html_common::spec::tag::omission::can_omit_as_before;
 use minify_html_common::spec::tag::omission::can_omit_as_last_node;
-use rustc_hash::FxHashMap;
 
 #[allow(clippy::too_many_arguments)]
 pub fn minify_element(
@@ -23,7 +23,7 @@ pub fn minify_element(
   // If the last node of the parent is an element and it's this one.
   is_last_child_text_or_element_node: bool,
   tag_name: &[u8],
-  attributes: FxHashMap<Vec<u8>, AttrVal>,
+  attributes: AHashMap<Vec<u8>, AttrVal>,
   closing_tag: ElementClosingTag,
   children: Vec<NodeData>,
 ) {
