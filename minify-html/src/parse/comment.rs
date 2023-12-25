@@ -1,9 +1,16 @@
 use crate::ast::NodeData;
 use crate::parse::Code;
 use aho_corasick::AhoCorasick;
+use aho_corasick::AhoCorasickBuilder;
+use aho_corasick::AhoCorasickKind;
 use once_cell::sync::Lazy;
 
-static COMMENT_END: Lazy<AhoCorasick> = Lazy::new(|| AhoCorasick::new(["-->"]));
+static COMMENT_END: Lazy<AhoCorasick> = Lazy::new(|| {
+  AhoCorasickBuilder::new()
+    .kind(Some(AhoCorasickKind::DFA))
+    .build(["-->"])
+    .unwrap()
+});
 
 pub fn parse_comment(code: &mut Code) -> NodeData {
   debug_assert!(code.as_slice().starts_with(b"<!--"));

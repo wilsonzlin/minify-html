@@ -5,13 +5,16 @@ use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
+use aho_corasick::AhoCorasickKind;
 use minify_js::Session;
 use once_cell::sync::Lazy;
 
 static SCRIPT_END: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
+    .kind(Some(AhoCorasickKind::DFA))
     .build(["</script"])
+    .unwrap()
 });
 
 // Provide `None` to `mode` if not JS.

@@ -5,6 +5,7 @@ use crate::proc::Processor;
 use crate::Cfg;
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
+use aho_corasick::AhoCorasickKind;
 use lightningcss::stylesheet::MinifyOptions;
 use lightningcss::stylesheet::ParserOptions;
 use lightningcss::stylesheet::PrinterOptions;
@@ -15,7 +16,9 @@ use std::str::from_utf8_unchecked;
 static STYLE_END: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
+    .kind(Some(AhoCorasickKind::DFA))
     .build(["</style"])
+    .unwrap()
 });
 
 #[inline(always)]

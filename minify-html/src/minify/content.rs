@@ -11,6 +11,7 @@ use crate::minify::element::minify_element;
 use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
 use aho_corasick::AhoCorasickBuilder;
+use aho_corasick::AhoCorasickKind;
 use aho_corasick::MatchKind;
 use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
 use minify_html_common::pattern::Replacer;
@@ -38,17 +39,22 @@ fn build_optimal_chevron_replacer() -> Replacer {
 
   Replacer::new(
     AhoCorasickBuilder::new()
-      .dfa(true)
+      .kind(Some(AhoCorasickKind::DFA))
       .match_kind(MatchKind::LeftmostLongest)
-      .build(patterns),
+      .build(patterns)
+      .unwrap(),
     replacements,
   )
 }
 
 fn build_whatwg_chevron_replacer() -> Replacer {
-  Replacer::new(AhoCorasickBuilder::new().dfa(true).build(["<"]), vec![
-    "&lt;".into(),
-  ])
+  Replacer::new(
+    AhoCorasickBuilder::new()
+      .kind(Some(AhoCorasickKind::DFA))
+      .build(["<"])
+      .unwrap(),
+    vec!["&lt;".into()],
+  )
 }
 
 static OPTIMAL_CHEVRON_REPLACER: Lazy<Replacer> = Lazy::new(|| build_optimal_chevron_replacer());

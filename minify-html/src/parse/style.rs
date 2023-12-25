@@ -4,12 +4,15 @@ use crate::parse::content::ParsedContent;
 use crate::parse::Code;
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
+use aho_corasick::AhoCorasickKind;
 use once_cell::sync::Lazy;
 
 static END: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
+    .kind(Some(AhoCorasickKind::DFA))
     .build(["</style"])
+    .unwrap()
 });
 
 pub fn parse_style_content(code: &mut Code) -> ParsedContent {
