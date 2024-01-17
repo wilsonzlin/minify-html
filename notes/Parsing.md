@@ -4,8 +4,6 @@ minify-html does not have any error states and will always output a value. This 
 
 minify-html tries to match what the specs dictate and modern browsers do. However, there may be occasional differences for malformed syntax, as the browser and spec rules are very complex when handling invalid HTML.
 
-To see some complex inputs, check out the [various fuzzing inputs](../fuzz/in).
-
 ## Limitations
 
 - Input must be valid UTF-8 without BOM.

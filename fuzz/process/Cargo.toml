@@ -1,8 +1,0 @@
-[package]
-name = "minify-html-fuzz-process"
-version = "0.0.1"
-authors = ["Wilson Lin <code@wilsonl.in>"]
-edition = "2018"
-
-[dependencies]
-minify-html-onepass = { path = "../../minify-html-onepass" }
