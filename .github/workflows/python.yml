@@ -28,7 +28,13 @@ jobs:
         os: [ubuntu-latest, macos-11.0, windows-2019]
         variant: ['', '-onepass']
         target: [x86_64, aarch64]
-        python: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python:
+        - '3.8'
+        - '3.9'
+        - '3.10'
+        - '3.11'
+        - '3.12'
+        - '3.13'
         exclude:
           # Building for Windows aarch64 isn't ready yet.
           - os: windows-2019
