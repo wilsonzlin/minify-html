@@ -52,6 +52,7 @@ pub fn minify(src: &[u8], cfg: &Cfg) -> Vec<u8> {
     EMPTY_SLICE,
     parsed.children,
   );
+  out.shrink_to_fit();
   out
 }
 
