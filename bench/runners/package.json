@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "esbuild": "0.12.19"
+    "esbuild": "0.25.0"
   }
 }
