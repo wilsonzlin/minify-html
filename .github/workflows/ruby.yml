@@ -45,7 +45,7 @@ jobs:
     - name: Set up Ruby and Rust
       uses: oxidize-rb/actions/setup-ruby-and-rust@main
       with:
-        ruby-version: "3.2"
+        ruby-version: "3.4"
         bundler-cache: false
         cargo-cache: true
         cargo-vendor: true
@@ -56,7 +56,7 @@ jobs:
       uses: oxidize-rb/actions/cross-gem@v1
       with:
         platform: ${{ matrix.platform }}
-        ruby-versions: "2.7,3.0,3.1,3.2"
+        ruby-versions: "2.7,3.0,3.1,3.2,3.3,3.4"
         working-directory: ./minify-html-ruby
 
     - name: Publish gem
