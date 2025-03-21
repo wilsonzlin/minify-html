@@ -33,6 +33,7 @@ pub fn eval(src: &'static [u8], expected: &'static [u8]) {
   let mut cfg = Cfg::new();
   // Most common tests assume the following minifications aren't done.
   cfg.keep_html_and_head_opening_tags = true;
+  cfg.allow_optimal_entities = true;
   eval_with_cfg(src, expected, &cfg);
 }
 
