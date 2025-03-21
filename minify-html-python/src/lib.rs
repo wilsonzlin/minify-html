@@ -5,23 +5,27 @@ use pyo3::wrap_pyfunction;
 use std::string::String;
 
 #[allow(clippy::too_many_arguments)]
-#[pyfunction(
-  py_args = "*",
-  allow_noncompliant_unquoted_attribute_values = "false",
-  allow_optimal_entities = "false",
-  allow_removing_spaces_between_attributes = "false",
-  keep_closing_tags = "false",
-  keep_comments = "false",
-  keep_html_and_head_opening_tags = "false",
-  keep_input_type_text_attr = "false",
-  keep_ssi_comments = "false",
-  minify_css = "false",
-  minify_doctype = "false",
-  minify_js = "false",
-  preserve_brace_template_syntax = "false",
-  preserve_chevron_percent_template_syntax = "false",
-  remove_bangs = "false",
-  remove_processing_instructions = "false"
+#[pyfunction]
+#[pyo3(
+  signature = (
+    code,
+    *,
+    allow_noncompliant_unquoted_attribute_values = false,
+    allow_optimal_entities = false,
+    allow_removing_spaces_between_attributes = false,
+    keep_closing_tags = false,
+    keep_comments = false,
+    keep_html_and_head_opening_tags = false,
+    keep_input_type_text_attr = false,
+    keep_ssi_comments = false,
+    minify_css = false,
+    minify_doctype = false,
+    minify_js = false,
+    preserve_brace_template_syntax = false,
+    preserve_chevron_percent_template_syntax = false,
+    remove_bangs = false,
+    remove_processing_instructions = false
+  )
 )]
 fn minify(
   code: String,
@@ -40,7 +44,7 @@ fn minify(
   preserve_chevron_percent_template_syntax: bool,
   remove_bangs: bool,
   remove_processing_instructions: bool,
-) -> PyResult<String> {
+) -> String {
   let code = code.into_bytes();
   let out_code = minify_html_native(&code, &Cfg {
     allow_noncompliant_unquoted_attribute_values,
@@ -59,12 +63,12 @@ fn minify(
     remove_bangs,
     remove_processing_instructions,
   });
-  Ok(String::from_utf8(out_code).unwrap())
+  String::from_utf8(out_code).unwrap()
 }
 
 #[pymodule]
-fn minify_html(_py: Python, m: &PyModule) -> PyResult<()> {
-  m.add_wrapped(wrap_pyfunction!(minify))?;
+fn minify_html(m: &Bound<'_, PyModule>) -> PyResult<()> {
+  m.add_function(wrap_pyfunction!(minify, m)?)?;
 
   Ok(())
 }

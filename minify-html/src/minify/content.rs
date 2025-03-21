@@ -156,7 +156,7 @@ pub fn minify_content(
       ),
       NodeData::Instruction { code, ended } => minify_instruction(cfg, out, &code, ended),
       NodeData::RcdataContent { typ, text } => minify_rcdata(cfg, out, typ, &text),
-      NodeData::ScriptOrStyleContent { code, lang: _ } if code.is_empty() => {},
+      NodeData::ScriptOrStyleContent { code, lang: _ } if code.is_empty() => {}
       NodeData::ScriptOrStyleContent { code, lang } => match lang {
         ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
         ScriptOrStyleLang::Data => out.extend_from_slice(&code),
