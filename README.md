@@ -22,7 +22,7 @@ View the [changelog](./CHANGELOG.md) to see the latest updates.
 
 Comparison with [html-minifier](https://github.com/kangax/html-minifier) and [minimize](https://github.com/Swaagie/minimize), run on the top web pages. [See the breakdown here.](./bench)
 
-<img width="400" alt="Chart showing speed of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.15.0/core/average-speeds.png"><img width="400" alt="Chart showing compression of HTML minifiers" src="https://wilsonl.in/minify-html/bench/0.15.0/core/average-sizes.png">
+<img width="400" alt="Chart showing speed of HTML minifiers" src="./bench/graphs/average-speeds.png"><img width="400" alt="Chart showing compression of HTML minifiers" src="./bench/graphs/average-sizes.png">
 
 The [onepass](https://github.com/wilsonzlin/minify-html/tree/master/minify-html-onepass) variant is even more optimised for speed. See its [README](https://github.com/wilsonzlin/minify-html/tree/master/minify-html-onepass) for more details.
 
