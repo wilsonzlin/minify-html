@@ -9,6 +9,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+
+    # https://jsr.io/docs/publishing-packages#publishing-from-github-actions
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
       - uses: actions/checkout@v1
 
@@ -34,21 +40,6 @@ jobs:
         shell: bash
         run: TARGET=web ./build
 
-      - name: Install B2 CLI
-        run: |
-          wget -O b2 https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-linux
-          chmod +x b2
-
-      - name: Upload to B2
-        run: |
-          ./b2 authorize-account ${{ secrets.CICD_CLI_B2_KEY_ID }} ${{ secrets.CICD_CLI_B2_APPLICATION_KEY }}
-          for f in minify-html-wasm/pkg/*; do
-            if [[ "$f" == *.js ]]; then
-              content_type='text/javascript'
-            elif [[ "$f" == *.wasm ]]; then
-              content_type='application/wasm'
-            else
-              content_type='application/octet-stream'
-            fi
-            ./b2 upload-file --contentType "$content_type" ${{ secrets.CICD_CLI_B2_BUCKET_NAME }} "$f" "minify-html/deno/${{ steps.version.outputs.VERSION }}/$(basename "$f")"
-          done
+      - name: Publish to JSR
+        working-directory: ./minify-html-wasm/pkg
+        run: npx jsr publish

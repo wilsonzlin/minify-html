@@ -2,7 +2,6 @@
 
 ## Pending
 
-- [Rust] Deny unsafe code in minify-html crate.
 - BREAKING: Cfg options have changed such that spec compliance is the default, to avoid confusion with users:
   - `do_not_minify_doctype` => `minify_doctype`
   - `ensure_spec_compliant_unquoted_attribute_values` => `allow_noncompliant_unquoted_attribute_values`
@@ -13,6 +12,8 @@
 - [Node.js] Fix ARM64 package metadata.
 - [Python] Add Python 3.13 support.
 - [Ruby] Add Ruby 3.3/3.4 support.
+- [Deno] Publish to JSR.
+- [Rust] Deny unsafe code in minify-html crate.
 
 ## 0.15.0
 

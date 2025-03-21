@@ -161,6 +161,14 @@ for (const f of ["minify-html-nodejs/package.json"]) {
   );
 }
 
+for (const f of ["minify-html-wasm/deno.json"]) {
+  replaceInFile(
+    f,
+    /(\s*"version": )"\d+\.\d+\.\d+"(,?\s*)$/gm,
+    `$1"${NEW_VERSION}"$2`
+  );
+}
+
 for (const f of ["minify-html-ruby/minify_html.gemspec"]) {
   replaceInFile(
     f,

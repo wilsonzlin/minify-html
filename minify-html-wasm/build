@@ -16,6 +16,7 @@ if [[ "$target" = "bundler" ]]; then
   rm .gitignore
 elif [[ "$target" = "web" ]]; then
   rm package.json .gitignore
+  cp ../deno.json .
 fi
 popd
 

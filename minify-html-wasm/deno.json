@@ -1,0 +1,6 @@
+{
+  "name": "@minify-html/deno",
+  "version": "0.15.0",
+  "license": "MIT",
+  "exports": "./index.js"
+}
