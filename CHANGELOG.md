@@ -12,6 +12,7 @@
 - [Internal] Migrate to [aHash](https://github.com/tkaitchuck/aHash/blob/master/compare/readme.md) for faster more consistent performance and once_cell for modern ergonomics.
 - [Node.js] Fix ARM64 package metadata.
 - [Python] Add Python 3.13 support.
+- [Ruby] Add Ruby 3.3/3.4 support.
 
 ## 0.15.0
 
