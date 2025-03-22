@@ -72,14 +72,16 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 <details>
 <summary><img width="24" src="https://wilsonl.in/minify-html/icon/deno.png"> <strong>Deno</strong></summary>
 
-- Package: https://wilsonl.in/minify-html/deno/0.15.0/index.js
+- Package: [@minify-html/deno](https://jsr.io/@minify-html/deno/)
 - Binding: [WASM](https://webassembly.org/)
 - Platforms: All
 
 ### Use
 
+Add the JSR package using `deno add jsr:@minify-html/deno`.
+
 ```ts
-import init, {minify} from "https://wilsonl.in/minify-html/deno/0.15.0/index.js";
+import init, {minify} from "@minify-html/deno";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -172,7 +174,7 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 - Package: [minify-html](https://pypi.org/project/minify-html)
 - Binding: [PyO3](https://github.com/PyO3/pyo3)
-- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Python 3.8 to 3.12
+- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Python 3.8 to 3.13
 
 ### Get
 
@@ -195,7 +197,7 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 - Package: [minify_html](https://rubygems.org/gems/minify_html)
 - Binding: [rb-sys](https://github.com/oxidize-rb/rb-sys) and [magnus](https://github.com/matsadler/magnus)
-- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Ruby 2.7 to 3.2
+- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Ruby 2.7 to 3.4
 
 ### Get
 

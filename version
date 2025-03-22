@@ -133,18 +133,6 @@ for (const f of ["README.md"]) {
   );
 }
 
-for (const f of [
-  "README.md",
-  "bench/README.md",
-  "minify-html-onepass/README.md",
-]) {
-  replaceInFile(
-    f,
-    /(wilsonl\.in\/minify-html\/bench\/)\d+\.\d+\.\d+/g,
-    `$1${NEW_VERSION}`
-  );
-}
-
 for (const f of ["minify-html-java/pom.xml", "README.md"]) {
   replaceInFile(
     f,
