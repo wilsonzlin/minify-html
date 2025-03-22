@@ -17,6 +17,8 @@ if [[ "$target" = "bundler" ]]; then
 elif [[ "$target" = "deno" ]]; then
   rm .gitignore
   cp ../deno.json .
+  # Necessary for Deno.
+  sed -i '1s%^%/* @ts-self-types="./index.d.ts" */\n%' index.js
 fi
 popd
 

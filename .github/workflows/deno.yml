@@ -41,5 +41,11 @@ jobs:
         run: TARGET=deno ./build
 
       - name: Publish to JSR
-        working-directory: ./minify-html-wasm/pkg
-        run: npx jsr publish
+        working-directory: ./minify-html-wasm
+        run: |
+          # Sadly `jsr` ignores .gitignore files (i.e. our built dist package) and will fail on a dirty repo,
+          # contrary to almost every other build/package system.
+          # Therefore, we first move to a non-ignored folder.
+          mv -iv pkg pkg-pub
+          cd pkg-pub
+          npx jsr publish --allow-dirty

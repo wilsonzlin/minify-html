@@ -1,5 +1,10 @@
 # minify-html changelog
 
+## Pending
+
+- Fix Node.js builds.
+- Fix Deno builds.
+
 ## 0.16.1
 
 - Fix Node.js builds.
