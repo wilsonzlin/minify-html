@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Bump Java version for GitHub Actions.
+
 ## 0.16.4
 
 - Fix macOS label for GitHub Actions.
