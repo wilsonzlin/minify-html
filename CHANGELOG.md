@@ -3,6 +3,7 @@
 ## Pending
 
 - Bump Java version for GitHub Actions.
+- [CLI] Add missing exit status on I/O errors.
 - [Internal] Loosen ahash dependency version.
 - [Internal] Bump lightningcss.
 

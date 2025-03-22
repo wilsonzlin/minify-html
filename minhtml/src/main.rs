@@ -98,7 +98,7 @@ macro_rules! io_expect {
       Ok(r) => r,
       Err(e) => {
         eprintln!("[{}] {}: {}", $name, $msg, e);
-        return;
+        exit(1);
       }
     }
   };
