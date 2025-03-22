@@ -9,13 +9,13 @@ target="${TARGET:-bundler}"
 rm -rf pkg
 wasm-pack build --target "$target"
 pushd pkg
-# `bundler` is for WASM/npm, `web` is for Deno.
+# `bundler` is for WASM/npm, `deno` is for Deno.
 if [[ "$target" = "bundler" ]]; then
   jq -s '.[0] * .[1]' package.json ../package.merge.json > package.new.json
   mv package.new.json package.json
   rm .gitignore
-elif [[ "$target" = "web" ]]; then
-  rm package.json .gitignore
+elif [[ "$target" = "deno" ]]; then
+  rm .gitignore
   cp ../deno.json .
 fi
 popd

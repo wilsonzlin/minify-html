@@ -38,7 +38,7 @@ jobs:
       - name: Build native module
         working-directory: ./minify-html-wasm
         shell: bash
-        run: TARGET=web ./build
+        run: TARGET=deno ./build
 
       - name: Publish to JSR
         working-directory: ./minify-html-wasm/pkg

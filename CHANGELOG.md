@@ -1,5 +1,10 @@
 # minify-html changelog
 
+## Pending
+
+- Fix Node.js builds.
+- Fix Deno builds.
+
 ## 0.16.0
 
 - BREAKING: Cfg options have changed such that spec compliance is the default, to avoid confusion with users:

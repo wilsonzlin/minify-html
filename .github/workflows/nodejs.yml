@@ -76,7 +76,8 @@ jobs:
           cp ../README.md .
 
       - name: Pack and publish package
-        uses: JS-DevTools/npm-publish@v3
+        # We need this fix: https://github.com/JS-DevTools/npm-publish/issues/198
+        uses: JS-DevTools/npm-publish@66e0e1d9494ba904d4d608ae77fc5f4fe9bcc038
         if: startsWith(github.ref, 'refs/tags/v')
         with:
           access: public

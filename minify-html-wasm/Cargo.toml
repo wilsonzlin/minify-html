@@ -15,6 +15,8 @@ default = ["console_error_panic_hook"]
 js-sys = "0.3.58"
 minify-html = { path = "../minify-html" }
 wasm-bindgen = "0.2.63"
+# We don't use this dep directly, but it's transitive, and we must enable "js" feature to use with WASM.
+getrandom = { version = "0.2", features = ["js"] }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
