@@ -9,6 +9,7 @@
   - `Cfg::spec_compliant()` => `Cfg::enable_possibly_noncompliant(&mut self)`
 - BREAKING: Some entity minifications are now classified as "possibly noncompliant" and can be enabled via the `allow_optimal_entities` option but won't be performed by default.
 - [Internal] Migrate to [aHash](https://github.com/tkaitchuck/aHash/blob/master/compare/readme.md) for faster more consistent performance and once_cell for modern ergonomics.
+- [Internal] Downgrade aho-corasick to 0.7 temporarily to support minify-js.
 - [Node.js] Fix ARM64 package metadata.
 - [Python] Add Python 3.13 support.
 - [Ruby] Add Ruby 3.3/3.4 support.

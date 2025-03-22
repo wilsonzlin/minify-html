@@ -11,7 +11,6 @@ use crate::parse::instruction::parse_instruction;
 use crate::parse::Code;
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
-use aho_corasick::AhoCorasickKind;
 use aho_corasick::MatchKind;
 use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
 use minify_html_common::spec::tag::ns::Namespace;
@@ -137,11 +136,10 @@ fn build_content_type_matcher(
   (
     AhoCorasickBuilder::new()
       .ascii_case_insensitive(true)
-      .kind(Some(AhoCorasickKind::DFA))
+      .dfa(true)
       .match_kind(MatchKind::LeftmostLongest)
       // Keep in sync with order of CONTENT_TYPE_FROM_PATTERN.
-      .build(patterns)
-      .unwrap(),
+      .build(patterns),
     types,
   )
 }
@@ -157,27 +155,23 @@ static CONTENT_TYPE_MATCHER_OPAQUE_BRACE_CP: Lazy<(AhoCorasick, Vec<ContentType>
 
 static CLOSING_BRACE_BRACE: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
-    .kind(Some(AhoCorasickKind::DFA))
+    .dfa(true)
     .build(["}}"])
-    .unwrap()
 });
 static CLOSING_BRACE_HASH: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
-    .kind(Some(AhoCorasickKind::DFA))
+    .dfa(true)
     .build(["#}"])
-    .unwrap()
 });
 static CLOSING_BRACE_PERCENT: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
-    .kind(Some(AhoCorasickKind::DFA))
+    .dfa(true)
     .build(["%}"])
-    .unwrap()
 });
 static CLOSING_CHEVRON_PERCENT: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
-    .kind(Some(AhoCorasickKind::DFA))
+    .dfa(true)
     .build(["%>"])
-    .unwrap()
 });
 
 pub struct ParsedContent {

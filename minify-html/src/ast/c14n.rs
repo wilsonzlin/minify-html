@@ -1,7 +1,6 @@
 use crate::ast::ElementClosingTag;
 use crate::ast::NodeData;
 use aho_corasick::AhoCorasickBuilder;
-use aho_corasick::AhoCorasickKind;
 use aho_corasick::MatchKind;
 use minify_html_common::pattern::Replacer;
 use once_cell::sync::Lazy;
@@ -10,37 +9,34 @@ use std::io::Write;
 static TEXT_REPLACER: Lazy<Replacer> = Lazy::new(|| {
   Replacer::new(
     AhoCorasickBuilder::new()
-      .kind(Some(AhoCorasickKind::DFA))
+      .dfa(true)
       .match_kind(MatchKind::LeftmostLongest)
-      .build(vec![b"&".to_vec(), b"<".to_vec()])
-      .unwrap(),
+      .build(vec![b"&".to_vec(), b"<".to_vec()]),
     vec![b"&amp;".to_vec(), b"&lt;".to_vec()],
   )
 });
 static DOUBLE_QUOTED_REPLACER: Lazy<Replacer> = Lazy::new(|| {
   Replacer::new(
     AhoCorasickBuilder::new()
-      .kind(Some(AhoCorasickKind::DFA))
+      .dfa(true)
       .match_kind(MatchKind::LeftmostLongest)
-      .build(vec![b"&".to_vec(), b"\"".to_vec()])
-      .unwrap(),
+      .build(vec![b"&".to_vec(), b"\"".to_vec()]),
     vec![b"&amp;".to_vec(), b"&#34;".to_vec()],
   )
 });
 static SINGLE_QUOTED_REPLACER: Lazy<Replacer> = Lazy::new(|| {
   Replacer::new(
     AhoCorasickBuilder::new()
-      .kind(Some(AhoCorasickKind::DFA))
+      .dfa(true)
       .match_kind(MatchKind::LeftmostLongest)
-      .build(vec![b"&".to_vec(), b"'".to_vec()])
-      .unwrap(),
+      .build(vec![b"&".to_vec(), b"'".to_vec()]),
     vec![b"&amp;".to_vec(), b"&#39;".to_vec()],
   )
 });
 static UNQUOTED_REPLACER: Lazy<Replacer> = Lazy::new(|| {
   Replacer::new(
     AhoCorasickBuilder::new()
-      .kind(Some(AhoCorasickKind::DFA))
+      .dfa(true)
       .match_kind(MatchKind::LeftmostLongest)
       .build(vec![
         b"&".to_vec(),
@@ -52,8 +48,7 @@ static UNQUOTED_REPLACER: Lazy<Replacer> = Lazy::new(|| {
         b"\x0c".to_vec(),
         b"\x0d".to_vec(),
         b"\x20".to_vec(),
-      ])
-      .unwrap(),
+      ]),
     vec![
       b"&amp;".to_vec(),
       b"&gt;".to_vec(),

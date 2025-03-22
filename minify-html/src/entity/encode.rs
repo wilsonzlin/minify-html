@@ -1,6 +1,5 @@
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
-use aho_corasick::AhoCorasickKind;
 use aho_corasick::MatchKind;
 use memchr::memchr;
 use minify_html_common::gen::codepoints::ALPHANUMERIC_OR_EQUALS;
@@ -13,10 +12,9 @@ use once_cell::sync::Lazy;
 
 static SHORTER_ENCODED_ENTITIES_ENCODED_SEARCHER: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
-    .kind(Some(AhoCorasickKind::DFA))
+    .dfa(true)
     .match_kind(MatchKind::LeftmostLongest)
     .build(SHORTER_ENCODED_ENTITIES_DECODED)
-    .unwrap()
 });
 
 // Encodes ampersands when necessary, as well as UTF-8 sequences that are shorter encoded.
