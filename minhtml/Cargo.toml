@@ -1,7 +1,7 @@
 [package]
 name = "minhtml"
 description = "[CLI] Extremely fast and smart HTML + JS + CSS minifier"
-version = "0.15.0"
+version = "0.16.0"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 license = "MIT"
@@ -12,6 +12,6 @@ categories = ["compression", "command-line-utilities", "development-tools::build
 repository = "https://github.com/wilsonzlin/minify-html.git"
 
 [dependencies]
-minify-html = { version = "0.15.0", path = "../minify-html" }
+minify-html = { version = "0.16.0", path = "../minify-html" }
 rayon = "1.5"
 structopt = "0.3"

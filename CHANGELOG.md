@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.16.0
 
 - BREAKING: Cfg options have changed such that spec compliance is the default, to avoid confusion with users:
   - `do_not_minify_doctype` => `minify_doctype`
