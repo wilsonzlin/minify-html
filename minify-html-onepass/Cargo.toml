@@ -7,7 +7,7 @@ readme = "README.md"
 keywords = ["html", "compress", "minifier", "js", "css"]
 categories = ["compression", "development-tools::build-utils", "web-programming"]
 repository = "https://github.com/wilsonzlin/minify-html.git"
-version = "0.16.2"
+version = "0.16.3"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 

@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.16.3
 
 - Bump macOS version for GitHub Actions.
 
