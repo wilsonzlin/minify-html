@@ -3,6 +3,8 @@
 ## Pending
 
 - Bump Java version for GitHub Actions.
+- [Internal] Loosen ahash dependency version.
+- [Internal] Bump lightningcss.
 
 ## 0.16.4
 

@@ -15,9 +15,9 @@ edition = "2018"
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-ahash = "0.8.6"
+ahash = "0.8"
 aho-corasick = "0.7"
-lightningcss = "1.0.0-alpha.51"
+lightningcss = "1.0.0-alpha.65"
 memchr = "2"
 minify-html-common = { version = "0.0.2", path = "../minify-html-common" }
 minify-js = "0.6"
