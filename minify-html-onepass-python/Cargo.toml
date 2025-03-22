@@ -6,7 +6,7 @@ license = "MIT"
 homepage = "https://github.com/wilsonzlin/minify-html"
 readme = "README.md"
 repository = "https://github.com/wilsonzlin/minify-html.git"
-version = "0.16.3"
+version = "0.16.4"
 authors = ["Wilson Lin <code@wilsonl.in>"]
 edition = "2018"
 

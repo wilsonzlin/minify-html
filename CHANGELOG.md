@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.16.4
 
 - Fix macOS label for GitHub Actions.
 
