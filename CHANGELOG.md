@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Bump macOS version for GitHub Actions.
+
 ## 0.16.2
 
 - Fix Node.js builds.

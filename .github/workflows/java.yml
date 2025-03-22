@@ -29,12 +29,12 @@ jobs:
             resfile: 'linux-x64.nativelib'
 
           - target: aarch64-apple-darwin
-            os: macos-11.0
+            os: macos-13.0
             buildfile: 'libminify_html_java.dylib'
             resfile: 'mac-aarch64.nativelib'
 
           - target: x86_64-apple-darwin
-            os: macos-11.0
+            os: macos-13.0
             buildfile: 'libminify_html_java.dylib'
             resfile: 'mac-x64.nativelib'
 

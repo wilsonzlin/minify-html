@@ -25,10 +25,10 @@ jobs:
             os: ubuntu-20.04
             ext: ''
           - target: aarch64-apple-darwin
-            os: macos-11.0
+            os: macos-13.0
             ext: ''
           - target: x86_64-apple-darwin
-            os: macos-11.0
+            os: macos-13.0
             ext: ''
           - target: x86_64-pc-windows-msvc
             os: windows-2019
