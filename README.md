@@ -76,9 +76,15 @@ Check out the [docs](https://docs.rs/minify-html) for API and usage examples.
 - Binding: [WASM](https://webassembly.org/)
 - Platforms: All
 
-### Use
+### Get
 
-Add the JSR package using `deno add jsr:@minify-html/deno`.
+Add the JSR package:
+
+```
+deno add jsr:@minify-html/deno
+```
+
+### Use
 
 ```ts
 import init, {minify} from "@minify-html/deno";
