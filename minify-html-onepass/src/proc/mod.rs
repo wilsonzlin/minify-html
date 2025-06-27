@@ -8,7 +8,7 @@ use crate::proc::MatchMode::*;
 use aho_corasick::AhoCorasick;
 use core::fmt;
 use memchr::memchr;
-use minify_html_common::gen::codepoints::Lookup;
+use minify_html_common::r#gen::codepoints::Lookup;
 use minify_html_common::spec::tag::EMPTY_SLICE;
 use std::fmt::Debug;
 use std::fmt::Formatter;

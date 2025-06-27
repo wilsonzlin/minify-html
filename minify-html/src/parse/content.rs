@@ -12,7 +12,7 @@ use crate::parse::Code;
 use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
-use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
+use minify_html_common::r#gen::codepoints::TAG_NAME_CHAR;
 use minify_html_common::spec::tag::ns::Namespace;
 use minify_html_common::spec::tag::omission::can_omit_as_before;
 use minify_html_common::spec::tag::omission::can_omit_as_last_node;

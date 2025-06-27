@@ -2,7 +2,7 @@ use neon::prelude::*;
 use neon::types::buffer::TypedArray;
 
 macro_rules! get_bool {
-  ($cx:expr, $opt:expr, $name:literal) => {
+  ($cx:expr_2021, $opt:expr_2021, $name:literal) => {
     $opt
       .get_opt::<JsBoolean, _, _>(&mut $cx, $name)?
       .map(|v| v.value(&mut $cx))

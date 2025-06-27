@@ -93,7 +93,7 @@ struct Cli {
 }
 
 macro_rules! io_expect {
-  ($name:expr, $expr:expr, $msg:literal) => {
+  ($name:expr_2021, $expr:expr_2021, $msg:literal) => {
     match $expr {
       Ok(r) => r,
       Err(e) => {

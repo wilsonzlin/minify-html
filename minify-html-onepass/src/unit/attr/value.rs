@@ -6,12 +6,12 @@ use crate::proc::MatchAction::*;
 use crate::proc::MatchMode::*;
 use crate::proc::Processor;
 use ahash::AHashMap;
-use minify_html_common::gen::codepoints::ATTR_QUOTE;
-use minify_html_common::gen::codepoints::DIGIT;
-use minify_html_common::gen::codepoints::DOUBLE_QUOTE;
-use minify_html_common::gen::codepoints::NOT_UNQUOTED_ATTR_VAL_CHAR;
-use minify_html_common::gen::codepoints::SINGLE_QUOTE;
-use minify_html_common::gen::codepoints::WHITESPACE;
+use minify_html_common::r#gen::codepoints::ATTR_QUOTE;
+use minify_html_common::r#gen::codepoints::DIGIT;
+use minify_html_common::r#gen::codepoints::DOUBLE_QUOTE;
+use minify_html_common::r#gen::codepoints::NOT_UNQUOTED_ATTR_VAL_CHAR;
+use minify_html_common::r#gen::codepoints::SINGLE_QUOTE;
+use minify_html_common::r#gen::codepoints::WHITESPACE;
 use once_cell::sync::Lazy;
 
 // See comment in `process_attr_value` for full description of why these intentionally do not have semicolons.

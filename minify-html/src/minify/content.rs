@@ -12,7 +12,7 @@ use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
-use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
+use minify_html_common::r#gen::codepoints::TAG_NAME_CHAR;
 use minify_html_common::pattern::Replacer;
 use minify_html_common::spec::tag::ns::Namespace;
 use minify_html_common::spec::tag::whitespace::get_whitespace_minification_for_tag;

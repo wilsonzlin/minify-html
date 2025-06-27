@@ -10,7 +10,7 @@ use wasm_bindgen::prelude::*;
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 macro_rules! get_prop {
-  ($cfg:expr, $x:literal) => {
+  ($cfg:expr_2021, $x:literal) => {
     Reflect::get($cfg, &JsValue::from_str($x))
       .ok()
       .and_then(|p| p.as_bool())

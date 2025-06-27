@@ -8,9 +8,9 @@ use crate::unit::attr::value::process_attr_value;
 use crate::unit::attr::value::skip_attr_value;
 use crate::unit::attr::value::DelimiterType;
 use crate::unit::attr::value::ProcessedAttrValue;
-use minify_html_common::gen::attrs::ATTRS;
-use minify_html_common::gen::codepoints::WHATWG_ATTR_NAME_CHAR;
-use minify_html_common::gen::codepoints::WHITESPACE;
+use minify_html_common::r#gen::attrs::ATTRS;
+use minify_html_common::r#gen::codepoints::WHATWG_ATTR_NAME_CHAR;
+use minify_html_common::r#gen::codepoints::WHITESPACE;
 use minify_html_common::spec::tag::ns::Namespace;
 
 mod value;

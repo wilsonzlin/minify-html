@@ -3,7 +3,7 @@ publish = false
 name = "minify-html-java"
 version = "0.16.4"
 authors = ["Wilson Lin <code@wilsonl.in>"]
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 minify-html = { path = "../minify-html" }
