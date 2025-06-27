@@ -14,14 +14,14 @@
 //   Unicode Scalar Value.
 
 use crate::proc::Processor;
-use minify_html_common::gen::codepoints::Lookup;
-use minify_html_common::gen::codepoints::ALPHANUMERIC_OR_EQUALS;
-use minify_html_common::gen::codepoints::DIGIT;
-use minify_html_common::gen::codepoints::HEX_DIGIT;
-use minify_html_common::gen::codepoints::LOWER_HEX_ALPHA;
-use minify_html_common::gen::codepoints::UPPER_HEX_ALPHA;
-use minify_html_common::gen::entities::EntityType;
-use minify_html_common::gen::entities::ENTITY;
+use minify_html_common::r#gen::codepoints::Lookup;
+use minify_html_common::r#gen::codepoints::ALPHANUMERIC_OR_EQUALS;
+use minify_html_common::r#gen::codepoints::DIGIT;
+use minify_html_common::r#gen::codepoints::HEX_DIGIT;
+use minify_html_common::r#gen::codepoints::LOWER_HEX_ALPHA;
+use minify_html_common::r#gen::codepoints::UPPER_HEX_ALPHA;
+use minify_html_common::r#gen::entities::EntityType;
+use minify_html_common::r#gen::entities::ENTITY;
 use minify_html_common::pattern::TrieNodeMatch;
 use std::char::from_u32;
 

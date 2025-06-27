@@ -9,7 +9,7 @@ categories = ["compression", "development-tools::build-utils", "web-programming"
 repository = "https://github.com/wilsonzlin/minify-html.git"
 version = "0.16.4"
 authors = ["Wilson Lin <code@wilsonl.in>"]
-edition = "2018"
+edition = "2024"
 
 [badges]
 maintenance = { status = "actively-developed" }

@@ -1,4 +1,6 @@
 [workspace]
+resolver = "3"
+
 members = [
   "bench/runners/minify-html-onepass",
   "bench/runners/minify-html",
