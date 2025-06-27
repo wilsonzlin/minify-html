@@ -1,7 +1,6 @@
 __pycache__/
 bin/
 build/
-Cargo.lock
 dist/
 Gemfile.lock
 node_modules/
