@@ -2,11 +2,8 @@ package in.wilsonl.minifyhtml;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
-import static java.lang.String.format;
 
 /**
  * Class containing only static methods and exception classes. Cannot be instantiated.
@@ -15,31 +12,20 @@ import static java.lang.String.format;
  */
 public class MinifyHtml {
   static {
-    String osName = System.getProperty("os.name").toLowerCase();
-    String osArch = System.getProperty("os.arch").toLowerCase();
+    final String osName = System.getProperty("os.name").toLowerCase();
+    final String osArch = System.getProperty("os.arch").toLowerCase();
 
-    String nativeLibNameOs = osName.startsWith("windows")
-      ? "win"
-      : osName.startsWith("linux")
-        ? "linux"
-        : osName.startsWith("mac")
-          ? "mac"
-          : null;
-    String nativeLibNameArch =
-      osArch.equals("amd64") || osArch.equals("x86_64")
-      ? "x64"
-      : osArch.equals("arm64") || osArch.equals("aarch64")
-        ? "aarch64"
-        : null;
+    final String nativeLibNameOs = getNativeLibNameOs(osName);
+    final String nativeLibNameArch = getNativeLibNameArch(osArch);
 
     if (nativeLibNameOs == null || nativeLibNameArch == null) {
-      throw new RuntimeException(format("Platform not supported (os.name=%s, os.arch=%s)", osName, osArch));
+      throw new RuntimeException(String.format("Platform not supported (os.name=%s, os.arch=%s)", osName, osArch));
     }
 
-    String nativeLibFile = format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
+    final String nativeLibFile = String.format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
 
     try (InputStream is = MinifyHtml.class.getResourceAsStream(nativeLibFile)) {
-      File temp = File.createTempFile("minify-html-java-nativelib", nativeLibFile.substring(1));
+      final File temp = File.createTempFile("minify-html-java-nativelib", nativeLibFile.substring(1));
       temp.deleteOnExit();
       Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.load(temp.getAbsolutePath());
@@ -60,4 +46,26 @@ public class MinifyHtml {
    * @return minified HTML code
    */
   public static native String minify(String code, Configuration cfg);
+
+  private static String getNativeLibNameOs(String osName) {
+    if (osName.startsWith("windows")) {
+      return "win";
+    } else if (osName.startsWith("linux")) {
+      return "linux";
+    } else if (osName.startsWith("mac")) {
+      return "mac";
+    } else {
+      return null;
+    }
+  }
+
+  private static String getNativeLibNameArch(String osArch) {
+    if (osArch.equals("amd64") || osArch.equals("x86_64")) {
+      return "x64";
+    } else if (osArch.equals("arm64") || osArch.equals("aarch64")) {
+      return "aarch64";
+    } else {
+      return null;
+    }
+  }
 }
