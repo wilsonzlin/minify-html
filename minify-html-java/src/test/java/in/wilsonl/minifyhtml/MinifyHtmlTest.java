@@ -13,7 +13,7 @@ class MinifyHtmlTest {
   void testMinifyHtmlCallsNativeFunction() {
     final String input = "<html>   <body>   Hello   World!   </body>   </html>";
     final String expected = "<body>Hello World!";
-    assertEquals(expected, MinifyHtml.minify(input, DEFAULT_CONFIG), "Basic HTML minification failed");
+    assertEquals(expected, MinifyHtml.minify(input, DEFAULT_CONFIG));
     assertEquals("", MinifyHtml.minify("", DEFAULT_CONFIG));
   }
 

@@ -6,31 +6,31 @@ import lombok.Builder;
 import lombok.Value;
 
 /**
- * Class representing minification configuration.
- * Use the {@link Builder} to create an instance of this class.
+ * Class representing minification configuration. Use the {@link Builder} to create an instance of
+ * this class.
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(
-    setterPrefix = "set",
-    builderClassName = "Builder"
-)
+@Builder(setterPrefix = "set", builderClassName = "Builder")
 @Value
 public class Configuration {
-    /* BEGIN FIELD NAMES */
-    boolean allowNoncompliantUnquotedAttributeValues;
-    boolean allowOptimalEntities;
-    boolean allowRemovingSpacesBetweenAttributes;
-    boolean keepClosingTags;
-    boolean keepComments;
-    boolean keepHtmlAndHeadOpeningTags;
-    boolean keepInputTypeTextAttr;
-    boolean keepSsiComments;
-    boolean minifyCss;
-    boolean minifyDoctype;
-    boolean minifyJs;
-    boolean preserveBraceTemplateSyntax;
-    boolean preserveChevronPercentTemplateSyntax;
-    boolean removeBangs;
-    boolean removeProcessingInstructions;
-    /* END FIELD NAMES */
+  // Do not change fields below or remove the markers.
+  // Use `update-java.sh` to generate config fields. Lombok takes care of the rest
+
+  /* BEGIN FIELD NAMES */
+  boolean allowNoncompliantUnquotedAttributeValues;
+  boolean allowOptimalEntities;
+  boolean allowRemovingSpacesBetweenAttributes;
+  boolean keepClosingTags;
+  boolean keepComments;
+  boolean keepHtmlAndHeadOpeningTags;
+  boolean keepInputTypeTextAttr;
+  boolean keepSsiComments;
+  boolean minifyCss;
+  boolean minifyDoctype;
+  boolean minifyJs;
+  boolean preserveBraceTemplateSyntax;
+  boolean preserveChevronPercentTemplateSyntax;
+  boolean removeBangs;
+  boolean removeProcessingInstructions;
+  /* END FIELD NAMES */
 }

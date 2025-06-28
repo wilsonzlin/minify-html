@@ -35,7 +35,7 @@ echo "Generating Java fields..."
 java_fields=""
 while IFS= read -r field; do
     camel_field=$(snake_to_camel "$field")
-    java_fields="$java_fields    boolean $camel_field;\n"
+    java_fields="$java_fields  boolean $camel_field;\n"
 done <<< "$rust_fields"
 
 # Update Java configuration file between markers
