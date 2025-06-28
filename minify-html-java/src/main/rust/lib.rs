@@ -31,7 +31,7 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
 }
 
 #[no_mangle]
-pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minify(
+pub extern "system" fn Java_in_wilsonl_minifyhtml_MinifyHtml_minifyRs(
   env: JNIEnv,
   _class: JClass,
   input: JString,

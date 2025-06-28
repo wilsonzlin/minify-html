@@ -22,10 +22,10 @@ public class MinifyHtml {
       throw new RuntimeException(String.format("Platform not supported (os.name=%s, os.arch=%s)", osName, osArch));
     }
 
-    final String nativeLibFile = String.format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
+    final String nativeLibFile = String.format("%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
 
-    try (InputStream is = MinifyHtml.class.getResourceAsStream(nativeLibFile)) {
-      final File temp = File.createTempFile("minify-html-java-nativelib", nativeLibFile.substring(1));
+    try (InputStream is = MinifyHtml.class.getResourceAsStream("/" + nativeLibFile)) {
+      final File temp = File.createTempFile("minify-html-java-nativelib", nativeLibFile);
       temp.deleteOnExit();
       Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.load(temp.getAbsolutePath());
@@ -41,11 +41,22 @@ public class MinifyHtml {
    * Minify HTML code represented as a {@link String}.
    * The {@link String} will be copied to a UTF-8 byte array in native code, and then copied back into a Java {@link String}.
    *
-   * @param code HTML code to minify
-   * @param cfg  {@link Configuration} minification settings to use
+   * @param code HTML code to minify, cannot be null
+   * @param cfg  {@link Configuration} minification settings to use, cannot be null
    * @return minified HTML code
+   * @throws IllegalArgumentException if either {@code code} or {@code cfg} is null
    */
-  public static native String minify(String code, Configuration cfg);
+  public static String minify(String code, Configuration cfg) {
+    if (code == null) {
+      throw new IllegalArgumentException("code cannot be null");
+    }
+    if (cfg == null) {
+      throw new IllegalArgumentException("configuration cannot be null");
+    }
+    return minifyRs(code, cfg);
+  }
+
+  private static native String minifyRs(String code, Configuration cfg);
 
   private static String getNativeLibNameOs(String osName) {
     if (osName.startsWith("windows")) {
