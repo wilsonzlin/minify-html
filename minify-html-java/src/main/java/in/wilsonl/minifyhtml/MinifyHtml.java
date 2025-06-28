@@ -13,28 +13,15 @@ import java.nio.file.StandardCopyOption;
  */
 public final class MinifyHtml {
   static {
-    final String osName = System.getProperty("os.name").toLowerCase();
-    final String osArch = System.getProperty("os.arch").toLowerCase();
-
-    final String nativeLibNameOs = getNativeLibNameOs(osName);
-    final String nativeLibNameArch = getNativeLibNameArch(osArch);
-
-    if (nativeLibNameOs == null || nativeLibNameArch == null) {
-      throw new RuntimeException(
-          String.format("Platform not supported (os.name=%s, os.arch=%s)", osName, osArch));
-    }
-
-    final String nativeLibFile =
-        String.format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
-
-    try (InputStream is = MinifyHtml.class.getResourceAsStream(nativeLibFile)) {
-      final File temp =
-          File.createTempFile("minify-html-java-nativelib", nativeLibFile.substring(1));
+    final String nativeLibFilePath = getNativeLibFilePath();
+    try (InputStream is = MinifyHtml.class.getResourceAsStream(nativeLibFilePath)) {
+      final String nativeLibFileName = nativeLibFilePath.substring(1);
+      final File temp = File.createTempFile("minify-html-java-nativelib", nativeLibFileName);
       temp.deleteOnExit();
       Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.load(temp.getAbsolutePath());
     } catch (Exception e) {
-      throw new RuntimeException("Failed to load native library", e);
+      throw new MinifyHtmlException("Failed to load native library", e);
     }
   }
 
@@ -60,6 +47,20 @@ public final class MinifyHtml {
   }
 
   private static native String minifyRs(String code, Configuration cfg);
+
+  private static String getNativeLibFilePath() {
+    final String osName = System.getProperty("os.name").toLowerCase();
+    final String osArch = System.getProperty("os.arch").toLowerCase();
+
+    final String nativeLibNameOs = getNativeLibNameOs(osName);
+    final String nativeLibNameArch = getNativeLibNameArch(osArch);
+
+    if (nativeLibNameOs == null || nativeLibNameArch == null) {
+      throw new MinifyHtmlException(
+          String.format("Platform not supported (os.name=%s, os.arch=%s)", osName, osArch));
+    }
+    return String.format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
+  }
 
   private static String getNativeLibNameOs(String osName) {
     if (osName.startsWith("linux")) {
