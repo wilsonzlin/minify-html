@@ -11,6 +11,7 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
   #[rustfmt::skip]
   // This is a statement because "attributes on expressions are experimental".
   let cfg = Cfg {
+    // BEGIN CONFIGURATION FIELDS
     allow_noncompliant_unquoted_attribute_values: env.call_method(*obj, "getAllowNoncompliantUnquotedAttributeValues", "()Z", &[]).unwrap().z().unwrap(),
     allow_optimal_entities: env.call_method(*obj, "getAllowOptimalEntities", "()Z", &[]).unwrap().z().unwrap(),
     allow_removing_spaces_between_attributes: env.call_method(*obj, "getAllowRemovingSpacesBetweenAttributes", "()Z", &[]).unwrap().z().unwrap(),
@@ -26,6 +27,7 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
     preserve_chevron_percent_template_syntax: env.call_method(*obj, "getPreserveChevronPercentTemplateSyntax", "()Z", &[]).unwrap().z().unwrap(),
     remove_bangs: env.call_method(*obj, "getRemoveBangs", "()Z", &[]).unwrap().z().unwrap(),
     remove_processing_instructions: env.call_method(*obj, "getRemoveProcessingInstructions", "()Z", &[]).unwrap().z().unwrap(),
+    // END CONFIGURATION FIELDS
   };
   cfg
 }

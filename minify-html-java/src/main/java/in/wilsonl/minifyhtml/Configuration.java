@@ -16,6 +16,7 @@ import lombok.Value;
 )
 @Value
 public class Configuration {
+    /* BEGIN FIELD NAMES */
     boolean allowNoncompliantUnquotedAttributeValues;
     boolean allowOptimalEntities;
     boolean allowRemovingSpacesBetweenAttributes;
@@ -31,4 +32,5 @@ public class Configuration {
     boolean preserveChevronPercentTemplateSyntax;
     boolean removeBangs;
     boolean removeProcessingInstructions;
+    /* END FIELD NAMES */
 }
