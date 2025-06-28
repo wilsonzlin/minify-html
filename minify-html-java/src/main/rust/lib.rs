@@ -12,21 +12,21 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
   // This is a statement because "attributes on expressions are experimental".
   let cfg = Cfg {
     // BEGIN CONFIGURATION FIELDS
-    allow_noncompliant_unquoted_attribute_values: env.call_method(*obj, "getAllowNoncompliantUnquotedAttributeValues", "()Z", &[]).unwrap().z().unwrap(),
-    allow_optimal_entities: env.call_method(*obj, "getAllowOptimalEntities", "()Z", &[]).unwrap().z().unwrap(),
-    allow_removing_spaces_between_attributes: env.call_method(*obj, "getAllowRemovingSpacesBetweenAttributes", "()Z", &[]).unwrap().z().unwrap(),
-    keep_closing_tags: env.call_method(*obj, "getKeepClosingTags", "()Z", &[]).unwrap().z().unwrap(),
-    keep_comments: env.call_method(*obj, "getKeepComments", "()Z", &[]).unwrap().z().unwrap(),
-    keep_html_and_head_opening_tags: env.call_method(*obj, "getKeepHtmlAndHeadOpeningTags", "()Z", &[]).unwrap().z().unwrap(),
-    keep_input_type_text_attr: env.call_method(*obj, "getKeepInputTypeTextAttr", "()Z", &[]).unwrap().z().unwrap(),
-    keep_ssi_comments: env.call_method(*obj, "getKeepSsiComments", "()Z", &[]).unwrap().z().unwrap(),
-    minify_css: env.call_method(*obj, "getMinifyCss", "()Z", &[]).unwrap().z().unwrap(),
-    minify_doctype: env.call_method(*obj, "getMinifyDoctype", "()Z", &[]).unwrap().z().unwrap(),
-    minify_js: env.call_method(*obj, "getMinifyJs", "()Z", &[]).unwrap().z().unwrap(),
-    preserve_brace_template_syntax: env.call_method(*obj, "getPreserveBraceTemplateSyntax", "()Z", &[]).unwrap().z().unwrap(),
-    preserve_chevron_percent_template_syntax: env.call_method(*obj, "getPreserveChevronPercentTemplateSyntax", "()Z", &[]).unwrap().z().unwrap(),
-    remove_bangs: env.call_method(*obj, "getRemoveBangs", "()Z", &[]).unwrap().z().unwrap(),
-    remove_processing_instructions: env.call_method(*obj, "getRemoveProcessingInstructions", "()Z", &[]).unwrap().z().unwrap(),
+    allow_noncompliant_unquoted_attribute_values: env.call_method(*obj, "isAllowNoncompliantUnquotedAttributeValues", "()Z", &[]).unwrap().z().unwrap(),
+    allow_optimal_entities: env.call_method(*obj, "isAllowOptimalEntities", "()Z", &[]).unwrap().z().unwrap(),
+    allow_removing_spaces_between_attributes: env.call_method(*obj, "isAllowRemovingSpacesBetweenAttributes", "()Z", &[]).unwrap().z().unwrap(),
+    keep_closing_tags: env.call_method(*obj, "isKeepClosingTags", "()Z", &[]).unwrap().z().unwrap(),
+    keep_comments: env.call_method(*obj, "isKeepComments", "()Z", &[]).unwrap().z().unwrap(),
+    keep_html_and_head_opening_tags: env.call_method(*obj, "isKeepHtmlAndHeadOpeningTags", "()Z", &[]).unwrap().z().unwrap(),
+    keep_input_type_text_attr: env.call_method(*obj, "isKeepInputTypeTextAttr", "()Z", &[]).unwrap().z().unwrap(),
+    keep_ssi_comments: env.call_method(*obj, "isKeepSsiComments", "()Z", &[]).unwrap().z().unwrap(),
+    minify_css: env.call_method(*obj, "isMinifyCss", "()Z", &[]).unwrap().z().unwrap(),
+    minify_doctype: env.call_method(*obj, "isMinifyDoctype", "()Z", &[]).unwrap().z().unwrap(),
+    minify_js: env.call_method(*obj, "isMinifyJs", "()Z", &[]).unwrap().z().unwrap(),
+    preserve_brace_template_syntax: env.call_method(*obj, "isPreserveBraceTemplateSyntax", "()Z", &[]).unwrap().z().unwrap(),
+    preserve_chevron_percent_template_syntax: env.call_method(*obj, "isPreserveChevronPercentTemplateSyntax", "()Z", &[]).unwrap().z().unwrap(),
+    remove_bangs: env.call_method(*obj, "isRemoveBangs", "()Z", &[]).unwrap().z().unwrap(),
+    remove_processing_instructions: env.call_method(*obj, "isRemoveProcessingInstructions", "()Z", &[]).unwrap().z().unwrap(),
     // END CONFIGURATION FIELDS
   };
   cfg
