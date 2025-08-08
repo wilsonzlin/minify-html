@@ -1,6 +1,8 @@
 use crate::cfg::Cfg;
 use crate::minify;
+#[cfg(feature = "lightningcss")]
 use minify_html_common::tests::create_common_css_test_data;
+#[cfg(feature = "minify-js")]
 use minify_html_common::tests::create_common_js_test_data;
 use minify_html_common::tests::create_common_noncompliant_test_data;
 use minify_html_common::tests::create_common_test_data;
@@ -17,12 +19,14 @@ pub fn eval_with_noncompliant(src: &'static [u8], expected: &'static [u8]) {
   eval_with_cfg(src, expected, &cfg)
 }
 
+#[cfg(feature = "minify-js")]
 pub fn eval_with_js_min(src: &'static [u8], expected: &'static [u8]) -> () {
   let mut cfg = Cfg::new();
   cfg.minify_js = true;
   eval_with_cfg(src, expected, &cfg);
 }
 
+#[cfg(feature = "lightningcss")]
 pub fn eval_with_css_min(src: &'static [u8], expected: &'static [u8]) -> () {
   let mut cfg = Cfg::new();
   cfg.minify_css = true;
@@ -50,9 +54,11 @@ fn test_common() {
   for (a, b) in create_common_noncompliant_test_data() {
     eval_with_noncompliant(a, b);
   }
+  #[cfg(feature = "lightningcss")]
   for (a, b) in create_common_css_test_data() {
     eval_with_css_min(a, b);
   }
+  #[cfg(feature = "minify-js")]
   for (a, b) in create_common_js_test_data() {
     eval_with_js_min(a, b);
   }
@@ -76,6 +82,7 @@ fn test_keep_input_type_text_attr() {
 
 #[test]
 fn test_preserve_template_brace_syntax() {
+  #[cfg(feature = "minify-js")]
   eval_with_js_min(
     b"<p> {{   hello    world! %}  {%}{#} echo '  </p><P><script>  let x = 1; //'  }} </p>",
     b"<p>{{ hello world! %} {%}{#} echo '<p><script>let x=1",
@@ -223,6 +230,7 @@ fn test_viewport_attr_minification() {
   );
 }
 
+#[cfg(feature = "lightningcss")]
 #[test]
 fn test_style_attr_minification() {
   eval_with_css_min(
