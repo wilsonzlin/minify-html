@@ -12,6 +12,7 @@ edition = "2018"
 
 [lib]
 crate-type = ["cdylib"]
+name = "minify_html_onepass"
 
 [dependencies]
 minify-html-onepass = { path = "../minify-html-onepass" }
