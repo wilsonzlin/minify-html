@@ -1,5 +1,6 @@
 def minify(
     code: str,
+    always_quote_attribute_values: bool = False,
     allow_noncompliant_unquoted_attribute_values: bool = False,
     allow_optimal_entities: bool = False,
     allow_removing_spaces_between_attributes: bool = False,

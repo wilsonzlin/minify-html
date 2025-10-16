@@ -10,6 +10,7 @@ use std::string::String;
   signature = (
     code,
     *,
+    always_quote_attribute_values = true,
     allow_noncompliant_unquoted_attribute_values = false,
     allow_optimal_entities = false,
     allow_removing_spaces_between_attributes = false,
@@ -29,6 +30,7 @@ use std::string::String;
 )]
 fn minify(
   code: String,
+  always_quote_attribute_values: bool,
   allow_noncompliant_unquoted_attribute_values: bool,
   allow_optimal_entities: bool,
   allow_removing_spaces_between_attributes: bool,
@@ -47,6 +49,7 @@ fn minify(
 ) -> String {
   let code = code.into_bytes();
   let out_code = minify_html_native(&code, &Cfg {
+    always_quote_attribute_values,
     allow_noncompliant_unquoted_attribute_values,
     allow_optimal_entities,
     allow_removing_spaces_between_attributes,

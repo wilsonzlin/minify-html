@@ -8,6 +8,8 @@
 export function minify(
   src: Buffer,
   cfg: {
+    /** Always quote attribute values in the output. */
+    always_quote_attribute_values?: boolean;
     /** Allow unquoted attribute values in the output to contain characters prohibited by the [WHATWG specification](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2). These will still be parsed correctly by almost all browsers. */
     allow_noncompliant_unquoted_attribute_values?: boolean;
     /** Allow some minifications around entities that may not pass validation, but will still be parsed correctly by almost all browsers. */
