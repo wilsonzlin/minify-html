@@ -2,62 +2,86 @@ package in.wilsonl.minifyhtml;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-import static java.lang.String.format;
-
 /**
- * Class containing only static methods and exception classes. Cannot be instantiated.
- * Methods call to native compiled Rust code using JNI.
- * When this class is loaded, a static initialiser will attempt to load a prebuilt native library for the running operating system and architecture from the JAR. If it cannot, a {@link RuntimeException} will be thrown.
+ * Class containing only static methods and exception classes. Cannot be instantiated. Methods call
+ * to native compiled Rust code using JNI. When this class is loaded, a static initialiser will
+ * attempt to load a prebuilt native library for the running operating system and architecture from
+ * the JAR. If it cannot, a {@link RuntimeException} will be thrown.
  */
-public class MinifyHtml {
+public final class MinifyHtml {
   static {
-    String osName = System.getProperty("os.name").toLowerCase();
-    String osArch = System.getProperty("os.arch").toLowerCase();
-
-    String nativeLibNameOs = osName.startsWith("windows")
-      ? "win"
-      : osName.startsWith("linux")
-        ? "linux"
-        : osName.startsWith("mac")
-          ? "mac"
-          : null;
-    String nativeLibNameArch =
-      osArch.equals("amd64") || osArch.equals("x86_64")
-      ? "x64"
-      : osArch.equals("arm64") || osArch.equals("aarch64")
-        ? "aarch64"
-        : null;
-
-    if (nativeLibNameOs == null || nativeLibNameArch == null) {
-      throw new RuntimeException(format("Platform not supported (os.name=%s, os.arch=%s)", osName, osArch));
-    }
-
-    String nativeLibFile = format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
-
-    try (InputStream is = MinifyHtml.class.getResourceAsStream(nativeLibFile)) {
-      File temp = File.createTempFile("minify-html-java-nativelib", nativeLibFile.substring(1));
+    final String nativeLibFilePath = getNativeLibFilePath();
+    try (InputStream is = MinifyHtml.class.getResourceAsStream(nativeLibFilePath)) {
+      final String nativeLibFileName = nativeLibFilePath.substring(1);
+      final File temp = File.createTempFile("minify-html-java-nativelib", nativeLibFileName);
       temp.deleteOnExit();
       Files.copy(is, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.load(temp.getAbsolutePath());
     } catch (Exception e) {
-      throw new RuntimeException("Failed to load native library", e);
+      throw new MinifyHtmlException("Failed to load native library", e);
     }
   }
 
-  private MinifyHtml() {
-  }
+  private MinifyHtml() {}
 
   /**
-   * Minify HTML code represented as a {@link String}.
-   * The {@link String} will be copied to a UTF-8 byte array in native code, and then copied back into a Java {@link String}.
+   * Minify HTML code represented as a {@link String}. The {@link String} will be copied to a UTF-8
+   * byte array in native code, and then copied back into a Java {@link String}.
    *
-   * @param code HTML code to minify
-   * @param cfg  {@link Configuration} minification settings to use
+   * @param code HTML code to minify, cannot be null
+   * @param cfg {@link Configuration} minification settings to use, cannot be null
    * @return minified HTML code
+   * @throws IllegalArgumentException if either {@code code} or {@code cfg} is null
    */
-  public static native String minify(String code, Configuration cfg);
+  public static String minify(String code, Configuration cfg) {
+    if (code == null) {
+      throw new IllegalArgumentException("code cannot be null");
+    }
+    if (cfg == null) {
+      throw new IllegalArgumentException("configuration cannot be null");
+    }
+    return minifyRs(code, cfg);
+  }
+
+  private static native String minifyRs(String code, Configuration cfg);
+
+  private static String getNativeLibFilePath() {
+    final String osName = System.getProperty("os.name").toLowerCase();
+    final String osArch = System.getProperty("os.arch").toLowerCase();
+
+    final String nativeLibNameOs = getNativeLibNameOs(osName);
+    final String nativeLibNameArch = getNativeLibNameArch(osArch);
+
+    if (nativeLibNameOs == null || nativeLibNameArch == null) {
+      throw new MinifyHtmlException(
+          String.format("Platform not supported (os.name=%s, os.arch=%s)", osName, osArch));
+    }
+    return String.format("/%s-%s.nativelib", nativeLibNameOs, nativeLibNameArch);
+  }
+
+  private static String getNativeLibNameOs(String osName) {
+    if (osName.startsWith("linux")) {
+      return "linux";
+    }
+    if (osName.startsWith("windows")) {
+      return "win";
+    }
+    if (osName.startsWith("mac")) {
+      return "mac";
+    }
+    return null;
+  }
+
+  private static String getNativeLibNameArch(String osArch) {
+    if (osArch.equals("amd64") || osArch.equals("x86_64")) {
+      return "x64";
+    }
+    if (osArch.equals("arm64") || osArch.equals("aarch64")) {
+      return "aarch64";
+    }
+    return null;
+  }
 }
