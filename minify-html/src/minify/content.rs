@@ -1,14 +1,17 @@
 use super::rcdata::minify_rcdata;
 use crate::ast::NodeData;
+#[cfg(any(feature = "lightningcss", feature = "minify-js"))]
 use crate::ast::ScriptOrStyleLang;
 use crate::cfg::Cfg;
 use crate::entity::encode::encode_entities;
 use crate::minify::bang::minify_bang;
 use crate::minify::comment::minify_comment;
+#[cfg(feature = "lightningcss")]
 use crate::minify::css::minify_css;
 use crate::minify::doctype::minify_doctype;
 use crate::minify::element::minify_element;
 use crate::minify::instruction::minify_instruction;
+#[cfg(feature = "minify-js")]
 use crate::minify::js::minify_js;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
@@ -155,10 +158,13 @@ pub fn minify_content(
       NodeData::RcdataContent { typ, text } => minify_rcdata(cfg, out, typ, &text),
       NodeData::ScriptOrStyleContent { code, lang: _ } if code.is_empty() => {}
       NodeData::ScriptOrStyleContent { code, lang } => match lang {
+        #[cfg(feature = "lightningcss")]
         ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
-        ScriptOrStyleLang::Data => out.extend_from_slice(&code),
+        #[cfg(feature = "minify-js")]
         ScriptOrStyleLang::JS => minify_js(cfg, minify_js::TopLevelMode::Global, out, &code),
+        #[cfg(feature = "minify-js")]
         ScriptOrStyleLang::JSModule => minify_js(cfg, minify_js::TopLevelMode::Module, out, &code),
+        _ => out.extend_from_slice(&code),
       },
       NodeData::Text { value } => {
         let min = encode_entities(&value, false, !cfg.allow_optimal_entities);

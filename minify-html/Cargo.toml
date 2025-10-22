@@ -17,8 +17,13 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 ahash = "0.8"
 aho-corasick = "0.7"
-lightningcss = "1.0.0-alpha.65"
+lightningcss = { version = "1.0.0-alpha.65", optional = true }
 memchr = "2"
 minify-html-common = { version = "0.0.2", path = "../minify-html-common" }
-minify-js = "0.6"
+minify-js = { version = "0.6", optional = true }
 once_cell = "1.19.0"
+
+[features]
+default = ["lightningcss", "minify-js"]
+lightningcss = ["dep:lightningcss"]
+minify-js = ["dep:minify-js"]
