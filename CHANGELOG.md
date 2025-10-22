@@ -6,6 +6,7 @@
 - [CLI] Add missing exit status on I/O errors.
 - [Internal] Loosen ahash dependency version.
 - [Internal] Bump lightningcss.
+- [Python] Add Python 3.14 support.
 
 ## 0.16.4
 
