@@ -19,12 +19,12 @@ jobs:
           - x86_64-pc-windows-msvc
         include:
           - target: aarch64-unknown-linux-gnu
-            os: ubuntu-20.04
+            os: ubuntu-22.04
             buildfile: 'libminify_html_java.so'
             resfile: 'linux-aarch64.nativelib'
 
           - target: x86_64-unknown-linux-gnu
-            os: ubuntu-20.04
+            os: ubuntu-22.04
             buildfile: 'libminify_html_java.so'
             resfile: 'linux-x64.nativelib'
 
@@ -70,7 +70,7 @@ jobs:
           path: minify-html-java/${{ matrix.resfile }}
 
   package:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: build
     steps:
       - uses: actions/checkout@v1

@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## 0.17.1
+
+- Bump Ubuntu version for GitHub Actions.
+
 ## 0.17.0
 
 - [Node.js] BREAKING: Minimum Node.js version increased from 8.6.0 to 10.0.0.
