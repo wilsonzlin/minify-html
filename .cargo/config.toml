@@ -1,0 +1,13 @@
+# https://pyo3.rs/main/building-and-distribution#macos
+[target.x86_64-apple-darwin]
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]
+
+# https://pyo3.rs/main/building-and-distribution#macos
+[target.aarch64-apple-darwin]
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]
