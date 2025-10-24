@@ -12,9 +12,9 @@ use once_cell::sync::Lazy;
 
 static SHORTER_ENCODED_ENTITIES_ENCODED_SEARCHER: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
-    .dfa(true)
     .match_kind(MatchKind::LeftmostLongest)
     .build(SHORTER_ENCODED_ENTITIES_DECODED)
+    .unwrap()
 });
 
 // Encodes ampersands when necessary, as well as UTF-8 sequences that are shorter encoded.

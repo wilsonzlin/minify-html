@@ -1,7 +1,7 @@
 use crate::cfg::Cfg;
 use minify_html_common::whitespace::trimmed;
 use oxc_allocator::Allocator;
-use oxc_codegen::CodeGenerator;
+use oxc_codegen::Codegen;
 use oxc_codegen::CodegenOptions;
 use oxc_minifier::CompressOptions;
 use oxc_minifier::MangleOptions;
@@ -41,16 +41,16 @@ pub fn minify_js(cfg: &Cfg, mode: TopLevelMode, out: &mut Vec<u8>, code: &[u8]) 
         // Apply minification
         let minifier_options = MinifierOptions {
           mangle: Some(MangleOptions::default()),
-          compress: CompressOptions::default(),
+          compress: Some(CompressOptions::default()),
         };
-        let _minifier_ret = Minifier::new(minifier_options).build(&allocator, &mut program);
+        let _minifier_ret = Minifier::new(minifier_options).minify(&allocator, &mut program);
 
         // Generate minified code
         let codegen_options = CodegenOptions {
           minify: true,
           ..CodegenOptions::default()
         };
-        let minified = CodeGenerator::new()
+        let minified = Codegen::new()
           .with_options(codegen_options)
           .build(&program)
           .code;

@@ -9,8 +9,8 @@ use once_cell::sync::Lazy;
 static END: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .dfa(true)
     .build(["</style"])
+    .unwrap()
 });
 
 pub fn parse_style_content(code: &mut Code) -> ParsedContent {

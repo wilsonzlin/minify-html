@@ -13,6 +13,6 @@ crate-type = ["cdylib"]
 minify-html = { path = "../minify-html" }
 
 [dependencies.neon]
-version = "0.10"
+version = "1.1"
 default-features = false
-features = ["napi-1", "try-catch-api"]
+features = ["napi-1"]

@@ -7,7 +7,7 @@ edition = "2018"
 
 [dependencies]
 minify-html = { path = "../minify-html" }
-jni = "0.14.0"
+jni = "0.21"
 
 [lib]
 crate-type = ["cdylib"]

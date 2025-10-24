@@ -9,8 +9,8 @@ use once_cell::sync::Lazy;
 static END: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .dfa(true)
     .build(["</script"])
+    .unwrap()
 });
 
 pub fn parse_script_content(code: &mut Code, lang: ScriptOrStyleLang) -> ParsedContent {

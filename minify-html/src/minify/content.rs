@@ -39,15 +39,15 @@ fn build_optimal_chevron_replacer() -> Replacer {
 
   Replacer::new(
     AhoCorasickBuilder::new()
-      .dfa(true)
       .match_kind(MatchKind::LeftmostLongest)
-      .build(patterns),
+      .build(patterns)
+      .unwrap(),
     replacements,
   )
 }
 
 fn build_whatwg_chevron_replacer() -> Replacer {
-  Replacer::new(AhoCorasickBuilder::new().dfa(true).build(["<"]), vec![
+  Replacer::new(AhoCorasickBuilder::new().build(["<"]).unwrap(), vec![
     "&lt;".into(),
   ])
 }

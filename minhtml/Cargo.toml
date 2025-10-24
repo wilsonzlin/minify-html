@@ -13,5 +13,5 @@ repository = "https://github.com/wilsonzlin/minify-html.git"
 
 [dependencies]
 minify-html = { version = "0.16.5", path = "../minify-html" }
-rayon = "1.5"
+rayon = "1.11"
 structopt = "0.3"

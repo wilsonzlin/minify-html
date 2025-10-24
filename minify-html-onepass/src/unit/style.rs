@@ -15,8 +15,8 @@ use std::str::from_utf8_unchecked;
 static STYLE_END: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .dfa(true)
     .build(["</style"])
+    .unwrap()
 });
 
 #[inline(always)]

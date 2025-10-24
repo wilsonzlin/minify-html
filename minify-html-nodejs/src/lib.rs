@@ -36,7 +36,7 @@ fn minify(mut cx: FunctionContext) -> JsResult<JsBuffer> {
     remove_processing_instructions: get_bool!(cx, opt, "remove_processing_instructions"),
   };
   let out = minify_html::minify(src.as_slice(&cx), &cfg);
-  Ok(JsBuffer::external(&mut cx, out))
+  JsBuffer::from_slice(&mut cx, &out)
 }
 
 #[neon::main]

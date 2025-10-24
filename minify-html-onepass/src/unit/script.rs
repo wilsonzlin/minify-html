@@ -7,7 +7,7 @@ use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
 use once_cell::sync::Lazy;
 use oxc_allocator::Allocator;
-use oxc_codegen::CodeGenerator;
+use oxc_codegen::Codegen;
 use oxc_codegen::CodegenOptions;
 use oxc_minifier::CompressOptions;
 use oxc_minifier::MangleOptions;
@@ -19,8 +19,8 @@ use oxc_span::SourceType;
 static SCRIPT_END: Lazy<AhoCorasick> = Lazy::new(|| {
   AhoCorasickBuilder::new()
     .ascii_case_insensitive(true)
-    .dfa(true)
     .build(["</script"])
+    .unwrap()
 });
 
 /// Represents the mode in which JavaScript should be parsed and minified
@@ -65,16 +65,16 @@ pub fn process_script(
         // Apply minification
         let minifier_options = MinifierOptions {
           mangle: Some(MangleOptions::default()),
-          compress: CompressOptions::default(),
+          compress: Some(CompressOptions::default()),
         };
-        let _minifier_ret = Minifier::new(minifier_options).build(&allocator, &mut program);
+        let _minifier_ret = Minifier::new(minifier_options).minify(&allocator, &mut program);
 
         // Generate minified code
         let codegen_options = CodegenOptions {
           minify: true,
           ..CodegenOptions::default()
         };
-        let minified = CodeGenerator::new()
+        let minified = Codegen::new()
           .with_options(codegen_options)
           .build(&program)
           .code;

@@ -136,10 +136,10 @@ fn build_content_type_matcher(
   (
     AhoCorasickBuilder::new()
       .ascii_case_insensitive(true)
-      .dfa(true)
       .match_kind(MatchKind::LeftmostLongest)
       // Keep in sync with order of CONTENT_TYPE_FROM_PATTERN.
-      .build(patterns),
+      .build(patterns)
+      .unwrap(),
     types,
   )
 }
@@ -154,13 +154,13 @@ static CONTENT_TYPE_MATCHER_OPAQUE_BRACE_CP: Lazy<(AhoCorasick, Vec<ContentType>
   Lazy::new(|| build_content_type_matcher(true, true));
 
 static CLOSING_BRACE_BRACE: Lazy<AhoCorasick> =
-  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["}}"]));
+  Lazy::new(|| AhoCorasickBuilder::new().build(["}}"]).unwrap());
 static CLOSING_BRACE_HASH: Lazy<AhoCorasick> =
-  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["#}"]));
+  Lazy::new(|| AhoCorasickBuilder::new().build(["#}"]).unwrap());
 static CLOSING_BRACE_PERCENT: Lazy<AhoCorasick> =
-  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["%}"]));
+  Lazy::new(|| AhoCorasickBuilder::new().build(["%}"]).unwrap());
 static CLOSING_CHEVRON_PERCENT: Lazy<AhoCorasick> =
-  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["%>"]));
+  Lazy::new(|| AhoCorasickBuilder::new().build(["%>"]).unwrap());
 
 pub struct ParsedContent {
   pub children: Vec<NodeData>,

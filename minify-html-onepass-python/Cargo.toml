@@ -15,4 +15,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 minify-html-onepass = { path = "../minify-html-onepass" }
-pyo3 = { "version" = "0.26.0", features = ["extension-module", "generate-import-lib"] }
+pyo3 = { "version" = "0.27", features = ["extension-module", "generate-import-lib"] }
