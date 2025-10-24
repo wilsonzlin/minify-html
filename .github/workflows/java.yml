@@ -98,14 +98,14 @@ jobs:
           <settings>
             <servers>
               <server>
-                <id>ossrh</id>
-                <username>wilsonzlin</username>
-                <password>${{ secrets.SONATYPE_PASSWORD }}</password>
+                <id>central</id>
+                <username>${{ secrets.CENTRAL_PORTAL_USERNAME }}</username>
+                <password>${{ secrets.CENTRAL_PORTAL_TOKEN }}</password>
               </server>
             </servers>
             <profiles>
               <profile>
-                <id>ossrh</id>
+                <id>central</id>
                 <activation>
                   <activeByDefault>true</activeByDefault>
                 </activation>
