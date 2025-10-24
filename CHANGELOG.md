@@ -4,6 +4,7 @@
 
 - [Node.js] BREAKING: Minimum Node.js version increased from 8.6.0 to 10.0.0.
 - Replace minify-js with [oxc_minifier](https://github.com/oxc-project/oxc) for JavaScript minification.
+- [Python] Add musl builds for Linux.
 - Bump Windows version for GitHub Actions.
 - Migrate to Central Portal for Java.
 
