@@ -3,6 +3,7 @@
 ## Pending
 
 - Fix WASM builds.
+- [Java] BREAKING: Minimum Java version increased from 7 to 8.
 
 ## 0.17.1
 
