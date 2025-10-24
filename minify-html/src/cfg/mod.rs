@@ -2,6 +2,8 @@
 /// minification approach.
 #[derive(Clone, Default)]
 pub struct Cfg {
+  /// Always quote attribute values in the output.
+  pub always_quote_attribute_values: bool,
   /// Allow unquoted attribute values in the output to contain characters prohibited by the [WHATWG specification](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2). These will still be parsed correctly by almost all browsers.
   pub allow_noncompliant_unquoted_attribute_values: bool,
   /// Allow some minifications around entities that may not pass validation, but will still be parsed correctly by almost all browsers.

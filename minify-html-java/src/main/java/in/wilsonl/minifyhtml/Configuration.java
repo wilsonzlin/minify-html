@@ -6,6 +6,7 @@ package in.wilsonl.minifyhtml;
  * Class representing minification configuration.
  */
 public class Configuration {
+  public final boolean always_quote_attribute_values;
   public final boolean allow_noncompliant_unquoted_attribute_values;
   public final boolean allow_optimal_entities;
   public final boolean allow_removing_spaces_between_attributes;
@@ -23,6 +24,7 @@ public class Configuration {
   public final boolean remove_processing_instructions;
 
   private Configuration(
+    boolean always_quote_attribute_values,
     boolean allow_noncompliant_unquoted_attribute_values,
     boolean allow_optimal_entities,
     boolean allow_removing_spaces_between_attributes,
@@ -39,6 +41,7 @@ public class Configuration {
     boolean remove_bangs,
     boolean remove_processing_instructions
   ) {
+    this.always_quote_attribute_values = always_quote_attribute_values;
     this.allow_noncompliant_unquoted_attribute_values = allow_noncompliant_unquoted_attribute_values;
     this.allow_optimal_entities = allow_optimal_entities;
     this.allow_removing_spaces_between_attributes = allow_removing_spaces_between_attributes;
@@ -60,6 +63,7 @@ public class Configuration {
    * Builder to help create configuration.
    */
   public static class Builder {
+    private boolean always_quote_attribute_values = false;
     private boolean allow_noncompliant_unquoted_attribute_values = false;
     private boolean allow_optimal_entities = false;
     private boolean allow_removing_spaces_between_attributes = false;
@@ -76,6 +80,10 @@ public class Configuration {
     private boolean remove_bangs = false;
     private boolean remove_processing_instructions = false;
 
+    public Builder setAlwaysQuoteAttributeValues(boolean v) {
+      this.always_quote_attribute_values = v;
+      return this;
+    }
     public Builder setAllowNoncompliantUnquotedAttributeValues(boolean v) {
       this.allow_noncompliant_unquoted_attribute_values = v;
       return this;
@@ -139,6 +147,7 @@ public class Configuration {
 
     public Configuration build() {
       return new Configuration(
+        this.always_quote_attribute_values,
         this.allow_noncompliant_unquoted_attribute_values,
         this.allow_optimal_entities,
         this.allow_removing_spaces_between_attributes,

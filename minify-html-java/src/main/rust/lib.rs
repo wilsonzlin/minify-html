@@ -11,6 +11,7 @@ fn build_cfg(env: &JNIEnv, obj: &JObject) -> Cfg {
   #[rustfmt::skip]
   // This is a statement because "attributes on expressions are experimental".
   let cfg = Cfg {
+    always_quote_attribute_values: env.get_field(*obj, "always_quote_attribute_values", "Z").unwrap().z().unwrap(),
     allow_noncompliant_unquoted_attribute_values: env.get_field(*obj, "allow_noncompliant_unquoted_attribute_values", "Z").unwrap().z().unwrap(),
     allow_optimal_entities: env.get_field(*obj, "allow_optimal_entities", "Z").unwrap().z().unwrap(),
     allow_removing_spaces_between_attributes: env.get_field(*obj, "allow_removing_spaces_between_attributes", "Z").unwrap().z().unwrap(),

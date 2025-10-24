@@ -22,6 +22,7 @@ macro_rules! get_prop {
 pub fn minify(code: &[u8], cfg: &JsValue) -> Vec<u8> {
   #[rustfmt::skip]
   let cfg = minify_html::Cfg {
+    always_quote_attribute_values: get_prop!(cfg, "always_quote_attribute_values"),
     allow_noncompliant_unquoted_attribute_values: get_prop!(cfg, "allow_noncompliant_unquoted_attribute_values"),
     allow_optimal_entities: get_prop!(cfg, "allow_optimal_entities"),
     allow_removing_spaces_between_attributes: get_prop!(cfg, "allow_removing_spaces_between_attributes"),

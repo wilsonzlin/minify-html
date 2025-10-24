@@ -26,6 +26,10 @@ struct Cli {
   #[structopt(short, long, parse(from_os_str))]
   output: Option<std::path::PathBuf>,
 
+  /// Always quote attribute values.
+  #[structopt(long)]
+  always_quote_attribute_values: bool,
+
   /// Allow unquoted attribute values in the output to contain characters prohibited by the [WHATWG specification](https://html.spec.whatwg.org/multipage/syntax.html#attributes-2). These will still be parsed correctly by almost all browsers.
   #[structopt(long)]
   allow_noncompliant_unquoted_attribute_values: bool,
@@ -113,6 +117,7 @@ fn main() {
 
   #[rustfmt::skip]
   let cfg = Arc::new(Cfg {
+    always_quote_attribute_values: args.always_quote_attribute_values,
     allow_noncompliant_unquoted_attribute_values: args.allow_noncompliant_unquoted_attribute_values,
     allow_optimal_entities: args.allow_optimal_entities,
     allow_removing_spaces_between_attributes: args.allow_removing_spaces_between_attributes,

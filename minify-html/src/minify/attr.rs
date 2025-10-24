@@ -450,13 +450,15 @@ pub fn minify_attr(
   if sq.len() < min.len() {
     min = sq;
   };
-  let uq = encode_unquoted(
-    &encoded,
-    must_end_with_semicolon,
-    !cfg.allow_noncompliant_unquoted_attribute_values,
-  );
-  if uq.len() < min.len() {
-    min = uq;
-  };
+  if !cfg.always_quote_attribute_values {
+    let uq = encode_unquoted(
+      &encoded,
+      must_end_with_semicolon,
+      !cfg.allow_noncompliant_unquoted_attribute_values,
+    );
+    if uq.len() < min.len() {
+      min = uq;
+    };
+  }
   AttrMinified::Value(min)
 }
