@@ -60,7 +60,7 @@ minhtml --keep-closing-tags --minify-css /path/to/**/*.html
 
 ```toml
 [dependencies]
-minify-html = "0.16.4"
+minify-html = "0.16.5"
 ```
 
 ### Use
@@ -153,7 +153,7 @@ Add as a Maven dependency:
 <dependency>
   <groupId>in.wilsonl.minifyhtml</groupId>
   <artifactId>minify-html</artifactId>
-  <version>0.16.4</version>
+  <version>0.16.5</version>
 </dependency>
 ```
 

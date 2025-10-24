@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.16.5
 
 - Bump Java version for GitHub Actions.
 - [CLI] Add missing exit status on I/O errors.
