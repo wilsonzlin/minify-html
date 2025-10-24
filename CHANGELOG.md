@@ -1,5 +1,9 @@
 # minify-html changelog
 
+## Pending
+
+- Fix WASM builds.
+
 ## 0.17.1
 
 - Bump Ubuntu version for GitHub Actions.
