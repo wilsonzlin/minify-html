@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.18.0
 
 - Fix WASM builds.
 - [Java] BREAKING: Minimum Java version increased from 7 to 8.
