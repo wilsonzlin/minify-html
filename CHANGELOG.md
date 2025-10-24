@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.17.0
 
 - [Node.js] BREAKING: Minimum Node.js version increased from 8.6.0 to 10.0.0.
 - [Ruby] BREAKING: Minimum Ruby version increased from 2.7 to 3.2.
