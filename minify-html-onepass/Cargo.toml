@@ -19,7 +19,7 @@ ahash = "0.8"
 aho-corasick = "1.1"
 lightningcss = "1.0.0-alpha.68"
 memchr = "2"
-minify-html-common = { version = "0.0.2", path = "../minify-html-common" }
+minify-html-common = { version = "0.0.3", path = "../minify-html-common" }
 once_cell = "1.21"
 oxc_allocator = "0.95"
 oxc_codegen = "0.95"
