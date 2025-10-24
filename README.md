@@ -203,7 +203,7 @@ All [`Cfg` fields](https://docs.rs/minify-html/latest/minify_html/struct.Cfg.htm
 
 - Package: [minify_html](https://rubygems.org/gems/minify_html)
 - Binding: [rb-sys](https://github.com/oxidize-rb/rb-sys) and [magnus](https://github.com/matsadler/magnus)
-- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Ruby 2.7 to 3.4
+- Platforms: Linux (ARM64 and x64), macOS (ARM64 and x64), Windows (x64); Ruby 3.2 to 3.4
 
 ### Get
 
