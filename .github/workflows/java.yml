@@ -39,7 +39,7 @@ jobs:
             resfile: 'mac-x64.nativelib'
 
           - target: x86_64-pc-windows-msvc
-            os: windows-2019
+            os: windows-2022
             buildfile: 'minify_html_java.dll'
             resfile: 'win-x64.nativelib'
     steps:
