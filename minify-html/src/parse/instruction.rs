@@ -4,11 +4,8 @@ use aho_corasick::AhoCorasick;
 use aho_corasick::AhoCorasickBuilder;
 use once_cell::sync::Lazy;
 
-static INSTRUCTION_END: Lazy<AhoCorasick> = Lazy::new(|| {
-  AhoCorasickBuilder::new()
-    .dfa(true)
-    .build(["?>"])
-});
+static INSTRUCTION_END: Lazy<AhoCorasick> =
+  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["?>"]));
 
 pub fn parse_instruction(code: &mut Code) -> NodeData {
   debug_assert!(code.as_slice().starts_with(b"<?"));

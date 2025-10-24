@@ -153,26 +153,14 @@ static CONTENT_TYPE_MATCHER_OPAQUE_CP: Lazy<(AhoCorasick, Vec<ContentType>)> =
 static CONTENT_TYPE_MATCHER_OPAQUE_BRACE_CP: Lazy<(AhoCorasick, Vec<ContentType>)> =
   Lazy::new(|| build_content_type_matcher(true, true));
 
-static CLOSING_BRACE_BRACE: Lazy<AhoCorasick> = Lazy::new(|| {
-  AhoCorasickBuilder::new()
-    .dfa(true)
-    .build(["}}"])
-});
-static CLOSING_BRACE_HASH: Lazy<AhoCorasick> = Lazy::new(|| {
-  AhoCorasickBuilder::new()
-    .dfa(true)
-    .build(["#}"])
-});
-static CLOSING_BRACE_PERCENT: Lazy<AhoCorasick> = Lazy::new(|| {
-  AhoCorasickBuilder::new()
-    .dfa(true)
-    .build(["%}"])
-});
-static CLOSING_CHEVRON_PERCENT: Lazy<AhoCorasick> = Lazy::new(|| {
-  AhoCorasickBuilder::new()
-    .dfa(true)
-    .build(["%>"])
-});
+static CLOSING_BRACE_BRACE: Lazy<AhoCorasick> =
+  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["}}"]));
+static CLOSING_BRACE_HASH: Lazy<AhoCorasick> =
+  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["#}"]));
+static CLOSING_BRACE_PERCENT: Lazy<AhoCorasick> =
+  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["%}"]));
+static CLOSING_CHEVRON_PERCENT: Lazy<AhoCorasick> =
+  Lazy::new(|| AhoCorasickBuilder::new().dfa(true).build(["%>"]));
 
 pub struct ParsedContent {
   pub children: Vec<NodeData>,

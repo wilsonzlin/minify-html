@@ -78,7 +78,7 @@ fn test_keep_input_type_text_attr() {
 fn test_preserve_template_brace_syntax() {
   eval_with_js_min(
     b"<p> {{   hello    world! %}  {%}{#} echo '  </p><P><script>  let x = 1; //'  }} </p>",
-    b"<p>{{ hello world! %} {%}{#} echo '<p><script>let x=1",
+    b"<p>{{ hello world! %} {%}{#} echo '<p><script>let x=1;",
   );
   let mut cfg = Cfg::default();
   cfg.preserve_brace_template_syntax = true;

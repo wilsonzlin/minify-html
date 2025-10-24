@@ -10,6 +10,7 @@ use crate::minify::doctype::minify_doctype;
 use crate::minify::element::minify_element;
 use crate::minify::instruction::minify_instruction;
 use crate::minify::js::minify_js;
+use crate::minify::js::TopLevelMode;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
 use minify_html_common::gen::codepoints::TAG_NAME_CHAR;
@@ -46,12 +47,9 @@ fn build_optimal_chevron_replacer() -> Replacer {
 }
 
 fn build_whatwg_chevron_replacer() -> Replacer {
-  Replacer::new(
-    AhoCorasickBuilder::new()
-      .dfa(true)
-      .build(["<"]),
-    vec!["&lt;".into()],
-  )
+  Replacer::new(AhoCorasickBuilder::new().dfa(true).build(["<"]), vec![
+    "&lt;".into(),
+  ])
 }
 
 static OPTIMAL_CHEVRON_REPLACER: Lazy<Replacer> = Lazy::new(|| build_optimal_chevron_replacer());
@@ -157,8 +155,8 @@ pub fn minify_content(
       NodeData::ScriptOrStyleContent { code, lang } => match lang {
         ScriptOrStyleLang::CSS => minify_css(cfg, out, &code),
         ScriptOrStyleLang::Data => out.extend_from_slice(&code),
-        ScriptOrStyleLang::JS => minify_js(cfg, minify_js::TopLevelMode::Global, out, &code),
-        ScriptOrStyleLang::JSModule => minify_js(cfg, minify_js::TopLevelMode::Module, out, &code),
+        ScriptOrStyleLang::JS => minify_js(cfg, TopLevelMode::Global, out, &code),
+        ScriptOrStyleLang::JSModule => minify_js(cfg, TopLevelMode::Module, out, &code),
       },
       NodeData::Text { value } => {
         let min = encode_entities(&value, false, !cfg.allow_optimal_entities);

@@ -1,5 +1,11 @@
 # minify-html changelog
 
+## Pending
+
+- [Internal] Replace minify-js with [oxc_minifier](https://github.com/oxc-project/oxc) for JavaScript minification.
+- Bump Windows version for GitHub Actions.
+- Migrate to Central Portal for Java.
+
 ## 0.16.5
 
 - Bump Java version for GitHub Actions.

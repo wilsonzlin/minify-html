@@ -12,6 +12,7 @@ use crate::unit::attr::AttrType;
 use crate::unit::attr::ProcessedAttr;
 use crate::unit::content::process_content;
 use crate::unit::script::process_script;
+use crate::unit::script::TopLevelMode;
 use crate::unit::style::process_style;
 use minify_html_common::gen::attrs::AttributeMinification;
 use minify_html_common::gen::attrs::ATTRS;
@@ -215,8 +216,8 @@ pub fn process_tag(
   let mut closing_tag_omitted = false;
   match tag_type {
     TagType::ScriptData => process_script(proc, cfg, None)?,
-    TagType::ScriptJs => process_script(proc, cfg, Some(minify_js::TopLevelMode::Global))?,
-    TagType::ScriptJsModule => process_script(proc, cfg, Some(minify_js::TopLevelMode::Module))?,
+    TagType::ScriptJs => process_script(proc, cfg, Some(TopLevelMode::Global))?,
+    TagType::ScriptJsModule => process_script(proc, cfg, Some(TopLevelMode::Module))?,
     TagType::Style => process_style(proc, cfg)?,
     _ => {
       closing_tag_omitted =
