@@ -37,13 +37,13 @@ pub fn minify_js(cfg: &Cfg, mode: TopLevelMode, out: &mut Vec<u8>, code: &[u8]) 
       // Only proceed if parsing succeeded without errors
       if parser_ret.errors.is_empty() {
         let mut program = parser_ret.program;
-
+        
         // Apply minification
-        let minifier_options = MinifierOptions {
+        // Use CompressOptions::safest() instead of default() to avoid overly aggressive dead code elimination
+        let _minifier_ret = Minifier::new(MinifierOptions {
           mangle: Some(MangleOptions::default()),
-          compress: Some(CompressOptions::default()),
-        };
-        let _minifier_ret = Minifier::new(minifier_options).minify(&allocator, &mut program);
+          compress: Some(CompressOptions::safest()),
+        }).minify(&allocator, &mut program);
 
         // Generate minified code
         let codegen_options = CodegenOptions {

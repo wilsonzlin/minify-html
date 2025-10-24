@@ -457,7 +457,7 @@ pub fn create_common_js_test_data() -> HashMap<&'static [u8], &'static [u8]> {
             let a = 1;
         </script>
     "#,
-    b"<script>let a=1;</script>",
+    b"<script>// This is a comment.\nlet a=1;</script>",
   );
 
   // js minification unintentional closing tag
