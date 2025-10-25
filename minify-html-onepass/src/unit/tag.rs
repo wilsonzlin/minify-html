@@ -144,7 +144,7 @@ pub fn process_tag(
       _ => {}
     };
 
-    let ProcessedAttr { name, typ, value } = process_attr(proc, ns, tag_name)?;
+    let ProcessedAttr { name, typ, value } = process_attr(proc, cfg, ns, tag_name)?;
     match (tag_type, &proc[name]) {
       // NOTE: We don't support multiple `type` attributes, so can't go from ScriptData => ScriptJs.
       (TagType::ScriptJs, b"type") => {

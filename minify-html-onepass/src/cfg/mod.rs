@@ -12,6 +12,9 @@ pub struct Cfg {
 
   /// If enabled, CSS in `<style>` tags are minified.
   pub minify_css: bool,
+
+  /// Preserve the case of attribute names. This is useful for frameworks like React and Vue which use case-sensitive attribute names.
+  pub preserve_attribute_case: bool,
 }
 
 impl Cfg {

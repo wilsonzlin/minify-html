@@ -21,6 +21,7 @@ fn minify_html(source: String, cfg: RHash) -> String {
     minify_js: cfg.aref(StaticSymbol::new("minify_js")).unwrap_or_default(),
     preserve_brace_template_syntax: cfg.aref(StaticSymbol::new("preserve_brace_template_syntax")).unwrap_or_default(),
     preserve_chevron_percent_template_syntax: cfg.aref(StaticSymbol::new("preserve_chevron_percent_template_syntax")).unwrap_or_default(),
+    preserve_attribute_case: cfg.aref(StaticSymbol::new("preserve_attribute_case")).unwrap_or_default(),
     remove_bangs: cfg.aref(StaticSymbol::new("remove_bangs")).unwrap_or_default(),
     remove_processing_instructions: cfg.aref(StaticSymbol::new("remove_processing_instructions")).unwrap_or_default(),
   });

@@ -30,6 +30,7 @@ pub struct ProcessedAttr {
 
 pub fn process_attr(
   proc: &mut Processor,
+  cfg: &crate::cfg::Cfg,
   ns: Namespace,
   element: ProcessorRange,
 ) -> ProcessingResult<ProcessedAttr> {
@@ -38,7 +39,9 @@ pub fn process_attr(
   let name = proc
     .m(WhileInLookup(WHATWG_ATTR_NAME_CHAR), Keep)
     .require("attribute name")?;
-  proc.make_lowercase(name);
+  if !cfg.preserve_attribute_case {
+    proc.make_lowercase(name);
+  }
   let attr_cfg = ATTRS.get(ns, &proc[element], &proc[name]);
   let is_boolean = attr_cfg.filter(|attr| attr.boolean).is_some();
   let after_name = WriteCheckpoint::new(proc);

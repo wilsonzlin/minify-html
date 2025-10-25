@@ -28,6 +28,8 @@ pub struct Cfg {
   pub preserve_brace_template_syntax: bool,
   /// When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched.
   pub preserve_chevron_percent_template_syntax: bool,
+  /// Preserve the case of attribute names. This is useful for frameworks like React and Vue which use case-sensitive attribute names.
+  pub preserve_attribute_case: bool,
   /// Remove all bangs.
   pub remove_bangs: bool,
   /// Remove all processing instructions.

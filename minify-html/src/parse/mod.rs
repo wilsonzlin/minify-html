@@ -17,6 +17,7 @@ pub mod title;
 pub struct ParseOpts {
   pub treat_brace_as_opaque: bool,
   pub treat_chevron_percent_as_opaque: bool,
+  pub preserve_attribute_case: bool,
 }
 
 pub struct Code<'c> {

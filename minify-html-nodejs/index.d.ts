@@ -34,6 +34,8 @@ export function minify(
     preserve_brace_template_syntax?: boolean;
     /** When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched. */
     preserve_chevron_percent_template_syntax?: boolean;
+    /** Preserve the case of attribute names. This is useful for frameworks like React and Vue which use case-sensitive attribute names. */
+    preserve_attribute_case?: boolean;
     /** Remove all bangs. */
     remove_bangs?: boolean;
     /** Remove all processing instructions. */

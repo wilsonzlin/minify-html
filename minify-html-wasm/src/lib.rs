@@ -35,6 +35,7 @@ pub fn minify(code: &[u8], cfg: &JsValue) -> Vec<u8> {
     minify_js: get_prop!(cfg, "minify_js"),
     preserve_brace_template_syntax: get_prop!(cfg, "preserve_brace_template_syntax"),
     preserve_chevron_percent_template_syntax: get_prop!(cfg, "preserve_chevron_percent_template_syntax"),
+    preserve_attribute_case: get_prop!(cfg, "preserve_attribute_case"),
     remove_bangs: get_prop!(cfg, "remove_bangs"),
     remove_processing_instructions: get_prop!(cfg, "remove_processing_instructions"),
   };

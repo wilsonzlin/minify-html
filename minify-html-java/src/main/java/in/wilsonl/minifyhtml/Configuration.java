@@ -19,6 +19,7 @@ public class Configuration {
   public final boolean minify_js;
   public final boolean preserve_brace_template_syntax;
   public final boolean preserve_chevron_percent_template_syntax;
+  public final boolean preserve_attribute_case;
   public final boolean remove_bangs;
   public final boolean remove_processing_instructions;
 
@@ -36,6 +37,7 @@ public class Configuration {
     boolean minify_js,
     boolean preserve_brace_template_syntax,
     boolean preserve_chevron_percent_template_syntax,
+    boolean preserve_attribute_case,
     boolean remove_bangs,
     boolean remove_processing_instructions
   ) {
@@ -52,6 +54,7 @@ public class Configuration {
     this.minify_js = minify_js;
     this.preserve_brace_template_syntax = preserve_brace_template_syntax;
     this.preserve_chevron_percent_template_syntax = preserve_chevron_percent_template_syntax;
+    this.preserve_attribute_case = preserve_attribute_case;
     this.remove_bangs = remove_bangs;
     this.remove_processing_instructions = remove_processing_instructions;
   }
@@ -73,6 +76,7 @@ public class Configuration {
     private boolean minify_js = false;
     private boolean preserve_brace_template_syntax = false;
     private boolean preserve_chevron_percent_template_syntax = false;
+    private boolean preserve_attribute_case = false;
     private boolean remove_bangs = false;
     private boolean remove_processing_instructions = false;
 
@@ -128,6 +132,10 @@ public class Configuration {
       this.preserve_chevron_percent_template_syntax = v;
       return this;
     }
+    public Builder setPreserveAttributeCase(boolean v) {
+      this.preserve_attribute_case = v;
+      return this;
+    }
     public Builder setRemoveBangs(boolean v) {
       this.remove_bangs = v;
       return this;
@@ -152,6 +160,7 @@ public class Configuration {
         this.minify_js,
         this.preserve_brace_template_syntax,
         this.preserve_chevron_percent_template_syntax,
+        this.preserve_attribute_case,
         this.remove_bangs,
         this.remove_processing_instructions
       );

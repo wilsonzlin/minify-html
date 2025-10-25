@@ -88,7 +88,9 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
       code.slice_and_shift_while_not_in_lookup(WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_CHEVRON),
     );
     debug_assert!(!attr_name.is_empty());
-    attr_name.make_ascii_lowercase();
+    if !code.opts.preserve_attribute_case {
+      attr_name.make_ascii_lowercase();
+    }
     // See comment for WHITESPACE_OR_SLASH in codepoints.ts for details of complex attr parsing.
     code.shift_while_in_lookup(WHITESPACE);
     let has_value = code.shift_if_next(b'=');

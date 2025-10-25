@@ -83,6 +83,10 @@ struct Cli {
   #[structopt(long)]
   preserve_chevron_percent_template_syntax: bool,
 
+  /// Preserve the case of attribute names. This is useful for frameworks like React and Vue which use case-sensitive attribute names.
+  #[structopt(long)]
+  preserve_attribute_case: bool,
+
   /// Remove all bangs.
   #[structopt(long)]
   remove_bangs: bool,
@@ -126,6 +130,7 @@ fn main() {
     minify_js: args.minify_js,
     preserve_brace_template_syntax: args.preserve_brace_template_syntax,
     preserve_chevron_percent_template_syntax: args.preserve_chevron_percent_template_syntax,
+    preserve_attribute_case: args.preserve_attribute_case,
     remove_bangs: args.remove_bangs,
     remove_processing_instructions: args.remove_processing_instructions,
   });
