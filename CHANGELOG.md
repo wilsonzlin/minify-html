@@ -1,6 +1,6 @@
 # minify-html changelog
 
-## Pending
+## 0.18.1
 
 - Fix WASM builds.
 
