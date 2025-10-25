@@ -35,8 +35,8 @@ wee_alloc = { version = "0.4.5", optional = true }
 wasm-bindgen-test = "0.3"
 
 # https://github.com/WebAssembly/wasi-sdk/issues/254
+# https://github.com/rust-lang/rust/issues/137315
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-Oz", "--enable-bulk-memory"]
-
+wasm-opt = ["-Oz", "--all-features"]
 [package.metadata.wasm-pack.profile.dev]
-wasm-opt = ["-O", "--enable-bulk-memory"]
+wasm-opt = ["-O", "--all-features"]
