@@ -1,4 +1,5 @@
 use crate::ast::NodeData;
+use crate::cfg::Cfg;
 use crate::entity::decode::decode_entities;
 use crate::parse::bang::parse_bang;
 use crate::parse::comment::parse_comment;
@@ -169,6 +170,7 @@ pub struct ParsedContent {
 
 // Use empty slice for `grandparent` or `parent` if none.
 pub fn parse_content(
+  cfg: &Cfg,
   code: &mut Code,
   ns: Namespace,
   grandparent: &[u8],
@@ -228,7 +230,7 @@ pub fn parse_content(
     };
     match typ {
       Text => break,
-      OpeningTag => nodes.push(parse_element(code, ns, parent)),
+      OpeningTag => nodes.push(parse_element(cfg, code, ns, parent)),
       ClosingTag => {
         closing_tag_omitted = false;
         break;

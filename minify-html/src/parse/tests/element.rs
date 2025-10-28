@@ -1,6 +1,7 @@
 use crate::ast::AttrVal;
 use crate::ast::ElementClosingTag;
 use crate::ast::NodeData;
+use crate::cfg::Cfg;
 use crate::parse::element::parse_element;
 use crate::parse::element::parse_tag;
 use crate::parse::element::ParsedTag;
@@ -52,7 +53,8 @@ fn test_parse_tag() {
 #[test]
 fn test_parse_element() {
   let mut code = Code::new(br#"<a b=\"c\"></a>"#);
-  let elem = parse_element(&mut code, Namespace::Html, EMPTY_SLICE);
+  let cfg = Cfg::new();
+  let elem = parse_element(&cfg, &mut code, Namespace::Html, EMPTY_SLICE);
   assert_eq!(elem, NodeData::Element {
     attributes: {
       let mut map = AHashMap::<Vec<u8>, AttrVal>::default();

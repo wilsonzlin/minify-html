@@ -42,7 +42,7 @@ pub fn minify(src: &[u8], cfg: &Cfg) -> Vec<u8> {
     treat_brace_as_opaque: cfg.preserve_brace_template_syntax,
     treat_chevron_percent_as_opaque: cfg.preserve_chevron_percent_template_syntax,
   });
-  let parsed = parse_content(&mut code, Namespace::Html, EMPTY_SLICE, EMPTY_SLICE);
+  let parsed = parse_content(cfg, &mut code, Namespace::Html, EMPTY_SLICE, EMPTY_SLICE);
   let mut out = Vec::with_capacity(src.len());
   minify_content(
     cfg,
@@ -58,7 +58,8 @@ pub fn minify(src: &[u8], cfg: &Cfg) -> Vec<u8> {
 
 pub fn canonicalise<T: Write>(out: &mut T, src: &[u8]) -> std::io::Result<()> {
   let mut code = Code::new(src);
-  let parsed = parse_content(&mut code, Namespace::Html, EMPTY_SLICE, EMPTY_SLICE);
+  let cfg = Cfg::new();
+  let parsed = parse_content(&cfg, &mut code, Namespace::Html, EMPTY_SLICE, EMPTY_SLICE);
   for c in parsed.children {
     c14n_serialise_ast(out, &c)?;
   }

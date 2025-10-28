@@ -28,6 +28,8 @@ pub struct Cfg {
   pub preserve_brace_template_syntax: bool,
   /// When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched.
   pub preserve_chevron_percent_template_syntax: bool,
+  /// Preserve self-closing syntax on unknown HTML elements (e.g. `<custom />`).
+  pub preserve_self_closing_on_unknown_tags: bool,
   /// Remove all bangs.
   pub remove_bangs: bool,
   /// Remove all processing instructions.
