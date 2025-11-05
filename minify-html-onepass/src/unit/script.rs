@@ -32,6 +32,61 @@ pub enum TopLevelMode {
   Module,
 }
 
+/// Strips treeshake annotations like /*#__PURE__*/ and /*@__PURE__*/
+/// These annotations are only useful for bundlers during tree-shaking,
+/// and waste bytes in inline scripts where no further bundling occurs.
+fn strip_treeshake_annotations(code: &str) -> String {
+  let mut result = String::with_capacity(code.len());
+  let bytes = code.as_bytes();
+  let mut i = 0;
+
+  while i < bytes.len() {
+    // Check for comment start
+    if i + 1 < bytes.len() && bytes[i] == b'/' && bytes[i + 1] == b'*' {
+      // Find comment end
+      let comment_start = i;
+      i += 2;
+      let mut comment_end = None;
+
+      while i + 1 < bytes.len() {
+        if bytes[i] == b'*' && bytes[i + 1] == b'/' {
+          comment_end = Some(i + 2);
+          break;
+        }
+        i += 1;
+      }
+
+      if let Some(end) = comment_end {
+        // Extract comment content (between /* and */)
+        let comment = &code[comment_start + 2..end - 2];
+        let trimmed_comment = comment.trim();
+
+        // Check if it's a treeshake annotation
+        if trimmed_comment == "#__PURE__"
+          || trimmed_comment == "@__PURE__"
+          || trimmed_comment == "__PURE__" {
+          // Skip this comment entirely
+          i = end;
+          continue;
+        }
+
+        // Not a treeshake annotation, keep the comment
+        result.push_str(&code[comment_start..end]);
+        i = end;
+      } else {
+        // Unterminated comment, keep it as-is
+        result.push(bytes[i - 2] as char);
+        i -= 1;
+      }
+    } else {
+      result.push(bytes[i] as char);
+      i += 1;
+    }
+  }
+
+  result
+}
+
 // Provide `None` to `mode` if not JS.
 #[inline(always)]
 pub fn process_script(
@@ -79,6 +134,10 @@ pub fn process_script(
           .with_options(codegen_options)
           .build(&program)
           .code;
+
+        // Strip treeshake annotations (e.g., /*#__PURE__*/, /*@__PURE__*/)
+        // These are only useful for bundlers, not inline scripts
+        let minified = strip_treeshake_annotations(&minified);
 
         // Only use minified version if it's actually smaller
         if minified.len() < src.len() {
