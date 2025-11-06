@@ -3,6 +3,7 @@ use minify_html_common::whitespace::trimmed;
 use oxc_allocator::Allocator;
 use oxc_codegen::Codegen;
 use oxc_codegen::CodegenOptions;
+use oxc_codegen::CommentOptions;
 use oxc_minifier::CompressOptions;
 use oxc_minifier::MangleOptions;
 use oxc_minifier::Minifier;
@@ -46,8 +47,14 @@ pub fn minify_js(cfg: &Cfg, mode: TopLevelMode, out: &mut Vec<u8>, code: &[u8]) 
         }).minify(&allocator, &mut program);
 
         // Generate minified code
+        // Disable treeshake annotations (e.g., /*#__PURE__*/, /*@__PURE__*/)
+        // These are only useful for bundlers, not inline scripts
         let codegen_options = CodegenOptions {
           minify: true,
+          comments: CommentOptions {
+            annotation: false,
+            ..CommentOptions::default()
+          },
           ..CodegenOptions::default()
         };
         let minified = Codegen::new()
