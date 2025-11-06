@@ -1,0 +1,14 @@
+name: minify_html
+description: Extremely fast and smart HTML + JS + CSS minifier
+version: 0.10.8
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: '>=2.19.2 <3.0.0'
+
+dependencies:
+  ffi: ^2.0.1
+
+dev_dependencies:
+  lints: ^2.0.0
+  test: ^1.21.0
