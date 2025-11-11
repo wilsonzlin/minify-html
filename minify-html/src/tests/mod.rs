@@ -232,3 +232,21 @@ fn test_style_attr_minification() {
   // `style` attributes are removed if fully minified away.
   eval_with_css_min(br#"<div style="  /*  */   "></div>"#, br#"<div></div>"#);
 }
+
+#[test]
+fn test_preserve_self_closing_on_unknown_tags() {
+  let mut cfg = Cfg::new();
+  cfg.preserve_self_closing_on_unknown_tags = true;
+  eval_with_cfg(b"<custom />", b"<custom/>", &cfg);
+  eval_with_cfg(b"<custom class=\"foo\" />", b"<custom class=foo />", &cfg);
+  eval_with_cfg(b"<custom-element />", b"<custom-element/>", &cfg);
+  eval_with_cfg(b"<my-component />", b"<my-component/>", &cfg);
+  eval_with_cfg(b"<div />", b"<div>", &cfg);
+  eval_with_cfg(b"<div id=\"test\" />", b"<div id=test>", &cfg);
+  eval_with_cfg(b"<span />", b"<span>", &cfg);
+  eval_with_cfg(b"<input />", b"<input>", &cfg);
+  eval_with_cfg(b"<br />", b"<br>", &cfg);
+  eval_with_cfg(b"<img />", b"<img>", &cfg);
+  eval_with_cfg(b"<svg><path /></svg>", b"<svg><path/></svg>", &cfg);
+  eval_with_cfg(b"<svg><circle /></svg>", b"<svg><circle/></svg>", &cfg);
+}

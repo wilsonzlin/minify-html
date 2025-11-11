@@ -58,7 +58,7 @@ static DEFAULT_SVG: &WhitespaceMinification = &WhitespaceMinification {
   trim: true,
 };
 
-static HTML_TAG_WHITESPACE_MINIFICATION: Lazy<
+pub static HTML_TAG_WHITESPACE_MINIFICATION: Lazy<
   AHashMap<&'static [u8], &'static WhitespaceMinification>,
 > = Lazy::new(|| {
   let mut m = AHashMap::<&'static [u8], &'static WhitespaceMinification>::default();

@@ -3,6 +3,7 @@
 ## Pending
 
 - Disable treeshake annotations (e.g., `/*#__PURE__*/`) in minified JavaScript output as they are only useful for bundlers, not inline scripts.
+- Add `preserve_self_closing_on_unknown_tags` option to preserve self-closing syntax on unknown HTML elements.
 
 ## 0.18.1
 

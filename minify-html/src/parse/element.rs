@@ -2,6 +2,7 @@ use crate::ast::AttrVal;
 use crate::ast::ElementClosingTag;
 use crate::ast::NodeData;
 use crate::ast::ScriptOrStyleLang;
+use crate::cfg::Cfg;
 use crate::entity::decode::decode_entities;
 use crate::parse::content::parse_content;
 use crate::parse::content::ParsedContent;
@@ -22,6 +23,7 @@ use minify_html_common::gen::codepoints::WHITESPACE_OR_SLASH_OR_EQUALS_OR_RIGHT_
 use minify_html_common::spec::script::JAVASCRIPT_MIME_TYPES;
 use minify_html_common::spec::tag::ns::Namespace;
 use minify_html_common::spec::tag::void::VOID_TAGS;
+use minify_html_common::spec::tag::whitespace::HTML_TAG_WHITESPACE_MINIFICATION;
 use std::fmt::Debug;
 use std::fmt::Formatter;
 use std::str::from_utf8;
@@ -131,7 +133,7 @@ pub fn parse_tag(code: &mut Code) -> ParsedTag {
 }
 
 // `<` must be next. `parent` should be an empty slice if it doesn't exist.
-pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData {
+pub fn parse_element(cfg: &Cfg, code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData {
   let ParsedTag {
     name: elem_name,
     attributes,
@@ -146,7 +148,15 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
   };
 
   // Only foreign elements can be self closed.
-  if self_closing && ns != Namespace::Html {
+  // However, if preserve_self_closing_on_unknown_tags is enabled,
+  // preserve self-closing syntax on unknown HTML elements as well.
+  let should_preserve_self_closing = cfg.preserve_self_closing_on_unknown_tags
+    && !VOID_TAGS.contains(elem_name.as_slice())
+    && HTML_TAG_WHITESPACE_MINIFICATION
+      .get(elem_name.as_slice())
+      .is_none();
+
+  if self_closing && (ns != Namespace::Html || should_preserve_self_closing) {
     return NodeData::Element {
       attributes,
       children: Vec::new(),
@@ -183,7 +193,7 @@ pub fn parse_element(code: &mut Code, ns: Namespace, parent: &[u8]) -> NodeData 
     (_, b"style") => parse_style_content(code),
     (Namespace::Html, b"textarea") => parse_textarea_content(code),
     (Namespace::Html, b"title") => parse_title_content(code),
-    _ => parse_content(code, ns, parent, &elem_name),
+    _ => parse_content(cfg, code, ns, parent, &elem_name),
   };
 
   if !closing_tag_omitted {
