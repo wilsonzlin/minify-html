@@ -1,6 +1,6 @@
 /// Configuration settings that can be adjusted and passed to a minification function to change the
 /// minification approach.
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Cfg {
   /// If enabled, JavaScript in `<script>` tags are minified using
   /// [minify-js](https://github.com/wilsonzlin/minify-js).
