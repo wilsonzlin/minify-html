@@ -1,7 +1,7 @@
 use itertools::Itertools;
 use serde::Deserialize;
 use std::cell::RefCell;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::env::var_os;
 use std::fmt::Write;
 use std::ops::Add;
@@ -10,7 +10,7 @@ use std::ops::BitOr;
 use std::path::Path;
 use std::rc::Rc;
 
-#[derive(Deserialize, Hash, PartialEq, Eq, Clone, Copy)]
+#[derive(Deserialize, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 #[serde(rename_all = "lowercase")]
 enum HtmlDataNamespace {
   Html,
@@ -37,9 +37,9 @@ struct HtmlDataAttrConfig {
 #[derive(Deserialize)]
 #[allow(dead_code)]
 struct HtmlData {
-  tags: HashMap<HtmlDataNamespace, Vec<String>>,
+  tags: BTreeMap<HtmlDataNamespace, Vec<String>>,
   // attr => ns => tag => AttrConfig.
-  attributes: HashMap<String, HashMap<HtmlDataNamespace, HashMap<String, HtmlDataAttrConfig>>>,
+  attributes: BTreeMap<String, BTreeMap<HtmlDataNamespace, BTreeMap<String, HtmlDataAttrConfig>>>,
 }
 
 fn gen_attr_min_struct(
@@ -371,7 +371,7 @@ fn gen_codepoints_rs() -> String {
 #[derive(Default)]
 struct TrieNode {
   // Keys: 0..=255.
-  children: HashMap<u8, Rc<RefCell<TrieNode>>>,
+  children: BTreeMap<u8, Rc<RefCell<TrieNode>>>,
   value: Option<String>,
 }
 
@@ -404,7 +404,7 @@ impl TrieBuilder {
     struct State {
       variables: Vec<String>,
       next_id: u64,
-      code_cache: HashMap<String, String>,
+      code_cache: BTreeMap<String, String>,
       trie_name: &'static str,
       value_type: &'static str,
     }
@@ -476,7 +476,7 @@ struct Entity {
 }
 
 fn gen_entities_rs() -> String {
-  let entities: HashMap<String, Entity> =
+  let entities: BTreeMap<String, Entity> =
     serde_json::from_slice(include_bytes!("entities.json")).unwrap();
   let mut trie_builder = TrieBuilder::default();
   trie_builder.add(
