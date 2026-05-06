@@ -3,6 +3,7 @@
 ## Pending
 
 - Disable treeshake annotations (e.g., `/*#__PURE__*/`) in minified JavaScript output as they are only useful for bundlers, not inline scripts.
+- [Ruby] Add Ruby 4.0 support. Drop unmaintained Ruby 2.7, 3.0, 3.1, and 3.2.
 
 ## 0.18.1
 
