@@ -1,10 +1,13 @@
 use ::minify_html_onepass::in_place as minify_html_native;
 use ::minify_html_onepass::Cfg;
 use ::minify_html_onepass::Error;
-use pyo3::exceptions::PySyntaxError;
+use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::wrap_pyfunction;
+use pyo3::create_exception;
 use std::str::from_utf8_unchecked;
+
+create_exception!(minify_html_onepass, MinifyError, PyException);
 
 #[pyfunction]
 #[pyo3(
@@ -25,7 +28,7 @@ fn minify(code: String, minify_js: bool, minify_css: bool) -> PyResult<String> {
     Err(Error {
       error_type,
       position,
-    }) => Err(PySyntaxError::new_err(format!(
+    }) => Err(MinifyError::new_err(format!(
       "{} [Character {}]",
       error_type.message(),
       position
@@ -35,6 +38,7 @@ fn minify(code: String, minify_js: bool, minify_css: bool) -> PyResult<String> {
 
 #[pymodule]
 fn minify_html_onepass(m: &Bound<'_, PyModule>) -> PyResult<()> {
+  m.add("MinifyError", m.py().get_type::<MinifyError>())?;
   m.add_function(wrap_pyfunction!(minify, m)?)?;
 
   Ok(())
