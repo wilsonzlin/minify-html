@@ -22,6 +22,7 @@ fn build_cfg(env: &mut JNIEnv, obj: &JObject) -> Cfg {
     minify_css: env.get_field(obj, "minify_css", "Z").unwrap().z().unwrap(),
     minify_doctype: env.get_field(obj, "minify_doctype", "Z").unwrap().z().unwrap(),
     minify_js: env.get_field(obj, "minify_js", "Z").unwrap().z().unwrap(),
+    remove_js_comments: env.get_field(obj, "remove_js_comments", "Z").unwrap().z().unwrap(),
     preserve_brace_template_syntax: env.get_field(obj, "preserve_brace_template_syntax", "Z").unwrap().z().unwrap(),
     preserve_chevron_percent_template_syntax: env.get_field(obj, "preserve_chevron_percent_template_syntax", "Z").unwrap().z().unwrap(),
     remove_bangs: env.get_field(obj, "remove_bangs", "Z").unwrap().z().unwrap(),

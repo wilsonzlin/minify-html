@@ -232,3 +232,27 @@ fn test_style_attr_minification() {
   // `style` attributes are removed if fully minified away.
   eval_with_css_min(br#"<div style="  /*  */   "></div>"#, br#"<div></div>"#);
 }
+
+#[test]
+fn test_remove_js_comments() {
+    let mut cfg = Cfg::default();
+    cfg.minify_js = true;
+    cfg.remove_js_comments = true;
+    eval_with_cfg(
+        br#"
+            <script>
+            // first comment to be removed
+            cp('create', id);
+            // second comment to be removed
+            cp('render', {
+                onFullActivation: function () {
+                    console.log(1);
+                    // Last comment to be removed
+                }
+            });
+            </script>
+        "#,
+        b"<script>cp(`create`,id),cp(`render`,{onFullActivation:function(){console.log(1)}});</script>",
+        &cfg
+    );
+}
