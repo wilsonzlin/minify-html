@@ -47,14 +47,19 @@ pub fn minify_js(cfg: &Cfg, mode: TopLevelMode, out: &mut Vec<u8>, code: &[u8]) 
         }).minify(&allocator, &mut program);
 
         // Generate minified code
-        // Disable treeshake annotations (e.g., /*#__PURE__*/, /*@__PURE__*/)
-        // These are only useful for bundlers, not inline scripts
+        let comments = if cfg.remove_js_comments {
+            CommentOptions::disabled()
+        } else {
+            // Disable treeshake annotations (e.g., /*#__PURE__*/, /*@__PURE__*/)
+            // These are only useful for bundlers, not inline scripts
+            CommentOptions {
+                annotation: false,
+                ..CommentOptions::default()
+            }
+        };
         let codegen_options = CodegenOptions {
           minify: true,
-          comments: CommentOptions {
-            annotation: false,
-            ..CommentOptions::default()
-          },
+          comments,
           ..CodegenOptions::default()
         };
         let minified = Codegen::new()

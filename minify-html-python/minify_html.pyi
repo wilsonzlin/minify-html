@@ -11,6 +11,7 @@ def minify(
     minify_css: bool = False,
     minify_doctype: bool = False,
     minify_js: bool = False,
+    remove_js_comments: bool = False,
     preserve_brace_template_syntax: bool = False,
     preserve_chevron_percent_template_syntax: bool = False,
     remove_bangs: bool = False,

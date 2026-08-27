@@ -24,6 +24,8 @@ pub struct Cfg {
   pub minify_doctype: bool,
   /// Minify JavaScript in `<script>` tags using [minify-js](https://github.com/wilsonzlin/minify-js).
   pub minify_js: bool,
+  /// Remove all comments from minified JavaScript (only used when minify_js = True)
+  pub remove_js_comments: bool,
   /// When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
   pub preserve_brace_template_syntax: bool,
   /// When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched.

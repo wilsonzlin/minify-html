@@ -30,6 +30,8 @@ export function minify(
     minify_doctype?: boolean;
     /** Minify JavaScript in `<script>` tags using [minify-js](https://github.com/wilsonzlin/minify-js). */
     minify_js?: boolean;
+    /** Remove all comments from minified JavaScript (only used when minify_js = True). */
+    remove_js_comments?: boolean;
     /** When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched. */
     preserve_brace_template_syntax?: boolean;
     /** When `<%` is seen in content, all source code until the subsequent matching closing `%>` gets piped through untouched. */

@@ -75,6 +75,11 @@ struct Cli {
   #[structopt(long)]
   minify_js: bool,
 
+  /// Remove all comments from minified JavaScript (only used when minify_js = True) using
+  /// [CommentOptions::disabled()]()https://docs.rs/oxc_codegen/latest/oxc_codegen/struct.CommentOptions.html#method.disabled)
+  #[structopt(long)]
+  remove_js_comments: bool,
+
   /// When `{{`, `{#`, or `{%` are seen in content, all source code until the subsequent matching closing `}}`, `#}`, or `%}` respectively gets piped through untouched.
   #[structopt(long)]
   preserve_brace_template_syntax: bool,
@@ -124,6 +129,7 @@ fn main() {
     minify_css: args.minify_css,
     minify_doctype: args.minify_doctype,
     minify_js: args.minify_js,
+    remove_js_comments: args.remove_js_comments,
     preserve_brace_template_syntax: args.preserve_brace_template_syntax,
     preserve_chevron_percent_template_syntax: args.preserve_chevron_percent_template_syntax,
     remove_bangs: args.remove_bangs,
