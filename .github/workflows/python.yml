@@ -37,6 +37,7 @@ jobs:
         - '3.12'
         - '3.13'
         - '3.14'
+        - '3.15'
         exclude:
           # Building for Windows aarch64 isn't ready yet.
           - os: windows-2022
