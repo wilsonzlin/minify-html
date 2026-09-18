@@ -14,15 +14,22 @@ edition = "2018"
 [badges]
 maintenance = { status = "actively-developed" }
 
+[features]
+default = ["css", "js"]
+# CSS minification (`<style>` tags and `style` attributes) via lightningcss.
+css = ["lightningcss"]
+# JS minification (`<script>` tags) via the oxc toolchain.
+js = ["oxc_allocator", "oxc_codegen", "oxc_minifier", "oxc_parser", "oxc_span"]
+
 [dependencies]
 ahash = "0.8"
 aho-corasick = "1.1"
-lightningcss = "1.0.0-alpha.68"
+lightningcss = { version = "1.0.0-alpha.68", optional = true }
 memchr = "2"
 minify-html-common = { version = "0.0.3", path = "../minify-html-common" }
 once_cell = "1.21"
-oxc_allocator = "0.95"
-oxc_codegen = "0.95"
-oxc_minifier = "0.95"
-oxc_parser = "0.95"
-oxc_span = "0.95"
+oxc_allocator = { version = "0.95", optional = true }
+oxc_codegen = { version = "0.95", optional = true }
+oxc_minifier = { version = "0.95", optional = true }
+oxc_parser = { version = "0.95", optional = true }
+oxc_span = { version = "0.95", optional = true }

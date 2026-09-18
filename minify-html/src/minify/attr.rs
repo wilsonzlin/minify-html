@@ -2,9 +2,13 @@ use crate::entity::encode::encode_entities;
 use crate::Cfg;
 use aho_corasick::AhoCorasickBuilder;
 use aho_corasick::MatchKind;
+#[cfg(feature = "css")]
 use lightningcss::stylesheet::MinifyOptions;
+#[cfg(feature = "css")]
 use lightningcss::stylesheet::ParserOptions;
+#[cfg(feature = "css")]
 use lightningcss::stylesheet::PrinterOptions;
+#[cfg(feature = "css")]
 use lightningcss::stylesheet::StyleAttribute;
 use minify_html_common::gen::attrs::ATTRS;
 use minify_html_common::gen::codepoints::DIGIT;
@@ -16,6 +20,7 @@ use minify_html_common::whitespace::left_trim;
 use minify_html_common::whitespace::remove_all_whitespace;
 use minify_html_common::whitespace::right_trim;
 use once_cell::sync::Lazy;
+#[cfg(feature = "css")]
 use std::str::from_utf8;
 
 fn build_double_quoted_replacer() -> Replacer {
@@ -362,6 +367,42 @@ pub enum AttrMinified {
   Value(AttrMinifiedValue),
 }
 
+/// Returns the minified CSS for a `style` attribute value, or `None` if minification wasn't
+/// performed (either `cfg.minify_css` is `false`, or minification failed / produced no smaller
+/// result).
+///
+/// Without the `css` feature, this always returns `None`, i.e. behaves as if `cfg.minify_css`
+/// were `false`.
+#[cfg(feature = "css")]
+fn minify_style_attr_value(cfg: &Cfg, value_raw: &[u8]) -> Option<Vec<u8>> {
+  if !cfg.minify_css {
+    return None;
+  }
+  let result = match StyleAttribute::parse(
+    from_utf8(value_raw).expect("`style` attribute value contains non-UTF-8"),
+    ParserOptions::default(),
+  ) {
+    Ok(mut sty) => {
+      sty.minify(MinifyOptions::default());
+      let mut popt = PrinterOptions::default();
+      popt.minify = true;
+      match sty.to_css(popt) {
+        Ok(out) => Some(out.code),
+        // TODO Collect error as warning.
+        Err(_err) => None,
+      }
+    }
+    // TODO Collect error as warning.
+    Err(_err) => None,
+  };
+  result.map(|min| min.into_bytes())
+}
+
+#[cfg(not(feature = "css"))]
+fn minify_style_attr_value(_cfg: &Cfg, _value_raw: &[u8]) -> Option<Vec<u8>> {
+  None
+}
+
 pub fn minify_attr(
   cfg: &Cfg,
   ns: Namespace,
@@ -399,26 +440,9 @@ pub fn minify_attr(
     };
   };
 
-  if name == b"style" && cfg.minify_css {
-    let result = match StyleAttribute::parse(
-      from_utf8(&value_raw).expect("`style` attribute value contains non-UTF-8"),
-      ParserOptions::default(),
-    ) {
-      Ok(mut sty) => {
-        sty.minify(MinifyOptions::default());
-        let mut popt = PrinterOptions::default();
-        popt.minify = true;
-        match sty.to_css(popt) {
-          Ok(out) => Some(out.code),
-          // TODO Collect error as warning.
-          Err(_err) => None,
-        }
-      }
-      // TODO Collect error as warning.
-      Err(_err) => None,
-    };
-    if let Some(min) = result {
-      value_raw = min.into_bytes();
+  if name == b"style" {
+    if let Some(min) = minify_style_attr_value(cfg, &value_raw) {
+      value_raw = min;
     };
   }
 
